@@ -20,8 +20,8 @@ from discord.ext.commands import Bot
 
 bot = Bot(command_prefix=".")
 #bot.remove_command("help")
-token = 'MzA4MDc3ODg3MDYyNTQwMjg5.C_fH-w.KOJEFIHeGs2AjymOPtLGia0zN9E'
-token_roxbot = "MjU5ODY5MzA0MzY5OTcxMjAw.C8boOw.fsGDeKBUWWWjMjjRTnOgQZMjc0o"
+token = ''
+token_roxbot = ""
 owner_id = "142735312626515979"
 
 config_template = {
