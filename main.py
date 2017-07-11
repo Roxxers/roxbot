@@ -288,8 +288,9 @@ async def printcommands():
 async def listroles(ctx):
     roles = []
     for role in config[ctx.message.server.id]["self-assign_roles"]["roles"]:
-        if role in ctx.message.server.roles:
-            roles.append(role.name)
+        for serverrole in ctx.message.server.roles:
+            if role == serverrole.id:
+                roles.append(serverrole.name)
     return await bot.say(roles)
 
 
