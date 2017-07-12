@@ -251,9 +251,9 @@ async def listroles(ctx):
     return await bot.say(roles)
 
 
-#################
-# Owner Commands#
-#################
+##################
+# Owner Commands #
+##################
 
 
 @bot.command(pass_context=True)
