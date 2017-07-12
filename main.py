@@ -1,5 +1,5 @@
 # RoxBot
-# Version = 0.1
+# Version = 0.1.1
 # Author = Roxxers
 
 ##############
@@ -19,9 +19,9 @@ import discord
 from discord.ext.commands import Bot
 
 bot = Bot(command_prefix=".")
-#bot.remove_command("help")
+# bot.remove_command("help")
+# TODO: Take these from a file, not the program
 token = ''
-token_roxbot = ""
 owner_id = "142735312626515979"
 
 config_template = {
@@ -43,16 +43,36 @@ config_template = {
 }
 
 
-def owner(ctx):
-    if owner_id == ctx.author.id:
-        return True
-    else:
-        return False
+def load_config():
+    with open('config.json', 'r') as config_file:
+        return json.load(config_file)
 
 
 def updateconfig():
     with open('config.json', 'w') as conf_file:
         json.dump(config, conf_file)
+
+
+def config_errorcheck():
+    # Checks for errors in the config files and fixes them automatically
+    for server in bot.servers:
+        if server.id not in config:
+            config[server.id] = config_template["example"]
+            updateconfig()
+            print("WARNING: The config file for {} was not found. A template has been loaded and saved. All modules are turned off by default.".format(server.name.upper()))
+        else:
+            for module_setting in config_template["example"]:
+                if module_setting not in config[server.id]:
+                    config[server.id][module_setting] = config_template["example"][module_setting]
+                    updateconfig()
+                    print("WARNING: The config file for {} was missing the {} module. This has been fixed with the template version. It is disabled by default.".format(server.name.upper(), module_setting.upper()))
+
+
+def owner(ctx):
+    if owner_id == ctx.author.id:
+        return True
+    else:
+        return False
 
 
 def mention_commandee(ctx):
@@ -77,6 +97,9 @@ def dice_roll(num):
 
 @bot.event
 async def on_ready():
+    # TODO: First part needs to be moved to wait_until_ready
+    config_errorcheck()
+
     print("Client logged in\n\n")
     print("Servers I am currently in:\n")
     for server in bot.servers:
@@ -144,6 +167,7 @@ async def on_server_remove(server):
     config.pop(server.id)
     updateconfig()
 
+
 @bot.command(pass_context=True)
 async def iam(ctx, role: discord.Role = None, *, user: discord.User = None, server: discord.Server = None):
 
@@ -166,11 +190,6 @@ async def iam(ctx, role: discord.Role = None, *, user: discord.User = None, serv
         return await bot.say("Yay {}! You now have the {} role!".format(user.mention, role.name))
     else:
         return await bot.say("That role is not self-assignable.")
-
-
-"""@bot.command(pass_context=True)
-async def help(ctx):
-    return await bot.say("Not that")"""
 
 
 @bot.command(pass_context=True)
@@ -242,30 +261,6 @@ async def dice(ctx, num, *, user: discord.User = None):
     roll = dice_roll(int(num))
     return await bot.say("You rolled a {}, {}".format(roll,user.mention))
 
-""""@bot.command(pass_context=True)
-async def cat(self,ctx):
-    from PIL import Image
-    images = [None] * 3
-    images[0] = Image.open("1.png")
-    images[1] = Image.open("2.png")
-    images[2] = Image.open("3.png")
-    do = 3
-    widths, heights = zip(*(i.size for i in images))
-
-    total_width = sum(widths)
-    max_height = max(heights)
-
-    new_im = Image.new('RGBA', (total_width, max_height))
-
-    x_offset = 0
-    for im in images:
-        new_im.paste(im, (x_offset, 0))
-        x_offset += im.size[0]
-
-    new_im.save('test.png')
-    with Image.open("test.png") as fp:
-        await self.bot.send_file(ctx.message.channel,"test.png")
-"""
 
 @bot.command(pass_context=True)
 async def suck(ctx, user: discord.User = None):
@@ -345,21 +340,19 @@ async def enablemodule(ctx, module):
 
 
 @bot.command(pass_context=True)
-async def welcomechannel(ctx, channel: discord.Channel = None):
+async def set_welcomechannel(ctx, channel: discord.Channel = None):
     config[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
     updateconfig()
     return await bot.say("{} has been set as the welcome channel!".format(channel.mention))
 
 
 @bot.command(pass_context=True)
-async def goodbyechannel(ctx, channel: discord.Channel = None):
+async def set_goodbyechannel(ctx, channel: discord.Channel = None):
     config[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
     updateconfig()
     return await bot.say("{} has been set as the goodbye channel!".format(channel.mention))
 
 
 if __name__ == "__main__":
-
-    with open('config.json', 'r') as config_file:
-        config = json.load(config_file)
+    config = load_config()
     bot.run(token)
