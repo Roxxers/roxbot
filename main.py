@@ -1,5 +1,5 @@
 # RoxBot
-# Version = 1.2
+# Version = 1.1
 # Author = Roxxers
 
 ##############
@@ -14,11 +14,6 @@
 # TODO: Move away from using ID's for everthing. Maybe replace list with dict
 # TODO: Add check for no channel id when a module is enabled
 
-# Fixed bug with blacklist remove options. So that any option not '+' or 'add' is no longer accepted as the remove option.
-# Optimised removerole command
-# New names for some commands so it is easier to know what module they change.
-# Twitch Shilling
-# Fixed major bug with the owner only commands
 
 import json
 import random
@@ -120,18 +115,22 @@ async def on_ready():
     print("Servers I am currently in:")
     for server in bot.servers:
         print(server)
+    print("")
 
 
 @bot.event
 async def on_member_update(member_b, member_a):
     # Twitch Shilling Part
+    if blacklisted(member_b):
+        return
+
     ts_enabled = config[member_a.server.id]["twitch_shilling"]["enabled"]
     if ts_enabled:
         if not config[member_a.server.id]["twitch_shilling"]["whitelist"]["enabled"] or member_a.id in config[member_a.server.id]["twitch_shilling"]["whitelist"]["list"]:
             if member_a.game:
                 if member_a.game.type:
                     channel = discord.Object(config[member_a.server.id]["twitch_shilling"]["twitch-channel"])
-                    return await bot.send_message(channel, content=":video_game:**{} is live!**:video_game:\n {}\n{}".format(member_a.name, member_a.game.name, member_a.game.url))
+                    return await bot.send_message(channel, content=":video_game:** {} is live!** :video_game:\n {}\n{}".format(member_a.name, member_a.game.name, member_a.game.url))
 
 
 @bot.event
@@ -426,6 +425,7 @@ async def ts_whitelist(ctx, option, *mentions):
 
     elif option == 'list':
         return await bot.say(config[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"])
+
 
 if __name__ == "__main__":
     config = load_config()
