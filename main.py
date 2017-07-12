@@ -247,19 +247,14 @@ async def printcommands():
 
 @bot.command(pass_context=True)
 async def listroles(ctx):
+    if not config[ctx.message.server.id]["self-assign_roles"]["enabled"]:
+        return
     roles = []
     for role in config[ctx.message.server.id]["self-assign_roles"]["roles"]:
         for serverrole in ctx.message.server.roles:
             if role == serverrole.id:
                 roles.append(serverrole.name)
     return await bot.say(roles)
-
-
-@bot.command()
-async def embed():
-    embed = discord.Embed(title="sdfsdfsdf", video={"url": "https://www.youtube.com/watch?v=N4FlL1FCbvA"},
-                          color=0x46e1ff)
-    return await bot.say(embed=embed)
 
 
 #################
