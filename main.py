@@ -13,6 +13,7 @@
 # TODO: Overwatch stats - Using Overwatch-API lib
 # TODO: Move away from using ID's for everthing. Maybe replace list with dict
 # TODO: Add check for no channel id when a module is enabled
+# TODO: Formatting, both the code and the messages send. Add more rich embeds
 
 
 import json
@@ -121,6 +122,7 @@ async def on_ready():
 @bot.event
 async def on_member_update(member_b, member_a):
     # Twitch Shilling Part
+
     if blacklisted(member_b):
         return
 
@@ -130,7 +132,9 @@ async def on_member_update(member_b, member_a):
             if member_a.game:
                 if member_a.game.type:
                     channel = discord.Object(config[member_a.server.id]["twitch_shilling"]["twitch-channel"])
-                    return await bot.send_message(channel, content=":video_game:** {} is live!** :video_game:\n {}\n{}".format(member_a.name, member_a.game.name, member_a.game.url))
+                    return await bot.send_message(channel,
+                                                  content=":video_game:** {} is live!** :video_game:\n{}\n{}".format(
+                                                      member_a.name, member_a.game.name, member_a.game.url))
 
 
 @bot.event
@@ -249,6 +253,13 @@ async def listroles(ctx):
             if role == serverrole.id:
                 roles.append(serverrole.name)
     return await bot.say(roles)
+
+
+@bot.command()
+async def embed():
+    embed = discord.Embed(title="sdfsdfsdf", video={"url": "https://www.youtube.com/watch?v=N4FlL1FCbvA"},
+                          color=0x46e1ff)
+    return await bot.say(embed=embed)
 
 
 #################
@@ -429,4 +440,5 @@ async def ts_whitelist(ctx, option, *mentions):
 
 if __name__ == "__main__":
     config = load_config()
+
     bot.run(token)
