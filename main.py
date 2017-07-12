@@ -1,5 +1,5 @@
 # RoxBot
-# Version = 0.1.1
+# Version = 1.1
 # Author = Roxxers
 
 ##############
