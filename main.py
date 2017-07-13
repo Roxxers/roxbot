@@ -12,7 +12,7 @@
 # TODO: Admin tools - For commands already in and things like purge a chat
 # TODO: Overwatch stats - Using Overwatch-API lib
 # TODO: Move away from using ID's for everthing. Maybe replace list with dict
-# TODO: Add check for no channel id when a module is enabled
+# TODO: Add check for no channel id when a module is enabled 
 
 
 import json
