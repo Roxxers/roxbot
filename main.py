@@ -1,31 +1,44 @@
-# RoxBot
-# Version = 1.1
-# Author = Roxxers
-
 ##############
 # To-do List #
 ##############
 
-# TODO: On member role assign, welcome member using on_member_update
-# TODO: Better help menu- AutoGen using <command>.help
-# TODO: WaifuRater - Mention user and RNG a rating
-# TODO: Admin tools - For commands already in and things like purge a chat
-# TODO: Overwatch stats - Using Overwatch-API lib
+# High Priority #
+# TODO: Command Review, look at all commands and flesh them out. Maybe some randomised dialogue so that not every command has only one response. Also self delete timers. Make sure user experience feels nice.
+# TODO: Complete rework of the commands. Moving to cog based commands again. Rework the code to be easier and cleaner.
+
+# Mid Priority #
 # TODO: Move away from using ID's for everthing. Maybe replace list with dict
-# TODO: Add check for no channel id when a module is enabled 
+# TODO: Admin tools - For commands already in and things like purge a chat
+# TODO: On member role assign, welcome member using on_member_update
+
+# Low Priority #
+# TODO: Better help menu- AutoGen using <command>.help
+# TODO: Overwatch stats - Using Overwatch-API lib
+# TODO: Add check for no channel id when a module is enabled
 
 
 import json
 import random
+import os
+import sys
+import configparser
 
 import discord
 from discord.ext.commands import Bot
 
-bot = Bot(command_prefix=".")
-# bot.remove_command("help")
-# TODO: Take these from a file, not the program
-token = 'MzA4MDc3ODg3MDYyNTQwMjg5.DEW5YA.JfLfU5jPjTFQi0xFI6B_-SKvC54'
-owner_id = "142735312626515979"
+
+__version__ = '0.3.0'
+
+
+settings = configparser.ConfigParser()
+settings.read('config/settings.ini')
+
+token = settings["Credentials"]["Token"]
+owner_id = settings["RoxBot"]["OwnerID"]
+command_prefix = settings["RoxBot"]["CommandPrefix"]
+
+bot = Bot(command_prefix=command_prefix)
+
 
 config_template = {
     "example": {
@@ -55,12 +68,12 @@ config_template = {
 
 
 def load_config():
-    with open('config.json', 'r') as config_file:
+    with open('config/config.json', 'r') as config_file:
         return json.load(config_file)
 
 
 def updateconfig():
-    with open('config.json', 'w') as conf_file:
+    with open('config/config.json', 'w') as conf_file:
         json.dump(config, conf_file)
 
 
@@ -91,7 +104,7 @@ def mention_commandee(ctx):
 
 
 def blacklisted(user):
-    with open("blacklist.txt", "r") as fp:
+    with open("config/blacklist.txt", "r") as fp:
         for line in fp.readlines():
             if user.id+"\n" == line:
                 return True
@@ -110,7 +123,8 @@ def dice_roll(num):
 async def on_ready():
     # TODO: First part needs to be moved to wait_until_ready
     config_errorcheck()
-
+    await bot.change_presence(game=discord.Game(name="v1.2_Testing"), status=discord.Status.dnd, afk=False)
+    print(discord.__version__)
     print("Client logged in\n")
     print("Servers I am currently in:")
     for server in bot.servers:
@@ -251,6 +265,32 @@ async def listroles(ctx):
     return await bot.say(roles)
 
 
+@bot.command(pass_context=True)
+async def waifurate(ctx):
+    mentions = ctx.message.mentions
+    if not mentions:
+        return await bot.reply("You didn't mention anyone for me to rate.", delete_after=10)
+
+    rating = random.randrange(1, 11)
+    if rating <= 2:
+        emoji = ":sob:"
+    elif rating <= 4:
+        emoji = ":disappointed:"
+    elif rating <= 6:
+        emoji = ":thinking:"
+    elif rating <= 8:
+        emoji = ":blush:"
+    elif rating == 9:
+        emoji = ":kissing_heart:"
+    else:
+        emoji = ":heart_eyes:"
+
+    if len(mentions) > 1:
+        return await bot.say("Oh poly waifu rating? :smirk: Your combined waifu rating is {}/10. {}".format(rating, emoji))
+    else:
+        return await bot.say("Oh that's your waifu? I rate them a {}/10. {}".format(rating, emoji))
+
+
 ##################
 # Owner Commands #
 ##################
@@ -284,13 +324,13 @@ async def blacklist(ctx, option, *mentions):
             mentions.remove(user)
 
     if option in ['+', 'add']:
-        with open("blacklist.txt", "r") as fp:
+        with open("config/blacklist.txt", "r") as fp:
             for user in mentions:
                 for line in fp.readlines():
                     if user.id+"\n" in line:
                         mentions.remove(user)
 
-        with open("blacklist.txt","a+") as fp:
+        with open("config/blacklist.txt","a+") as fp:
             lines = fp.readlines()
             for user in mentions:
                 if user.id not in lines:
@@ -299,9 +339,9 @@ async def blacklist(ctx, option, *mentions):
         return await bot.say('{} user(s) have been added to the blacklist'.format(blacklist_amount))
 
     elif option in ['-', 'remove']:
-        with open("blacklist.txt","r") as fp:
+        with open("config/blacklist.txt","r") as fp:
             lines = fp.readlines()
-        with open("blacklist.txt","w") as fp:
+        with open("config/blacklist.txt","w") as fp:
             for user in mentions:
                 for line in lines:
                     if user.id+"\n" != line:
@@ -426,6 +466,17 @@ async def ts_whitelist(ctx, option, *mentions):
     elif option == 'list':
         return await bot.say(config[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"])
 
+
+@bot.command()
+async def restart():
+    await bot.logout()
+    return os.execl(sys.executable, sys.executable, *sys.argv)
+
+@bot.command()
+async def shutdown():
+    bot.dev()
+    await bot.logout()
+    return exit(0)
 
 if __name__ == "__main__":
     config = load_config()
