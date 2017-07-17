@@ -17,15 +17,14 @@
 # TODO: Add check for no channel id when a module is enabled
 
 
-import json
 import random
-import os
-import sys
 import configparser
 
 import discord
 from discord.ext.commands import Bot
 
+from config import config
+from cogs import cogs
 
 __version__ = '0.3.0'
 
@@ -38,65 +37,10 @@ owner_id = settings["RoxBot"]["OwnerID"]
 command_prefix = settings["RoxBot"]["CommandPrefix"]
 
 bot = Bot(command_prefix=command_prefix)
+con = config.Config(bot)
 
 
-config_template = {
-    "example": {
-        "greets": {
-            "enabled": 0,
-            "welcome-channel": "",
-            "member-role": ""
-        },
-        "goodbyes": {
-            "enabled": 0,
-            "goodbye-channel": ""
-        },
-        "self-assign_roles": {
-            "enabled": 0,
-            "roles": []
-        },
-        "twitch_shilling": {
-            "enabled": 0,
-            "twitch-channel": "",
-            "whitelist": {
-                "enabled": 0,
-                "list": []
-            }
-        }
-    }
-}
 
-
-def load_config():
-    with open('config/config.json', 'r') as config_file:
-        return json.load(config_file)
-
-
-def updateconfig():
-    with open('config/config.json', 'w') as conf_file:
-        json.dump(config, conf_file)
-
-
-def config_errorcheck():
-    # Checks for errors in the config files and fixes them automatically
-    for server in bot.servers:
-        if server.id not in config:
-            config[server.id] = config_template["example"]
-            updateconfig()
-            print("WARNING: The config file for {} was not found. A template has been loaded and saved. All modules are turned off by default.".format(server.name.upper()))
-        else:
-            for module_setting in config_template["example"]:
-                if module_setting not in config[server.id]:
-                    config[server.id][module_setting] = config_template["example"][module_setting]
-                    updateconfig()
-                    print("WARNING: The config file for {} was missing the {} module. This has been fixed with the template version. It is disabled by default.".format(server.name.upper(), module_setting.upper()))
-
-
-def owner(ctx):
-    if owner_id == ctx.message.author.id:
-        return True
-    else:
-        return False
 
 
 def mention_commandee(ctx):
@@ -122,29 +66,17 @@ def dice_roll(num):
 @bot.event
 async def on_ready():
     # TODO: First part needs to be moved to wait_until_ready
-    config_errorcheck()
-    await bot.change_presence(game=discord.Game(name="v1.2_Testing"), status=discord.Status.dnd, afk=False)
+    con.config_errorcheck()
+    await bot.change_presence(game=discord.Game(name="v0.3.0_Testing"), status=discord.Status.dnd, afk=False)
+    for cog in cogs:
+        bot.load_extension(cog)
+        print(f"{cog} Cog added")
     print(discord.__version__)
     print("Client logged in\n")
     print("Servers I am currently in:")
     for server in bot.servers:
         print(server)
     print("")
-
-
-@bot.event
-async def on_member_update(member_b, member_a):
-    # Twitch Shilling Part
-    if blacklisted(member_b):
-        return
-
-    ts_enabled = config[member_a.server.id]["twitch_shilling"]["enabled"]
-    if ts_enabled:
-        if not config[member_a.server.id]["twitch_shilling"]["whitelist"]["enabled"] or member_a.id in config[member_a.server.id]["twitch_shilling"]["whitelist"]["list"]:
-            if member_a.game:
-                if member_a.game.type:
-                    channel = discord.Object(config[member_a.server.id]["twitch_shilling"]["twitch-channel"])
-                    return await bot.send_message(channel, content=":video_game:** {} is live!** :video_game:\n {}\n{}".format(member_a.name, member_a.game.name, member_a.game.url))
 
 
 @bot.event
@@ -163,7 +95,7 @@ async def on_member_join(member):
     :param member: 
     :return: 
     """
-    if not config[member.server.id]["greets"]["enabled"]:
+    if not con.serverconfig[member.server.id]["greets"]["enabled"]:
         return
 
     em = discord.Embed(
@@ -171,8 +103,8 @@ async def on_member_join(member):
         description='Hey {}! Welcome to {}! Be sure to read the rules.'.format(member.mention, member.server),
         colour=0xDEADBF)
 
-    if config[member.server.id]["greets"]["welcome-channel"]:
-        channel = discord.Object(config[member.server.id]["greets"]["welcome-channel"])
+    if con.serverconfig[member.server.id]["greets"]["welcome-channel"]:
+        channel = discord.Object(con.serverconfig[member.server.id]["greets"]["welcome-channel"])
     else:
         channel = member.server.default_channel
 
@@ -181,29 +113,19 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    if not config[member.server.id]["goodbyes"]["enabled"]:
+    if not con.serverconfig[member.server.id]["goodbyes"]["enabled"]:
         return
     else:
         return await bot.send_message(member.server,embed=discord.Embed(
             description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=0xDEADBF))
 
 
-@bot.event
-async def on_server_join(server):
-    config[server.id] = config_template["example"]
-    updateconfig()
 
-
-@bot.event
-async def on_server_remove(server):
-    config.pop(server.id)
-    updateconfig()
 
 
 @bot.command(pass_context=True)
 async def iam(ctx, role: discord.Role = None, *, user: discord.User = None, server: discord.Server = None):
-
-    if not config[ctx.message.server.id]["self-assign_roles"]["enabled"]:
+    if not con.serverconfig[ctx.message.server.id]["self-assign_roles"]["enabled"]:
         return
 
     user = ctx.message.author
@@ -215,7 +137,7 @@ async def iam(ctx, role: discord.Role = None, *, user: discord.User = None, serv
     if role in user.roles:
         return await bot.say("You already have that role.")
 
-    if role.id in config[ctx.message.server.id]["self-assign_roles"]["roles"]:
+    if role.id in con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
         await bot.add_roles(user, role)
         print("{} added {} to themselves in {} on {}".format(user.display_name, role.name, ctx.message.channel,
                                                                  ctx.message.server))
@@ -258,7 +180,7 @@ async def printcommands():
 @bot.command(pass_context=True)
 async def listroles(ctx):
     roles = []
-    for role in config[ctx.message.server.id]["self-assign_roles"]["roles"]:
+    for role in con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
         for serverrole in ctx.message.server.roles:
             if role == serverrole.id:
                 roles.append(serverrole.name)
@@ -296,188 +218,7 @@ async def waifurate(ctx):
 ##################
 
 
-@bot.command(pass_context=True)
-async def blacklist(ctx, option, *mentions):
-    """
-    Usage:
-        .blacklist [ + | - | add | remove ] @UserName [@UserName2 ...]
 
-    Add or remove users to the blacklist.
-    Blacklisted users are forbidden from using bot commands.
-    Only the bot owner can use this command
-    """
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    blacklist_amount = 0
-    mentions = ctx.message.mentions
-
-    if not mentions:
-        return await bot.say("You didn't mention anyone")
-
-    if option not in ['+', '-', 'add', 'remove']:
-        return await bot.say('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
-
-    for user in mentions:
-        if user.id == owner_id:
-            print("[Commands:Blacklist] The owner cannot be blacklisted.")
-            await bot.say("The owner cannot be blacklisted.")
-            mentions.remove(user)
-
-    if option in ['+', 'add']:
-        with open("config/blacklist.txt", "r") as fp:
-            for user in mentions:
-                for line in fp.readlines():
-                    if user.id+"\n" in line:
-                        mentions.remove(user)
-
-        with open("config/blacklist.txt","a+") as fp:
-            lines = fp.readlines()
-            for user in mentions:
-                if user.id not in lines:
-                    fp.write("{}\n".format(user.id))
-                    blacklist_amount += 1
-        return await bot.say('{} user(s) have been added to the blacklist'.format(blacklist_amount))
-
-    elif option in ['-', 'remove']:
-        with open("config/blacklist.txt","r") as fp:
-            lines = fp.readlines()
-        with open("config/blacklist.txt","w") as fp:
-            for user in mentions:
-                for line in lines:
-                    if user.id+"\n" != line:
-                        fp.write(line)
-                    else:
-                        fp.write("")
-                        blacklist_amount += 1
-            return await bot.say('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
-
-
-@bot.command(pass_context=True)
-async def addrole(ctx, role: discord.Role = None):
-    # Add Remove List Help
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    else:
-        config[ctx.message.server.id]["self-assign_roles"]["roles"].append(role.id)
-        updateconfig()
-        return await bot.say('Role "{}" added'.format(str(role)))
-
-
-@bot.command(pass_context=True)
-async def removerole(ctx, role: discord.Role = None):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-
-    if role.id in config[ctx.message.server.id]["self-assign_roles"]["roles"]:
-        config[ctx.message.server.id]["self-assign_roles"]["roles"].remove(role.id)
-        return await bot.say('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-    else:
-        return await bot.say("That role was not in the list.")
-
-
-@bot.command(pass_context=True)
-async def enablemodule(ctx, module):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    else:
-        if module in config[ctx.message.server.id]:
-            if not config[ctx.message.server.id][module]["enabled"]:
-                config[ctx.message.server.id][module]["enabled"] = 1
-                updateconfig()
-                return await bot.say("'{}' was enabled!".format(module))
-            else:
-                config[ctx.message.server.id][module]["enabled"] = 0
-                updateconfig()
-                return await bot.say("'{}' was disabled :cry:".format(module))
-        else:
-            return await bot.say("That module dont exist fam. You made the thing")
-
-
-@bot.command(pass_context=True)
-async def set_welcomechannel(ctx, channel: discord.Channel = None):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    config[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
-    updateconfig()
-    return await bot.say("{} has been set as the welcome channel!".format(channel.mention))
-
-
-@bot.command(pass_context=True)
-async def set_goodbyechannel(ctx, channel: discord.Channel = None):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    config[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
-    updateconfig()
-    return await bot.say("{} has been set as the goodbye channel!".format(channel.mention))
-
-
-@bot.command(pass_context=True)
-async def set_twitchchannel(ctx, channel: discord.Channel = None):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    config[ctx.message.server.id]["twitch_shilling"]["twitch-channel"] = channel.id
-    updateconfig()
-    return await bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
-
-
-@bot.command(pass_context=True)
-async def ts_enablewhitelist(ctx):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-    else:
-        if not config[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"]:
-            config[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"] = 1
-            updateconfig()
-            return await bot.reply("Whitelist for Twitch shilling has been enabled.")
-        else:
-            config[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"] = 0
-            updateconfig()
-            return await bot.reply("Whitelist for Twitch shilling has been disabled.")
-
-
-@bot.command(pass_context=True)
-async def ts_whitelist(ctx, option, *mentions):
-    if not owner(ctx):
-        return await bot.reply("You do not have permission to do this command.", delete_after=20)
-
-    whitelist_count = 0
-
-    if not ctx.message.mentions and option != 'list':
-        return await bot.reply("You haven't mentioned anyone to whitelist.")
-
-    if option not in ['+', '-', 'add', 'remove', 'list']:
-        return await bot.say('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
-
-    if option in ['+', 'add']:
-        for user in ctx.message.mentions:
-            config[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"].append(user.id)
-            updateconfig()
-            whitelist_count += 1
-        return await bot.say('{} user(s) have been added to the whitelist'.format(whitelist_count))
-
-    elif option in ['-', 'remove']:
-        for user in ctx.message.mentions:
-            if user.id in config[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"]:
-                config[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"].remove(user.id)
-                updateconfig()
-                whitelist_count += 1
-        return await bot.say('{} user(s) have been removed to the whitelist'.format(whitelist_count))
-
-    elif option == 'list':
-        return await bot.say(config[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"])
-
-
-@bot.command()
-async def restart():
-    await bot.logout()
-    return os.execl(sys.executable, sys.executable, *sys.argv)
-
-@bot.command()
-async def shutdown():
-    bot.dev()
-    await bot.logout()
-    return exit(0)
 
 if __name__ == "__main__":
-    config = load_config()
     bot.run(token)
