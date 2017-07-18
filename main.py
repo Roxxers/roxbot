@@ -50,9 +50,6 @@ def blacklisted(user):
         return False
 
 
-
-
-
 @bot.event
 async def on_ready():
     # TODO: First part needs to be moved to wait_until_ready
