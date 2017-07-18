@@ -6,7 +6,8 @@
 # TODO: Command Review, look at all commands and flesh them out. Maybe some randomised dialogue so that not every command has only one response. Make sure user experience feels nice.
 # TODO: Also self delete timers.
 # TODO: Full Docs on the commands and their use
-# TODO: Complete rework of the commands. Moving to cog based commands again. Rework the code to be easier and cleaner.
+# TODO: iam remove command
+# TODO: Welcome and goodbye default messages and changable messages
 
 # Mid Priority #
 # TODO: Move away from using ID's for everthing. Maybe replace list with dict
@@ -25,7 +26,7 @@ import configparser
 import discord
 from discord.ext.commands import Bot
 
-from config import config
+from config.config import Config
 from cogs import cogs
 
 __version__ = '0.3.0'
@@ -39,7 +40,7 @@ owner_id = settings["RoxBot"]["OwnerID"]
 command_prefix = settings["RoxBot"]["CommandPrefix"]
 
 bot = Bot(command_prefix=command_prefix)
-con = config.Config(bot)
+con = Config(bot)
 
 
 def blacklisted(user):

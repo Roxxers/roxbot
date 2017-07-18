@@ -1,8 +1,10 @@
-import sys
 import os
+import sys
+import aiohttp
+import asyncio
 
-from config.config import Config
 from main import owner_id
+from config.config import Config
 
 import discord
 from discord.ext.commands import bot
@@ -17,7 +19,7 @@ class Admin():
         self.bot = Bot
         self.con = Config(Bot)
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def blacklist(self, ctx, option, *args):
         """
         Usage:
@@ -28,7 +30,7 @@ class Admin():
         Only the bot owner can use this command
         """
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         blacklist_amount = 0
         mentions = ctx.message.mentions
 
@@ -73,10 +75,10 @@ class Admin():
                 return await self.bot.say('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def enablesetting(self, ctx, setting):
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
             if module in self.con.serverconfig[ctx.message.server.id]:
                 if not self.con.serverconfig[ctx.message.server.id][setting]["enabled"]:
@@ -90,39 +92,87 @@ class Admin():
             else:
                 return await self.bot.say("That module dont exist fam. You made the thing")
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def set_welcomechannel(self, ctx, channel: discord.Channel = None):
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         self.con.serverconfig[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
         self.con.updateconfig(self.con.serverconfig)
         return await self.bot.say("{} has been set as the welcome channel!".format(channel.mention))
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def set_goodbyechannel(self, ctx, channel: discord.Channel = None):
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         self.con.serverconfig[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
         self.con.updateconfig(self.con.serverconfig)
         return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def set_twitchchannel(self, ctx, channel: discord.Channel = None):
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["twitch-channel"] = channel.id
         self.con.updateconfig(self.con.serverconfig)
         return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 
-    @bot.command()
-    async def restart(self):
+    @bot.command(pass_context=True, hidden=True)
+    async def changeavatar(self, ctx, url=None):
+        """
+        Usage:
+            {command_prefix}setavatar [url]
+
+        Changes the bot's avatar.
+        Attaching a file and leaving the url parameter blank also works.
+        """
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+
+        if ctx.message.attachments:
+            thing = ctx.message.attachments[0]['url']
+        else:
+            thing = url.strip('<>')
+
+        tempAvaFile = 'tempAva.png'
+        async with aiohttp.get(thing) as img:
+            with open(tempAvaFile, 'wb') as f:
+                f.write(await img.read())
+        with open(tempAvaFile, 'rb') as f:
+            await self.bot.edit_profile(avatar=f.read())
+        os.remove(tempAvaFile)
+        asyncio.sleep(2)
+        return await self.bot.say(":ok_hand:")
+
+    @bot.command(hidden=True)
+    async def restart(self, ctx):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+
         await self.bot.logout()
         return os.execl(sys.executable, sys.executable, *sys.argv)
 
-    @bot.command()
-    async def shutdown(self):
+    @bot.command(hidden=True)
+    async def shutdown(self, ctx):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+
         await self.bot.logout()
         return exit(0)
+
+    @bot.command(pass_context=True, hidden=True)
+    async def announce(self, ctx, *announcement):
+        """
+        ONLY USE FOR SERIOUS ANNOUNCEMENTS
+        """
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+
+        embed = discord.Embed(title="RoxBot Announcement", colour=discord.Colour(0x306f99), description=' '.join(announcement))
+        embed.set_footer(text="This message has be automatically generated by a QT Roxie",
+                         icon_url=self.bot.user.avatar_url)
+        for server in self.bot.servers:
+            await self.bot.send_message(server, embed=embed)
+        return await self.bot.say("Done!", delete_after=self.con.delete_after)
 
 
 def setup(Bot):

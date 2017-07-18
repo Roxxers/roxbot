@@ -14,8 +14,14 @@ class selfAssign():
         self.bot = Bot
         self.con = Config(Bot)
 
+
     @bot.command(pass_context=True)
     async def listroles(self, ctx):
+        """
+        List's all roles that can be self-assigned on this server.
+        Usage:
+            {command_prefix}listroles
+        """
         roles = []
         for role in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
             for serverrole in ctx.message.server.roles:
@@ -25,6 +31,13 @@ class selfAssign():
 
     @bot.command(pass_context=True)
     async def iam(self, ctx, role: discord.Role = None):
+        """
+        Self-assign yourself a role. Only one role at a time. Doesn't work for roles with spaces.
+        Usage:
+            {command_prefix}iam [role]
+        Example:
+            .iam OverwatchPing
+        """
         if not self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["enabled"]:
             return
 
@@ -46,19 +59,45 @@ class selfAssign():
             return await self.bot.say("That role is not self-assignable.")
 
     @bot.command(pass_context=True)
+    async def iamn(self, ctx, role: discord.Role = None):
+        """
+        Remove a self-assigned role
+        Usage:
+            {command_prefix}iamn [role]
+        Example:
+            .iamn OverwatchPing
+        """
+        if not self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["enabled"]:
+            return
+
+        user = ctx.message.author
+        server = ctx.message.server
+
+        if role not in server.roles:
+            return await self.bot.say("That role doesn't exist. Roles are case sensitive. ")
+
+        elif role in user.roles and role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+            await self.bot.remove_roles(user, role)
+            return await self.bot.reply("{} has been successfully removed.".format(role.name))
+
+        elif role not in user.roles and role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+            return await self.bot.reply("You do not have {}.".format(role.name))
+        else:
+            return await self.bot.say("That role is not self-assignable.")
+
+    @bot.command(pass_context=True, hidden=True)
     async def addrole(self, ctx, role: discord.Role = None):
-        # Add Remove List Help
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
             self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].append(role.id)
             self.con.updateconfig(self.con.serverconfig)
             return await self.bot.say('Role "{}" added'.format(str(role)))
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def removerole(self, ctx, role: discord.Role = None):
         if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
 
         if role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
             self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].remove(role.id)

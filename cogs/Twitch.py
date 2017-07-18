@@ -27,7 +27,7 @@ class Twitch():
                                                            content=":video_game:** {} is live!** :video_game:\n {}\n{}".format(
                                                                member_a.name, member_a.game.name, member_a.game.url))
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def ts_enablewhitelist(self, ctx):
         if not owner(ctx):
             return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
@@ -41,7 +41,7 @@ class Twitch():
                 self.con.updateconfig(self.con.serverconfig)
                 return await self.bot.reply("Whitelist for Twitch shilling has been disabled.")
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, hidden=True)
     async def ts_whitelist(self, ctx, option, *mentions):
         if not owner(ctx):
             return await self.bot.reply("You do not have permission to do this command.", delete_after=20)

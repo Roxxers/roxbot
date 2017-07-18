@@ -30,6 +30,8 @@ class Config():
         }
         self.serverconfig = self.load_config()
         self.bot = bot
+        self.no_perms_reponse = ":no_entry_sign: You do not have permission to use this command."
+        self.delete_after = 20
 
     async def on_server_join(self, server):
         self.serverconfig[server.id] = self.serverconfig_template["example"]

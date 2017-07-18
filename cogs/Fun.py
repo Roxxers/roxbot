@@ -1,6 +1,5 @@
 import random
 
-import discord
 from discord.ext.commands import bot
 
 
@@ -10,6 +9,14 @@ class Fun():
 
     @bot.command(pass_context=True)
     async def roll(self, ctx, die):
+        """
+        Rolls a die using ndx format.
+        Usage:
+            {command_prefix}roll ndx
+        Example:
+            .roll 2d20 # Rolls two D20s
+            
+        """
         # TODO: Change to ndx format
         dice = 0
         if die[0].isdigit():
@@ -45,14 +52,24 @@ class Fun():
             return await self.bot.say("{} rolled a **{}**".format(ctx.message.author.mention, roll))
 
     @bot.command(pass_context=True)
-    async def suck(self, ctx, user: discord.User = None):
+    async def suck(self, ctx):
+        """
+        Sucks the mentioned user ;)
+        Usage:
+            {command_prefix}suck @user#9999
+        """
         if len(ctx.message.mentions) < 1:
             return await self.bot.say("You didn't mention someone for me to suck")
         user = ctx.message.mentions[0]
         return await self.bot.say(":eggplant: :sweat_drops: :tongue: {}".format(user.mention))
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, aliases=["wf"])
     async def waifurate(self, ctx):
+        """
+        Rates the mentioned waifu(s)
+        Usage:
+            {command_prefix}waifurate @user#9999
+        """
         mentions = ctx.message.mentions
         if not mentions:
             return await self.bot.reply("You didn't mention anyone for me to rate.", delete_after=10)
@@ -76,8 +93,9 @@ class Fun():
         else:
             return await self.bot.say("Oh that's your waifu? I rate them a {}/10. {}".format(rating, emoji))
 
-    @bot.command(pass_context=True)
+    @bot.command(pass_context=True, aliases=["cf"])
     async def coinflip(self, ctx):
+        """Flip a coin"""
         return await self.bot.reply("the coin landed on {}!".format(random.choice(["heads", "tails"])))
 
 
