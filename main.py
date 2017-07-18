@@ -3,7 +3,9 @@
 ##############
 
 # High Priority #
-# TODO: Command Review, look at all commands and flesh them out. Maybe some randomised dialogue so that not every command has only one response. Also self delete timers. Make sure user experience feels nice.
+# TODO: Command Review, look at all commands and flesh them out. Maybe some randomised dialogue so that not every command has only one response. Make sure user experience feels nice.
+# TODO: Also self delete timers.
+# TODO: Full Docs on the commands and their use
 # TODO: Complete rework of the commands. Moving to cog based commands again. Rework the code to be easier and cleaner.
 
 # Mid Priority #
@@ -40,13 +42,6 @@ bot = Bot(command_prefix=command_prefix)
 con = config.Config(bot)
 
 
-
-
-
-def mention_commandee(ctx):
-    return ctx.message.author
-
-
 def blacklisted(user):
     with open("config/blacklist.txt", "r") as fp:
         for line in fp.readlines():
@@ -55,12 +50,7 @@ def blacklisted(user):
         return False
 
 
-def dice_roll(num):
-    if num == 100:
-        step = 10
-    else:
-        step = 1
-    return random.randrange(step, num+1, step)
+
 
 
 @bot.event
@@ -118,105 +108,6 @@ async def on_member_remove(member):
     else:
         return await bot.send_message(member.server,embed=discord.Embed(
             description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=0xDEADBF))
-
-
-
-
-
-@bot.command(pass_context=True)
-async def iam(ctx, role: discord.Role = None, *, user: discord.User = None, server: discord.Server = None):
-    if not con.serverconfig[ctx.message.server.id]["self-assign_roles"]["enabled"]:
-        return
-
-    user = ctx.message.author
-    server = ctx.message.server
-
-    if role not in server.roles:
-        return await bot.say("That role doesn't exist. Roles are case sensitive. ")
-
-    if role in user.roles:
-        return await bot.say("You already have that role.")
-
-    if role.id in con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
-        await bot.add_roles(user, role)
-        print("{} added {} to themselves in {} on {}".format(user.display_name, role.name, ctx.message.channel,
-                                                                 ctx.message.server))
-        return await bot.say("Yay {}! You now have the {} role!".format(user.mention, role.name))
-    else:
-        return await bot.say("That role is not self-assignable.")
-
-
-@bot.command(pass_context=True, enabled=False)
-async def dice(ctx, num, *, user: discord.User = None):
-    # TODO: Change to ndx format
-    die = ("4","6","8","10","12","20","100")
-    if num not in die:
-        if num == "help":
-            return await bot.say("!dice - This command random roles a dice. The die I support are (4, 6, 8, 10, 12, 20, 100) like the ones used in Table Top games.")
-        else:
-            return await bot.say("That is not a dice I know. Try !dice help for help!")
-    user = mention_commandee(ctx)
-    roll = dice_roll(int(num))
-    return await bot.say("You rolled a {}, {}".format(roll,user.mention))
-
-
-@bot.command(pass_context=True)
-async def suck(ctx, user: discord.User = None):
-    if user is None:
-        try:
-            user = ctx.message.mentions[0]
-        except:
-            return await bot.say("You didn't mention someone for me to suck")
-    return await bot.say(":eggplant: :sweat_drops: :tongue: {}".format(user.mention))
-
-
-@bot.command(enabled=False)
-async def printcommands():
-    for command in bot.commands:
-        print(command)
-    return await bot.say("Done.")
-
-
-@bot.command(pass_context=True)
-async def listroles(ctx):
-    roles = []
-    for role in con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
-        for serverrole in ctx.message.server.roles:
-            if role == serverrole.id:
-                roles.append(serverrole.name)
-    return await bot.say(roles)
-
-
-@bot.command(pass_context=True)
-async def waifurate(ctx):
-    mentions = ctx.message.mentions
-    if not mentions:
-        return await bot.reply("You didn't mention anyone for me to rate.", delete_after=10)
-
-    rating = random.randrange(1, 11)
-    if rating <= 2:
-        emoji = ":sob:"
-    elif rating <= 4:
-        emoji = ":disappointed:"
-    elif rating <= 6:
-        emoji = ":thinking:"
-    elif rating <= 8:
-        emoji = ":blush:"
-    elif rating == 9:
-        emoji = ":kissing_heart:"
-    else:
-        emoji = ":heart_eyes:"
-
-    if len(mentions) > 1:
-        return await bot.say("Oh poly waifu rating? :smirk: Your combined waifu rating is {}/10. {}".format(rating, emoji))
-    else:
-        return await bot.say("Oh that's your waifu? I rate them a {}/10. {}".format(rating, emoji))
-
-
-##################
-# Owner Commands #
-##################
-
 
 
 

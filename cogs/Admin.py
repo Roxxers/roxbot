@@ -1,7 +1,7 @@
 import sys
 import os
 
-import config
+from config.config import Config
 from main import owner_id
 
 import discord
@@ -13,9 +13,9 @@ def owner(ctx):
 
 
 class Admin():
-    def __init__(self, bot):
-        self.bot = bot
-        self.con = config.config.Config(bot)
+    def __init__(self, Bot):
+        self.bot = Bot
+        self.con = Config(Bot)
 
     @bot.command(pass_context=True)
     async def blacklist(self, ctx, option, *args):
@@ -72,42 +72,21 @@ class Admin():
                             blacklist_amount += 1
                 return await self.bot.say('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
-    @bot.command(pass_context=True)
-    async def addrole(self, ctx, role: discord.Role = None):
-        # Add Remove List Help
-        if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
-        else:
-            self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].append(role.id)
-            self.con.updateconfig(self.con.serverconfig)
-            return await self.bot.say('Role "{}" added'.format(str(role)))
 
     @bot.command(pass_context=True)
-    async def removerole(self, ctx, role: discord.Role = None):
-        if not owner(ctx):
-            return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
-
-        if role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
-            self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].remove(role.id)
-            self.con.updateconfig(self.con.serverconfig)
-            return await self.bot.say('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-        else:
-            return await self.bot.say("That role was not in the list.")
-
-    @bot.command(pass_context=True)
-    async def enablemodule(self, ctx, module):
+    async def enablesetting(self, ctx, setting):
         if not owner(ctx):
             return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
         else:
             if module in self.con.serverconfig[ctx.message.server.id]:
-                if not self.con.serverconfig[ctx.message.server.id][module]["enabled"]:
-                    self.con.serverconfig[ctx.message.server.id][module]["enabled"] = 1
+                if not self.con.serverconfig[ctx.message.server.id][setting]["enabled"]:
+                    self.con.serverconfig[ctx.message.server.id][setting]["enabled"] = 1
                     self.con.updateconfig(self.con.serverconfig)
-                    return await self.bot.say("'{}' was enabled!".format(module))
+                    return await self.bot.say("'{}' was enabled!".format(setting))
                 else:
-                    self.con.serverconfig[ctx.message.server.id][module]["enabled"] = 0
+                    self.con.serverconfig[ctx.message.server.id][setting]["enabled"] = 0
                     self.con.updateconfig(self.con.serverconfig)
-                    return await self.bot.say("'{}' was disabled :cry:".format(module))
+                    return await self.bot.say("'{}' was disabled :cry:".format(setting))
             else:
                 return await self.bot.say("That module dont exist fam. You made the thing")
 
@@ -146,5 +125,5 @@ class Admin():
         return exit(0)
 
 
-def setup(bot):
-    bot.add_cog(Admin(bot))
+def setup(Bot):
+    Bot.add_cog(Admin(Bot))
