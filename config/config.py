@@ -31,6 +31,7 @@ class Config():
                 }
             }
         }
+        # Serverconfig is seperate here and shouldnt cause a bug like the cogs o.
         self.serverconfig = self.load_config()
         self.bot = bot
         self.no_perms_reponse = ":no_entry_sign: You do not have permission to use this command."

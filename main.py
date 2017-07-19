@@ -8,7 +8,7 @@
 # TODO: Fix Config Bug
 
 # Mid Priority #
-# TODO: Move away from using ID's for everthing. Maybe replace list with dict
+# TODO: Move away from using ID's for everything. Maybe replace list with dict
 # TODO: Admin tools - For commands already in and things like purge a chat
 # TODO: On member role assign, welcome member using on_member_update
 

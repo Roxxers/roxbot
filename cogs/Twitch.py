@@ -32,6 +32,7 @@ class Twitch():
         if not owner(ctx):
             return await self.bot.reply("You do not have permission to do this command.", delete_after=20)
         else:
+            self.con.serverconfig = self.con.load_config()
             if not self.con.serverconfig[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"]:
                 self.con.serverconfig[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"] = 1
                 self.con.updateconfig()
@@ -55,6 +56,7 @@ class Twitch():
             return await self.bot.say('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
 
         if option in ['+', 'add']:
+            self.con.serverconfig = self.con.load_config()
             for user in ctx.message.mentions:
                 self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"].append(user.id)
                 self.con.updateconfig()
@@ -62,6 +64,7 @@ class Twitch():
             return await self.bot.say('{} user(s) have been added to the whitelist'.format(whitelist_count))
 
         elif option in ['-', 'remove']:
+            self.con.serverconfig = self.con.load_config()
             for user in ctx.message.mentions:
                 if user.id in self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"]:
                     self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"].remove(user.id)
