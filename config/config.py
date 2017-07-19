@@ -1,4 +1,5 @@
 import json
+from pprint import pprint
 
 
 class Config():
@@ -8,11 +9,13 @@ class Config():
                 "greets": {
                     "enabled": 0,
                     "welcome-channel": "",
-                    "member-role": ""
+                    "member-role": "",
+                    "custom-message": "",
+                    "default-message:": "Be sure to read the rules."
                 },
                 "goodbyes": {
                     "enabled": 0,
-                    "goodbye-channel": ""
+                    "goodbye-channel": "",
                 },
                 "self-assign_roles": {
                     "enabled": 0,
@@ -35,26 +38,28 @@ class Config():
 
     async def on_server_join(self, server):
         self.serverconfig[server.id] = self.serverconfig_template["example"]
-        self.updateconfig(self.serverconfig)
+        self.updateconfig()
 
     async def on_server_remove(self, server):
         self.serverconfig.pop(server.id)
-        self.updateconfig(self.serverconfig)
+        self.updateconfig()
 
     def load_config(self):
         with open('config/config.json', 'r') as config_file:
             return json.load(config_file)
 
-    def updateconfig(self, config):
+    def updateconfig(self):
         with open('config/config.json', 'w') as conf_file:
-            json.dump(config, conf_file)
+            json.dump(self.serverconfig, conf_file)
+        pprint(self.serverconfig)
 
     def config_errorcheck(self):
-        # Checks for errors in the config files and fixes them automatically
+        # TODO: Fix so that it checks for problems in children of module settings. i.e children of 'greets'
+        # TODO: Fix issue where a setting can be enabled when it has no channel to post to.
         for server in self.bot.servers:
             if server.id not in self.serverconfig:
                 self.serverconfig[server.id] = self.serverconfig_template["example"]
-                self.updateconfig(self.serverconfig)
+                self.updateconfig()
                 print(
                     "WARNING: The config file for {} was not found. A template has been loaded and saved. All modules are turned off by default.".format(
                         server.name.upper()))
@@ -63,10 +68,11 @@ class Config():
                     if module_setting not in self.serverconfig[server.id]:
                         self.serverconfig[server.id][module_setting] = self.serverconfig_template["example"][
                             module_setting]
-                        self.updateconfig(self.serverconfig)
+                        self.updateconfig()
                         print(
                             "WARNING: The config file for {} was missing the {} module. This has been fixed with the template version. It is disabled by default.".format(
                                 server.name.upper(), module_setting.upper()))
+        print("")
 
 
 def setup(bot):

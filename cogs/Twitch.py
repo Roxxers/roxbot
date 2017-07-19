@@ -34,11 +34,11 @@ class Twitch():
         else:
             if not self.con.serverconfig[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"]:
                 self.con.serverconfig[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"] = 1
-                self.con.updateconfig(self.con.serverconfig)
+                self.con.updateconfig()
                 return await self.bot.reply("Whitelist for Twitch shilling has been enabled.")
             else:
                 self.con.serverconfig[ctx.server.id]["twitch_shilling"]["whitelist"]["enabled"] = 0
-                self.con.updateconfig(self.con.serverconfig)
+                self.con.updateconfig()
                 return await self.bot.reply("Whitelist for Twitch shilling has been disabled.")
 
     @bot.command(pass_context=True, hidden=True)
@@ -57,7 +57,7 @@ class Twitch():
         if option in ['+', 'add']:
             for user in ctx.message.mentions:
                 self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"].append(user.id)
-                self.con.updateconfig(self.con.serverconfig)
+                self.con.updateconfig()
                 whitelist_count += 1
             return await self.bot.say('{} user(s) have been added to the whitelist'.format(whitelist_count))
 
@@ -65,7 +65,7 @@ class Twitch():
             for user in ctx.message.mentions:
                 if user.id in self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"]:
                     self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["whitelist"]["list"].remove(user.id)
-                    self.con.updateconfig(self.con.serverconfig)
+                    self.con.updateconfig()
                     whitelist_count += 1
             return await self.bot.say('{} user(s) have been removed to the whitelist'.format(whitelist_count))
 

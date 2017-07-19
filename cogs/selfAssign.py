@@ -91,7 +91,7 @@ class selfAssign():
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
             self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].append(role.id)
-            self.con.updateconfig(self.con.serverconfig)
+            self.con.updateconfig()
             return await self.bot.say('Role "{}" added'.format(str(role)))
 
     @bot.command(pass_context=True, hidden=True)
@@ -101,7 +101,7 @@ class selfAssign():
 
         if role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
             self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].remove(role.id)
-            self.con.updateconfig(self.con.serverconfig)
+            self.con.updateconfig()
             return await self.bot.say('"{}" has been removed from the self-assignable roles.'.format(str(role)))
         else:
             return await self.bot.say("That role was not in the list.")
