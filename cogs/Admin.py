@@ -124,16 +124,16 @@ class Admin():
         return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 
     @bot.command(pass_context=True, visible=False)
-    async def set_customwelcomemessage(self, ctx, *message):
+    async def set_customwelcomemessage(self, ctx, *, message: str):
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
             self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["greets"]["custom_message"] = ' '.join(message)
+            self.con.serverconfig[ctx.message.server.id]["greets"]["custom_message"] = message
             self.con.updateconfig()
-        return await self.bot.say("Custom message set to '{}'".format(' '.join(message)), delete_after=10)
+        return await self.bot.say("Custom message set to '{}'".format(message))
 
-    @bot.command(pass_context=True, hidden=True)
+    @bot.command(pass_context=True, hidden=True, aliases=["setava"])
     async def changeavatar(self, ctx, url=None):
         """
         Usage:
@@ -150,17 +150,73 @@ class Admin():
         else:
             thing = url.strip('<>')
 
-        tempAvaFile = 'tempAva.png'
+        avaimg = 'avaimg.png'
         async with aiohttp.get(thing) as img:
-            with open(tempAvaFile, 'wb') as f:
+            with open(avaimg, 'wb') as f:
                 f.write(await img.read())
-        with open(tempAvaFile, 'rb') as f:
+        with open(avaimg, 'rb') as f:
             await self.bot.edit_profile(avatar=f.read())
-        os.remove(tempAvaFile)
+        os.remove(avaimg)
         asyncio.sleep(2)
         return await self.bot.say(":ok_hand:")
 
-    @bot.command(hidden=True)
+    @bot.command(pass_context=True, hidden=True, aliases=["nick"])
+    async def changenickname(self, ctx, *nick):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+        else:
+            if ctx.message.channel.permissions_for(ctx.message.server.me).change_nickname:
+                await self.bot.change_nickname(ctx.message.server.me, ' '.join(nick))
+                return await self.bot.say(":thumbsup:")
+            else:
+                return await self.bot.say("I don't have permission to do that :sob:", delete_after=self.con.delete_after)
+
+    @bot.command(pass_context=True, hidden=True, aliases=["setgame", "game"])
+    async def changegame(self, ctx, *, game: str):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+        else:
+            if game.lower() == "none":
+                game_name = None
+            else:
+                game_name = discord.Game(name=game)
+            await self.bot.change_presence(game=game_name, afk=False)
+            return await self.bot.say(":ok_hand: Game set to {}".format(str(game_name)))
+
+    @bot.command(pass_context=True, hidden=True, aliases=["status"])
+    async def changestatus(self, ctx, status: str):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+        else:
+            status = status.lower()
+            if status == 'offline' or status == 'invisible':
+                discordStatus = discord.Status.invisible
+            elif status == 'idle':
+                discordStatus = discord.Status.idle
+            elif status == 'dnd':
+                discordStatus = discord.Status.dnd
+            else:
+                discordStatus = discord.Status.online
+            await self.bot.change_presence(status=discordStatus)
+            await self.bot.say("**:ok:** Status set to {}".format(discordStatus))
+
+    @bot.command(pass_context=True, hidden=True)
+    async def echo(self, ctx, channel, *, message: str):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+        else:
+            if ctx.message.channel_mentions:
+                for channel in ctx.message.channel_mentions:
+                    await self.bot.send_message(channel, content=message)
+                return await self.bot.say(":point_left:")
+            elif channel.isdigit():
+                channel = ctx.message.server.get_channel(channel)
+                await self.bot.send_message(channel, content=message)
+                return await self.bot.say(":point_left:")
+            else:
+                return await self.bot.say("You did something wrong smh")
+
+    @bot.command(pass_context=True, hidden=True)
     async def restart(self, ctx):
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
@@ -168,7 +224,7 @@ class Admin():
         await self.bot.logout()
         return os.execl(sys.executable, sys.executable, *sys.argv)
 
-    @bot.command(hidden=True)
+    @bot.command(pass_context=True, hidden=True)
     async def shutdown(self, ctx):
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
@@ -183,13 +239,13 @@ class Admin():
         """
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
-
-        embed = discord.Embed(title="RoxBot Announcement", colour=discord.Colour(0x306f99), description=' '.join(announcement))
-        embed.set_footer(text="This message has be automatically generated by a QT Roxie",
-                         icon_url=self.bot.user.avatar_url)
-        for server in self.bot.servers:
-            await self.bot.send_message(server, embed=embed)
-        return await self.bot.say("Done!", delete_after=self.con.delete_after)
+        else:
+            embed = discord.Embed(title="RoxBot Announcement", colour=discord.Colour(0x306f99), description=' '.join(announcement))
+            embed.set_footer(text="This message has be automatically generated by a QT Roxie",
+                             icon_url=self.bot.user.avatar_url)
+            for server in self.bot.servers:
+                await self.bot.send_message(server, embed=embed)
+            return await self.bot.say("Done!", delete_after=self.con.delete_after)
 
 
 def setup(Bot):

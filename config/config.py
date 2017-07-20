@@ -1,5 +1,4 @@
 import json
-from pprint import pprint
 
 
 class Config():
@@ -17,11 +16,11 @@ class Config():
                     "enabled": 0,
                     "goodbye-channel": "",
                 },
-                "self-assign_roles": {
+                "selfAssign": {
                     "enabled": 0,
                     "roles": []
                 },
-                "twitch_shilling": {
+                "twitch": {
                     "enabled": 0,
                     "twitch-channel": "",
                     "whitelist": {
@@ -31,7 +30,6 @@ class Config():
                 }
             }
         }
-        # Serverconfig is seperate here and shouldnt cause a bug like the cogs o.
         self.serverconfig = self.load_config()
         self.bot = bot
         self.no_perms_reponse = ":no_entry_sign: You do not have permission to use this command."
@@ -52,7 +50,6 @@ class Config():
     def updateconfig(self):
         with open('config/config.json', 'w') as conf_file:
             json.dump(self.serverconfig, conf_file)
-        pprint(self.serverconfig)
 
     def config_errorcheck(self):
         # TODO: Fix so that it checks for problems in children of module settings. i.e children of 'greets'

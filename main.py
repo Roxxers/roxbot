@@ -27,7 +27,7 @@ from discord.ext.commands import Bot
 from config.config import Config
 from cogs import cogs
 
-__version__ = '0.3.0'
+__version__ = '0.3.2'
 
 settings = configparser.ConfigParser()
 settings.read('config/settings.ini')
@@ -52,12 +52,14 @@ def blacklisted(user):
 async def on_ready():
     # TODO: First part needs to be moved to wait_until_ready
     con.config_errorcheck()
-    await bot.change_presence(game=discord.Game(name="v0.3.0_Testing"), status=discord.Status.dnd, afk=False)
+    print("Discord.py version: "+discord.__version__)
+    print("Client logged in\n")
+    await bot.change_presence(game=discord.Game(name=__version__), afk=False)
+    print("Cods loaded:")
     for cog in cogs:
         bot.load_extension(cog)
-        print(f"{cog} Cog added")
-    print(discord.__version__)
-    print("Client logged in\n")
+        print("{}".format(cog))
+    print("")
     print("Servers I am currently in:")
     for server in bot.servers:
         print(server)

@@ -22,7 +22,7 @@ class selfAssign():
             {command_prefix}listroles
         """
         roles = []
-        for role in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+        for role in self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"]:
             for serverrole in ctx.message.server.roles:
                 if role == serverrole.id:
                     roles.append(serverrole.name)
@@ -38,7 +38,7 @@ class selfAssign():
             .iam OverwatchPing
         """
         self.con.serverconfig = self.con.load_config()
-        if not self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["enabled"]:
+        if not self.con.serverconfig[ctx.message.server.id]["selfAssign"]["enabled"]:
             return
 
         user = ctx.message.author
@@ -50,7 +50,7 @@ class selfAssign():
         if role in user.roles:
             return await self.bot.say("You already have that role.")
 
-        if role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+        if role.id in self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"]:
             await self.bot.add_roles(user, role)
             print("{} added {} to themselves in {} on {}".format(user.display_name, role.name, ctx.message.channel,
                                                                  ctx.message.server))
@@ -68,7 +68,7 @@ class selfAssign():
             .iamn OverwatchPing
         """
         self.con.serverconfig = self.con.load_config()
-        if not self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["enabled"]:
+        if not self.con.serverconfig[ctx.message.server.id]["selfAssign"]["enabled"]:
             return
 
         user = ctx.message.author
@@ -77,11 +77,11 @@ class selfAssign():
         if role not in server.roles:
             return await self.bot.say("That role doesn't exist. Roles are case sensitive. ")
 
-        elif role in user.roles and role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+        elif role in user.roles and role.id in self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"]:
             await self.bot.remove_roles(user, role)
             return await self.bot.reply("{} has been successfully removed.".format(role.name))
 
-        elif role not in user.roles and role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+        elif role not in user.roles and role.id in self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"]:
             return await self.bot.reply("You do not have {}.".format(role.name))
         else:
             return await self.bot.say("That role is not self-assignable.")
@@ -91,10 +91,10 @@ class selfAssign():
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
-            if role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
+            if role.id in self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"]:
                 return await self.bot.say("{} is already a self-assignable role.".format(role.name), delete_after=self.con.delete_after)
             self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].append(role.id)
+            self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"].append(role.id)
             self.con.updateconfig()
             return await self.bot.say('Role "{}" added'.format(str(role)))
 
@@ -104,8 +104,8 @@ class selfAssign():
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
             self.con.serverconfig = self.con.load_config()
-            if role.id in self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"]:
-                self.con.serverconfig[ctx.message.server.id]["self-assign_roles"]["roles"].remove(role.id)
+            if role.id in self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"]:
+                self.con.serverconfig[ctx.message.server.id]["selfAssign"]["roles"].remove(role.id)
                 self.con.updateconfig()
                 return await self.bot.say('"{}" has been removed from the self-assignable roles.'.format(str(role)))
             else:
