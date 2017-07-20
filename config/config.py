@@ -10,7 +10,7 @@ class Config():
                     "welcome-channel": "",
                     "member-role": "",
                     "custom-message": "",
-                    "default-message:": "Be sure to read the rules."
+                    "default-message": "Be sure to read the rules."
                 },
                 "goodbyes": {
                     "enabled": 0,

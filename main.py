@@ -1,24 +1,5 @@
 #!/usr/env python
 
-##############
-# To-do List #
-##############
-
-# High Priority #
-# TODO: Fix Config Bug
-
-# Mid Priority #
-# TODO: Move away from using ID's for everything. Maybe replace list with dict
-# TODO: Admin tools - For commands already in and things like purge a chat
-# TODO: On member role assign, welcome member using on_member_update
-
-# Low Priority #
-# TODO: Command Review, look at all commands and flesh them out. Make sure user experience feels nice
-# TODO: Better help menu- AutoGen using <command>.help
-# TODO: Overwatch stats - Using Overwatch-API lib
-# TODO: Add check for no channel id when a module is enabled
-# TODO: Maybe some randomised dialogue so that not every command has only one response.
-
 import configparser
 
 import discord
@@ -27,7 +8,7 @@ from discord.ext.commands import Bot
 from config.config import Config
 from cogs import cogs
 
-__version__ = '0.3.2'
+__version__ = '0.3.3'
 
 settings = configparser.ConfigParser()
 settings.read('config/settings.ini')
@@ -82,14 +63,14 @@ async def on_member_join(member):
     :param member: 
     :return: 
     """
+    print(con.serverconfig[member.server.id]["greets"]["enabled"])
     if not con.serverconfig[member.server.id]["greets"]["enabled"]:
         return
-    print("Passes Enabled Check")
     if con.serverconfig[member.server.id]["greets"]["custom-message"]:
         message = con.serverconfig[member.server.id]["greets"]["custom-message"]
     else:
         message = con.serverconfig[member.server.id]["greets"]["default-message"]
-    print("passed message check")
+    # TODO: Maybe thumbnail for the embed
     em = discord.Embed(
         title="Welcome to {}!".format(member.server),
         description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.server, message),
@@ -99,7 +80,6 @@ async def on_member_join(member):
         channel = discord.Object(con.serverconfig[member.server.id]["greets"]["welcome-channel"])
     else:
         channel = member.server.default_channel
-    print("passed channel getting")
     return await bot.send_message(channel,embed=em)
 
 

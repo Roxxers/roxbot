@@ -25,7 +25,7 @@ class Fun():
             multiplier = int(die[0])
         else:
             multiplier = 1
-        if die[1].lower() != "d":
+        if die[1].lower() != "d" and die[0].lower() != "d":
             return await self.bot.say("Use the format 'ndx'.")
         options = (4, 6, 8, 10, 12, 20, 100)
         for option in options:
