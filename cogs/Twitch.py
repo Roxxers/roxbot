@@ -23,7 +23,7 @@ class Twitch():
                             self.con.serverconfig[member_a.server.id]["twitch"]["whitelist"]["list"]:
                         channel = discord.Object(self.con.serverconfig[member_a.server.id]["twitch"]["twitch-channel"])
                         return await self.bot.send_message(channel,
-                                                           content=":video_game:** {} is live!** :video_game:\n {}\n{}".format(
+                                                           content=":video_game:** {} is live!** :video_game:\n{}\n{}".format(
                                                                member_a.name, member_a.game.name, member_a.game.url))
 
     @bot.command(pass_context=True, hidden=True)
