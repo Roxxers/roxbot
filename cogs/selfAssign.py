@@ -26,7 +26,7 @@ class selfAssign():
             for serverrole in ctx.message.server.roles:
                 if role == serverrole.id:
                     roles.append(serverrole.name)
-        return await self.bot.say(str(roles).strip("[]'"))
+        return await self.bot.say(str(roles).strip("[]"))
 
 
     @bot.command(pass_context=True)
