@@ -35,7 +35,7 @@ async def on_ready():
     con.config_errorcheck()
     print("Discord.py version: "+discord.__version__)
     print("Client logged in\n")
-    await bot.change_presence(game=discord.Game(name=__version__), afk=False)
+    await bot.change_presence(game=discord.Game(name="v"+__version__), afk=False)
     print("Cods loaded:")
     for cog in cogs:
         bot.load_extension(cog)
@@ -59,11 +59,9 @@ async def on_message(message):
 async def on_member_join(member):
     """
     Greets users when they join a server. 
-    
-    :param member: 
-    :return: 
     """
-    print(con.serverconfig[member.server.id]["greets"]["enabled"])
+    # TODO: Move these to a cog cause they suck in main
+    con.load_config()
     if not con.serverconfig[member.server.id]["greets"]["enabled"]:
         return
     if con.serverconfig[member.server.id]["greets"]["custom-message"]:
@@ -85,6 +83,7 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
+    con.load_config()
     if not con.serverconfig[member.server.id]["goodbyes"]["enabled"]:
         return
     else:

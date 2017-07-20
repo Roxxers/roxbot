@@ -3,6 +3,7 @@ import json
 
 class Config():
     def __init__(self, bot):
+        # TODO: Move default message into settings.ini
         self.serverconfig_template = {
             "example": {
                 "greets": {

@@ -119,7 +119,7 @@ class Admin():
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
             self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["twitch_shilling"]["twitch-channel"] = channel.id
+            self.con.serverconfig[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
             self.con.updateconfig()
         return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 

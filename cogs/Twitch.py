@@ -14,15 +14,14 @@ class Twitch():
         # Twitch Shilling Part
         if blacklisted(member_b):
             return
-        ts_enabled = self.con.serverconfig[member_a.server.id]["twitch"]["enabled"]
-        if ts_enabled:
-            if not self.con.serverconfig[member_a.server.id]["twitch"]["whitelist"][
-                "enabled"] or member_a.id in \
-                    self.con.serverconfig[member_a.server.id]["twitch"]["whitelist"]["list"]:
-                if member_a.game:
-                    if member_a.game.type:
-                        channel = discord.Object(
-                            self.con.serverconfig[member_a.server.id]["twitch"]["twitch-channel"])
+        if member_a.game:
+            if member_a.game.type and not member_b.game.type:
+                ts_enabled = self.con.serverconfig[member_a.server.id]["twitch"]["enabled"]
+                ts_whitelist = self.con.serverconfig[member_a.server.id]["twitch"]["whitelist"]["enabled"]
+                if ts_enabled:
+                    if not ts_whitelist or member_a.id in \
+                            self.con.serverconfig[member_a.server.id]["twitch"]["whitelist"]["list"]:
+                        channel = discord.Object(self.con.serverconfig[member_a.server.id]["twitch"]["twitch-channel"])
                         return await self.bot.send_message(channel,
                                                            content=":video_game:** {} is live!** :video_game:\n {}\n{}".format(
                                                                member_a.name, member_a.game.name, member_a.game.url))

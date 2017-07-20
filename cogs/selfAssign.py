@@ -26,7 +26,8 @@ class selfAssign():
             for serverrole in ctx.message.server.roles:
                 if role == serverrole.id:
                     roles.append(serverrole.name)
-        return await self.bot.say(roles)
+        return await self.bot.say(str(roles).strip("[]'"))
+
 
     @bot.command(pass_context=True)
     async def iam(self, ctx, role: discord.Role = None):
