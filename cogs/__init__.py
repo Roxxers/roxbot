@@ -1,7 +1,8 @@
-import json
 cogs = [
     'cogs.Admin',
     'cogs.Twitch',
     'cogs.selfAssign',
-    'cogs.Fun'
+    'cogs.Fun',
+    'cogs.joinLeave',
+    'config.config'
 ]

@@ -18,6 +18,7 @@ class Admin():
     def __init__(self, Bot):
         self.bot = Bot
         self.con = Config(Bot)
+        self.serverconfig = self.con.serverconfig
 
     @bot.command(pass_context=True, hidden=True)
     async def blacklist(self, ctx, option, *args):
@@ -80,27 +81,30 @@ class Admin():
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
-            if setting in self.con.serverconfig[ctx.message.server.id]:
-                self.con.serverconfig = self.con.load_config()
-                if not self.con.serverconfig[ctx.message.server.id][setting]["enabled"]:
-                    self.con.serverconfig[ctx.message.server.id][setting]["enabled"] = 1
-                    self.con.updateconfig()
+            server_id = ctx.message.server.id
+            if setting in self.serverconfig[server_id]:
+                self.serverconfig = self.con.load_config()
+                if not self.serverconfig[server_id][setting]["enabled"]:
+                    self.serverconfig[server_id][setting]["enabled"] = 1
+                    self.con.updateconfig(self.serverconfig)
                     return await self.bot.say("'{}' was enabled!".format(setting))
                 else:
-                    self.con.serverconfig[ctx.message.server.id][setting]["enabled"] = 0
-                    self.con.updateconfig()
+                    self.serverconfig[server_id][setting]["enabled"] = 0
+                    self.con.updateconfig(self.serverconfig)
                     return await self.bot.say("'{}' was disabled :cry:".format(setting))
             else:
                 return await self.bot.say("That module dont exist fam. You made the thing")
+
+    # TODO: Combine all set commands into one
 
     @bot.command(pass_context=True, hidden=True)
     async def set_welcomechannel(self, ctx, channel: discord.Channel = None):
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
-            self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
-            self.con.updateconfig()
+            self.serverconfig = self.con.load_config()
+            self.serverconfig[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
+            self.con.updateconfig(self.serverconfig)
         return await self.bot.say("{} has been set as the welcome channel!".format(channel.mention))
 
     @bot.command(pass_context=True, hidden=True)
@@ -108,9 +112,9 @@ class Admin():
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
-            self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
-            self.con.updateconfig()
+            self.serverconfig = self.con.load_config()
+            self.serverconfig[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
+            self.con.updateconfig(self.serverconfig)
         return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
 
     @bot.command(pass_context=True, hidden=True)
@@ -118,9 +122,9 @@ class Admin():
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
-            self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
-            self.con.updateconfig()
+            self.serverconfig = self.con.load_config()
+            self.serverconfig[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
+            self.con.updateconfig(self.serverconfig)
         return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 
     @bot.command(pass_context=True, hidden=True)
@@ -128,9 +132,9 @@ class Admin():
         if not owner(ctx):
             return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
         else:
-            self.con.serverconfig = self.con.load_config()
-            self.con.serverconfig[ctx.message.server.id]["greets"]["custom-message"] = message
-            self.con.updateconfig()
+            self.serverconfig = self.con.load_config()
+            self.serverconfig[ctx.message.server.id]["greets"]["custom-message"] = message
+            self.con.updateconfig(self.serverconfig)
         return await self.bot.say("Custom message set to '{}'".format(message))
 
     @bot.command(pass_context=True, hidden=True, aliases=["setava"])

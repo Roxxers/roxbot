@@ -38,19 +38,19 @@ class Config():
 
     async def on_server_join(self, server):
         self.serverconfig[server.id] = self.serverconfig_template["example"]
-        self.updateconfig()
+        self.updateconfig(self.serverconfig)
 
     async def on_server_remove(self, server):
         self.serverconfig.pop(server.id)
-        self.updateconfig()
+        self.updateconfig(self.serverconfig)
 
     def load_config(self):
         with open('config/config.json', 'r') as config_file:
             return json.load(config_file)
 
-    def updateconfig(self):
+    def updateconfig(self, config):
         with open('config/config.json', 'w') as conf_file:
-            json.dump(self.serverconfig, conf_file)
+            json.dump(config, conf_file)
 
     def config_errorcheck(self):
         # TODO: Fix so that it checks for problems in children of module settings. i.e children of 'greets'
@@ -58,7 +58,7 @@ class Config():
         for server in self.bot.servers:
             if server.id not in self.serverconfig:
                 self.serverconfig[server.id] = self.serverconfig_template["example"]
-                self.updateconfig()
+                self.updateconfig(self.serverconfig)
                 print(
                     "WARNING: The config file for {} was not found. A template has been loaded and saved. All modules are turned off by default.".format(
                         server.name.upper()))
@@ -67,7 +67,7 @@ class Config():
                     if module_setting not in self.serverconfig[server.id]:
                         self.serverconfig[server.id][module_setting] = self.serverconfig_template["example"][
                             module_setting]
-                        self.updateconfig()
+                        self.updateconfig(self.serverconfig)
                         print(
                             "WARNING: The config file for {} was missing the {} module. This has been fixed with the template version. It is disabled by default.".format(
                                 server.name.upper(), module_setting.upper()))
