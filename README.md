@@ -22,7 +22,7 @@ A simple Discord Bot used by me personally, written for fun.
 A list I just dump ideas on or planned bug fixes so that I can keep track.
 
 #### High Priority
-- Create print settings command
+- ~~Create print settings command~~
 
 #### Mid Priority
 - Make the code cleaner so that it isn't eye cancer

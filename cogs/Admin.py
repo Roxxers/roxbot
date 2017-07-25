@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import aiohttp
 import asyncio
 
@@ -95,8 +96,17 @@ class Admin():
             else:
                 return await self.bot.say("That module dont exist fam. You made the thing")
 
-    # TODO: Combine all set commands into one
+    @bot.command(pass_context=True)
+    async def printsettings(self, ctx, setting=None):
+        if not owner(ctx):
+            return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+        else:
+            config = self.serverconfig[ctx.message.server.id]
+            if setting in config:
+                config = config[setting]
+            return await self.bot.say(str(json.dumps(config, indent=4)))
 
+    # TODO: Combine all set commands into one
     @bot.command(pass_context=True, hidden=True)
     async def set_welcomechannel(self, ctx, channel: discord.Channel = None):
         if not owner(ctx):
