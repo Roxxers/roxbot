@@ -1,4 +1,4 @@
-[![Banner](http://i.imgur.com/SZIVXEg.png)]
+![Banner](http://i.imgur.com/SZIVXEg.png)
 
 [![MIT](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://github.com/RainbowDinoaur/roxbot/)
