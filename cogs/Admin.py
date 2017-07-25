@@ -155,7 +155,7 @@ class Admin():
             thing = url.strip('<>')
 
         avaimg = 'avaimg.png'
-        async with aiohttp.get(thing) as img:
+        async with aiohttp.ClientSession().get(thing) as img:
             with open(avaimg, 'wb') as f:
                 f.write(await img.read())
         with open(avaimg, 'rb') as f:
