@@ -9,7 +9,7 @@ from config.config import Config
 from cogs import cogs
 
 __version__ = '0.3.6'
-
+# TODO: make that constants file
 settings = configparser.ConfigParser()
 settings.read('config/settings.ini')
 
