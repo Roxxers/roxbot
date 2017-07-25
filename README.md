@@ -11,8 +11,11 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
-### v0.3.5
+#### v0.3.5
 - Changelog created
+
+#### Pre-v0.3.5
+- Bot was made. Wasn't great. You can check the commits though for more info.
 
 
 ## Todo List
