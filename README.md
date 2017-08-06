@@ -11,6 +11,11 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v0.4.0
+
+- New Misc cog, new commands like avatar and info
+- ChangeAvatar updated again to be inline with who avatar deals with avatar images.
+
 #### v0.3.6
 - ChangeAvatar command updated to use a upto date function to download images
 - printsetting command created for bot owner to check the serverconfig at the current time
