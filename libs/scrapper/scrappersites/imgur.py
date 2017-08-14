@@ -1,6 +1,4 @@
 import requests
-import os
-import wget
 from bs4 import BeautifulSoup
 
 class imgur():
@@ -25,12 +23,12 @@ class imgur():
 		elif url.split("/")[-2] == "a":
 			page = requests.get(url)
 			soup = BeautifulSoup(page.content, 'html.parser')
-			list = []
+			links = []
 			for img in soup.find_all("img"):
 				if "imgur" in img["src"]:
-					if not img["src"] in list:
-						list.append(img["src"])
-			if len(list) > 1:
+					if not img["src"] in links:
+						links.append(img["src"])
+			if len(links) > 1:
 				return False
 			else:
-				return list[0]
+				return links[0]

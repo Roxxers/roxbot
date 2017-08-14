@@ -1,4 +1,3 @@
-
 class eroshare():
 	def __init__(self):
 		pass

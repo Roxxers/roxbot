@@ -1,10 +1,16 @@
+import requests
 from libs.scrapper.scrappersites import imgur, reddit, gfy, tumblr
 
 class scrapper():
 	def __init__(self):
 		pass
 
-	def get(self, url):
+	def linkget(self, subreddit):
+		html = requests.get("https://reddit.com/r/"+subreddit+".json", headers = {'User-agent': 'RoxBot Discord Bot'})
+		reddit = html.json()["data"]["children"]
+		return reddit
+
+	def retriveurl(self, url):
 		url2 = ""
 		if "imgur" in url:
 			url2 = imgur.imgur().get(url)
@@ -18,4 +24,3 @@ class scrapper():
 		elif "media.tumblr" in url:
 			url2 = tumblr.tumblr().get(url)
 		return url2
-
