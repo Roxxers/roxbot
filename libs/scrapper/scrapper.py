@@ -31,5 +31,4 @@ class scrapper():
 			url2 = reddit.reddit().get(url)
 		elif "media.tumblr" in url:
 			url2 = tumblr.tumblr().get(url)
-		print(url)
 		return url2
