@@ -12,7 +12,10 @@ class scrapper():
 			choice = random.choice(options)
 			subreddit += choice
 		html = requests.get("https://reddit.com/r/"+subreddit, headers = {'User-agent': 'RoxBot Discord Bot'})
-		reddit = html.json()["data"]["children"]
+		try:
+			reddit = html.json()["data"]["children"]
+		except KeyError:
+			return False
 		return reddit
 
 	def retriveurl(self, url):

@@ -1,6 +1,4 @@
 import random
-import discord
-from pprint import pprint
 from libs.scrapper.scrapper import scrapper
 from discord.ext.commands import bot
 

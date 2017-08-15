@@ -32,6 +32,11 @@ class imgur():
 				if "imgur" in img["src"]:
 					if not img["src"] in links:
 						links.append(img["src"])
+
+			for video in soup.find_all("source"):
+				if "imgur" in video["src"]:
+					if not video["src"] in links:
+						links.append(video["src"])
 			if len(links) > 1:
 				return url
 			else:
