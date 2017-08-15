@@ -21,9 +21,39 @@ class Misc():
             async with session.get(url) as img:
                 with open(avaimg, 'wb') as f:
                     f.write(await img.read())
-        with open(avaimg, 'rb') as f:
-            await self.bot.send_file(ctx.message.channel, f.read())
-        os.remove(avaimg)
+
+        return await self.bot.send_file(ctx.message.channel, avaimg)
+
+    @bot.command(pass_context=True)
+    async def info(self, ctx, member: discord.Member = None):
+        if not member:
+            member = ctx.message.author
+        name_disc = member.name + "#" + member.discriminator
+        if member.game:
+            if member.game.type:
+                game = member.game.name
+                desc = "Streaming "
+            else:
+                game = member.game.name
+                desc = "Playing "
+        else:
+            desc = ""
+            game = ""
+
+        colour = member.colour.value
+        avatar = member.avatar_url
+
+        embed = discord.Embed(colour=colour, description=desc+game)
+        embed.set_thumbnail(url=avatar)
+        embed.set_author(name=name_disc, icon_url=avatar)
+
+        embed.add_field(name="🤔", value="some of these properties have certain limits...")
+        embed.add_field(name="😱", value="try exceeding some of them!")
+        embed.add_field(name="🙄", value=" ")
+        embed.add_field(name="<:thonkang:219069250692841473>", value="these last two", inline=True)
+        embed.add_field(name="<:thonkang:219069250692841473>", value="are inline fields", inline=True)
+
+        return await self.bot.say(embed=embed)
 
 def setup(Bot):
     Bot.add_cog(Misc(Bot))
