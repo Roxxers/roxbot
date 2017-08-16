@@ -9,13 +9,14 @@ from config.config import Config
 
 import discord
 from discord.ext.commands import bot
+from discord.ext.commands import group
 
 
 def owner(ctx):
 	return owner_id == ctx.message.author.id
 
 
-class Admin():
+class Settings():
 	def __init__(self, Bot):
 		self.bot = Bot
 		self.con = Config(Bot)
@@ -107,18 +108,13 @@ class Admin():
 				config = config[setting]
 			return await self.bot.say(str(json.dumps(config, indent=4)))
 
-	# TODO: Combine all set commands into one
-	@bot.group(pass_context=True)
-	async def test(self, ctx):
-		if True:
-			return self.bot.say("True")
+	@group(pass_context=True, hidden=True)
+	async def set(self, ctx):
+		if ctx.invoked_subcommand is None:
+			return await self.bot.say('Missing Argument')
 
-	@test.command()
-	async def hallo(self, ctx):
-		await self.bot.say('Pushing to {}'.format(ctx))
-
-	@bot.command(pass_context=True, hidden=True)
-	async def set_welcomechannel(self, ctx, channel: discord.Channel = None):
+	@set.command(pass_context=True, hidden=True)
+	async def welcomechannel(self, ctx, channel: discord.Channel = None):
 		if not owner(ctx):
 			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
 		else:
@@ -127,8 +123,8 @@ class Admin():
 			self.con.updateconfig(self.serverconfig)
 		return await self.bot.say("{} has been set as the welcome channel!".format(channel.mention))
 
-	@bot.command(pass_context=True, hidden=True)
-	async def set_goodbyechannel(self, ctx, channel: discord.Channel = None):
+	@set.command(pass_context=True, hidden=True)
+	async def goodbyechannel(self, ctx, channel: discord.Channel = None):
 		if not owner(ctx):
 			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
 		else:
@@ -137,8 +133,8 @@ class Admin():
 			self.con.updateconfig(self.serverconfig)
 		return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
 
-	@bot.command(pass_context=True, hidden=True)
-	async def set_twitchchannel(self, ctx, channel: discord.Channel = None):
+	@set.command(pass_context=True, hidden=True)
+	async def twitchchannel(self, ctx, channel: discord.Channel = None):
 		if not owner(ctx):
 			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
 		else:
@@ -147,8 +143,8 @@ class Admin():
 			self.con.updateconfig(self.serverconfig)
 		return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 
-	@bot.command(pass_context=True, hidden=True)
-	async def set_customwelcomemessage(self, ctx, *, message: str):
+	@set.command(pass_context=True, hidden=True)
+	async def mwelcomemessage(self, ctx, *, message: str):
 		if not owner(ctx):
 			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
 		else:
@@ -276,4 +272,4 @@ class Admin():
 
 
 def setup(Bot):
-	Bot.add_cog(Admin(Bot))
+	Bot.add_cog(Settings(Bot))

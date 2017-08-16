@@ -4,6 +4,6 @@ cogs = [
     'cogs.selfAssign',
     'cogs.Fun',
     'cogs.joinLeave',
-    'cogs.Misc',
+    'cogs.Utils',
     'config.config'
 ]
