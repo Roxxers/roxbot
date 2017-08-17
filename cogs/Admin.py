@@ -12,6 +12,7 @@ class Admin():
 		self.serverconfig = self.con.serverconfig
 
 	@bot.command(pass_context=True, enabled=False)
+	"""Its broke atm"""
 	async def mute(self, ctx, minutes: int, user: discord.User = None):
 		admins = self.serverconfig[ctx.message.server.id]["mute"]["admin-role"]
 		muterole = self.serverconfig[ctx.message.server.id]["mute"]["role"]
