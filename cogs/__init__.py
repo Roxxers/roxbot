@@ -1,5 +1,4 @@
 cogs = [
-    'cogs.Admin',
 	'cogs.Settings',
     'cogs.Twitch',
     'cogs.selfAssign',
