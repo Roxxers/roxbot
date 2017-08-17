@@ -15,7 +15,7 @@ from discord.ext.commands import group
 def owner(ctx):
 	return owner_id == ctx.message.author.id
 
-
+# TODO: Clean the fuck up
 class Settings():
 	def __init__(self, Bot):
 		self.bot = Bot
@@ -144,7 +144,7 @@ class Settings():
 		return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 
 	@set.command(pass_context=True, hidden=True)
-	async def mwelcomemessage(self, ctx, *, message: str):
+	async def welcomemessage(self, ctx, *, message: str):
 		if not owner(ctx):
 			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
 		else:
@@ -152,6 +152,26 @@ class Settings():
 			self.serverconfig[ctx.message.server.id]["greets"]["custom-message"] = message
 			self.con.updateconfig(self.serverconfig)
 		return await self.bot.say("Custom message set to '{}'".format(message))
+
+	@set.command(pass_context=True, hidden=True)
+	async def muterole(self, ctx, role: discord.Role = None):
+		if not owner(ctx):
+			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+		else:
+			self.serverconfig = self.con.load_config()
+			self.serverconfig[ctx.message.server.id]["mute"]["role"] = role.id
+			self.con.updateconfig(self.serverconfig)
+		return await self.bot.say("Muted role set to '{}'".format(role.name))
+
+	@set.command(pass_context=True, hidden=True)
+	async def muteadmin(self, ctx, role: discord.Role = None):
+		if not owner(ctx):
+			return await self.bot.reply(self.con.no_perms_reponse, delete_after=self.con.delete_after)
+		else:
+			self.serverconfig = self.con.load_config()
+			self.serverconfig[ctx.message.server.id]["mute"]["admin-role"].append(role.id)
+			self.con.updateconfig(self.serverconfig)
+		return await self.bot.say("Admin role appended to list: '{}'".format(role.name))
 
 	@bot.command(pass_context=True, hidden=True, aliases=["setava"])
 	async def changeavatar(self, ctx, url=None):

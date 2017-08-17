@@ -75,8 +75,8 @@ class Util():
 			msg = "I'm here to remind you of something. Idk what, but you told me to do this {} minutes ago ¯\_(ツ)_/¯".format(str(minutes))
 		else:
 			msg = "I was told to remind you this: **'{}'** {} minutes ago.".format(" ".join(kwargs),str(minutes))
-		#secs = minutes * 60
-		await sleep(minutes)
+		secs = minutes * 60
+		await sleep(secs)
 		return await self.bot.reply(msg)
 
 def setup(Bot):
