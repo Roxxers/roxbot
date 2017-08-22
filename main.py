@@ -14,4 +14,4 @@ bot = commands.Bot(command_prefix=command_prefix)
 async def on_ready():
 	print("Client Logged In")
 
-bot.run()
+bot.run(token)
