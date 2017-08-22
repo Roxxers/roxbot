@@ -28,7 +28,7 @@ async def on_ready():
 	for cog in load_config.cogslist:
 		bot.load_extension(cog)
 		print(cog)
-	
+
 	# Testing Code
 	game = discord.Game(name="Rewriting Moi for v{}".format(load_config.version), type=0)
 	await bot.change_presence(game=game)
