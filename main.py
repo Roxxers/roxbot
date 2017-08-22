@@ -33,7 +33,7 @@ async def on_ready():
 	game = discord.Game(name="Rewriting Moi", type=0)
 	await bot.change_presence(game=game)
 	print("Game Changed")
-	
+
 @bot.event
 async def on_server_join(server):
 	server_config.servers = server_config.load_config()
@@ -42,8 +42,9 @@ async def on_server_join(server):
 
 @bot.event
 async def on_server_remove(server):
+	server_config.servers = server_config.load_config()
 	server_config.servers.pop(server.id)
-	server_config.update_config(self.serverconfig)
+	server_config.update_config(server_config.servers)
 
 @bot.event
 async def on_message(message):
