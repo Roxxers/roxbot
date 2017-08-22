@@ -12,9 +12,16 @@ A simple Discord Bot used by me personally, written for fun.
 ## Changelog
 
 #### v0.4.0
+###### New Features
+- New commands in fun like a reddit scrapper.
+- New Utils cog, new commands like avatar, and info
 
-- New Misc cog, new commands like avatar and info
+###### Bugs and Fixes
+- Admin cog renamed to Settins cog.
 - ChangeAvatar updated again to be inline with who avatar deals with avatar images.
+- Fixed twitch cog bug that made roxbot crash a lot
+
+Probs more but I forgot honestly
 
 #### v0.3.6
 - ChangeAvatar command updated to use a upto date function to download images
