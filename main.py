@@ -1,7 +1,5 @@
 #!/usr/env python
 import logging
-import json
-import time
 import configparser
 
 import discord
@@ -34,11 +32,13 @@ async def on_ready():
 	await bot.change_presence(game=game)
 	print("Game Changed")
 
+
 @bot.event
 async def on_server_join(server):
 	server_config.servers = server_config.load_config()
 	server_config.servers[server.id] = server_config.servers_template["example"]
 	server_config.update_config(server_config.servers)
+
 
 @bot.event
 async def on_server_remove(server):
@@ -46,9 +46,10 @@ async def on_server_remove(server):
 	server_config.servers.pop(server.id)
 	server_config.update_config(server_config.servers)
 
+
 @bot.event
 async def on_message(message):
-	# Check for words for reactions and check blacklist
+	# TODO: Check for words for reactions and check blacklist
 	return await bot.process_commands(message)
 
 
@@ -60,9 +61,6 @@ async def on_error(error, ctx):
 @bot.event
 async def on_command_error(error, ctx):
 	pass
-
-
-
 
 
 bot.run(token)
