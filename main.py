@@ -10,6 +10,7 @@ token = settings["Roxbot"]["Token"]
 
 bot = commands.Bot(command_prefix=command_prefix)
 
+
 @bot.event
 async def on_ready():
 	print("Client Logged In")
