@@ -1,34 +1,36 @@
 #!/usr/env python
 import logging
-import configparser
 
 import discord
 from discord.ext import commands
 
 from server_config import ServerConfig
+import load_config
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
-settings = configparser.ConfigParser()
-settings.read("config/preferences.ini")
-command_prefix = settings["Roxbot"]["Command_Prefix"]
-token = settings["Roxbot"]["Token"]
-owner = settings["Roxbot"]["OwnerID"]
 
 server_config = ServerConfig()
-
-bot = commands.Bot(command_prefix=command_prefix)
+bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
 
 
 @bot.event
 async def on_ready():
+	server_config.error_check(bot.servers)
 	print("Client Logged In")
-	game = discord.Game(name="Rewriting Moi", type=0)
+	bot.owner = load_config.owner
+	print("Cogs Loaded:")
+	for cog in load_config.cogslist:
+		bot.load_extension(cog)
+		print(cog)
+	
+	# Testing Code
+	game = discord.Game(name="Rewriting Moi for v{}".format(load_config.version), type=0)
 	await bot.change_presence(game=game)
 	print("Game Changed")
 
@@ -63,4 +65,4 @@ async def on_command_error(error, ctx):
 	pass
 
 
-bot.run(token)
+bot.run(load_config.token)

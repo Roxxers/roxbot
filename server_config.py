@@ -2,7 +2,6 @@ import json
 
 class ServerConfig():
 	def __init__(self):
-		# TODO: Move default message into settings.ini
 		self.servers_template = {
 			"example": {
 				"greets": {
@@ -40,30 +39,36 @@ class ServerConfig():
 		self.delete_after = 20
 
 	def load_config(self):
-		with open('config/config.json', 'r') as config_file:
+		with open('config/servers.json', 'r') as config_file:
 			return json.load(config_file)
 
 	def update_config(self, config):
-		with open('config/config.json', 'w') as conf_file:
+		with open('config/servers.json', 'w') as conf_file:
 			json.dump(config, conf_file)
 
-	def errorcheck(self, servers):
-		# TODO: Fix so that it checks for problems in children of module settings. i.e children of 'greets'
-		# TODO: Fix issue where a setting can be enabled when it has no channel to post to.
+	def error_check(self, servers):
 		for server in servers:
 			if server.id not in self.servers:
 				self.servers[server.id] = self.servers_template["example"]
 				self.update_config(self.servers)
 				print(
-					"WARNING: The config file for {} was not found. A template has been loaded and saved. All modules are turned off by default.".format(
+					"WARNING: The config file for {} was not found. A template has been loaded and saved. All cogs are turned off by default.".format(
 						server.name.upper()))
 			else:
-				for module_setting in self.servers_template["example"]:
-					if module_setting not in self.servers[server.id]:
-						self.servers[server.id][module_setting] = self.servers_template["example"][
-							module_setting]
+				for cog_setting in self.servers_template["example"]:
+					for setting in self.servers_template["example"][cog_setting]:
+						if setting not in self.servers[server.id][cog_setting]:
+							self.servers[server.id][cog_setting][setting] = self.servers_template["example"][
+								cog_setting][setting]
+							self.update_config(self.servers)
+							print(
+								"WARNING: The config file for {} was missing the {} setting in the {} cog. This has been fixed with the template version. It is disabled by default.".format(
+									server.name.upper(), setting.upper(), cog_setting.upper()))
+					if cog_setting not in self.servers[server.id]:
+						self.servers[server.id][cog_setting] = self.servers_template["example"][
+							cog_setting]
 						self.update_config(self.servers)
 						print(
-							"WARNING: The config file for {} was missing the {} module. This has been fixed with the template version. It is disabled by default.".format(
-								server.name.upper(), module_setting.upper()))
+							"WARNING: The config file for {} was missing the {} cog. This has been fixed with the template version. It is disabled by default.".format(
+								server.name.upper(), cog_setting.upper()))
 		print("")
