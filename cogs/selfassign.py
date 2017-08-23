@@ -4,7 +4,7 @@ from discord.ext import commands
 from server_config import ServerConfig
 import checks
 
-class selfAssign():
+class SelfAssign():
 	def __init__(self, Bot):
 		self.bot = Bot
 		self.con = ServerConfig()
@@ -105,4 +105,4 @@ class selfAssign():
 			return await self.bot.say("That role was not in the list.")
 
 def setup(Bot):
-	Bot.add_cog(selfAssign(Bot))
+	Bot.add_cog(SelfAssign(Bot))
