@@ -1,8 +1,9 @@
 import discord
 from discord.ext import commands
 
-from server_config import ServerConfig
 import checks
+from config.server_config import ServerConfig
+
 
 class SelfAssign():
 	def __init__(self, Bot):
@@ -17,12 +18,12 @@ class SelfAssign():
 		Usage:
 			{command_prefix}listroles
 		"""
-		roles = []
+		roles = " "
 		for role in self.servers[ctx.message.server.id]["selfAssign"]["roles"]:
 			for serverrole in ctx.message.server.roles:
 				if role == serverrole.id:
-					roles.append(serverrole.name)
-		return await self.bot.say(str(roles).strip("[]"))
+					roles.join(serverrole.name)
+		return await self.bot.say(roles)
 
 	@commands.command(pass_context=True)
 	async def iam(self, ctx, role: discord.Role = None):

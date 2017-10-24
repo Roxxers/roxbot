@@ -1,11 +1,11 @@
 #!/usr/env python
 import logging
-import datetime
+
 import discord
 from discord.ext import commands
 
-from server_config import ServerConfig
 import load_config
+from config.server_config import ServerConfig
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
@@ -63,9 +63,9 @@ async def on_message(message):
 	return await bot.process_commands(message)
 
 
-@bot.event
-async def on_error(error, ctx):
-	pass
+#@bot.event
+#async def on_error(error, ctx, *args, **kwargs):
+#	pass
 
 
 @bot.event
