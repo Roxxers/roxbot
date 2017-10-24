@@ -18,12 +18,15 @@ class SelfAssign():
 		Usage:
 			{command_prefix}listroles
 		"""
-		roles = " "
+		roles = []
 		for role in self.servers[ctx.message.server.id]["selfAssign"]["roles"]:
 			for serverrole in ctx.message.server.roles:
 				if role == serverrole.id:
-					roles.join(serverrole.name)
-		return await self.bot.say(roles)
+					roles.append("**"+serverrole.name+"**")
+		roles = '\n'.join(roles)
+		embed = discord.Embed(colour=discord.Colour(0xDEADBF), # Make Embed colour a constant
+							  description="The self-assignable roles for this server are: \n"+roles)
+		return await self.bot.send_message(ctx.message.channel, embed=embed)
 
 	@commands.command(pass_context=True)
 	async def iam(self, ctx, role: discord.Role = None):

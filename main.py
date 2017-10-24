@@ -65,10 +65,10 @@ async def on_message(message):
 
 #@bot.event
 #async def on_error(error, ctx, *args, **kwargs):
-#	pass
+#	raise error
 
 
-@bot.event
+"""@bot.event
 async def on_command_error(error, ctx):
 	if isinstance(error, commands.NoPrivateMessage):
 		await bot.send_message(ctx.message.author, 'This command cannot be used in private messages.')
@@ -90,6 +90,6 @@ async def on_command_error(error, ctx):
 		#		await bot.send_message(bot.owner, embed=embed)
 		#	except:
 		#		pass
-
+"""
 
 bot.run(load_config.token)

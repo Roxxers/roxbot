@@ -7,3 +7,4 @@ cogslist = cogs.cogs
 description = meta.__description__
 version = meta.__version__
 author = meta.__author__
+embedcolour = meta.embedcolour
