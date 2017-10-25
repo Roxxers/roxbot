@@ -1,3 +1,4 @@
 cogs = [
-	"cogs.selfassign"
+	"cogs.selfassign",
+	"cogs.joinleave"
 ]

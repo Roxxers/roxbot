@@ -15,23 +15,27 @@ class JoinLeave():
 		self.con.load_config()
 		if not self.servers[member.server.id]["greets"]["enabled"]:
 			return
+
 		if self.servers[member.server.id]["greets"]["custom-message"]:
 			message = self.servers[member.server.id]["greets"]["custom-message"]
 		else:
 			message = self.servers[member.server.id]["greets"]["default-message"]
-		# TODO: Maybe thumbnail for the embed
 		em = discord.Embed(
 			title="Welcome to {}!".format(member.server),
 			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.server, message),
 			colour=0xDEADBF)
+		em.set_thumbnail(url=member.avatar_url)
 
 		if self.servers[member.server.id]["greets"]["welcome-channel"]:
 			channel = discord.Object(self.servers[member.server.id]["greets"]["welcome-channel"])
 		else:
 			channel = member.server.default_channel
-		return await self.bot.send_message(channel,embed=em)
+		return await self.bot.send_message(member.server.default_channel,embed=em)
 
 	async def on_member_remove(self, member):
+		"""
+		The same but the opposite
+		"""
 		self.con.load_config()
 		if not self.servers[member.server.id]["goodbyes"]["enabled"]:
 			return
