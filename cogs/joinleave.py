@@ -30,7 +30,7 @@ class JoinLeave():
 			channel = discord.Object(self.servers[member.server.id]["greets"]["welcome-channel"])
 		else:
 			channel = member.server.default_channel
-		return await self.bot.send_message(member.server.default_channel,embed=em)
+		return await self.bot.send_message(channel, embed=em)
 
 	async def on_member_remove(self, member):
 		"""
