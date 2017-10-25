@@ -30,6 +30,9 @@ class ServerConfig():
 				"mute": {
 					"role": "",
 					"admin-role": []
+				},
+				"nsfw": {
+					"enabled": 0
 				}
 			}
 		}

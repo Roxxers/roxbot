@@ -26,12 +26,12 @@ class SelfAssign():
 		roles = '\n'.join(roles)
 		embed = discord.Embed(colour=discord.Colour(0xDEADBF), # Make Embed colour a constant
 							  description="The self-assignable roles for this server are: \n"+roles)
-		return await self.bot.send_message(ctx.message.channel, embed=embed)
+		return await self.bot.say(embed=embed)
 
 	@commands.command(pass_context=True)
 	async def iam(self, ctx, role: discord.Role = None):
 		"""
-		Self-assign yourself a role. Only one role at a time. Doesn't work for roles with spaces.
+		Self-assign yourself a role. Only one role at a time.
 		Usage:
 			{command_prefix}iam [role]
 		Example:

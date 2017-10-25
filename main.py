@@ -75,7 +75,6 @@ async def on_message(message):
 	# TODO: Check for words for reactions and check blacklist
 	if blacklisted(message.author):
 		return
-
 	return await bot.process_commands(message)
 
 # Bot Debug and Info
@@ -121,8 +120,6 @@ async def on_command_error(error, ctx):
 				await bot.send_message(bot.owner, embed=embed)
 			except:
 				pass
-	else:
-		raise error
 
 
 if not os.path.isfile("settings/preferences.ini"):
