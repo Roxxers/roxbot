@@ -99,9 +99,16 @@ class Settings():
 	async def printsettings(self, ctx, setting=None):
 		self.serverconfig = self.con.load_config()
 		config = self.serverconfig[ctx.message.server.id]
-		if setting in config:
-			config = config[setting]
-		return await self.bot.say(str(json.dumps(config, indent=4)))
+		em = discord.Embed(colour=0xDEADBF)
+		em.set_author(name="RoxBot settings for {}.".format(ctx.message.server.name), icon_url=self.bot.user.avatar_url)
+
+		for settings in config:
+			settingcontent = ""
+			for x in config[settings].items():
+				settingcontent += str(x).strip("()") + "\n"
+			em.add_field(name=settings, value=settingcontent)
+
+		return await self.bot.say(embed=em)
 
 	@group(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
