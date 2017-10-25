@@ -14,8 +14,10 @@ from discord.ext.commands import group
 
 
 
-# TODO: Clean the fuck up
 class Settings():
+	"""
+	Settings is a mix of settings and admin stuff for the bot.
+	"""
 	def __init__(self, Bot):
 		self.bot = Bot
 		self.con = ServerConfig()
