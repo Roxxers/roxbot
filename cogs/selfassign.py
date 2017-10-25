@@ -89,6 +89,9 @@ class SelfAssign():
 	@commands.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
 	async def addrole(self, ctx, role: discord.Role = None):
+		"""
+]		Adds a role to the list of roles that can be self assigned for that server.
+		"""
 		self.servers = self.con.load_config()
 		if role.id in self.servers[ctx.message.server.id]["selfAssign"]["roles"]:
 			return await self.bot.say("{} is already a self-assignable role.".format(role.name), delete_after=self.con.delete_after)
@@ -100,6 +103,12 @@ class SelfAssign():
 	@commands.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
 	async def removerole(self, ctx, role: discord.Role = None):
+		"""
+		Removes a role from the list of self assignable roles for that server.
+		:param ctx:
+		:param role:
+		:return:
+		"""
 		self.servers = self.con.load_config()
 		if role.id in self.servers[ctx.message.server.id]["selfAssign"]["roles"]:
 			self.servers[ctx.message.server.id]["selfAssign"]["roles"].remove(role.id)
