@@ -96,7 +96,7 @@ class Settings():
 
 	@bot.command(pass_context=True)
 	@checks.is_bot_owner()
-	async def printsettings(self, ctx, setting=None):
+	async def printsettings(self, ctx):
 		self.serverconfig = self.con.load_config()
 		config = self.serverconfig[ctx.message.server.id]
 		em = discord.Embed(colour=0xDEADBF)
