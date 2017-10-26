@@ -37,7 +37,6 @@ class Util():
 		await self.bot.send_file(ctx.message.channel, avaimg)
 		os.remove(avaimg)
 
-
 	@bot.command(pass_context=True)
 	async def info(self, ctx, member: discord.Member = None):
 		"""
@@ -86,7 +85,6 @@ class Util():
 		embed.add_field(name="Roles [{}]".format(count), value=roles.strip(", "))
 		return await self.bot.say(embed=embed)
 
-
 	@bot.command(pass_context=True)
 	async def upload(self, ctx):
 		"""
@@ -134,6 +132,12 @@ class Util():
 			return await self.bot.say(msg)
 		else:
 			return await self.bot.say("Send me shit to upload nig")
+
+	@bot.command(pass_context=True)
+	async def emote(self, ctx, emote):
+		emoteid = emote.split(":")[-1].strip("<>")
+		url = "https://discordapp.com/api/emojis/{}.png".format(emoteid)
+		return await self.bot.say(url)
 
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
