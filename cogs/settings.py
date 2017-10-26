@@ -157,7 +157,7 @@ class Settings():
 		self.con.update_config(self.serverconfig)
 		return await self.bot.say("Admin role appended to list: '{}'".format(role.name))
 
-	@bot.command(pass_context=True, hidden=True, aliases=["setava"])
+	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
 	@checks.is_bot_owner()
 	async def changeavatar(self, ctx, url=None):
 		"""
@@ -171,9 +171,9 @@ class Settings():
 		else:
 			thing = url.strip('<>')
 
-		avaimg = 'avaimg.png'
+		avaimg = 'avaimg'
 		async with aiohttp.ClientSession() as session:
-			with session.get(thing) as img:
+			async with session.get(thing) as img:
 				with open(avaimg, 'wb') as f:
 					f.write(await img.read())
 		with open(avaimg, 'rb') as f:
