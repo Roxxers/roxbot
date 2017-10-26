@@ -165,13 +165,20 @@ class Reddit():
 		self.servers = self.con.servers
 
 	@bot.command(pass_context=True)
-	async def reddit(self, ctx, subreddit):
+	async def subreddit(self, ctx, subreddit):
+		"""
+		Grabs an image (png, gif, gifv, webm) from the subreddit inputted.
+		Exmaple:
+		{command_prefix}subreddit pics
+		"""
 		links = Scrapper().linkget(subreddit, True)
+		title = ""
 		if not links:
 			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 		url = ""
 		for x in range(10):
 			choice = random.choice(links)
+			title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
 			if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
 				return await self.bot.say("This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 			url = Scrapper().retriveurl(choice["data"]["url"])
@@ -185,23 +192,80 @@ class Reddit():
 		else:
 			text = ""
 
-		return await self.bot.say(text + url)
+		return await self.bot.say(title + text + url)
 
 
-	@bot.command()
-	async def aww(self):
-		links = Scrapper().linkget("aww", True)
+	@bot.command(pass_context=True)
+	async def aww(self, ctx):
+		"""
+		Gives you cute pics from reddit
+		"""
+		subreddit = "aww"
+		links = Scrapper().linkget(subreddit, True)
 		if not links:
 			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 
 		choice = random.choice(links)
+		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
+		if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
+			return await self.bot.say(
+				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		url = Scrapper().retriveurl(choice["data"]["url"])
 
 		if url.split("/")[-2] == "a":
 			text = "This is an album, click on the link to see more. "
 		else:
 			text = ""
-		return await self.bot.say(text + url)
+		return await self.bot.say(title + text + url)
+
+	@bot.command(pass_context=True)
+	async def feedme(self, ctx):
+		"""
+		Feeds you with food porn. Uses multiple subreddits
+		Yes, I was very hungry when trying to find the subreddits for this command.
+		"""
+		subreddits = ["foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "Pizza", "grilledcheese", "PutAnEggOnIt", "sushi"]
+		subreddit = random.choice(subreddits)
+		links = Scrapper().linkget(subreddit, True)
+		if not links:
+			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+
+		choice = random.choice(links)
+		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
+		if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
+			return await self.bot.say(
+				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
+		url = Scrapper().retriveurl(choice["data"]["url"])
+
+		if url.split("/")[-2] == "a":
+			text = "This is an album, click on the link to see more. "
+		else:
+			text = ""
+		return await self.bot.say(title + text + url)
+
+
+	@bot.command(pass_context=True)
+	async def traa(self, ctx):
+		"""
+		Gives you the best trans memes ever
+		"""
+		subreddit = "traaaaaaannnnnnnnnns"
+		links = Scrapper().linkget(subreddit, True)
+		if not links:
+			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+
+		choice = random.choice(links)
+		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
+		if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
+			return await self.bot.say(
+				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
+		url = Scrapper().retriveurl(choice["data"]["url"])
+
+		if url.split("/")[-2] == "a":
+			text = "This is an album, click on the link to see more. "
+		else:
+			text = ""
+		return await self.bot.say(title + text + url)
 
 
 def setup(Bot):
