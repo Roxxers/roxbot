@@ -1,5 +1,6 @@
 import os
 import json
+import checks
 import random
 import aiohttp
 import discord
@@ -134,6 +135,19 @@ class Util():
 		else:
 			return await self.bot.say("Send me shit to upload nig")
 
+	@bot.command(pass_context=True, hidden=True)
+	@checks.is_bot_owner()
+	async def echo(self, ctx, channel, *, message: str):
+		if ctx.message.channel_mentions:
+			for channel in ctx.message.channel_mentions:
+				await self.bot.send_message(channel, content=message)
+			return await self.bot.say(":point_left:")
+		elif channel.isdigit():
+			channel = ctx.message.server.get_channel(channel)
+			await self.bot.send_message(channel, content=message)
+			return await self.bot.say(":point_left:")
+		else:
+			return await self.bot.say("You did something wrong smh")
 
 def setup(Bot):
 	Bot.add_cog(Util(Bot))

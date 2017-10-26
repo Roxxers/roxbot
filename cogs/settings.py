@@ -216,19 +216,7 @@ class Settings():
 		await self.bot.change_presence(status=discordStatus)
 		await self.bot.say("**:ok:** Status set to {}".format(discordStatus))
 
-	@bot.command(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
-	async def echo(self, ctx, channel, *, message: str):
-		if ctx.message.channel_mentions:
-			for channel in ctx.message.channel_mentions:
-				await self.bot.send_message(channel, content=message)
-			return await self.bot.say(":point_left:")
-		elif channel.isdigit():
-			channel = ctx.message.server.get_channel(channel)
-			await self.bot.send_message(channel, content=message)
-			return await self.bot.say(":point_left:")
-		else:
-			return await self.bot.say("You did something wrong smh")
+
 
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
