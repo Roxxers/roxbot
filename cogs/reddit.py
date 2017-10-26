@@ -1,4 +1,5 @@
-
+import discord
+import random
 
 
 class Reddit():
