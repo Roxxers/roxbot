@@ -6,7 +6,7 @@ import random
 import requests
 from bs4 import BeautifulSoup
 
-# Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much
+# Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
 
 
 class RedditMedia:
@@ -158,9 +158,6 @@ class Scrapper():
 		return url2
 
 
-
-
-
 class Reddit():
 	def __init__(self, Bot):
 		self.bot = Bot
@@ -205,8 +202,6 @@ class Reddit():
 		else:
 			text = ""
 		return await self.bot.say(text + url)
-
-
 
 
 def setup(Bot):
