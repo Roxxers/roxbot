@@ -2,9 +2,14 @@ import discord
 from discord.ext.commands import group
 
 import checks
-from main import blacklisted
 from config.server_config import ServerConfig
 
+def blacklisted(user):
+	with open("config/blacklist.txt", "r") as fp:
+		for line in fp.readlines():
+			if user.id+"\n" == line:
+				return True
+	return False
 
 class Twitch():
 	"""
@@ -26,12 +31,12 @@ class Twitch():
 			typeb = False
 		if member_a.game:
 			if member_a.game.type and not typeb: # Hopefully this fucking fixes it
-				ts_enabled = self.serverconfig[member_a.server.id]["twitch"]["enabled"]
-				ts_whitelist = self.serverconfig[member_a.server.id]["twitch"]["whitelist"]["enabled"]
+				ts_enabled = self.servers[member_a.server.id]["twitch"]["enabled"]
+				ts_whitelist = self.servers[member_a.server.id]["twitch"]["whitelist"]["enabled"]
 				if ts_enabled:
 					if not ts_whitelist or member_a.id in \
-							self.serverconfig[member_a.server.id]["twitch"]["whitelist"]["list"]:
-						channel = discord.Object(self.serverconfig[member_a.server.id]["twitch"]["twitch-channel"])
+							self.servers[member_a.server.id]["twitch"]["whitelist"]["list"]:
+						channel = discord.Object(self.servers[member_a.server.id]["twitch"]["twitch-channel"])
 						return await self.bot.send_message(channel,
 														   content=":video_game:** {} is live!** :video_game:\n{}\n{}".format(
 															   member_a.name, member_a.game.name, member_a.game.url))
@@ -43,14 +48,14 @@ class Twitch():
 
 	@twitch.command(pass_context=True, hidden=True)
 	async def enablewhitelist(self, ctx):
-		self.serverconfig = self.con.load_config()
-		if not self.serverconfig[ctx.server.id]["twitch"]["whitelist"]["enabled"]:
-			self.serverconfig[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 1
-			self.con.update_config(self.serverconfig)
+		self.servers = self.con.load_config()
+		if not self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"]:
+			self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 1
+			self.con.update_config(self.servers)
 			return await self.bot.reply("Whitelist for Twitch shilling has been enabled.")
 		else:
-			self.serverconfig[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 0
-			self.con.update_config(self.serverconfig)
+			self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 0
+			self.con.update_config(self.servers)
 			return await self.bot.reply("Whitelist for Twitch shilling has been disabled.")
 
 	@twitch.command(pass_context=True, hidden=True)
@@ -64,25 +69,25 @@ class Twitch():
 			return await self.bot.say('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
 
 		if option in ['+', 'add']:
-			self.serverconfig = self.con.load_config()
+			self.servers = self.con.load_config()
 			for user in ctx.message.mentions:
-				self.serverconfig[ctx.message.server.id]["twitch"]["whitelist"]["list"].append(user.id)
-				self.con.update_config(self.serverconfig)
+				self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"].append(user.id)
+				self.con.update_config(self.servers)
 				whitelist_count += 1
 			return await self.bot.say('{} user(s) have been added to the whitelist'.format(whitelist_count))
 
 		elif option in ['-', 'remove']:
-			self.serverconfig = self.con.load_config()
+			self.servers = self.con.load_config()
 			for user in ctx.message.mentions:
-				if user.id in self.serverconfig[ctx.message.server.id]["twitch"]["whitelist"]["list"]:
-					self.serverconfig[ctx.message.server.id]["twitch"]["whitelist"]["list"].remove(user.id)
-					self.con.update_config(self.serverconfig)
+				if user.id in self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"]:
+					self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"].remove(user.id)
+					self.con.update_config(self.servers)
 					whitelist_count += 1
 			return await self.bot.say('{} user(s) have been removed to the whitelist'.format(whitelist_count))
 
 		elif option == 'list':
 			return await self.bot.say(
-				self.serverconfig[ctx.message.server.id]["twitch"]["whitelist"]["list"])
+				self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"])
 
 
 def setup(Bot):
