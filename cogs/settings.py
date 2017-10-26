@@ -198,7 +198,7 @@ class Settings():
 		if game.lower() == "none":
 			game_name = None
 		else:
-			game_name = discord.Game(name=game)
+			game_name = discord.Game(name=game, type=0)
 		await self.bot.change_presence(game=game_name, afk=False)
 		return await self.bot.say(":ok_hand: Game set to {}".format(str(game_name)))
 
