@@ -1,9 +1,9 @@
 #!/usr/env python
+import time
 import logging
 import os.path
 import datetime
 import traceback
-
 
 import discord
 from discord.ext import commands
@@ -11,6 +11,7 @@ from discord.ext import commands
 import load_config
 from config.server_config import ServerConfig
 
+start_time = time.time()
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
@@ -117,9 +118,33 @@ async def on_command_error(error, ctx):
 			embed.add_field(name='Message', value=ctx.message.clean_content)
 			embed.timestamp = datetime.datetime.utcnow()
 			try:
-				await bot.send_message(bot.owner, embed=embed)
+				await bot.send_message(load_config.owner, embed=embed)
 			except:
-				pass
+				raise error
+	else:
+		if bot.dev:
+			raise error
+
+@bot.command(pass_context=True)
+async def about(ctx):
+	user = await bot.get_user_info(load_config.owner)
+	ownername = user.name + "#" + user.discriminator
+	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.description)
+	em.set_thumbnail(url=bot.user.avatar_url)
+	em.add_field(name="Command Prefix", value=load_config.command_prefix)
+	em.add_field(name="Owner", value=ownername)
+	em.add_field(name="Owner ID", value=load_config.owner)
+	em.add_field(name="Bot Version", value=load_config.version)
+	em.add_field(name="Author", value=load_config.author)
+	em.set_footer(text="RoxBot is licensed under the MIT License")
+
+	# Do time calc late in the command so that the time returned is closest to when the message is received
+	uptimeflo = time.time() - start_time
+	uptime = str(datetime.timedelta(seconds=uptimeflo))
+	em.add_field(name="Current Uptime", value=str(uptime.split(".")[0]))
+
+	return await bot.say(embed=em)
+
 
 
 if not os.path.isfile("settings/preferences.ini"):

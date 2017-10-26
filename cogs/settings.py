@@ -217,7 +217,6 @@ class Settings():
 		await self.bot.say("**:ok:** Status set to {}".format(discordStatus))
 
 
-
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
 	async def restart(self, ctx):
