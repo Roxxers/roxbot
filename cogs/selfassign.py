@@ -18,6 +18,10 @@ class SelfAssign():
 		Usage:
 			{command_prefix}listroles
 		"""
+		if not self.servers[ctx.message.server.id]["selfAssign"]["enabled"]:
+			embed = discord.Embed(colour=discord.Colour(0xDEADBF),  # Make Embed colour a constant
+								  description="SelfAssignable roles are not enabled on this server")
+			return await self.bot.say(embed=embed)
 		roles = []
 		for role in self.servers[ctx.message.server.id]["selfAssign"]["roles"]:
 			for serverrole in ctx.message.server.roles:
@@ -105,9 +109,6 @@ class SelfAssign():
 	async def removerole(self, ctx, role: discord.Role = None):
 		"""
 		Removes a role from the list of self assignable roles for that server.
-		:param ctx:
-		:param role:
-		:return:
 		"""
 		self.servers = self.con.load_config()
 		if role.id in self.servers[ctx.message.server.id]["selfAssign"]["roles"]:
