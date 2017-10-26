@@ -1,4 +1,4 @@
-__description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443. She is a simple bot written as a hobby.
+__description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
 
 [Github link](https://github.com/RainbowDinoaur/roxbot)"""
 __author__ = "Roxanne Gibson"
