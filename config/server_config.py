@@ -15,7 +15,7 @@ class ServerConfig():
 					"enabled": 0,
 					"goodbye-channel": "",
 				},
-				"selfAssign": {
+				"self_assign": {
 					"enabled": 0,
 					"roles": []
 				},
