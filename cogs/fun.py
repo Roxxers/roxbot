@@ -1,3 +1,4 @@
+import discord
 import random
 from discord.ext.commands import bot
 
@@ -50,16 +51,16 @@ class Fun():
 			return await self.bot.say("{} rolled a **{}**".format(ctx.message.author.mention, roll))
 
 	@bot.command(pass_context=True)
-	async def suck(self, ctx):
+	async def suck(self, ctx, *, user: discord.User = None):
 		"""
 		Sucks the mentioned user ;)
 		Usage:
-			{command_prefix}suck @user#9999
+			{command_prefix}suck @RoxBot#4170
+			{command_prefix}suck RoxBot
 		"""
-		if len(ctx.message.mentions) < 1:
+		if not user:
 			return await self.bot.say("You didn't mention someone for me to suck")
-		user = ctx.message.mentions[0]
-		return await self.bot.say(":eggplant: :sweat_drops: :tongue: {}".format(user.mention))
+		return await self.bot.say(":eggplant: :sweat_drops: :tongue: *{} sucks {}*".format(self.bot.user.name, user.name))
 
 	@bot.command(pass_context=True, aliases=["wf"])
 	async def waifurate(self, ctx):
