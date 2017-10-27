@@ -15,16 +15,14 @@ class Util():
 		self.bot = Bot
 
 	@bot.command(pass_context=True)
-	async def avatar(self, ctx, user: discord.User = None):
+	async def avatar(self, ctx, *,user: discord.User = None):
 		"""
 		Returns a mentioned users avatar
 		Example:
 		{command_prefix}avatar @RoxBot#4170
 		{command_prefix}avatar RoxBot
 		"""
-		if ctx.message.mentions:
-			user = ctx.message.mentions[0]
-		elif not user:
+		if not user:
 			user = ctx.message.author
 
 		url = user.avatar_url
@@ -135,6 +133,9 @@ class Util():
 
 	@bot.command(pass_context=True)
 	async def emote(self, ctx, emote):
+		"""
+		Gets a url to the emote given. Useful for downloading emotes.
+		"""
 		emoteid = emote.split(":")[-1].strip("<>")
 		url = "https://discordapp.com/api/emojis/{}.png".format(emoteid)
 		return await self.bot.say(url)

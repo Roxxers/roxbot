@@ -73,14 +73,10 @@ async def on_server_remove(server):
 
 @bot.event
 async def on_message(message):
-	# TODO: Check for words for reactions and check blacklist
+	# TODO: Check for words for reactions
 	if blacklisted(message.author):
 		return
 	return await bot.process_commands(message)
-
-# Bot Debug and Info
-
-# TODO: Add command that has things like uptime in it and is outputted as a rich embed
 
 # Error Handling, thanks for Der Eddy who did most of this stuff. <3
 
@@ -127,6 +123,9 @@ async def on_command_error(error, ctx):
 
 @bot.command(pass_context=True)
 async def about(ctx):
+	"""
+	Outputs info about RoxBot, showing uptime, what settings where set in prefs.ini and credits.
+	"""
 	user = await bot.get_user_info(load_config.owner)
 	ownername = user.name + "#" + user.discriminator
 	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.description)
