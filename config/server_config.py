@@ -33,7 +33,8 @@ class ServerConfig():
 				},
 				"nsfw": {
 					"enabled": 0
-				}
+				},
+				"admin_role": ""
 			}
 		}
 		self.servers = self.load_config()

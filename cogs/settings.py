@@ -151,11 +151,11 @@ class Settings():
 		return await self.bot.say("Muted role set to '{}'".format(role.name))
 
 	@set.command(pass_context=True, hidden=True)
-	async def muteadmin(self, ctx, role: discord.Role = None):
+	async def adminrole(self, ctx, role: discord.Role = None):
 		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["mute"]["admin-role"].append(role.id)
+		self.serverconfig[ctx.message.server.id]["admin_role"] = role.id
 		self.con.update_config(self.serverconfig)
-		return await self.bot.say("Admin role appended to list: '{}'".format(role.name))
+		return await self.bot.say("Admin role set to '{}'".format(role.name))
 
 	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
 	@checks.is_bot_owner()
