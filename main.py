@@ -16,7 +16,7 @@ start_time = time.time()
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
@@ -24,7 +24,7 @@ logger.addHandler(handler)
 
 server_config = ServerConfig()
 bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
-bot.dev = True # For debugging
+bot.dev = False # For debugging
 bot.owner = load_config.owner
 
 def blacklisted(user):
@@ -53,9 +53,8 @@ async def on_ready():
 	print("")
 
 	# Testing Code
-	game = discord.Game(name="Rewriting Moi for v{}".format(load_config.version), type=0)
+	game = discord.Game(name="v{}".format(load_config.version), type=0)
 	await bot.change_presence(game=game)
-	print("Game Changed")
 
 
 @bot.event
