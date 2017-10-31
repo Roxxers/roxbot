@@ -79,9 +79,9 @@ class Settings():
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
 	async def enablesetting(self, ctx, setting):
+		self.serverconfig = self.con.load_config()
 		server_id = ctx.message.server.id
 		if setting in self.serverconfig[server_id]:
-			self.serverconfig = self.con.load_config()
 			if not self.serverconfig[server_id][setting]["enabled"]:
 				self.serverconfig[server_id][setting]["enabled"] = 1
 				self.con.update_config(self.serverconfig)

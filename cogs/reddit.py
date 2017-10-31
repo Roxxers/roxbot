@@ -7,6 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
+# There is redundant code here that if removed would make it easier. But it might be handy in the future and isn't that bad.
 
 
 class RedditMedia:

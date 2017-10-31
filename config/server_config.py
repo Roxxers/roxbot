@@ -2,6 +2,7 @@ import json
 
 class ServerConfig():
 	def __init__(self):
+		# Admin role is how it is because of how I print out settings. Touch it and it will break that command.
 		self.servers_template = {
 			"example": {
 				"greets": {
@@ -34,7 +35,9 @@ class ServerConfig():
 				"nsfw": {
 					"enabled": 0
 				},
-				"admin_role": ""
+				"admin_role": {
+					"role": ""
+				}
 			}
 		}
 		self.servers = self.load_config()
