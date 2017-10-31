@@ -24,7 +24,7 @@ logger.addHandler(handler)
 
 server_config = ServerConfig()
 bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
-bot.dev = False # For debugging
+bot.dev = True # For debugging
 bot.owner = load_config.owner
 
 def blacklisted(user):

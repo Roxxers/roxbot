@@ -20,9 +20,9 @@ class NFSW():
 		limit = 100
 		url = base_url + '/index.php?page=dapi&s=post&q=index&json=1&tags=' + tags + '&limit=' + str(limit)
 		req = requests.get(url, headers={'User-agent': 'RoxBot Discord Bot'})
-		#print(req.status_code)
-		#print(req.content)
-		#print(req.json)
+		if str(req.content) == "b''": # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
+			post = None
+			return post
 		post = random.choice(req.json())
 		return post
 
@@ -36,6 +36,8 @@ class NFSW():
 		limit = 150
 		url = base_url + 'post/index.json?tags=' + tags + '&limit=' + str(limit)
 		req = requests.get(url, headers = {'User-agent': 'RoxBot Discord Bot'})
+		if str(req.content) == "b'[]'": # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
+			return await self.bot.say("Nothing was found. *psst, check the tags you gave me.*")
 		post = random.choice(req.json())
 		return await self.bot.say(post["file_url"])
 
@@ -47,6 +49,8 @@ class NFSW():
 		"""
 		base_url = "https://rule34.xxx"
 		post = self.gelbooru_clone(base_url, tags)
+		if not post:
+			return await self.bot.say("Nothing was found. *psst, check the tags you gave me.*")
 		url = "https://img.rule34.xxx/images/" + post["directory"] + "/" + post["image"]
 		return await self.bot.say(url)
 
@@ -58,6 +62,8 @@ class NFSW():
 		"""
 		base_url = "https://gelbooru.com"
 		post = self.gelbooru_clone(base_url, tags)
+		if not post:
+			return await self.bot.say("Nothing was found. *psst, check the tags you gave me.*")
 		url = "https://simg3.gelbooru.com/images/" + ''.join(post["directory"].split("\\")) + "/" + post["image"]
 		return await self.bot.say(url)
 
