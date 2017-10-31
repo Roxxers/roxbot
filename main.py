@@ -4,6 +4,7 @@ import logging
 import os.path
 import datetime
 import traceback
+import json
 
 import discord
 from discord.ext import commands
@@ -23,7 +24,7 @@ logger.addHandler(handler)
 
 server_config = ServerConfig()
 bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
-bot.dev = True # For debugging
+bot.dev = False # For debugging
 bot.owner = load_config.owner
 
 def blacklisted(user):
@@ -102,6 +103,8 @@ async def on_command_error(error, ctx):
 		await bot.send_message(ctx.message.channel, content="This command is disabled.")
 	elif isinstance(error, commands.CheckFailure):
 		await bot.send_message(ctx.message.channel, content="You do not have permission to do this. Back off, thot!")
+	elif isinstance(error, json.JSONDecodeError): # For the NSFW cogs requests because error exception doesn't work in commands because of this here.
+		await bot.send_message(ctx.message.channel, content="That didn't return anything")
 	elif isinstance(error, commands.CommandInvokeError):
 		if bot.dev:
 			raise error
@@ -117,9 +120,9 @@ async def on_command_error(error, ctx):
 				await bot.send_message(load_config.owner, embed=embed)
 			except:
 				raise error
-	else:
-		if bot.dev:
-			raise error
+	#else:
+	#	if bot.dev:
+	#		raise error
 
 @bot.command(pass_context=True)
 async def about(ctx):

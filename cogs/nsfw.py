@@ -1,4 +1,5 @@
 import random
+from json import JSONDecodeError
 import checks
 import requests
 from discord.ext.commands import bot
