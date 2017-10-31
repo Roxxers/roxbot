@@ -131,14 +131,41 @@ class Util():
 		else:
 			return await self.bot.say("Send me shit to upload nig")
 
-	@bot.command(pass_context=True, aliases=["emoji"])
+	@bot.command(pass_context=True, aliases=["emoji"]) # This command will only work with normal emoji once I can put in something to get the svgs for twiemoji and convert em
 	async def emote(self, ctx, emote):
 		"""
-		Gets a url to the emote given. Useful for downloading emotes.
+		Uploads the emote given. Useful for downloading emotes. ONLY WORKS WITH CUSTOM EMOJI
 		"""
 		emoteid = emote.split(":")[-1].strip("<>")
+		if not emoteid.isdigit():
+			return await self.bot.say("This command only works with custom emotes.")
 		url = "https://discordapp.com/api/emojis/{}.png".format(emoteid)
-		return await self.bot.say(url)
+		imgname = 'img.png'
+		async with aiohttp.ClientSession() as session:
+			async with session.get(url) as img:
+				with open(imgname, 'wb') as f:
+					f.write(await img.read())
+		await self.bot.send_file(ctx.message.channel, imgname)
+		os.remove(imgname)
+		#return await self.bot.say(url)
+
+	@bot.command(pass_context=True, enabled=False, hidden=True)
+	@checks.is_bot_owner()
+	async def emoterob(self, ctx, emote, name=None):
+		"""
+		Gets a emoji and adds it to the custom emoji list. ONLY WORKS WITH CUSTOM EMOJI
+		"""
+		emoteid = emote.split(":")[-1].strip("<>")
+		if not emoteid.isdigit():
+			return await self.bot.say("This command only works with custom emotes.")
+		url = "https://discordapp.com/api/emojis/{}.png".format(emoteid)
+		imgname = 'img.png'
+		async with aiohttp.ClientSession() as session:
+			async with session.get(url) as img:
+				with open(imgname, 'wb') as f:
+					f.write(await img.read())
+		with open(imgname, "rb") as f:
+			return await self.bot.create_custom_emoji(ctx.message.server, name=name, image=f)
 
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
@@ -153,6 +180,11 @@ class Util():
 			return await self.bot.say(":point_left:")
 		else:
 			return await self.bot.say("You did something wrong smh")
+
+	@bot.command(pass_context=True, enabled=False, hidden=True)
+	async def say(self, ctx, *, echo):
+		return await self.bot.say(echo)
+
 
 def setup(Bot):
 	Bot.add_cog(Util(Bot))
