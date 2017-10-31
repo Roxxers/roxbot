@@ -131,7 +131,7 @@ class Util():
 		else:
 			return await self.bot.say("Send me shit to upload nig")
 
-	@bot.command(pass_context=True)
+	@bot.command(pass_context=True, aliases=["emoji"])
 	async def emote(self, ctx, emote):
 		"""
 		Gets a url to the emote given. Useful for downloading emotes.
