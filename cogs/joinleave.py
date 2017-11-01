@@ -1,4 +1,3 @@
-
 import discord
 from config.server_config import ServerConfig
 
