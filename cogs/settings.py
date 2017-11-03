@@ -75,7 +75,6 @@ class Settings():
 							blacklist_amount += 1
 				return await self.bot.say('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
-
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
 	async def enablesetting(self, ctx, setting):
@@ -117,44 +116,44 @@ class Settings():
 
 	@set.command(pass_context=True, hidden=True)
 	async def welcomechannel(self, ctx, channel: discord.Channel = None):
-		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
-		self.con.update_config(self.serverconfig)
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
+		self.con.update_config(self.servers)
 		return await self.bot.say("{} has been set as the welcome channel!".format(channel.mention))
 
 	@set.command(pass_context=True, hidden=True)
 	async def goodbyechannel(self, ctx, channel: discord.Channel = None):
-		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
-		self.con.update_config(self.serverconfig)
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
+		self.con.update_config(self.servers)
 		return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
 
 	@set.command(pass_context=True, hidden=True)
 	async def twitchchannel(self, ctx, channel: discord.Channel = None):
-		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
-		self.con.update_config(self.serverconfig)
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
+		self.con.update_config(self.servers)
 		return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
 
 	@set.command(pass_context=True, hidden=True)
 	async def welcomemessage(self, ctx, *, message: str):
-		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["greets"]["custom-message"] = message
-		self.con.update_config(self.serverconfig)
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["greets"]["custom-message"] = message
+		self.con.update_config(self.servers)
 		return await self.bot.say("Custom message set to '{}'".format(message))
 
 	@set.command(pass_context=True, hidden=True)
 	async def muterole(self, ctx, role: discord.Role = None):
-		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["mute"]["role"] = role.id
-		self.con.update_config(self.serverconfig)
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["mute"]["role"] = role.id
+		self.con.update_config(self.servers)
 		return await self.bot.say("Muted role set to '{}'".format(role.name))
 
 	@set.command(pass_context=True, hidden=True)
 	async def adminrole(self, ctx, role: discord.Role = None):
-		self.serverconfig = self.con.load_config()
-		self.serverconfig[ctx.message.server.id]["admin_role"] = role.id
-		self.con.update_config(self.serverconfig)
+		self.servers= self.con.load_config()
+		self.servers[ctx.message.server.id]["admin_role"] = role.id
+		self.con.update_config(self.servers)
 		return await self.bot.say("Admin role set to '{}'".format(role.name))
 
 	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
@@ -216,16 +215,15 @@ class Settings():
 		await self.bot.change_presence(status=discordStatus)
 		await self.bot.say("**:ok:** Status set to {}".format(discordStatus))
 
-
-	@bot.command(pass_context=True, hidden=True)
+	@bot.command(hidden=True)
 	@checks.is_bot_owner()
-	async def restart(self, ctx):
+	async def restart(self):
 		await self.bot.logout()
 		return os.execl(sys.executable, sys.executable, *sys.argv)
 
-	@bot.command(pass_context=True, hidden=True)
+	@bot.command(hidden=True)
 	@checks.is_bot_owner()
-	async def shutdown(self, ctx):
+	async def shutdown(self):
 		await self.bot.logout()
 		return exit(0)
 

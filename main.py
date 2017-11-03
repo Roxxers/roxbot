@@ -4,7 +4,6 @@ import logging
 import os.path
 import datetime
 import traceback
-import json
 
 import discord
 from discord.ext import commands
@@ -24,8 +23,11 @@ logger.addHandler(handler)
 
 server_config = ServerConfig()
 bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
-bot.dev = False # For debugging
+bot.dev = True # For debugging
 bot.owner = load_config.owner
+# TODO: Put load_config variables into the bot variable so we can pass all of it to the cogs as one.
+# Can't do this with server config in any meaningful way since it still needs updating.
+
 
 def blacklisted(user):
 	with open("config/blacklist.txt", "r") as fp:
@@ -102,8 +104,8 @@ async def on_command_error(error, ctx):
 		await bot.send_message(ctx.message.channel, content="This command is disabled.")
 	elif isinstance(error, commands.CheckFailure):
 		await bot.send_message(ctx.message.channel, content="You do not have permission to do this. Back off, thot!")
-	elif isinstance(error, json.JSONDecodeError): # For the NSFW cogs requests because error exception doesn't work in commands because of this here.
-		await bot.send_message(ctx.message.channel, content="That didn't return anything")
+	elif isinstance(error, KeyError):
+		await bot.send_message(ctx.message.channel, content="Belgh")
 	elif isinstance(error, commands.CommandInvokeError):
 		if bot.dev:
 			raise error
@@ -113,7 +115,7 @@ async def on_command_error(error, ctx):
 			embed.add_field(name='Server', value=ctx.message.server)
 			embed.add_field(name='Channel', value=ctx.message.channel)
 			embed.add_field(name='User', value=ctx.message.author)
-			embed.add_field(name='Message', value=ctx.message.clean_content)
+			embed.add_field(name='Message', value=ctx.message.content)
 			embed.timestamp = datetime.datetime.utcnow()
 			try:
 				await bot.send_message(load_config.owner, embed=embed)
