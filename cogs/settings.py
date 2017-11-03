@@ -21,15 +21,12 @@ class Settings():
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 
-	@bot.command(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
+	@bot.command(pass_context=True)
+	@checks.is_owner_or_admin()
 	async def blacklist(self, ctx, option, *args):
 		"""
-		Usage:
-			.blacklist [ + | - | add | remove ] @UserName [@UserName2 ...]
-		Add or remove users to the blacklist.
+		OWNER OR ADMIN ONLY: Add or remove users to the blacklist.
 		Blacklisted users are forbidden from using bot commands.
-		Only the bot owner can use this command
 		"""
 		blacklist_amount = 0
 		mentions = ctx.message.mentions
@@ -74,9 +71,10 @@ class Settings():
 							blacklist_amount += 1
 				return await self.bot.say('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
-	@bot.command(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
+	@bot.command(pass_context=True)
+	@checks.is_owner_or_admin()
 	async def enablesetting(self, ctx, setting):
+		"OWNER OR ADMIN ONLY: Enables settings in the server config."
 		self.serverconfig = self.con.load_config()
 		server_id = ctx.message.server.id
 		if setting in self.serverconfig[server_id]:
@@ -92,12 +90,13 @@ class Settings():
 			return await self.bot.say("That module dont exist fam. You made the thing")
 
 	@bot.command(pass_context=True)
-	@checks.is_bot_owner()
+	@checks.is_owner_or_admin()
 	async def printsettings(self, ctx):
+		"OWNER OR ADMIN ONLY: Prints the servers config file."
 		self.serverconfig = self.con.load_config()
 		config = self.serverconfig[ctx.message.server.id]
 		em = discord.Embed(colour=0xDEADBF)
-		em.set_author(name="RoxBot settings for {}.".format(ctx.message.server.name), icon_url=self.bot.user.avatar_url)
+		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.server.name), icon_url=self.bot.user.avatar_url)
 
 		for settings in config:
 			settingcontent = ""
@@ -188,7 +187,7 @@ class Settings():
 		self.servers = self.con.load_config()
 		try:
 			self.servers[ctx.message.server.id]["perm_roles"]["admin"].remove(role.id)
-		except KeyError:
+		except ValueError:
 			return await self.bot.say("That role was not in the list.")
 		self.con.update_config(self.servers)
 		return await self.bot.say("'{}' has been removed from the Admin role list.".format(role.name))
@@ -198,7 +197,7 @@ class Settings():
 		self.servers = self.con.load_config()
 		try:
 			self.servers[ctx.message.server.id]["perm_roles"]["mod"].remove(role.id)
-		except KeyError:
+		except ValueError:
 			return await self.bot.say("That role was not in the list.")
 		self.con.update_config(self.servers)
 		return await self.bot.say("'{}' has been removed from the Mod role list.".format(role.name))
