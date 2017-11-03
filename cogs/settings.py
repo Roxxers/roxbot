@@ -12,10 +12,9 @@ from discord.ext.commands import bot
 from discord.ext.commands import group
 
 
-
 class Settings():
 	"""
-	Settings is a mix of settings and admin stuff for the bot.
+	Settings is a mix of settings and admin stuff for the bot. OWNER OR ADMIN ONLY.
 	"""
 	def __init__(self, Bot):
 		self.bot = Bot
@@ -129,7 +128,7 @@ class Settings():
 		return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
 
 	@set.command(pass_context=True, hidden=True)
-	async def twitchchannel(self, ctx, channel: discord.Channel = None):
+	async def twitchchannel(self, ctx, channel: discord.Channel = None): # Idk if this should be here, maybe in thw twitch cog?
 		self.servers = self.con.load_config()
 		self.servers[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
 		self.con.update_config(self.servers)
@@ -142,16 +141,52 @@ class Settings():
 		self.con.update_config(self.servers)
 		return await self.bot.say("Custom message set to '{}'".format(message))
 
-	@set.command(pass_context=True, hidden=True)
+	@set.command(pass_context=True, hidden=True, enabled=False)
 	async def muterole(self, ctx, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		self.servers[ctx.message.server.id]["mute"]["role"] = role.id
 		self.con.update_config(self.servers)
 		return await self.bot.say("Muted role set to '{}'".format(role.name))
 
-	@set.command(pass_context=True, hidden=True)
-	async def adminrole(self, ctx, role: discord.Role = None):
-		self.servers= self.con.load_config()
+	@group(pass_context=True, hidden=True)
+	@checks.is_bot_owner()
+	async def add(self, ctx):
+		if ctx.invoked_subcommand is None:
+			return await self.bot.say('Missing Argument')
+
+	@add.command(pass_context=True, hidden=True)
+	async def admin_role(self, ctx, *, role: discord.Role = None):
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["admin_role"] = role.id
+		self.con.update_config(self.servers)
+		return await self.bot.say("Admin role set to '{}'".format(role.name))
+
+	@add.command(pass_context=True, hidden=True)
+	async def mod_role(self, ctx, *, role: discord.Role = None):
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["admin_role"] = role.id
+		self.con.update_config(self.servers)
+		return await self.bot.say("Admin role set to '{}'".format(role.name))
+
+	@group(pass_context=True, hidden=True)
+	@checks.is_bot_owner()
+	async def remove(self, ctx):
+		if ctx.invoked_subcommand is None:
+			return await self.bot.say('Missing Argument')
+
+	@remove.command(pass_context=True, hidden=True)
+	async def admin_role(self, ctx, *, role: discord.Role = None):
+		self.servers = self.con.load_config()
+		try:
+			self.servers[ctx.message.server.id]["perm_roles"]["admin"].pop(role.id)
+		except KeyError:
+			return await self.bot.say("That role was not in the list.")
+		self.con.update_config(self.servers)
+		return await self.bot.say("Admin role set to '{}'".format(role.name))
+
+	@remove.command(pass_context=True, hidden=True)
+	async def mod_role(self, ctx, *, role: discord.Role = None):
+		self.servers = self.con.load_config()
 		self.servers[ctx.message.server.id]["admin_role"] = role.id
 		self.con.update_config(self.servers)
 		return await self.bot.say("Admin role set to '{}'".format(role.name))

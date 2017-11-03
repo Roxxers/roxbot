@@ -35,8 +35,9 @@ class ServerConfig():
 				"nsfw": {
 					"enabled": 0
 				},
-				"admin_role": {
-					"role": ""
+				"perm_roles": {
+					"admin": [],
+					"mod":[]
 				},
 				"custom_commands":{
 					"0": {},
@@ -67,6 +68,13 @@ class ServerConfig():
 						server.name.upper()))
 			else:
 				for cog_setting in self.servers_template["example"]:
+					if cog_setting not in self.servers[server.id]:
+						self.servers[server.id][cog_setting] = self.servers_template["example"][
+							cog_setting]
+						self.update_config(self.servers)
+						print(
+							"WARNING: The config file for {} was missing the {} cog. This has been fixed with the template version. It is disabled by default.".format(
+								server.name.upper(), cog_setting.upper()))
 					for setting in self.servers_template["example"][cog_setting]:
 						if setting not in self.servers[server.id][cog_setting]:
 							self.servers[server.id][cog_setting][setting] = self.servers_template["example"][
@@ -75,11 +83,5 @@ class ServerConfig():
 							print(
 								"WARNING: The config file for {} was missing the {} setting in the {} cog. This has been fixed with the template version. It is disabled by default.".format(
 									server.name.upper(), setting.upper(), cog_setting.upper()))
-					if cog_setting not in self.servers[server.id]:
-						self.servers[server.id][cog_setting] = self.servers_template["example"][
-							cog_setting]
-						self.update_config(self.servers)
-						print(
-							"WARNING: The config file for {} was missing the {} cog. This has been fixed with the template version. It is disabled by default.".format(
-								server.name.upper(), cog_setting.upper()))
+
 		print("")
