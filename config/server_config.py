@@ -29,8 +29,7 @@ class ServerConfig():
 					},
 				},
 				"mute": {
-					"role": "",
-					"admin-role": []
+					"role": ""
 				},
 				"nsfw": {
 					"enabled": 0

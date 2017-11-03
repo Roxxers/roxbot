@@ -103,7 +103,7 @@ class Settings():
 			settingcontent = ""
 			for x in config[settings].items():
 				settingcontent += str(x).strip("()") + "\n"
-			em.add_field(name=settings, value=settingcontent)
+			em.add_field(name=settings, value=settingcontent, inline=False)
 
 		return await self.bot.say(embed=em)
 
@@ -136,6 +136,7 @@ class Settings():
 
 	@set.command(pass_context=True, hidden=True)
 	async def welcomemessage(self, ctx, *, message: str):
+		print(ctx)
 		self.servers = self.con.load_config()
 		self.servers[ctx.message.server.id]["greets"]["custom-message"] = message
 		self.con.update_config(self.servers)
@@ -155,18 +156,24 @@ class Settings():
 			return await self.bot.say('Missing Argument')
 
 	@add.command(pass_context=True, hidden=True)
-	async def admin_role(self, ctx, *, role: discord.Role = None):
+	async def adminrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["admin_role"] = role.id
-		self.con.update_config(self.servers)
-		return await self.bot.say("Admin role set to '{}'".format(role.name))
+		if role.id not in self.servers[ctx.message.server.id]["perm_roles"]["admin"]:
+			self.servers[ctx.message.server.id]["perm_roles"]["admin"].append(role.id)
+			self.con.update_config(self.servers)
+			return await self.bot.say("'{}' has been added to the Admin role list.".format(role.name))
+		else:
+			return await self.bot.say("'{}' is already in the list.")
 
 	@add.command(pass_context=True, hidden=True)
-	async def mod_role(self, ctx, *, role: discord.Role = None):
+	async def modrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["admin_role"] = role.id
-		self.con.update_config(self.servers)
-		return await self.bot.say("Admin role set to '{}'".format(role.name))
+		if role.id not in self.servers[ctx.message.server.id]["perm_roles"]["mod"]:
+			self.servers[ctx.message.server.id]["perm_roles"]["mod"].append(role.id)
+			self.con.update_config(self.servers)
+			return await self.bot.say("'{}' has been added to the Mod role list.".format(role.name))
+		else:
+			return await self.bot.say("'{}' is already in the list.")
 
 	@group(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
@@ -175,21 +182,24 @@ class Settings():
 			return await self.bot.say('Missing Argument')
 
 	@remove.command(pass_context=True, hidden=True)
-	async def admin_role(self, ctx, *, role: discord.Role = None):
+	async def adminrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		try:
-			self.servers[ctx.message.server.id]["perm_roles"]["admin"].pop(role.id)
+			self.servers[ctx.message.server.id]["perm_roles"]["admin"].remove(role.id)
 		except KeyError:
 			return await self.bot.say("That role was not in the list.")
 		self.con.update_config(self.servers)
-		return await self.bot.say("Admin role set to '{}'".format(role.name))
+		return await self.bot.say("'{}' has been removed from the Admin role list.".format(role.name))
 
 	@remove.command(pass_context=True, hidden=True)
-	async def mod_role(self, ctx, *, role: discord.Role = None):
+	async def modrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["admin_role"] = role.id
+		try:
+			self.servers[ctx.message.server.id]["perm_roles"]["mod"].remove(role.id)
+		except KeyError:
+			return await self.bot.say("That role was not in the list.")
 		self.con.update_config(self.servers)
-		return await self.bot.say("Admin role set to '{}'".format(role.name))
+		return await self.bot.say("'{}' has been removed from the Mod role list.".format(role.name))
 
 	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
 	@checks.is_bot_owner()
