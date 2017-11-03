@@ -149,40 +149,42 @@ class Settings():
 		self.con.update_config(self.servers)
 		return await self.bot.say("Muted role set to '{}'".format(role.name))
 
-	@group(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
+	@group(pass_context=True)
+	@checks.is_owner_or_admin()
 	async def add(self, ctx):
+		"OWNER OR ADMIN ONLY: Adds to lists like admin roles."
 		if ctx.invoked_subcommand is None:
 			return await self.bot.say('Missing Argument')
 
-	@add.command(pass_context=True, hidden=True)
-	async def adminrole(self, ctx, *, role: discord.Role = None):
+	@add.command(pass_context=True, aliases=["adminrole"])
+	async def addadminrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		if role.id not in self.servers[ctx.message.server.id]["perm_roles"]["admin"]:
 			self.servers[ctx.message.server.id]["perm_roles"]["admin"].append(role.id)
 			self.con.update_config(self.servers)
 			return await self.bot.say("'{}' has been added to the Admin role list.".format(role.name))
 		else:
-			return await self.bot.say("'{}' is already in the list.")
+			return await self.bot.say("'{}' is already in the list.".format(role.name))
 
-	@add.command(pass_context=True, hidden=True)
-	async def modrole(self, ctx, *, role: discord.Role = None):
+	@add.command(pass_context=True, aliases=["modrole"])
+	async def addmodrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		if role.id not in self.servers[ctx.message.server.id]["perm_roles"]["mod"]:
 			self.servers[ctx.message.server.id]["perm_roles"]["mod"].append(role.id)
 			self.con.update_config(self.servers)
 			return await self.bot.say("'{}' has been added to the Mod role list.".format(role.name))
 		else:
-			return await self.bot.say("'{}' is already in the list.")
+			return await self.bot.say("'{}' is already in the list.".format(role.name))
 
-	@group(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
+	@group(pass_context=True)
+	@checks.is_owner_or_admin()
 	async def remove(self, ctx):
+		"OWNER OR ADMIN ONLY: Removes things like admin roles."
 		if ctx.invoked_subcommand is None:
 			return await self.bot.say('Missing Argument')
 
-	@remove.command(pass_context=True, hidden=True)
-	async def adminrole(self, ctx, *, role: discord.Role = None):
+	@remove.command(pass_context=True, aliases=["adminrole"])
+	async def readminrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		try:
 			self.servers[ctx.message.server.id]["perm_roles"]["admin"].remove(role.id)
@@ -191,8 +193,8 @@ class Settings():
 		self.con.update_config(self.servers)
 		return await self.bot.say("'{}' has been removed from the Admin role list.".format(role.name))
 
-	@remove.command(pass_context=True, hidden=True)
-	async def modrole(self, ctx, *, role: discord.Role = None):
+	@remove.command(pass_context=True, aliases=["modrole"])
+	async def remodrole(self, ctx, *, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		try:
 			self.servers[ctx.message.server.id]["perm_roles"]["mod"].remove(role.id)
