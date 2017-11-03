@@ -1,5 +1,6 @@
 cogs = [
 	"cogs.fun",
+	"cogs.customcommands",
 	"cogs.joinleave",
 	"cogs.nsfw",
 	"cogs.reddit",

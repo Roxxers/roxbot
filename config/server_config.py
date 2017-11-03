@@ -37,6 +37,10 @@ class ServerConfig():
 				},
 				"admin_role": {
 					"role": ""
+				},
+				"custom_commands":{
+					"0": {},
+					"1": {}
 				}
 			}
 		}
