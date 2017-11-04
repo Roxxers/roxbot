@@ -95,15 +95,22 @@ class CustomCommands():
 
 
 	@custom.command(pass_context=True)
-	async def list(self, ctx):
+	async def list(self, ctx, debug="0"):
 		"Lists all custom commands for this server."
+		if debug != "0" and debug != "1":
+			debug = "0"
 		self.servers = self.con.load_config()
 		l = self.servers[ctx.message.server.id]["custom_commands"]
 		listzero = ""
 		listone = ""
+
 		for command in l["0"]:
+			if debug == "1":
+				command += command + " - {}".format(l["0"][command])
 			listzero = listzero + "- " + command + "\n"
 		for command in l["1"]:
+			if debug == "1":
+				command += command + " - {}".format(l["1"][command])
 			listone = listone + "- " + command + "\n"
 		if not listone:
 			listone = "There are no commands setup.\n"
