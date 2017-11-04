@@ -116,6 +116,9 @@ class CustomCommands():
 			listone = "There are no commands setup.\n"
 		if not listzero:
 			listzero = "There are no commands setup.\n"
+
+		# TODO: Sort out a way to shorten this if it goes over 2000 characters.
+		
 		em = discord.Embed(title="Here is the list of Custom Commands", color=load_config.embedcolour)
 		em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
 		em.add_field(name="Commands that don't:", value=listzero, inline=False)
