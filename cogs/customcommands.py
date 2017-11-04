@@ -35,6 +35,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def add(self, ctx, command, output, prefix_required = "0"):
 		"Adds a custom command to the list of custom commands."
+		self.servers = self.con.load_config()
 		command = command.lower()
 		output = output.lower()
 		zero = self.servers[ctx.message.server.id]["custom_commands"]["0"]
@@ -58,6 +59,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def edit(self, ctx, command, edit):
 		"Edits an existing custom command."
+		self.servers = self.con.load_config()
 		zero = self.servers[ctx.message.server.id]["custom_commands"]["0"]
 		one = self.servers[ctx.message.server.id]["custom_commands"]["1"]
 
@@ -78,6 +80,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def remove(self, ctx, command):
 		"Removes a custom command."
+		self.servers = self.con.load_config()
 		command = command.lower()
 		if command in self.servers[ctx.message.server.id]["custom_commands"]["1"]:
 			self.servers[ctx.message.server.id]["custom_commands"]["1"].pop(command)
@@ -94,6 +97,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def list(self, ctx):
 		"Lists all custom commands for this server."
+		self.servers = self.con.load_config()
 		l = self.servers[ctx.message.server.id]["custom_commands"]
 		listzero = ""
 		listone = ""
