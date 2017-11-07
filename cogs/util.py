@@ -80,6 +80,9 @@ class Util():
 			else:
 				roles += role.name + ", "
 				count += 1
+		if not roles:
+			roles = "None"
+			count = 0
 		embed.add_field(name="Roles [{}]".format(count), value=roles.strip(", "))
 		return await self.bot.say(embed=embed)
 
