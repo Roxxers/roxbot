@@ -14,15 +14,15 @@ class GaySoundsShitposting():
 
 	@checks.is_gss()
 	@bot.command(pass_context=True)
-	async def selfieperm(self, ctx):
+	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
 
 		member = ctx.message.author
 		server = ctx.message.server
 		set_role = "394939389823811584"
 		role_obj = None
-		required_score = self.servers[server.id]["gss"]["required_score"]
-		days = self.servers[server.id]["gss"]["required_days"]
+		required_score = int(self.servers[server.id]["gss"]["required_score"])
+		days = int(self.servers[server.id]["gss"]["required_days"])
 		logging = self.servers[server.id]["gss"]["log_channel"]
 
 		for role in server.roles:
@@ -52,7 +52,7 @@ class GaySoundsShitposting():
 
 	@checks.is_gss()
 	@bot.command(pass_context=True)
-	async def nsfwperm(self, ctx):
+	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
 
 		member = ctx.message.author
