@@ -11,6 +11,10 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.2.0
+###### New Features
+- Added a new cog for the GaySoundsShiposts discord. Just some custom commands needed for modding.
+
 #### v1.1.3
 ###### Changes
 - Changed to traa command to gss and point to the /r/gaysoundsshitposts subreddit

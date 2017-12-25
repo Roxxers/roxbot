@@ -144,12 +144,33 @@ class Settings():
 		self.con.update_config(self.servers)
 		return await self.bot.say("Custom message set to '{}'".format(message))
 
-	@set.command(pass_context=True, hidden=True, enabled=False)
+	@set.command(pass_context=True, hidden=True)
 	async def muterole(self, ctx, role: discord.Role = None):
 		self.servers = self.con.load_config()
 		self.servers[ctx.message.server.id]["mute"]["role"] = role.id
 		self.con.update_config(self.servers)
 		return await self.bot.say("Muted role set to '{}'".format(role.name))
+
+	@set.command(pass_context=True, hidden=True)
+	async def loggingchannel(self, ctx, channel: discord.Channel = None):
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["gss"]["logging_channel"] = channel.id
+		self.con.update_config(self.servers)
+		return await self.bot.say("Logging Channel set to '{}'".format(channel.name))
+
+	@set.command(pass_context=True, hidden=True)
+	async def requireddays(self, ctx, days: int):
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["gss"]["required_days"] = str(days)
+		self.con.update_config(self.servers)
+		return await self.bot.say("Required days set to '{}'".format(str(days)))
+
+	@set.command(pass_context=True, hidden=True)
+	async def requiredscore(self, ctx, score: int):
+		self.servers = self.con.load_config()
+		self.servers[ctx.message.server.id]["gss"]["required_score"] = str(score)
+		self.con.update_config(self.servers)
+		return await self.bot.say("Required score set to '{}'".format(str(score)))
 
 	@group(pass_context=True)
 	@checks.is_owner_or_admin()

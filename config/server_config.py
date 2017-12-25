@@ -41,6 +41,11 @@ class ServerConfig():
 				"custom_commands":{
 					"0": {},
 					"1": {}
+				},
+				"gss":{
+					"log_channel": "",
+					"required_days": "",
+					"required_score": "",
 				}
 			}
 		}

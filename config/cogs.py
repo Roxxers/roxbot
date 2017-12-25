@@ -7,5 +7,6 @@ cogs = [
 	"cogs.selfassign",
 	"cogs.settings",
 	"cogs.twitch",
-	"cogs.util"
+	"cogs.util",
+	"cogs.gss"
 ]
