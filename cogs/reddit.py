@@ -247,11 +247,11 @@ class Reddit():
 
 
 	@bot.command(pass_context=True)
-	async def traa(self, ctx):
+	async def gss(self, ctx):
 		"""
 		Gives you the best trans memes ever
 		"""
-		subreddit = "traaaaaaannnnnnnnnns"
+		subreddit = "gaysoundsshitposts"
 		links = Scrapper().linkget(subreddit, True)
 		if not links:
 			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")

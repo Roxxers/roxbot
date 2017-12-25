@@ -11,6 +11,10 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.1.3
+###### Changes
+- Changed to traa command to gss and point to the /r/gaysoundsshitposts subreddit
+
 #### v1.1.2
 ###### Bug Fixes
 - Fixed a bug when a user only the '@everyone' role.
