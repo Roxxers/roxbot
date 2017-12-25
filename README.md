@@ -11,6 +11,20 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.1.2
+###### Bug Fixes
+- Fixed a bug when a user only the '@everyone' role.
+
+#### v1.1.1
+###### Bug Fixes
+- Print settings outputting too big of a message
+- perm roles being overwritten
+
+#### v1.1.0
+###### New Features
+- Custom commands! With and without prefixes, the bot can output a custom message.
+- Admin roles to check for perms
+
 #### v1.0.0
 ###### Rewrite
 The whole bot has been completly rewritten. Its jam packed with new commands, cogs, and functionality. Because of this, I wont be including a full change log. I will fill out the changelog for further versions. But this version should be more stable, have more features, and just be better than before.
