@@ -37,11 +37,13 @@ class JoinLeave():
 		The same but the opposite
 		"""
 		self.con.load_config()
+		channel = self.servers[member.server.id]["goodbyes"]["goodbye-channel"]
 		if not self.servers[member.server.id]["goodbyes"]["enabled"]:
 			return
 		else:
-			return await self.bot.send_message(member.server,embed=discord.Embed(
+			return await self.bot.send_message(channel ,embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=0xDEADBF))
+
 
 def setup(Bot):
 	Bot.add_cog(JoinLeave(Bot))
