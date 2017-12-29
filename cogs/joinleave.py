@@ -41,7 +41,7 @@ class JoinLeave():
 		if not self.servers[member.server.id]["goodbyes"]["enabled"]:
 			return
 		else:
-			return await self.bot.send_message(channel ,embed=discord.Embed(
+			return await self.bot.send_message(self.bot.get_channel(channel) ,embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=0xDEADBF))
 
 
