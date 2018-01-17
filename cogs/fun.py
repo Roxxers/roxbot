@@ -74,6 +74,18 @@ class Fun():
 			return await self.bot.say("You didn't mention someone for me to suck")
 		return await self.bot.say(":eggplant: :sweat_drops: :tongue: *{} sucks {}*".format(self.bot.user.name, user.name))
 
+	@bot.command(pass_context=True)
+	async def hug(self, ctx, *, user: discord.User = None):
+		"""
+		Hugs the mentioned user :3
+		Usage:
+			{command_prefix}hug @RoxBot#4170
+			{command_prefix}hug RoxBot
+		"""
+		if not user:
+			return await self.bot.say("You didn't mention someone for me to hug")
+		return await self.bot.say(":blush: *{} hugs {}*".format(self.bot.user.name, user.name))
+
 	@bot.command(pass_context=True, aliases=["wf"])
 	async def waifurate(self, ctx):
 		"""
