@@ -173,14 +173,16 @@ class Util():
 	@bot.command(pass_context=True, hidden=True)
 	@checks.is_bot_owner()
 	async def echo(self, ctx, channel, *, message: str):
-		if ctx.message.channel_mentions:
+		if ctx.message.channel_mentions: # If Mentioned
 			for channel in ctx.message.channel_mentions:
 				await self.bot.send_message(channel, content=message)
 			return await self.bot.say(":point_left:")
-		elif channel.isdigit():
+
+		elif channel.isdigit(): # If ID is given
 			channel = ctx.message.server.get_channel(channel)
 			await self.bot.send_message(channel, content=message)
 			return await self.bot.say(":point_left:")
+
 		else:
 			return await self.bot.say("You did something wrong smh")
 

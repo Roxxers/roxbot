@@ -26,10 +26,7 @@ class ServerConfig():
 					"whitelist": {
 						"enabled": 0,
 						"list": []
-					},
-				},
-				"mute": {
-					"role": ""
+					}
 				},
 				"nsfw": {
 					"enabled": 0,
