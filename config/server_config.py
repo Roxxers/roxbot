@@ -32,7 +32,8 @@ class ServerConfig():
 					"role": ""
 				},
 				"nsfw": {
-					"enabled": 0
+					"enabled": 0,
+					"channels": []
 				},
 				"perm_roles": {
 					"admin": [],

@@ -1,4 +1,5 @@
 cogs = [
+	"cogs.admin",
 	"cogs.fun",
 	"cogs.customcommands",
 	"cogs.joinleave",
