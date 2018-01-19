@@ -19,5 +19,3 @@ def is_owner_or_admin():
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["nsfw"]["enabled"] == 1)
 
-def is_gss():
-	return commands.check(lambda ctx: ctx.message.server.id == "393764974444675073")
