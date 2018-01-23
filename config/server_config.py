@@ -48,8 +48,6 @@ class ServerConfig():
 			}
 		}
 		self.servers = self.load_config()
-		# TODO: Move this to Checks
-		self.no_perms_reponse = ":no_entry_sign: You do not have permission to use this command."
 		self.delete_after = 20
 
 	def load_config(self):

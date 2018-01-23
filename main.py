@@ -53,7 +53,6 @@ async def on_ready():
 		print(server)
 	print("")
 
-	# Testing Code
 	game = discord.Game(name="v{}".format(load_config.version), type=0)
 	await bot.change_presence(game=game)
 
@@ -74,7 +73,6 @@ async def on_server_remove(server):
 
 @bot.event
 async def on_message(message):
-	# TODO: Check for words for reactions
 	if blacklisted(message.author):
 		return
 	return await bot.process_commands(message)
