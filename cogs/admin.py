@@ -1,8 +1,8 @@
 import datetime
+import checks
 import discord
 from discord.ext.commands import bot
 
-import checks
 
 class Admin():
 	"""
@@ -10,6 +10,53 @@ class Admin():
 	"""
 	def __init__(self, Bot):
 		self.bot = Bot
+		self.slow_mode = False
+		self.slow_mode_channels = {}
+		self.users = {}
+
+	async def on_message(self, message):
+		# Slow Mode Code
+		channel = message.channel
+		author = message.author
+
+		if not author == self.bot.user:
+			if self.slow_mode and channel.id in self.slow_mode_channels:
+				if author.id not in self.users[channel.id]:
+					# If user hasn't sent a message in this channel after slow mode was turned on
+					self.users[channel.id][author.id] = message.timestamp
+				else:
+					# Else, check when their last message was and if time is smaller than the timer, delete the message.
+					timer = datetime.timedelta(seconds=self.slow_mode_channels[channel.id])
+					if message.timestamp - self.users[channel.id][author.id] < timer:
+						await self.bot.delete_message(message)
+					else:
+						self.users[message.channel.id][author.id] = message.timestamp
+			else:
+				pass
+
+	@checks.not_pm()
+	@checks.is_owner_or_admin()
+	@bot.command(pass_context=True)
+	async def slowmode(self, ctx, time):
+		if time == "off" and self.slow_mode: # Turn Slow Mode off
+			self.slow_mode = False
+			self.slow_mode_channels.pop(ctx.message.channel.id)
+			self.users.pop(ctx.message.channel.id)
+			return await self.bot.say("Slowmode off")
+
+		elif time.isdigit() and not self.slow_mode: # Turn Slow Mode On
+			self.users[ctx.message.channel.id] = {}
+			self.slow_mode_channels[ctx.message.channel.id] = int(time)
+			self.slow_mode = True
+			return await self.bot.say("Slowmode on :snail: ({} seconds)".format(time))
+
+		elif time.isdigit and self.slow_mode: # Change value of Slow Mode timer
+			self.slow_mode_channels[ctx.message.channel.id] = int(time)
+			return await self.bot.say("Slowmode set to :snail: ({} seconds)".format(time))
+
+		else:
+			pass
+
 
 	@checks.is_owner_or_admin()
 	@bot.command(pass_context=True)
@@ -89,6 +136,8 @@ class Admin():
 
 			else: # Non-verbose output
 				return await self.bot.say("{} has been used {} time(s) in the last month. That's {}/day.".format(emoji, amount, useperday))
+
+
 
 
 

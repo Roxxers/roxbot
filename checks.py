@@ -1,6 +1,7 @@
 from discord.ext import commands
 import load_config
 from config.server_config import ServerConfig
+import discord
 
 def is_bot_owner():
 	return commands.check(lambda ctx: ctx.message.author.id == load_config.owner)
@@ -19,3 +20,5 @@ def is_owner_or_admin():
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["nsfw"]["enabled"] == 1)
 
+def not_pm():
+	return commands.check(lambda ctx: ctx.message.channel.type != discord.ChannelType.private)

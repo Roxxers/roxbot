@@ -1,4 +1,5 @@
-#!/usr/env python
+#!/usr/env python3
+
 import time
 import logging
 import os.path
@@ -118,7 +119,7 @@ async def on_command_error(error, ctx):
 			embed.add_field(name='Message', value=ctx.message.content)
 			embed.timestamp = datetime.datetime.utcnow()
 			try:
-				await bot.send_message(load_config.owner, embed=embed)
+				await bot.send_message(discord.utils.get(ctx.message.server.members, id=load_config.owner, embed=embed))
 			except:
 				raise error
 	#else:
