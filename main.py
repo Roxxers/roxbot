@@ -26,8 +26,6 @@ server_config = ServerConfig()
 bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
 bot.dev = True # For debugging
 bot.owner = load_config.owner
-# TODO: Put load_config variables into the bot variable so we can pass all of it to the cogs as one.
-# Can't do this with server config in any meaningful way since it still needs updating.
 
 
 def blacklisted(user):
@@ -119,15 +117,15 @@ async def on_command_error(error, ctx):
 			embed.add_field(name='Message', value=ctx.message.content)
 			embed.timestamp = datetime.datetime.utcnow()
 			try:
-				await bot.send_message(discord.utils.get(ctx.message.server.members, id=load_config.owner, embed=embed))
+				await bot.send_message(await bot.get_user_info(load_config.owner), embed=embed)
 			except:
 				raise error
 	#else:
 	#	if bot.dev:
 	#		raise error
 
-@bot.command(pass_context=True)
-async def about(ctx):
+@bot.command()
+async def about():
 	"""
 	Outputs info about RoxBot, showing uptime, what settings where set in prefs.ini and credits.
 	"""
