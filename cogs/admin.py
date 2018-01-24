@@ -35,7 +35,7 @@ class Admin():
 				pass
 
 	@checks.not_pm()
-	@checks.is_owner_or_admin()
+	@checks.is_admin_or_mod()
 	@bot.command(pass_context=True)
 	async def slowmode(self, ctx, time):
 		if time == "off" and self.slow_mode: # Turn Slow Mode off
@@ -58,7 +58,7 @@ class Admin():
 			pass
 
 
-	@checks.is_owner_or_admin()
+	@checks.is_admin_or_mod()
 	@bot.command(pass_context=True)
 	async def emojiuse(self, ctx, emoji, *args):
 		# TODO: Add check that emoji is an emoji
@@ -137,6 +137,11 @@ class Admin():
 			else: # Non-verbose output
 				return await self.bot.say("{} has been used {} time(s) in the last month. That's {}/day.".format(emoji, amount, useperday))
 
+
+	@checks.is_admin_or_mod()
+	@bot.command(pass_context=True)
+	async def warn(self, ctx, user: discord.User = None):
+		pass
 
 
 

@@ -17,6 +17,19 @@ def is_owner_or_admin():
 		return False
 	return commands.check(predicate)
 
+def is_admin_or_mod():
+	def predicate(ctx):
+		if ctx.message.author.id == load_config.owner:
+			return True
+		else:
+			admin_roles =  ServerConfig().load_config()[ctx.message.server.id]["perm_roles"]["admin"]
+			mod_roles = ServerConfig().load_config()[ctx.message.server.id]["perm_roles"]["mod"]
+			for role in ctx.message.author.roles:
+				if role.id in mod_roles or role.id in admin_roles:
+					return True
+		return False
+	return commands.check(predicate)
+
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["nsfw"]["enabled"] == 1)
 

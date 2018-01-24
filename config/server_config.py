@@ -40,6 +40,10 @@ class ServerConfig():
 					"0": {},
 					"1": {}
 				},
+				"admin":{
+					"warnings":{
+					}
+				},
 				"gss":{
 					"log_channel": "",
 					"required_days": "",
