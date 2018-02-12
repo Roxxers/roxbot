@@ -6,6 +6,14 @@ import load_config
 
 # TODO: Sort out admin commands, mod commands, the settings before ever pushing this to general use. It needs to be a mod only thing.
 
+def blacklisted(user):
+	with open("config/blacklist.txt", "r") as fp:
+		for line in fp.readlines():
+			if user.id+"\n" == line:
+				return True
+	return False
+
+
 class CustomCommands():
 	def __init__(self, Bot):
 		self.bot = Bot
@@ -13,6 +21,8 @@ class CustomCommands():
 		self.servers = self.con.servers
 
 	async def on_message(self, message):
+		if blacklisted(message.author):
+			return
 		msg = message.content.lower()
 		channel = message.channel
 		server = message.server.id
