@@ -62,6 +62,10 @@ class Admin():
 	@bot.command(pass_context=True)
 	async def emojiuse(self, ctx, emoji, *args):
 		# TODO: Add check that emoji is an emoji
+		# TODO: Disable so like when we go to 1.3 this isn't live cause it needs more work and it needs to be completed already
+		# The way forward is clearly put the given emoji in and treat it as a list of emojis,
+		# if all emojis, then generate the list. Allows for more than one emoji to be analysed. Works better for larger servers/
+
 		# Flag Parsing
 
 		if "-v" in args:
@@ -103,8 +107,30 @@ class Admin():
 						if str(emoji) in message.content:
 							x += 1
 					usage[channel.id] = x
+					print(str(emoji) + "HAS {} AMOUNT OF USES IN {}".format(x, str(channel)))
+
 				else:
 					pass
+			print("EMOJI WAS USED {} TOTAL TIMES".format(sum(usage)))
+			return usage
+
+		async def count_all_emoji():
+			whitelist = [":yeetpride:",":yeet:", ":transgendercat:", ":thonkspin:", ":thonkegg:", ":ThinkPride:", ":thinkinggaysounds:", ":thatsgoodnews", ":pansexualcat:", ":nonbinarycat: ", ":kappa:", ":icantputpunctuationinemojinames:", ":hellothere:", ":agendercat:", ":Hedgeok:", ":extremethink:", ":donttryit:", ":cutie:", ":catappa:", ":boots:", ":awoo:", ":anotherhappylanding:", ":angrygay:"]
+			usage = {}
+
+			for emote in ctx.message.server.emojis:
+				name = ":{}:".format(emote.name)
+				if name in whitelist:
+					usage[emote.id] = 0
+
+			for channel in  ctx.message.server.channels: # TODO: ADD COUNTING BY CHANNEL
+				if channel.type == discord.ChannelType.text: # Only looks at server's text channels
+					async for message in self.bot.logs_from(channel, limit=1000000, after=datetime.datetime.now() + datetime.timedelta(-30)):
+						for emote in ctx.message.server.emojis:
+							if str(emote) in message.content and ":{}:".format(emote.name) in whitelist:
+								usage[emote.id] += 1
+								print("{} found in message {}".format(str(emote), message.id))
+
 			return usage
 
 		# Command
@@ -113,14 +139,13 @@ class Admin():
 		await self.bot.send_typing(ctx.message.channel)
 
 		if all_emojis:
-			emoji_usage = {}
-			for emoji in ctx.message.server.emojis:
-				emoji_usage[emoji.id] = await count_uses()
+			emoji_usage = await count_all_emoji()
+
 
 			em = discord.Embed(colour=0xDEADBF)
 			for emoji in emoji_usage:
 				emoji_obj = discord.utils.get(ctx.message.server.emojis, id=emoji)
-				amount = sum(emoji_usage[emoji])
+				amount = emoji_usage[emoji]
 				useperday = use_by_day(amount)
 				em.add_field(name=str(emoji_obj), value="Amount Used: {}\nUse/Day: {}".format(amount, useperday), inline=False)
 			return await self.bot.say(content="Below is a report of all custom emoji on this server and how many times they have been used in the previous 30 days. This includes a usage/day ratio.", embed=em)
@@ -142,8 +167,6 @@ class Admin():
 	@bot.command(pass_context=True)
 	async def warn(self, ctx, user: discord.User = None):
 		pass
-
-
 
 
 def setup(Bot):
