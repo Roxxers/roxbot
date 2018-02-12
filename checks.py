@@ -30,8 +30,20 @@ def is_admin_or_mod():
 		return False
 	return commands.check(predicate)
 
+def nsfw_predicate(ctx):
+	nsfw = ServerConfig().load_config()[ctx.message.server.id]["nsfw"]
+	if not nsfw["channels"] and nsfw["enabled"]:
+		return nsfw["enabled"] == 1
+	elif nsfw["enabled"] and nsfw["channels"]:
+		return ctx.message.channel.id in nsfw["channels"]
+	else:
+		print("yo")
+		return False
+
 def is_nfsw_enabled():
-	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["nsfw"]["enabled"] == 1)
+	return commands.check(lambda ctx: nsfw_predicate(ctx))
+
+
 
 def not_pm():
 	return commands.check(lambda ctx: ctx.message.channel.type != discord.ChannelType.private)

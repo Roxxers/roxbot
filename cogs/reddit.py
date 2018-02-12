@@ -5,6 +5,7 @@ import os
 import random
 import requests
 from bs4 import BeautifulSoup
+import checks
 
 # Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
 # There is redundant code here that if removed would make it easier. But it might be handy in the future and isn't that bad.
@@ -180,8 +181,9 @@ class Reddit():
 		for x in range(10):
 			choice = random.choice(links)
 			title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-			if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
-				return await self.bot.say("This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
+			print(checks.is_nfsw_enabled())
+			if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
+				return await self.bot.say("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 			url = Scrapper().retriveurl(choice["data"]["url"])
 			if url:
 				break
@@ -208,7 +210,7 @@ class Reddit():
 
 		choice = random.choice(links)
 		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-		if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
+		if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
 			return await self.bot.say(
 				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		url = Scrapper().retriveurl(choice["data"]["url"])
@@ -234,7 +236,7 @@ class Reddit():
 
 		choice = random.choice(links)
 		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-		if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
+		if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
 			return await self.bot.say(
 				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		url = Scrapper().retriveurl(choice["data"]["url"])
@@ -258,7 +260,7 @@ class Reddit():
 
 		choice = random.choice(links)
 		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-		if choice["data"]["over_18"] and not self.servers[ctx.message.server.id]["nsfw"]["enabled"]:
+		if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
 			return await self.bot.say(
 				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		url = Scrapper().retriveurl(choice["data"]["url"])

@@ -299,6 +299,16 @@ class Settings():
 		else:
 			return await self.bot.say("'{}' is already in the list.".format(role.name))
 
+	@add.command(pass_context=True, aliases=["nsfwchannel"])
+	async def addnsfwchannel(self, ctx, *, channel: discord.Channel = None):
+		self.servers = self.con.load_config()
+		if channel.id not in self.servers[ctx.message.server.id]["nsfw"]["channels"]:
+			self.servers[ctx.message.server.id]["nsfw"]["channels"].append(channel.id)
+			self.con.update_config(self.servers)
+			return await self.bot.say("'{}' has been added to the nsfw channel list.".format(channel.name))
+		else:
+			return await self.bot.say("'{}' is already in the list.".format(channel.name))
+
 	@group(pass_context=True)
 	@checks.is_owner_or_admin()
 	async def remove(self, ctx):
@@ -326,7 +336,15 @@ class Settings():
 		self.con.update_config(self.servers)
 		return await self.bot.say("'{}' has been removed from the Mod role list.".format(role.name))
 
-
+	@remove.command(pass_context=True, aliases=["nsfwchannel"])
+	async def rensfwchannel(self, ctx, *, channel: discord.Channel = None):
+		self.servers = self.con.load_config()
+		try:
+			self.servers[ctx.message.server.id]["nsfw"]["channels"].remove(channel.id)
+		except ValueError:
+			return await self.bot.say("That role was not in the list.")
+		self.con.update_config(self.servers)
+		return await self.bot.say("'{}' has been removed from the nsfw channel list.".format(channel.name))
 
 
 def setup(Bot):
