@@ -210,7 +210,7 @@ class Settings():
 
 
 	@group(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
+	@checks.is_admin_or_mod()
 	async def set(self, ctx):
 		if ctx.invoked_subcommand is None:
 			return await self.bot.say('Missing Argument')
@@ -345,6 +345,20 @@ class Settings():
 			return await self.bot.say("That role was not in the list.")
 		self.con.update_config(self.servers)
 		return await self.bot.say("'{}' has been removed from the nsfw channel list.".format(channel.name))
+
+	@checks.is_admin_or_mod()
+	@bot.command(pass_context=True)
+	async def serverisanal(self, ctx):
+		self.servers = self.con.load_config()
+		is_anal = self.servers[ctx.message.server.id]["is_anal"]
+		if is_anal:
+			self.servers[ctx.message.server.id]["is_anal"]["y/n"] = 0
+			self.con.update_config(self.servers)
+			return await self.bot.say("I now know this server is anal")
+		else:
+			self.servers[ctx.message.server.id]["is_anal"]["y/n"] = 1
+			self.con.update_config(self.servers)
+			return await self.bot.say("I now know this server is NOT anal")
 
 
 def setup(Bot):

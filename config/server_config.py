@@ -48,7 +48,8 @@ class ServerConfig():
 					"log_channel": "",
 					"required_days": "",
 					"required_score": "",
-				}
+				},
+				"is_anal": {"y/n": 0}
 			}
 		}
 		self.servers = self.load_config()

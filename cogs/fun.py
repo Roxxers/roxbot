@@ -1,5 +1,6 @@
 import discord
 import random
+import checks
 from discord.ext.commands import bot
 
 
@@ -50,6 +51,7 @@ class Fun():
 			roll = random.randrange(step, dice + 1, step)
 			return await self.bot.say("{} rolled a **{}**".format(ctx.message.author.mention, roll))
 
+	@checks.is_anal()
 	@bot.command(pass_context=True)
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
@@ -62,6 +64,7 @@ class Fun():
 			return await self.bot.say("You didn't mention someone for me to spank")
 		return await self.bot.say(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
+	@checks.is_anal()
 	@bot.command(pass_context=True)
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""

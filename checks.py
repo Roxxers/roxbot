@@ -43,7 +43,8 @@ def nsfw_predicate(ctx):
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: nsfw_predicate(ctx))
 
-
+def is_anal():
+	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["is_anal"]["y/n"])
 
 def not_pm():
 	return commands.check(lambda ctx: ctx.message.channel.type != discord.ChannelType.private)
