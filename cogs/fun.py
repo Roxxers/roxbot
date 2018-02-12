@@ -65,7 +65,7 @@ class Fun():
 		return await self.bot.say(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
 	@checks.is_anal()
-	@bot.command(pass_context=True)
+	@bot.command(pass_context=True, aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
 		Sucks the mentioned user ;)
