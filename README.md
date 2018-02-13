@@ -11,6 +11,20 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.3.0
+###### New Features
+- New Admin Cog with warning and slowmode commands.
+- Hug Command like that of suck and spank
+- 'Succ' now added as an alias for ;suck
+- The GSS cog commands are more efficient
+- ;nsfwperms and ;selfieperms can now be repeated to remove the roles.
+- NSFW channels can now be added to selectively enable Roxbot's NSFW features.
+- New checks for the suck and spank commands so that they too can be disabled on a channel basis.
+
+######Bug FIxes
+- Fixed bug where Custom Commands would ignore the blacklist.
+- Removed Herobrine
+
 #### v1.2.0
 ###### New Features
 - Added a new cog for the GaySoundsShiposts discord. Just some custom commands needed for modding.
@@ -21,7 +35,7 @@ A simple Discord Bot used by me personally, written for fun.
 
 #### v1.1.2
 ###### Bug Fixes
-- Fixed a bug when a user only the '@everyone' role.
+- Fixed a bug when a user only had the '@everyone' role and used ;info.
 
 #### v1.1.1
 ###### Bug Fixes
