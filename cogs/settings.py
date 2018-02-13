@@ -167,7 +167,6 @@ class Settings():
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.server.name), icon_url=self.bot.user.avatar_url)
 
 		for settings in config:
-			print(settings)
 			if settings != "custom_commands" and settings != "warnings":
 				settingcontent = ""
 				for x in config[settings].items():
@@ -353,13 +352,13 @@ class Settings():
 	@bot.command(pass_context=True)
 	async def serverisanal(self, ctx):
 		self.servers = self.con.load_config()
-		is_anal = self.servers[ctx.message.server.id]["is_anal"]
-		if is_anal:
-			self.servers[ctx.message.server.id]["is_anal"]["y/n"] = 0
+		is_anal = self.servers[ctx.message.server.id]["is_anal"]["y/n"]
+		if is_anal == 0:
+			self.servers[ctx.message.server.id]["is_anal"]["y/n"] = 1
 			self.con.update_config(self.servers)
 			return await self.bot.say("I now know this server is anal")
 		else:
-			self.servers[ctx.message.server.id]["is_anal"]["y/n"] = 1
+			self.servers[ctx.message.server.id]["is_anal"]["y/n"] = 0
 			self.con.update_config(self.servers)
 			return await self.bot.say("I now know this server is NOT anal")
 
