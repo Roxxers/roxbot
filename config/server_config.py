@@ -36,19 +36,16 @@ class ServerConfig():
 					"admin": [],
 					"mod":[]
 				},
-				"custom_commands":{
+				"custom_commands": {
 					"0": {},
 					"1": {}
-				},
-				"admin":{
-					"warnings":{
-					}
 				},
 				"gss":{
 					"log_channel": "",
 					"required_days": "",
 					"required_score": "",
 				},
+				"warnings": {},
 				"is_anal": {"y/n": 0}
 			}
 		}

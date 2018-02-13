@@ -1,7 +1,9 @@
 import datetime
+import time
 import checks
 import discord
-from discord.ext.commands import bot
+from config.server_config import ServerConfig
+from discord.ext.commands import bot, group
 
 
 class Admin():
@@ -13,6 +15,8 @@ class Admin():
 		self.slow_mode = False
 		self.slow_mode_channels = {}
 		self.users = {}
+		self.con = ServerConfig()
+		self.servers = self.con.servers
 
 	async def on_message(self, message):
 		# Slow Mode Code
@@ -59,7 +63,7 @@ class Admin():
 
 
 	@checks.is_admin_or_mod()
-	@bot.command(pass_context=True)
+	@bot.command(pass_context=True, enabled=False)
 	async def emojiuse(self, ctx, emoji, *args):
 		# TODO: Add check that emoji is an emoji
 		# TODO: Disable so like when we go to 1.3 this isn't live cause it needs more work and it needs to be completed already
@@ -164,9 +168,87 @@ class Admin():
 
 
 	@checks.is_admin_or_mod()
-	@bot.command(pass_context=True)
-	async def warn(self, ctx, user: discord.User = None):
-		pass
+	@group(pass_context=True)
+	async def warn(self, ctx):
+		if ctx.invoked_subcommand is None:
+			return await self.bot.say('Missing Argument')
+
+
+	@warn.command(pass_context=True)
+	async def add(self, ctx, user: discord.User = None, *, warning = ""):
+		# Warning in the config is a dictionary of user ids. The user ids are equal to a list of dictionaries.
+		self.servers = self.con.load_config()
+		warning_limit = 2
+		id = ctx.message.server.id
+		warning_dict = {
+			"warned-by": ctx.message.author.id,
+			"date": time.time(),
+			"warning": warning
+		}
+
+		if not user.id in self.servers[id]["warnings"]:
+			self.servers[id]["warnings"][user.id] = []
+		self.servers[id]["warnings"][user.id].append(warning_dict)
+
+		self.con.update_config(self.servers)
+
+		amount_warnings = len(self.servers[id]["warnings"][user.id])
+		if amount_warnings > warning_limit:
+			await self.bot.send_message(ctx.message.author,"{} has been reported {} time(s). This is a reminder that this is over the set limit of {}.".format(
+					user.name+"#"+user.discriminator, amount_warnings, warning_limit))
+
+		return await self.bot.say("Reported {}.".format(user.name+"#"+user.discriminator))
+
+
+	@warn.command(pass_context=True)
+	async def list(self, ctx, user: discord.User = None):
+		await self.bot.send_typing(ctx.message.channel)
+		if not user.id in self.servers[ctx.message.server.id]["warnings"]:
+			return await self.bot.say("This user doesn't have any warning on record.")
+		em = discord.Embed(title="Warnings for {}".format(user.name+"#"+user.discriminator), colour=0XDEADBF)
+		em.set_thumbnail(url=user.avatar_url)
+		x = 1
+		userlist = self.servers[ctx.message.server.id]["warnings"][user.id]
+		for warning in userlist:
+			try:
+				warnuser = await self.bot.get_user_info(warning["warned-by"])
+				warned_by = warnuser.name + "#" + warnuser.discriminator
+			except:
+				warned_by = warning["warned-by"]
+			date = datetime.datetime.fromtimestamp(warning["date"]).strftime('%c')
+			warn_reason = warning["warning"]
+			em.add_field(name="Warning %s"%x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
+			x += 1
+
+		return await self.bot.say(embed=em)
+
+	@warn.command(pass_context=True)
+	async def remove(self, ctx, user: discord.User = None, index = None):
+		self.servers = self.con.load_config()
+		if index:
+			try:
+				index = int(index)
+				index -= 1
+				self.servers[ctx.message.server.id]["warnings"][user.id].pop(index)
+				self.con.update_config(self.servers)
+				return await self.bot.say("Removed Warning {} from {}".format(index+1, user.name+"#"+user.discriminator))
+
+			except Exception as e:
+				if isinstance(e, IndexError):
+					return await self.bot.say(":warning: Index Error.")
+				elif isinstance(e, KeyError):
+					return await self.bot.say("Could not find user in warning list.")
+				elif isinstance(e, ValueError):
+					return await self.bot.say("Please enter a valid index number.")
+				else:
+					raise e
+		else:
+			try:
+				self.servers[ctx.message.server.id]["warnings"].pop(user.id)
+				self.con.update_config(self.servers)
+				return await self.bot.say("Removed all warnings for {}".format(user.name+"#"+user.discriminator))
+			except KeyError:
+				return await self.bot.say("Could not find user in warning list.")
 
 
 def setup(Bot):
