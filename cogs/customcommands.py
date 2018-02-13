@@ -19,7 +19,7 @@ class CustomCommands():
 		self.servers = self.con.servers
 
 	async def on_message(self, message):
-		if blacklisted(message.author):
+		if blacklisted(message.author) or message.channel.type == discord.ChannelType.private:
 			return
 		msg = message.content.lower()
 		channel = message.channel
