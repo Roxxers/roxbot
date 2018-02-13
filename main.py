@@ -77,8 +77,6 @@ async def on_message(message):
 		return
 	return await bot.process_commands(message)
 
-# Error Handling, thanks for Der Eddy who did most of this stuff. <3
-
 @bot.event
 async def on_error(event, *args, **kwargs):
 	if bot.dev:
