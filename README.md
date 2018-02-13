@@ -77,4 +77,4 @@ Probs more but I forgot honestly
 
 
 ## Licence
-[MIT Licence](https://github.com/RainbowDinoaur/roxbot/blob/master/LICENSE.md)
+[MIT Licence](https://github.com/RainbowRoxxers/roxbot/blob/master/LICENSE)
