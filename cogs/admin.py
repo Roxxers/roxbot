@@ -205,13 +205,9 @@ class Admin():
 		await self.bot.send_typing(ctx.message.channel)
 		if user == None:
 			output = ""
-			print("0")
 			for user in self.servers[ctx.message.server.id]["warnings"]:
-				print("1")
 				user_obj = await self.bot.get_user_info(user)
-				print("2")
 				output += "{}#{}: {} Warning(s)\n".format(user_obj.name, user_obj.discriminator, len(self.servers[ctx.message.server.id]["warnings"][user]))
-				print("3")
 				return await self.bot.say(output)
 
 
