@@ -45,7 +45,7 @@ class CustomCommands():
 		"Adds a custom command to the list of custom commands."
 		self.servers = self.con.load_config()
 		command = command.lower()
-		output = output.lower()
+		output = output
 		zero = self.servers[ctx.message.server.id]["custom_commands"]["0"]
 		one = self.servers[ctx.message.server.id]["custom_commands"]["1"]
 
