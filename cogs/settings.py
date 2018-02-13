@@ -167,10 +167,12 @@ class Settings():
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.server.name), icon_url=self.bot.user.avatar_url)
 
 		for settings in config:
-			if settings != "custom_commands":
+			if settings != "custom_commands" or settings != "warnings":
 				settingcontent = ""
 				for x in config[settings].items():
 					settingcontent += str(x).strip("()") + "\n"
+				if not settingcontent:
+					settingcontent = "."
 				em.add_field(name=settings, value=settingcontent, inline=False)
 			else:
 				em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
