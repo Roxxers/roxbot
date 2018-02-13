@@ -201,8 +201,20 @@ class Admin():
 
 
 	@warn.command(pass_context=True)
-	async def list(self, ctx, user: discord.User = None):
+	async def list(self, ctx, *, user: discord.User = None):
 		await self.bot.send_typing(ctx.message.channel)
+		if user == None:
+			output = ""
+			print("0")
+			for user in self.servers[ctx.message.server.id]["warnings"]:
+				print("1")
+				user_obj = await self.bot.get_user_info(user)
+				print("2")
+				output += "{}#{}: {} Warning(s)\n".format(user_obj.name, user_obj.discriminator, len(self.servers[ctx.message.server.id]["warnings"][user]))
+				print("3")
+				return await self.bot.say(output)
+
+
 		if not user.id in self.servers[ctx.message.server.id]["warnings"]:
 			return await self.bot.say("This user doesn't have any warning on record.")
 		em = discord.Embed(title="Warnings for {}".format(user.name+"#"+user.discriminator), colour=0XDEADBF)
