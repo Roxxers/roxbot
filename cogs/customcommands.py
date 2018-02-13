@@ -4,8 +4,6 @@ from discord.ext.commands import group
 from config.server_config import ServerConfig
 import load_config
 
-# TODO: Sort out admin commands, mod commands, the settings before ever pushing this to general use. It needs to be a mod only thing.
-
 def blacklisted(user):
 	with open("config/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
