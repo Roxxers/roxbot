@@ -132,7 +132,7 @@ class Util():
 			msg = "".join(urls)
 			return await self.bot.say(msg)
 		else:
-			return await self.bot.say("Send me shit to upload nig")
+			return await self.bot.say("Send me stuff to upload.")
 
 	@bot.command(pass_context=True, aliases=["emoji"]) # This command will only work with normal emoji once I can put in something to get the svgs for twiemoji and convert em
 	async def emote(self, ctx, emote):
