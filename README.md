@@ -23,6 +23,8 @@ A simple Discord Bot used by me personally, written for fun.
 
 ######Bug FIxes
 - Fixed bug where Custom Commands would ignore the blacklist.
+- Fixed issue where custom command outputs were always lowercase
+- Fixed some naughty swears that were placeholders for a more civilised response.
 - Removed Herobrine
 
 #### v1.2.0
