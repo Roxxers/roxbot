@@ -11,6 +11,10 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.3.1
+######Bug Fixes
+- Fixed logging for gss cog.
+
 #### v1.3.0
 ###### New Features
 - New Admin Cog with warning and slowmode commands.
