@@ -70,6 +70,8 @@ class GaySoundsShitposting():
 
 		if self.nsfw_image_role in member.roles:
 			await self.bot.remove_roles(member, self.nsfw_image_role)
+			if logging:
+				return await self.bot.send_message(self.bot.get_channel(logging), content="{} has removed the {} role.".format(member.mention, self.nsfw_image_role.name))
 			return await self.bot.say("You already had {}. It has now been removed.".format(self.nsfw_image_role.name))
 
 		time = datetime.datetime.now() - ctx.message.author.joined_at
@@ -78,7 +80,7 @@ class GaySoundsShitposting():
 			await self.bot.add_roles(member, self.nsfw_image_role)
 			await self.bot.say("You have now have the {} role".format(self.nsfw_image_role.name))
 			if logging:
-				return await self.bot.send_message(self.bot.get_channel(logging), content="{} has requested the {} role.".format(member.mention, self.nsfw_image_role.name))
+				return await self.bot.send_message(self.bot.get_channel(logging), content="{} has given themselves the {} role.".format(member.mention, self.nsfw_image_role.name))
 		else:
 			return await self.bot.say(
 				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
