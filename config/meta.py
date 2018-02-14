@@ -3,5 +3,5 @@ __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built wi
 [Github link](https://github.com/RainbowDinoaur/roxbot)
 [Changelog](https://github.com/RainbowDinoaur/roxbot#v100)"""
 __author__ = "Roxanne Gibson"
-__version__= "1.3.0"
+__version__= "1.3.1"
 embedcolour = 0xDEADBF

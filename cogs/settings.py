@@ -256,7 +256,7 @@ class Settings():
 	@set.command(pass_context=True, hidden=True)
 	async def loggingchannel(self, ctx, channel: discord.Channel = None):
 		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["gss"]["logging_channel"] = channel.id
+		self.servers[ctx.message.server.id]["gss"]["log_channel"] = channel.id
 		self.con.update_config(self.servers)
 		return await self.bot.say("Logging Channel set to '{}'".format(channel.name))
 
