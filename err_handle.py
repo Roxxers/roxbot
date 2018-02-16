@@ -54,9 +54,6 @@ class ErrHandle():
 					await self.bot.send_message(await self.bot.get_user_info(load_config.owner), embed=embed)
 				except:
 					raise error
-		else:
-			if self.dev:
-				raise error
 
 def setup(Bot):
 	Bot.add_cog(ErrHandle(Bot))

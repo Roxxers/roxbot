@@ -29,7 +29,7 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 server_config = ServerConfig()
-bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description, owner_id=load_config.owner)
+bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.__description__, owner_id=load_config.owner)
 
 
 
@@ -45,7 +45,7 @@ async def on_ready():
 	server_config.error_check(bot.guilds)
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
-	bot.load_extension("err_handle")
+	#bot.load_extension("err_handle")
 
 	#print("Cogs Loaded:")
 	#for cog in load_config.cogs:
@@ -90,13 +90,14 @@ async def about(ctx):
 	"""
 	user = await bot.get_user_info(load_config.owner)
 	ownername = user.name + "#" + user.discriminator
-	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.description)
+	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
 	em.add_field(name="Command Prefix", value=load_config.command_prefix)
 	em.add_field(name="Owner", value=ownername)
 	em.add_field(name="Owner ID", value=load_config.owner)
 	em.add_field(name="Bot Version", value=load_config.__version__)
 	em.add_field(name="Author", value=load_config.__author__)
+	em.add_field(name="Discord.py version", value=discord.__version__)
 	em.set_footer(text="RoxBot is licensed under the MIT License")
 
 	# Do time calc late in the command so that the time returned is closest to when the message is received
@@ -104,7 +105,7 @@ async def about(ctx):
 	uptime = str(datetime.timedelta(seconds=uptimeflo))
 	em.add_field(name="Current Uptime", value=str(uptime.split(".")[0]))
 
-	return await ctx.channel.say(embed=em)
+	return await ctx.channel.send(embed=em)
 
 
 if __name__ == "__main__":

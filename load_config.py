@@ -9,7 +9,7 @@ owner = int(settings["Roxbot"]["OwnerID"])
 tat_token = settings["Roxbot"]["Tatsumaki_Token"]
 
 
-description = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
+__description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
 
 [Github link](https://github.com/RainbowDinoaur/roxbot)
 [Changelog](https://github.com/RainbowDinoaur/roxbot#v100)"""
