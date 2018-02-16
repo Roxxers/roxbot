@@ -5,11 +5,11 @@ settings.read("settings/preferences.ini")
 
 command_prefix = settings["Roxbot"]["Command_Prefix"]
 token = settings["Roxbot"]["Token"]
-owner = settings["Roxbot"]["OwnerID"]
+owner = int(settings["Roxbot"]["OwnerID"])
 tat_token = settings["Roxbot"]["Tatsumaki_Token"]
 
 
-__description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
+description = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
 
 [Github link](https://github.com/RainbowDinoaur/roxbot)
 [Changelog](https://github.com/RainbowDinoaur/roxbot#v100)"""

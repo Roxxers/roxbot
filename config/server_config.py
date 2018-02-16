@@ -62,7 +62,9 @@ class ServerConfig():
 
 	def error_check(self, servers):
 		for server in servers:
-			if server.id not in self.servers:
+			# Server ID needs to be made a string for this statement because keys have to be strings in JSON. Which is annoying now we use int for ids.
+			server.id = str(server.id)
+			if str(server.id) not in self.servers:
 				self.servers[server.id] = self.servers_template["example"]
 				self.update_config(self.servers)
 				print(
