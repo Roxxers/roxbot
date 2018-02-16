@@ -43,6 +43,8 @@ class GaySoundsShitposting():
 
 		if self.selfie_role in member.roles:
 			await self.bot.remove_roles(member, self.selfie_role)
+			if logging:
+				await self.bot.send_message(self.bot.get_channel(logging), content="{} has removed the {} role.".format(member.mention, self.nsfw_image_role.name))
 			return await self.bot.say("You already had {}. It has now been removed.".format(self.selfie_role.name))
 
 		time = datetime.datetime.now() - ctx.message.author.joined_at
