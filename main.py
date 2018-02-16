@@ -23,7 +23,7 @@ logger.addHandler(handler)
 
 
 server_config = ServerConfig()
-bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.description)
+bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.__description__)
 bot.dev = True # For debugging
 bot.owner = load_config.owner
 
@@ -37,23 +37,23 @@ def blacklisted(user):
 
 @bot.event
 async def on_ready():
-	server_config.error_check(bot.servers)
+	server_config.error_check(bot.guilds)
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
 	bot.owner = load_config.owner
 
-	print("Cogs Loaded:")
-	for cog in load_config.cogslist:
-		bot.load_extension(cog)
-		print(cog)
-	print("")
+	#print("Cogs Loaded:")
+	#for cog in load_config.cogs:
+	#	bot.load_extension(cog)
+	#	print(cog)
+	#print("")
 
 	print("Servers I am currently in:")
-	for server in bot.servers:
+	for server in bot.guilds:
 		print(server)
 	print("")
 
-	game = discord.Game(name="v{}".format(load_config.version), type=0)
+	game = discord.Game(name="v{}".format(load_config.__version__), type=0)
 	await bot.change_presence(game=game)
 
 
@@ -144,8 +144,13 @@ async def about():
 	return await bot.say(embed=em)
 
 
+if __name__ == "__main__":
+	if not os.path.isfile("settings/preferences.ini"):
+		print("PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
+		exit(0)
 
-if not os.path.isfile("settings/preferences.ini"):
-	print("PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
-else:
+	if not os.path.isfile("config/servers.json"):
+		with open("config/servers.json", "w") as fp:
+			fp.write("{}")
+
 	bot.run(load_config.token)
