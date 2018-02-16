@@ -11,8 +11,12 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.3.2
+###### Bug Fixes
+- Fixed logging for gss cog again...
+
 #### v1.3.1
-######Bug Fixes
+###### Bug Fixes
 - Fixed logging for gss cog.
 
 #### v1.3.0
