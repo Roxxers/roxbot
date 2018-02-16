@@ -11,5 +11,5 @@ cogs = [
 	"cogs.settings",
 	"cogs.twitch",
 	"cogs.util",
-
+	"cogs.gss"
 ]

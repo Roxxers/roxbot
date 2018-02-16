@@ -181,7 +181,6 @@ class Reddit():
 		for x in range(10):
 			choice = random.choice(links)
 			title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-			print(checks.is_nfsw_enabled())
 			if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
 				return await self.bot.say("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 			url = Scrapper().retriveurl(choice["data"]["url"])

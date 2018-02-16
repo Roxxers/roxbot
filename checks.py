@@ -37,14 +37,13 @@ def nsfw_predicate(ctx):
 	elif nsfw["enabled"] and nsfw["channels"]:
 		return ctx.message.channel.id in nsfw["channels"]
 	else:
-		print("yo")
 		return False
 
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: nsfw_predicate(ctx))
 
-def is_anal():
-	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["is_anal"]["y/n"])
+def isnt_anal():
+	return commands.check(lambda ctx: ServerConfig().load_config()[ctx.message.server.id]["is_anal"]["y/n"] and nsfw_predicate(ctx) or not ServerConfig().load_config()[ctx.message.server.id]["is_anal"]["y/n"])
 
 def not_pm():
 	return commands.check(lambda ctx: ctx.message.channel.type != discord.ChannelType.private)

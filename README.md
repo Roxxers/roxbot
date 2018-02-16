@@ -11,6 +11,14 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.3.2
+###### Bug Fixes
+- Fixed logging for gss cog again...
+
+#### v1.3.1
+###### Bug Fixes
+- Fixed logging for gss cog.
+
 #### v1.3.0
 ###### New Features
 - New Admin Cog with warning and slowmode commands.
@@ -21,7 +29,7 @@ A simple Discord Bot used by me personally, written for fun.
 - NSFW channels can now be added to selectively enable Roxbot's NSFW features.
 - New checks for the suck and spank commands so that they too can be disabled on a channel basis.
 
-######Bug FIxes
+###### Bug Fixes
 - Fixed bug where Custom Commands would ignore the blacklist.
 - Fixed issue where custom command outputs were always lowercase
 - Fixed some naughty swears that were placeholders for a more civilised response.
@@ -77,4 +85,4 @@ Probs more but I forgot honestly
 
 
 ## Licence
-[MIT Licence](https://github.com/RainbowDinoaur/roxbot/blob/master/LICENSE.md)
+[MIT Licence](https://github.com/RainbowRoxxers/roxbot/blob/master/LICENSE)
