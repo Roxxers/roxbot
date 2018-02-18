@@ -45,7 +45,7 @@ async def on_ready():
 	server_config.error_check(bot.guilds)
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
-	#bot.load_extension("err_handle")
+	#
 
 	#print("Cogs Loaded:")
 	#for cog in load_config.cogs:
@@ -109,4 +109,6 @@ async def about(ctx):
 
 
 if __name__ == "__main__":
+	bot.load_extension("config/settings")
+	#bot.load_extension("err_handle")
 	bot.run(load_config.token)
