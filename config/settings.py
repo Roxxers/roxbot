@@ -11,18 +11,18 @@ import discord
 from discord.ext.commands import bot, group, converter
 
 
-class Settings():
+class Settings:
 	"""
 	Settings is a mix of settings and admin stuff for the bot. OWNER OR ADMIN ONLY.
 	"""
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 
 	@bot.command(pass_context=True)
 	@checks.is_owner_or_admin()
-	async def blacklist(self, ctx, option, *args):
+	async def blacklist(self, ctx, option):
 		"""
 		OWNER OR ADMIN ONLY: Add or remove users to the blacklist.
 		Blacklisted users are forbidden from using bot commands.
@@ -166,11 +166,13 @@ class Settings():
 
 	@group(pass_context=True)
 	async def settings(self, ctx):
+		# TODO: Needs error handling for when the selection isn't there for all subcommands.
 		self.serverconfig = self.con.load_config()
 		self.guild_id = str(ctx.message.guild.id)
 
-	@settings.command(pass_context=True)
-	async def self_assign(self, ctx, selection, *, changes = None):
+
+	@settings.command(pass_context=True, aliases=["sa"])
+	async def selfassign(self, ctx, selection, *, changes = None):
 		"""
 		Adds a role to the list of roles that can be self assigned for that server.
 		Removes a role from the list of self assignable roles for that server.
@@ -185,7 +187,7 @@ class Settings():
 			self.serverconfig[self.guild_id]["self_assign"]["enabled"] = 0
 			self.con.update_config(self.serverconfig)
 			return await ctx.send("'self_assign' was disabled :cry:")
-		elif selection == "add":
+		elif selection == "addrole":
 			if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
 				return await ctx.send("{} is already a self-assignable role.".format(role.name),
 										  delete_after=self.con.delete_after)
@@ -193,13 +195,96 @@ class Settings():
 			self.servers[ctx.message.server.id]["self_assign"]["roles"].append(role.id)
 			self.con.update_config(self.servers)
 			return await ctx.send('Role "{}" added'.format(str(role)))
-		elif selection == "remove":
+		elif selection == "removerole":
 			if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
 				self.servers[ctx.message.server.id]["self_assign"]["roles"].remove(role.id)
 				self.con.update_config(self.servers)
 				return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
 			else:
 				return await ctx.send("That role was not in the list.")
+		else:
+			pass
+
+	@settings.command(pass_context=True, aliases=["jl"])
+	async def joinleave(self, ctx, selection, *, changes = None):
+		"""
+		Adds a role to the list of roles that can be self assigned for that server.
+		Removes a role from the list of self assignable roles for that server.
+		"""
+		# TODO: Sort out enable/disable
+		selection = selection.lower()
+		if selection == "enable":
+			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 1
+			await ctx.send("'twitch' was enabled!")
+		elif selection == "disable":
+			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 0
+			await ctx.send("'twitch' was disabled :cry:")
+		elif selection == "welcomechannel":
+			channel = converter.RoleConverter.convert(changes)
+			self.servers[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
+			await self.bot.say("{} has been set as the welcome channel!".format(channel.mention))
+		elif selection == "goodbyeschanel":
+			channel = converter.RoleConverter.convert(changes)
+			self.servers[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
+			return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
+		elif selection == "custommessage":
+			self.servers[ctx.message.server.id]["greets"]["custom-message"] = changes
+			await self.bot.say("Custom message set to '{}'".format(changes))
+		else:
+			pass
+		return self.con.update_config(self.servers)
+
+	@settings.command(pass_context=True)
+	async def twitch(self, ctx, selection, *, changes = None):
+		"""
+		Adds a role to the list of roles that can be self assigned for that server.
+		Removes a role from the list of self assignable roles for that server.
+		"""
+		selection = selection.lower()
+		if selection == "enable":
+			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 1
+			self.con.update_config(self.serverconfig)
+			return await ctx.send("'twitch' was enabled!")
+		elif selection == "disable":
+			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 0
+			self.con.update_config(self.serverconfig)
+			return await ctx.send("'twitch' was disabled :cry:")
+		elif selection == "channel":
+			channel = converter.RoleConverter.convert(changes)
+			self.servers[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
+			self.con.update_config(self.servers)
+			return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
+		else:
+			pass
+
+	@settings.command(pass_context=True, aliases=["perms"])
+	async def permrole(self, ctx, selection, *, changes = None):
+		"""
+		Adds a role to the list of roles that can be self assigned for that server.
+		Removes a role from the list of self assignable roles for that server.
+		"""
+		selection = selection.lower()
+		role = converter.RoleConverter.convert(changes)
+		#TODO: Needs finishing
+		if selection == "placeholder":
+			pass
+		elif selection == "addrole":
+			if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
+				return await ctx.send("{} is already a self-assignable role.".format(role.name),
+										  delete_after=self.con.delete_after)
+
+			self.servers[ctx.message.server.id]["self_assign"]["roles"].append(role.id)
+			self.con.update_config(self.servers)
+			return await ctx.send('Role "{}" added'.format(str(role)))
+		elif selection == "removerole":
+			if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
+				self.servers[ctx.message.server.id]["self_assign"]["roles"].remove(role.id)
+				self.con.update_config(self.servers)
+				return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
+			else:
+				return await ctx.send("That role was not in the list.")
+		else:
+			pass
 
 
 	@bot.command(pass_context=True)
@@ -227,41 +312,6 @@ class Settings():
 		if ctx.invoked_subcommand is None:
 			return await self.bot.say('Missing Argument')
 
-	@set.command(pass_context=True, hidden=True)
-	async def welcomechannel(self, ctx, channel: discord.TextChannel = None):
-		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["greets"]["welcome-channel"] = channel.id
-		self.con.update_config(self.servers)
-		return await self.bot.say("{} has been set as the welcome channel!".format(channel.mention))
-
-	@set.command(pass_context=True, hidden=True)
-	async def goodbyechannel(self, ctx, channel: discord.TextChannel = None):
-		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["goodbyes"]["goodbye-channel"] = channel.id
-		self.con.update_config(self.servers)
-		return await self.bot.say("{} has been set as the goodbye channel!".format(channel.mention))
-
-	@set.command(pass_context=True, hidden=True)
-	async def twitchchannel(self, ctx, channel: discord.TextChannel = None): # Idk if this should be here, maybe in thw twitch cog?
-		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["twitch"]["twitch-channel"] = channel.id
-		self.con.update_config(self.servers)
-		return await self.bot.say("{} has been set as the twitch shilling channel!".format(channel.mention))
-
-	@set.command(pass_context=True, hidden=True)
-	async def welcomemessage(self, ctx, *, message: str):
-		print(ctx)
-		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["greets"]["custom-message"] = message
-		self.con.update_config(self.servers)
-		return await self.bot.say("Custom message set to '{}'".format(message))
-
-	@set.command(pass_context=True, hidden=True)
-	async def muterole(self, ctx, role: discord.Role = None):
-		self.servers = self.con.load_config()
-		self.servers[ctx.message.server.id]["mute"]["role"] = role.id
-		self.con.update_config(self.servers)
-		return await self.bot.say("Muted role set to '{}'".format(role.name))
 
 	@set.command(pass_context=True, hidden=True)
 	async def loggingchannel(self, ctx, channel: discord.TextChannel = None):
