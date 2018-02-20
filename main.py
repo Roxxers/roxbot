@@ -23,7 +23,7 @@ start_time = time.time()
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.WARN)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
@@ -109,6 +109,6 @@ async def about(ctx):
 
 
 if __name__ == "__main__":
-	bot.load_extension("config/settings")
+	bot.load_extension("config.settings")
 	#bot.load_extension("err_handle")
 	bot.run(load_config.token)

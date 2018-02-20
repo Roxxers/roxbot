@@ -92,33 +92,7 @@ class SelfAssign():
 		else:
 			return await self.bot.say("That role is not self-assignable.")
 
-	@commands.command(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
-	async def addrole(self, ctx, *, role: discord.Role = None):
-		"""
-]		Adds a role to the list of roles that can be self assigned for that server.
-		"""
-		self.servers = self.con.load_config()
-		if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
-			return await self.bot.say("{} is already a self-assignable role.".format(role.name), delete_after=self.con.delete_after)
 
-		self.servers[ctx.message.server.id]["self_assign"]["roles"].append(role.id)
-		self.con.update_config(self.servers)
-		return await self.bot.say('Role "{}" added'.format(str(role)))
-
-	@commands.command(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
-	async def removerole(self, ctx, *, role: discord.Role = None):
-		"""
-		Removes a role from the list of self assignable roles for that server.
-		"""
-		self.servers = self.con.load_config()
-		if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
-			self.servers[ctx.message.server.id]["self_assign"]["roles"].remove(role.id)
-			self.con.update_config(self.servers)
-			return await self.bot.say('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-		else:
-			return await self.bot.say("That role was not in the list.")
 
 def setup(Bot):
 	Bot.add_cog(SelfAssign(Bot))
