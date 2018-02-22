@@ -6,6 +6,16 @@
 
 A simple Discord Bot used by me personally, written for fun.
 
+## Simple setup
+
+1. Copy settings/preferences_example.ini to settings/preferences.ini and fill in the details
+2. Run pip install -r requirements.txt in the root directory of the bot
+3. Add the bot to your server by generating an OAuth link with bot scope only
+4. Run main.py to generate config files for the server
+5. Stop RoxBot
+6. Open servers.json and populate with config options for your server
+7. Enjoy!
+
 ## Command Docs
 *Coming soon*
 
