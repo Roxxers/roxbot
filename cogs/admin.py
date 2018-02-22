@@ -25,6 +25,8 @@ class Admin():
 
 		if not author == self.bot.user:
 			if self.slow_mode and channel.id in self.slow_mode_channels:
+				if author.id not in self.servers[message.server.id]["perm_roles"]["admin"] or author.id not in self.servers[message.server.id]["perm_roles"]["mod"]:
+					return
 				if author.id not in self.users[channel.id]:
 					# If user hasn't sent a message in this channel after slow mode was turned on
 					self.users[channel.id][author.id] = message.timestamp
@@ -208,7 +210,7 @@ class Admin():
 			for user in self.servers[ctx.message.server.id]["warnings"]:
 				user_obj = await self.bot.get_user_info(user)
 				output += "{}#{}: {} Warning(s)\n".format(user_obj.name, user_obj.discriminator, len(self.servers[ctx.message.server.id]["warnings"][user]))
-				return await self.bot.say(output)
+			return await self.bot.say(output)
 
 
 		if not user.id in self.servers[ctx.message.server.id]["warnings"]:
