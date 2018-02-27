@@ -213,7 +213,7 @@ class Admin():
 				if not self.servers[ctx.message.server.id]["warnings"][member]:
 					self.servers[ctx.message.server.id]["warnings"].pop(member)
 				else:
-					member_obj = discord.utils.get(ctx.message.guild.members, id=member)
+					member_obj = discord.utils.get(ctx.message.server.members, id=member)
 					if member_obj:
 						output += "{}#{}: {} Warning(s)\n".format(member_obj.name, member_obj.discriminator, len(
 							self.servers[ctx.message.server.id]["warnings"][member]))
