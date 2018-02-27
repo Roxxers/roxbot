@@ -22,6 +22,13 @@ A simple Discord Bot used by me personally, written for fun.
 ## Changelog
 
 #### v1.3_3
+###### Performance
+- Changed the warning listing command do that it isn't slow.
+###### Bug Fixes
+- Removing all warnings of a user now removes them from the dictionary. Making them not display in the list even though they don't have any warnings.
+
+
+#### v1.3.3
 ###### Hottest of Bug Fixes
 - Warn list now actually works for all warnings.
 - Slowmode now ignores mods and admins.

@@ -96,32 +96,40 @@ class Admin():
 
 	@warn.command()
 	async def list(self, ctx, *, user: discord.User = None):
-		async with ctx.channel.typing():
-			if user == None:
-				output = ""
-				for user in self.servers[str(ctx.guild.id)]["warnings"]:
-					user_obj = await self.bot.get_user_info(user)
-					output += "{}#{}: {} Warning(s)\n".format(user_obj.name, user_obj.discriminator, len(self.servers[str(ctx.guild.id)]["warnings"][user]))
-					return await ctx.send(output)
+		if user == None:
+			output = ""
+			for member in self.servers[str(ctx.guild.id)]["warnings"]:
+				# Remove users with no warning here instead of remove cause im lazy
+				if not self.servers[str(ctx.guild.id)]["warnings"][member]:
+					self.servers[str(ctx.guild.id)]["warnings"].pop(member)
+				else:
+					member_obj = discord.utils.get(ctx.guild.members, id=int(member))
+					if member_obj:
+						output += "{}: {} Warning(s)\n".format(str(member_obj), len(
+							self.servers[str(ctx.guild.id)]["warnings"][member]))
+					else:
+						output += "{}: {} Warning(s)\n".format(member, len(
+							self.servers[str(ctx.guild.id)]["warnings"][member]))
+			return await ctx.send(output)
 
-
-			if not user.id in self.servers[str(ctx.guild.id)]["warnings"]:
-				return await ctx.send("This user doesn't have any warning on record.")
-			em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
-			em.set_thumbnail(url=user.avatar_url)
-			x = 1
-			userlist = self.servers[str(ctx.guild.id)]["warnings"][user.id]
-			for warning in userlist:
-				try:
-					warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
-				except:
-					warned_by = warning["warned-by"]
-				date = datetime.datetime.fromtimestamp(warning["date"]).strftime('%c')
-				warn_reason = warning["warning"]
-				em.add_field(name="Warning %s"%x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
-				x += 1
-
-			return await ctx.send(embed=em)
+		if not self.servers[str(ctx.guild.id)]["warnings"][str(user.id)]:
+			self.servers[str(ctx.guild.id)]["warnings"].pop(str(user.id))
+		if not user.id in self.servers[str(ctx.guild.id)]["warnings"]:
+			return await ctx.send("This user doesn't have any warning on record.")
+		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
+		em.set_thumbnail(url=user.avatar_url)
+		x = 1
+		userlist = self.servers[str(ctx.guild.id)]["warnings"][user.id]
+		for warning in userlist:
+			try:
+				warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
+			except:
+				warned_by = warning["warned-by"]
+			date = datetime.datetime.fromtimestamp(warning["date"]).strftime('%c')
+			warn_reason = warning["warning"]
+			em.add_field(name="Warning %s"%x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
+			x += 1
+		return await ctx.send(embed=em)
 
 	@warn.command()
 	async def remove(self, ctx, user: discord.User = None, index = None):
