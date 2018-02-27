@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import requests
+from random import shuffle
 from html import unescape
 import load_config
 import asyncio
@@ -14,20 +16,45 @@ class Trivia:
 		self.games = {}
 
 	def get_questions(self, amount=10):
-		r = requests.get("https://opentdb.com/api.php?amount={}".format(amount))
+		r = requests.get("https://opentdb.com/api.php?amount={}&type=boolean".format(amount))
 		return r.json()
+
+	def parse_question(self, question):
+		output = "Category: {}\nDifficulty: {}\nQuestion: {}\n".format(question["category"], question["difficulty"],
+																	   unescape(question["question"]))
+		if question["type"] == "boolean":
+			choices = ["True", "False"]
+			#shuffle(choices)
+			answers = "{} {}\n{} {}".format(":a:", choices[0], ":b:", choices[1])
+			output += answers
+		elif question["type"] == "multiple":
+			pass
+		return output
+
+	async def add_question_reactions(self, message, question):
+		if question["type"] == "boolean":
+			await message.add_reaction(self.bot.get_emoji(417108151415078941))
+			await message.add_reaction(self.bot.get_emoji(417108151415078941))
+		elif question["type"] == "multiple":
+			pass
+
+	async def on_reaction(self):
+		pass
 
 	async def game(self, ctx, channel, questions):
 		# make sure to check that there is still players playing after a question
 		for question in questions:
-			"""Category: {}
-			Difficulty: {}
-			Question: {}
-			
-			""".format(question["category"], question["difficulty"], unescape(question[question]))
-			if question["type"] == "boolean":
-				"t"
-			await ctx.send(question)
+			output = self.parse_question(question)
+			message  = await ctx.send(output)
+			await self.add_question_reactions(message, question)
+			await asyncio.sleep(10)
+
+
+		# Game Naturally Ends
+		# Some stuff here displaying score
+
+		self.games.pop(channel.id)
+		await ctx.send("GAME END")
 
 
 	@group()
@@ -52,9 +79,10 @@ class Trivia:
 		game = {"players":  {player.id: 0}, "active": 0, "length": length[amount]}
 		self.games[channel.id] = game
 		await ctx.send("Game Successfully created. Starting in 20 seconds...")
-		await asyncio.sleep(20)
+		#await asyncio.sleep(20)
 		questions = self.get_questions(length[amount])
-		# Ehecks if there is any players to play the game still
+
+		# Checks if there is any players to play the game still
 		if not self.games[channel.id]["players"]:
 			self.games.pop(channel.id)
 			return await ctx.send("Abandoning game due to lack of players.")
