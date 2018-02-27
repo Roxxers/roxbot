@@ -139,6 +139,9 @@ class Admin():
 				index = int(index)
 				index -= 1
 				self.servers[str(ctx.guild.id)]["warnings"][user.id].pop(index)
+				if not self.servers[str(ctx.guild.id)]["warnings"][user.id]:
+					self.servers[str(ctx.guild.id)]["warnings"].pop(user.id)
+
 				self.con.update_config(self.servers)
 				return await ctx.send("Removed Warning {} from {}".format(index+1, str(user)))
 
