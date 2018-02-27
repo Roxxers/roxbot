@@ -205,14 +205,26 @@ class Admin():
 	@warn.command(pass_context=True)
 	async def list(self, ctx, *, user: discord.User = None):
 		await self.bot.send_typing(ctx.message.channel)
+
 		if user == None:
 			output = ""
-			for user in self.servers[ctx.message.server.id]["warnings"]:
-				user_obj = await self.bot.get_user_info(user)
-				output += "{}#{}: {} Warning(s)\n".format(user_obj.name, user_obj.discriminator, len(self.servers[ctx.message.server.id]["warnings"][user]))
+			for member in self.servers[ctx.message.server.id]["warnings"]:
+				# Remove users with no warning here instead of remove cause im lazy
+				if not self.servers[ctx.message.server.id]["warnings"][user]:
+					self.servers[ctx.message.server.id]["warnings"].pop(user)
+				else:
+					member_obj = discord.utils.get(ctx.message.guild.members, id=member)
+					if member_obj:
+						output += "{}#{}: {} Warning(s)\n".format(member_obj.name, member_obj.discriminator, len(
+							self.servers[ctx.message.server.id]["warnings"][user]))
+					else:
+						member_obj = await self.bot.get_user_info(user)
+						output += "{}#{}: {} Warning(s)\n".format(member_obj.name, member_obj.discriminator, len(
+							self.servers[ctx.message.server.id]["warnings"][user]))
 			return await self.bot.say(output)
 
-
+		if not self.servers[ctx.message.server.id]["warnings"][user]:
+			self.servers[ctx.message.server.id]["warnings"].pop(user)
 		if not user.id in self.servers[ctx.message.server.id]["warnings"]:
 			return await self.bot.say("This user doesn't have any warning on record.")
 		em = discord.Embed(title="Warnings for {}".format(user.name+"#"+user.discriminator), colour=0XDEADBF)
