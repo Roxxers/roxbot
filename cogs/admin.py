@@ -210,17 +210,17 @@ class Admin():
 			output = ""
 			for member in self.servers[ctx.message.server.id]["warnings"]:
 				# Remove users with no warning here instead of remove cause im lazy
-				if not self.servers[ctx.message.server.id]["warnings"][user]:
-					self.servers[ctx.message.server.id]["warnings"].pop(user)
+				if not self.servers[ctx.message.server.id]["warnings"][member]:
+					self.servers[ctx.message.server.id]["warnings"].pop(member)
 				else:
 					member_obj = discord.utils.get(ctx.message.guild.members, id=member)
 					if member_obj:
 						output += "{}#{}: {} Warning(s)\n".format(member_obj.name, member_obj.discriminator, len(
-							self.servers[ctx.message.server.id]["warnings"][user]))
+							self.servers[ctx.message.server.id]["warnings"][member]))
 					else:
-						member_obj = await self.bot.get_user_info(user)
+						member_obj = await self.bot.get_user_info(member)
 						output += "{}#{}: {} Warning(s)\n".format(member_obj.name, member_obj.discriminator, len(
-							self.servers[ctx.message.server.id]["warnings"][user]))
+							self.servers[ctx.message.server.id]["warnings"][member]))
 			return await self.bot.say(output)
 
 		if not self.servers[ctx.message.server.id]["warnings"][user]:
