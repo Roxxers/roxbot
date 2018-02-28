@@ -218,8 +218,8 @@ class Admin():
 						self.servers[ctx.message.server.id]["warnings"][member]))
 			return await self.bot.say(output)
 
-		if not self.servers[ctx.message.server.id]["warnings"][user]:
-			self.servers[ctx.message.server.id]["warnings"].pop(user)
+		if not self.servers[ctx.message.server.id]["warnings"][user.id]:
+			self.servers[ctx.message.server.id]["warnings"].pop(user.id)
 		if not user.id in self.servers[ctx.message.server.id]["warnings"]:
 			return await self.bot.say("This user doesn't have any warning on record.")
 		em = discord.Embed(title="Warnings for {}".format(user.name+"#"+user.discriminator), colour=0XDEADBF)
