@@ -1,17 +1,46 @@
 # -*- coding: utf-8 -*-
-import requests
-from random import shuffle
-from html import unescape
-import load_config
+
+import discord
 import asyncio
-from discord.ext.commands import group
+import requests
+import datetime
+from html import unescape
+from random import shuffle
+from discord.ext.commands import group, bot
+
+
+"""
+Notes for myself.
+Game logic
+
+START
+WAIT FOR USERS WITH JOIN AND LEAVE
+START GAME FUNCTION
+
+LOOP:
+PARSE QUESTIONS
+ADD REACTION
+CORRECT ANSWER SCREEN
+ADD SCORES
+END
+
+END SCORES AND WINNER SCREEN"""
 
 
 class Trivia:
 	"""
 	Trivia is based off the lovely https://opentdb.com made by PixelTail Games.
+
+	This cog requires the bot account to be in the Roxbot Emoji Server to work.
 	"""
 	def __init__(self, bot_client):
+		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
+		# For some reason this is quicker than bot.get_emojis
+		a_emoji = discord.utils.get(self.bot.emojis, id=419572828854026252)
+		b_emoji = discord.utils.get(self.bot.emojis, id=419572828925329429)
+		c_emoji = discord.utils.get(self.bot.emojis, id=419572829231775755)
+		d_emoji = discord.utils.get(self.bot.emojis, id=419572828954820620)
+		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
 		self.bot = bot_client
 		self.games = {}
 
@@ -24,8 +53,7 @@ class Trivia:
 																	   unescape(question["question"]))
 		if question["type"] == "boolean":
 			choices = ["True", "False"]
-			#shuffle(choices)
-			answers = "{} {}\n{} {}".format(":a:", choices[0], ":b:", choices[1])
+			answers = "{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1])
 			output += answers
 		elif question["type"] == "multiple":
 			pass
@@ -33,21 +61,32 @@ class Trivia:
 
 	async def add_question_reactions(self, message, question):
 		if question["type"] == "boolean":
-			await message.add_reaction(self.bot.get_emoji(417108151415078941))
-			await message.add_reaction(self.bot.get_emoji(417108151415078941))
-		elif question["type"] == "multiple":
+			amount = 2
+		else:
+			amount = 4
+		for x in range(amount):
+			await message.add_reaction(self.emojis[x])
+
+	async def on_reaction_add(self, reaction, user):
+		"""Logic for answering a question"""
+		if reaction.me or user.id in self.games[reaction.message.channel.id]["answered"]:
+			return
+		elif reaction.emoji in self.emojis and reaction.message == self.games[reaction.message.channel.id]["current_question"]:
 			pass
 
-	async def on_reaction(self):
-		pass
-
 	async def game(self, ctx, channel, questions):
-		# make sure to check that there is still players playing after a question
 		for question in questions:
 			output = self.parse_question(question)
-			message  = await ctx.send(output)
+			message  = await ctx.send("Waiting for reacts")
 			await self.add_question_reactions(message, question)
+			await message.edit(content=output)
+			self.games[ctx.channel.id]["current_question"] = message
 			await asyncio.sleep(10)
+			await message.clear_reactions()
+			# Correct answer
+			# Scores
+			# Display that
+			# make sure to check that there is still players playing after a question
 
 
 		# Game Naturally Ends
@@ -73,13 +112,20 @@ class Trivia:
 			return await ctx.message.delete()
 
 		# Setup variables and wait for all players to join.
+		# Length of game
 		length = {"short": 5, "medium": 10, "long": 15}
 		if amount not in length:
 			amount = "medium"
-		game = {"players":  {player.id: 0}, "active": 0, "length": length[amount]}
+
+		# Game Dictionaries
+		game = {"players":  {player.id: 0}, "active": 0, "length": length[amount], "current_question": None, "answered": []}
 		self.games[channel.id] = game
+
+		# Waiting for players
 		await ctx.send("Game Successfully created. Starting in 20 seconds...")
 		#await asyncio.sleep(20)
+
+		# Get questions
 		questions = self.get_questions(length[amount])
 
 		# Checks if there is any players to play the game still
@@ -91,7 +137,6 @@ class Trivia:
 		self.games[channel.id]["active"] = 1
 		await ctx.send("GAME START")
 		await self.game(ctx, channel, questions["results"])
-		# FOR LOOP FOR THE GAME CAUSE THAT WILL WORK
 
 	@trivia.command()
 	async def join(self, ctx):
@@ -105,7 +150,7 @@ class Trivia:
 					return await ctx.send("Player {} joined the game".format(player.mention))
 				# Failures
 				else:
-					await ctx.send("You have already joined the game. If you want to leave, do `{}trivia leave`".format(load_config.command_prefix), delete_after=2)
+					await ctx.send("You have already joined the game. If you want to leave, do `{}trivia leave`".format(self.bot.command_prefix), delete_after=2)
 					await asyncio.sleep(2)
 					return await ctx.message.delete()
 			else:
@@ -136,6 +181,11 @@ class Trivia:
 			await ctx.send("Game isn't being played here.", delete_after=2)
 			await asyncio.sleep(2)
 			return await ctx.message.delete()
+
+	@bot.command()
+	async def emojiid(self, ctx, emoji: discord.Emoji = None):
+		return await ctx.send(emoji.id)
+
 
 def setup(Bot):
 	Bot.add_cog(Trivia(Bot))
