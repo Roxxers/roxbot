@@ -6,7 +6,7 @@ import requests
 import datetime
 from html import unescape
 from random import shuffle
-from discord.ext.commands import group, bot
+from discord.ext.commands import group
 
 
 """
@@ -44,6 +44,8 @@ class Trivia:
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
 		self.games = {}
 
+	# Game Functions
+
 	def get_questions(self, amount=10):
 		r = requests.get("https://opentdb.com/api.php?amount={}".format(amount))
 		return r.json()
@@ -65,8 +67,10 @@ class Trivia:
 			incorrect = question["incorrect_answers"]
 			correct = question["correct_answer"]
 			choices = [incorrect[0], incorrect[1], incorrect[2], correct]
+			for answer in choices:
+				choices[choices.index(answer)] = unescape(answer)
 			shuffle(choices)
-			# Then get the index of the corrent answer
+			# Then get the index of the correct answer
 			correct = choices.index(correct)
 			# Create output
 			answers = "{} {}\n{} {}\n{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1], str(self.emojis[2]), choices[2], str(self.emojis[3]), choices[3])
@@ -81,24 +85,32 @@ class Trivia:
 		for x in range(amount):
 			await message.add_reaction(self.emojis[x])
 
-	async def on_reaction_add(self, reaction, user):
-		"""Logic for answering a question"""
-		if reaction.me or user.id in self.games[reaction.message.channel.id]["answered"]:
-			return # Maybe add something removing reactions if they are not allowed.
-		elif reaction.emoji in self.emojis and reaction.message == self.games[reaction.message.channel.id]["current_question"]:
-			pass
-
 	async def game(self, ctx, channel, questions):
+		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
 		for question in questions:
+			# Parse question dictionary into something usable
 			output, correct = self.parse_question(question)
-			message  = await ctx.send("Waiting for reacts")
+			self.games[channel.id]["correct_answer"] = correct
+			# Send a message, add the emoji reactions, then edit in the question to avoid issues with answering before reactions are done.
+			message = await ctx.send("Waiting for reacts")
 			await self.add_question_reactions(message, question)
 			await message.edit(content=output)
-			self.games[channel.id]["answer"] = correct
 			self.games[channel.id]["current_question"] = message
+			# Wait for answers
 			await asyncio.sleep(10)
+			self.games[channel.id]["current_question"] = None
 			await message.clear_reactions()
-			await ctx.send("Correct Answer is {} '{}'".format(self.emojis[self.games[channel.id]["answer"]], question["correct_answer"]))
+			# Display Correct answer and calculate and display scores.
+			index = self.games[channel.id]["correct_answer"]
+			await ctx.send("Correct Answer is {} '{}'".format(self.emojis[index], question["correct_answer"]))
+			correct_out = ""
+			for user, time in self.games[channel.id]["correct_users"].items():
+				seconds = (time - message.edited_at).total_seconds()
+				correct_out += "{} answered correctly in {}s\n".format(discord.utils.get(ctx.guild.users, id=user), seconds)
+			if not correct_out:
+				await ctx.send("No one got anything right.")
+			else:
+				await ctx.send(correct_out)
 			# Scores
 			# Display that
 			# make sure to check that there is still players playing after a question
@@ -110,8 +122,41 @@ class Trivia:
 		self.games.pop(channel.id)
 		await ctx.send("GAME END")
 
+	# Discord Events
 
-	@group()
+	async def on_reaction_add(self, reaction, user):
+		"""Logic for answering a question"""
+		# TODO: Debug this.
+		time = datetime.time()
+		if user == self.bot.user: # reaction.me isnt working idk why
+			return
+
+		channel = reaction.message.channel
+		message = reaction.message
+
+		if channel.id in self.games:
+			print("passed games check")
+			if user.id in self.games[channel.id]["players"] and message == self.games[channel.id]["current_question"]:
+				print("passed user playing check and message is current question check")
+				if reaction.emoji in self.emojis and user.id not in self.games[channel.id]["players_answered"]:
+					print("emoji is in emojis and user hasnt answered before")
+					self.games[channel.id]["players_answered"].append(user.id)
+					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
+						print("player is correct")
+						self.games[channel.id]["correct_users"][user.id] = time
+					return  # Maybe add something removing reactions if they are not allowed.
+				else:
+					print("removing reactions due to failing check 3")
+					return await message.remove_reaction(reaction, user)
+			else:
+				print("removing reactions due to failing check 2")
+				return await message.remove_reaction(reaction, user)
+		else:
+			return
+
+	# Commands
+
+	@group(aliases=["tr"])
 	async def trivia(self, ctx):
 		pass
 
@@ -133,7 +178,15 @@ class Trivia:
 			amount = "medium"
 
 		# Game Dictionaries
-		game = {"players":  {player.id: 0}, "active": 0, "length": length[amount], "current_question": None, "answered": [], "answer": ""}
+		game = {
+			"players":  {player.id: 0},
+			"active": 0,
+			"length": length[amount],
+			"current_question": None,
+			"players_answered": [],
+			"correct_users": {},
+			"correct_answer": ""
+		}
 		self.games[channel.id] = game
 
 		# Waiting for players
@@ -196,10 +249,6 @@ class Trivia:
 			await ctx.send("Game isn't being played here.", delete_after=2)
 			await asyncio.sleep(2)
 			return await ctx.message.delete()
-
-	@bot.command()
-	async def emojiid(self, ctx, emoji: discord.Emoji = None):
-		return await ctx.send(emoji.id)
 
 
 def setup(Bot):
