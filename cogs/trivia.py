@@ -36,28 +36,42 @@ class Trivia:
 	def __init__(self, bot_client):
 		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
 		# For some reason this is quicker than bot.get_emojis
+		self.bot = bot_client
 		a_emoji = discord.utils.get(self.bot.emojis, id=419572828854026252)
 		b_emoji = discord.utils.get(self.bot.emojis, id=419572828925329429)
 		c_emoji = discord.utils.get(self.bot.emojis, id=419572829231775755)
 		d_emoji = discord.utils.get(self.bot.emojis, id=419572828954820620)
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
-		self.bot = bot_client
 		self.games = {}
 
 	def get_questions(self, amount=10):
-		r = requests.get("https://opentdb.com/api.php?amount={}&type=boolean".format(amount))
+		r = requests.get("https://opentdb.com/api.php?amount={}".format(amount))
 		return r.json()
 
 	def parse_question(self, question):
 		output = "Category: {}\nDifficulty: {}\nQuestion: {}\n".format(question["category"], question["difficulty"],
 																	   unescape(question["question"]))
 		if question["type"] == "boolean":
+			# List of possible answers
 			choices = ["True", "False"]
+			correct = question["correct_answer"]
+			# Get index of correct answer
+			correct = choices.index(correct)
+			# Create output
 			answers = "{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1])
 			output += answers
-		elif question["type"] == "multiple":
-			pass
-		return output
+		else:
+			# Get possible answers and shuffle them in a list
+			incorrect = question["incorrect_answers"]
+			correct = question["correct_answer"]
+			choices = [incorrect[0], incorrect[1], incorrect[2], correct]
+			shuffle(choices)
+			# Then get the index of the corrent answer
+			correct = choices.index(correct)
+			# Create output
+			answers = "{} {}\n{} {}\n{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1], str(self.emojis[2]), choices[2], str(self.emojis[3]), choices[3])
+			output += answers
+		return output, correct
 
 	async def add_question_reactions(self, message, question):
 		if question["type"] == "boolean":
@@ -70,20 +84,21 @@ class Trivia:
 	async def on_reaction_add(self, reaction, user):
 		"""Logic for answering a question"""
 		if reaction.me or user.id in self.games[reaction.message.channel.id]["answered"]:
-			return
+			return # Maybe add something removing reactions if they are not allowed.
 		elif reaction.emoji in self.emojis and reaction.message == self.games[reaction.message.channel.id]["current_question"]:
 			pass
 
 	async def game(self, ctx, channel, questions):
 		for question in questions:
-			output = self.parse_question(question)
+			output, correct = self.parse_question(question)
 			message  = await ctx.send("Waiting for reacts")
 			await self.add_question_reactions(message, question)
 			await message.edit(content=output)
-			self.games[ctx.channel.id]["current_question"] = message
+			self.games[channel.id]["answer"] = correct
+			self.games[channel.id]["current_question"] = message
 			await asyncio.sleep(10)
 			await message.clear_reactions()
-			# Correct answer
+			await ctx.send("Correct Answer is {} '{}'".format(self.emojis[self.games[channel.id]["answer"]], question["correct_answer"]))
 			# Scores
 			# Display that
 			# make sure to check that there is still players playing after a question
@@ -118,7 +133,7 @@ class Trivia:
 			amount = "medium"
 
 		# Game Dictionaries
-		game = {"players":  {player.id: 0}, "active": 0, "length": length[amount], "current_question": None, "answered": []}
+		game = {"players":  {player.id: 0}, "active": 0, "length": length[amount], "current_question": None, "answered": [], "answer": ""}
 		self.games[channel.id] = game
 
 		# Waiting for players
