@@ -61,7 +61,6 @@ class Trivia:
 			correct = choices.index(correct)
 			# Create output
 			answers = "{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1])
-			output += answers
 		else:
 			# Get possible answers and shuffle them in a list
 			incorrect = question["incorrect_answers"]
@@ -74,8 +73,7 @@ class Trivia:
 			correct = choices.index(correct)
 			# Create output
 			answers = "{} {}\n{} {}\n{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1], str(self.emojis[2]), choices[2], str(self.emojis[3]), choices[3])
-			output += answers
-		return output, correct
+		return output, answers, correct
 
 	async def add_question_reactions(self, message, question):
 		if question["type"] == "boolean":
@@ -89,12 +87,12 @@ class Trivia:
 		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
 		for question in questions:
 			# Parse question dictionary into something usable
-			output, correct = self.parse_question(question)
+			output, answers, correct = self.parse_question(question)
 			self.games[channel.id]["correct_answer"] = correct
 			# Send a message, add the emoji reactions, then edit in the question to avoid issues with answering before reactions are done.
-			message = await ctx.send("Waiting for reacts")
+			message = await ctx.send(output)
 			await self.add_question_reactions(message, question)
-			await message.edit(content=output)
+			await message.edit(content=output+answers)
 			self.games[channel.id]["current_question"] = message
 			# Wait for answers
 			await asyncio.sleep(10)
@@ -106,13 +104,17 @@ class Trivia:
 			correct_out = ""
 			for user, time in self.games[channel.id]["correct_users"].items():
 				seconds = (time - message.edited_at).total_seconds()
-				correct_out += "{} answered correctly in {}s\n".format(discord.utils.get(ctx.guild.users, id=user), seconds)
+				correct_out += "{} answered correctly in {}s\n".format(discord.utils.get(ctx.guild.members, id=user), seconds)
 			if not correct_out:
 				await ctx.send("No one got anything right.")
 			else:
 				await ctx.send(correct_out)
+
 			# Scores
 			# Display that
+			# Final checks for next question
+			self.games[channel.id]["correct_users"] = {}
+			self.games[channel.id]["players_answered"] = []
 			# make sure to check that there is still players playing after a question
 
 
@@ -127,7 +129,7 @@ class Trivia:
 	async def on_reaction_add(self, reaction, user):
 		"""Logic for answering a question"""
 		# TODO: Debug this.
-		time = datetime.time()
+		time = datetime.datetime.now()
 		if user == self.bot.user: # reaction.me isnt working idk why
 			return
 
@@ -135,21 +137,15 @@ class Trivia:
 		message = reaction.message
 
 		if channel.id in self.games:
-			print("passed games check")
-			if user.id in self.games[channel.id]["players"] and message == self.games[channel.id]["current_question"]:
-				print("passed user playing check and message is current question check")
+			if user.id in self.games[channel.id]["players"] and message.id == self.games[channel.id]["current_question"].id:
 				if reaction.emoji in self.emojis and user.id not in self.games[channel.id]["players_answered"]:
-					print("emoji is in emojis and user hasnt answered before")
 					self.games[channel.id]["players_answered"].append(user.id)
 					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
-						print("player is correct")
 						self.games[channel.id]["correct_users"][user.id] = time
 					return  # Maybe add something removing reactions if they are not allowed.
 				else:
-					print("removing reactions due to failing check 3")
 					return await message.remove_reaction(reaction, user)
 			else:
-				print("removing reactions due to failing check 2")
 				return await message.remove_reaction(reaction, user)
 		else:
 			return
