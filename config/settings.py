@@ -8,7 +8,7 @@ import load_config
 from config.server_config import ServerConfig
 
 import discord
-from discord.ext.commands import bot, group
+from discord.ext.commands import bot, group, is_owner
 
 
 class Settings:
@@ -77,7 +77,7 @@ class Settings:
 				return await ctx.send('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
 	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
-	@checks.is_bot_owner()
+	@is_owner()
 	async def changeavatar(self, ctx, url=None):
 		"""
 		Usage:
@@ -102,7 +102,7 @@ class Settings:
 		return await ctx.send(":ok_hand:")
 
 	@bot.command(pass_context=True, hidden=True, aliases=["nick"])
-	@checks.is_bot_owner()
+	@is_owner()
 	async def changenickname(self, ctx, *nick):
 		if ctx.message.channel.permissions_for(ctx.message.server.me).change_nickname:
 			await self.bot.change_nickname(ctx.message.server.me, ' '.join(nick))
@@ -111,7 +111,7 @@ class Settings:
 			return await ctx.send("I don't have permission to do that :sob:", delete_after=self.con.delete_after)
 
 	@bot.command(pass_context=True, hidden=True, aliases=["setgame", "game"])
-	@checks.is_bot_owner()
+	@is_owner()
 	async def changegame(self, ctx, *, game: str):
 		if game.lower() == "none":
 			game_name = None
@@ -121,7 +121,7 @@ class Settings:
 		return await ctx.send(":ok_hand: Game set to {}".format(str(game_name)))
 
 	@bot.command(pass_context=True, hidden=True, aliases=["status"])
-	@checks.is_bot_owner()
+	@is_owner()
 	async def changestatus(self, ctx, status: str):
 		status = status.lower()
 		if status == 'offline' or status == 'invisible':
@@ -136,13 +136,13 @@ class Settings:
 		await ctx.send("**:ok:** Status set to {}".format(discordStatus))
 
 	@bot.command(hidden=True)
-	@checks.is_bot_owner()
+	@is_owner()
 	async def restart(self):
 		await self.bot.logout()
 		return os.execl(sys.executable, sys.executable, *sys.argv)
 
 	@bot.command(hidden=True)
-	@checks.is_bot_owner()
+	@is_owner()
 	async def shutdown(self):
 		await self.bot.logout()
 		return exit(0)
@@ -166,6 +166,7 @@ class Settings:
 		return await ctx.send(embed=em)
 
 	@group(pass_context=True)
+	@checks.is_admin_or_mod()
 	async def settings(self, ctx):
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')

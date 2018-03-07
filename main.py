@@ -10,17 +10,6 @@ import load_config
 from config.server_config import ServerConfig
 
 
-if not os.path.isfile("settings/preferences.ini"):
-	print(
-		"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
-	exit(0)
-
-if not os.path.isfile("config/servers.json"):
-	with open("config/servers.json", "w+") as fp:
-		fp.write("{}")
-
-start_time = time.time()
-
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
 logger.setLevel(logging.WARN)
@@ -88,12 +77,11 @@ async def about(ctx):
 	"""
 	Outputs info about RoxBot, showing uptime, what settings where set in prefs.ini and credits.
 	"""
-	user = await bot.get_user_info(load_config.owner)
-	ownername = user.name + "#" + user.discriminator
+	ownername = await bot.get_user_info(load_config.owner)
 	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
 	em.add_field(name="Command Prefix", value=load_config.command_prefix)
-	em.add_field(name="Owner", value=ownername)
+	em.add_field(name="Owner", value=str(ownername))
 	em.add_field(name="Owner ID", value=load_config.owner)
 	em.add_field(name="Bot Version", value=load_config.__version__)
 	em.add_field(name="Author", value=load_config.__author__)
@@ -109,6 +97,17 @@ async def about(ctx):
 
 
 if __name__ == "__main__":
+	# Pre-Boot checks
+	if not os.path.isfile("settings/preferences.ini"):
+		print(
+			"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
+		exit(0)
+
+	if not os.path.isfile("config/servers.json"):
+		with open("config/servers.json", "w+") as fp:
+			fp.write("{}")
+
+	start_time = time.time()
 	bot.load_extension("config.settings")
 	#bot.load_extension("err_handle")
 	bot.run(load_config.token)
