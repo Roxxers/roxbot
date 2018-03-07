@@ -29,9 +29,12 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 server_config = ServerConfig()
-bot = commands.Bot(command_prefix=load_config.command_prefix, description=load_config.__description__, owner_id=load_config.owner)
-
-
+bot = commands.Bot(
+	command_prefix=load_config.command_prefix,
+	description=load_config.__description__,
+	owner_id=load_config.owner,
+	activity=discord.Game(name="v{}".format(load_config.__version__), type=0)
+)
 
 def blacklisted(user):
 	with open("config/blacklist.txt", "r") as fp:
@@ -57,9 +60,6 @@ async def on_ready():
 	for server in bot.guilds:
 		print(server)
 	print("")
-
-	game = discord.Game(name="v{}".format(load_config.__version__), type=0)
-	await bot.change_presence(game=game)
 
 
 @bot.event
