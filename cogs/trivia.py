@@ -51,17 +51,20 @@ class Trivia:
 		r = requests.get("https://opentdb.com/api.php?amount={}".format(amount))
 		return r.json()
 
-	def parse_question(self, question):
-		output = "Category: {}\nDifficulty: {}\nQuestion: {}\n".format(question["category"], question["difficulty"],
-																	   unescape(question["question"]))
+	def parse_question(self, question, counter):
+		embed = discord.Embed(
+			title=unescape(question["question"]),
+			colour=discord.Colour(0xDEADBF),
+			description="")
+
+		embed.set_author(name="Question {}".format(counter))
+		embed.set_footer(text="Difficulty: {} | Category: {}".format(question["category"], question["difficulty"].title()))
+
 		if question["type"] == "boolean":
 			# List of possible answers
 			choices = ["True", "False"]
 			correct = question["correct_answer"]
 			# Get index of correct answer
-			correct = choices.index(correct)
-			# Create output
-			answers = "{} {}\n{} {}".format(str(self.emojis[0]), choices[0], str(self.emojis[1]), choices[1])
 		else:
 			# Get possible answers and shuffle them in a list
 			incorrect = question["incorrect_answers"]
@@ -70,13 +73,14 @@ class Trivia:
 			for answer in choices:
 				choices[choices.index(answer)] = unescape(answer)
 			shuffle(choices)
-			# Then get the index of the correct answer
-			correct = choices.index(correct)
-			# Create output
-			answers = ""
-			for x in range(len(choices)):
-				answers += "{} {}\n".format(str(self.emojis[x]), choices[x])
-		return output, answers, correct
+
+		# Then get the index of the correct answer
+		correct = choices.index(correct)
+		# Create output
+		answers = ""
+		for x in range(len(choices)):
+			answers += "{} {}\n".format(str(self.emojis[x]), choices[x])
+		return embed, answers, correct
 
 	def calculate_scores(self, channel, message):
 		score_added = {}
@@ -102,19 +106,22 @@ class Trivia:
 	async def game(self, ctx, channel, questions):
 		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
 		# TODO: Defo needs some cleaning up
+		question_count = 1
 		for question in questions:
 			# Parse question dictionary into something usable
-			output, answers, correct = self.parse_question(question)
+			output, answers, correct = self.parse_question(question, question_count)
 			self.games[channel.id]["correct_answer"] = correct
 
 			# Send a message, add the emoji reactions, then edit in the question to avoid issues with answering before reactions are done.
-			message = await ctx.send(output)
+			message = await ctx.send(embed=output)
 			await self.add_question_reactions(message, question)
-			await message.edit(content=output+answers)
+			output.description = answers
+			await message.edit(embed=output)
 
 			# Set up variables for checking the question and if it's being answered
 			players_yet_to_answer = list(self.games[channel.id]["players"].keys())
 			self.games[channel.id]["current_question"] = message
+
 			# Wait for answers
 			for x in range(20):
 				for answered in self.games[channel.id]["players_answered"]:
@@ -137,7 +144,14 @@ class Trivia:
 
 			# Display Correct answer and calculate and display scores.
 			index = self.games[channel.id]["correct_answer"]
-			await ctx.send("Correct Answer is {} '{}'".format(self.emojis[index], unescape(question["correct_answer"])))
+			embed = discord.Embed(
+				colour=discord.Colour(0x1fb600),
+				description="Correct answer is {} **{}**".format(
+					self.emojis[index],
+					unescape(question["correct_answer"])
+				)
+			)
+			await ctx.send(embed=embed)
 
 			# Scores
 			scores_to_add = self.calculate_scores(channel, message)
@@ -148,9 +162,9 @@ class Trivia:
 			updated_scores = dict(self.games[channel.id]["players"])
 			for player in updated_scores:
 				if player in self.games[channel.id]["correct_users"]:
-					updated_scores[player] = str(updated_scores[player]) + " (+{})".format(scores_to_add[player])
+					updated_scores[player] = str(self.bot.get_emoji(421526796392202240)) + " " + str(updated_scores[player]) + " (+{})".format(scores_to_add[player])
 				else:
-					updated_scores[player] = str(updated_scores[player])
+					updated_scores[player] = str(self.bot.get_emoji(421526796379488256)) + " " + str(updated_scores[player])
 			updated_scores = OrderedDict(sorted(updated_scores.items(), key=lambda kv: kv))
 			output_scores = ""
 			for scores in updated_scores:
@@ -162,6 +176,7 @@ class Trivia:
 			# Final checks for next question
 			self.games[channel.id]["correct_users"] = {}
 			self.games[channel.id]["players_answered"] = []
+			question_count += 1
 
 
 		# Game Ends
@@ -290,6 +305,10 @@ class Trivia:
 			await ctx.send("Game isn't being played here.", delete_after=2)
 			await asyncio.sleep(2)
 			return await ctx.message.delete()
+
+	@commands.command()
+	async def emojid(self, ctx, emoji: discord.Emoji = None):
+		return await ctx.send(emoji.id)
 
 
 def setup(Bot):
