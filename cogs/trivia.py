@@ -36,12 +36,13 @@ class Trivia:
 	"""
 	def __init__(self, bot_client):
 		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
-		# For some reason this is quicker than bot.get_emojis
 		self.bot = bot_client
-		a_emoji = discord.utils.get(self.bot.emojis, id=419572828854026252)
-		b_emoji = discord.utils.get(self.bot.emojis, id=419572828925329429)
-		c_emoji = discord.utils.get(self.bot.emojis, id=419572829231775755)
-		d_emoji = discord.utils.get(self.bot.emojis, id=419572828954820620)
+		a_emoji = self.bot.get_emoji(self.bot.emojis, id=419572828854026252)
+		b_emoji = self.bot.get_emoji(self.bot.emojis, id=419572828925329429)
+		c_emoji = self.bot.get_emoji(self.bot.emojis, id=419572829231775755)
+		d_emoji = self.bot.get_emoji(self.bot.emojis, id=419572828954820620)
+		self.correct_emoji = self.bot.get_emoji(421526796392202240)
+		self.incorrect_emoji = self.bot.get_emoji(421526796379488256)
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
 		self.games = {}
 
@@ -162,9 +163,9 @@ class Trivia:
 			updated_scores = dict(self.games[channel.id]["players"])
 			for player in updated_scores:
 				if player in self.games[channel.id]["correct_users"]:
-					updated_scores[player] = str(self.bot.get_emoji(421526796392202240)) + " " + str(updated_scores[player]) + " (+{})".format(scores_to_add[player])
+					updated_scores[player] = str(self.correct_emoji) + " " + str(updated_scores[player]) + " (+{})".format(scores_to_add[player])
 				else:
-					updated_scores[player] = str(self.bot.get_emoji(421526796379488256)) + " " + str(updated_scores[player])
+					updated_scores[player] = str(self.incorrect_emoji) + " " + str(updated_scores[player])
 			updated_scores = OrderedDict(sorted(updated_scores.items(), key=lambda kv: kv))
 			output_scores = ""
 			for scores in updated_scores:
