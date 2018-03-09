@@ -184,7 +184,7 @@ class Trivia:
 					self.games[channel.id]["players_answered"].append(user.id)
 					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
 						self.games[channel.id]["correct_users"][user.id] = time
-					return  # Maybe add something removing reactions if they are not allowed.
+					return 
 				else:
 					return await message.remove_reaction(reaction, user)
 			else:
