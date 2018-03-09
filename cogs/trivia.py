@@ -10,24 +10,6 @@ from collections import OrderedDict
 from discord.ext import commands
 
 
-"""
-Notes for myself.
-Game logic
-
-START
-WAIT FOR USERS WITH JOIN AND LEAVE
-START GAME FUNCTION
-
-LOOP:
-PARSE QUESTIONS
-ADD REACTION
-CORRECT ANSWER SCREEN
-ADD SCORES
-END
-
-END SCORES AND WINNER SCREEN"""
-
-
 class Trivia:
 	"""
 	Trivia is based off the lovely https://opentdb.com made by PixelTail Games.
