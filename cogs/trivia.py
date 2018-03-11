@@ -19,10 +19,10 @@ class Trivia:
 	def __init__(self, bot_client):
 		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
 		self.bot = bot_client
-		a_emoji = self.bot.get_emoji(self.bot.emojis, id=419572828854026252)
-		b_emoji = self.bot.get_emoji(self.bot.emojis, id=419572828925329429)
-		c_emoji = self.bot.get_emoji(self.bot.emojis, id=419572829231775755)
-		d_emoji = self.bot.get_emoji(self.bot.emojis, id=419572828954820620)
+		a_emoji = self.bot.get_emoji(419572828854026252)
+		b_emoji = self.bot.get_emoji(419572828925329429)
+		c_emoji = self.bot.get_emoji(419572829231775755)
+		d_emoji = self.bot.get_emoji(419572828954820620)
 		self.correct_emoji = self.bot.get_emoji(421526796392202240)
 		self.incorrect_emoji = self.bot.get_emoji(421526796379488256)
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
@@ -77,6 +77,31 @@ class Trivia:
 				score = 50
 			score_added[user] = score  # This is just to display the amount of score added to a user
 		return score_added
+
+	def sort_leaderboard(self, scores):
+		# TODO: Fix this so it works.
+		return OrderedDict(sorted(scores.items(), key=lambda kv: kv))
+
+	def display_leaderboard(self, channel, scores_to_add):
+		updated_scores = dict(self.games[channel.id]["players"])
+		for player in updated_scores:
+			if player in self.games[channel.id]["correct_users"]:
+				updated_scores[player] = str(self.correct_emoji) + " " + str(updated_scores[player]) + " (+{})".format(
+					scores_to_add[player])
+			else:
+				updated_scores[player] = str(self.incorrect_emoji) + " " + str(updated_scores[player])
+		updated_scores = self.sort_leaderboard(updated_scores)
+		output_scores = ""
+		count = 1
+		for scores in updated_scores:
+			player = str(self.bot.get_user(scores))
+			if not player:
+				player = scores
+
+			output_scores += "{}) {}: {}\n".format(count, player, updated_scores[scores])
+			count += 1
+
+		return discord.Embed(title="Scores", description=output_scores)
 
 	async def add_question_reactions(self, message, question):
 		if question["type"] == "boolean":
@@ -142,18 +167,7 @@ class Trivia:
 				self.games[channel.id]["players"][user] += scores_to_add[user]
 
 			# Display scores
-			updated_scores = dict(self.games[channel.id]["players"])
-			for player in updated_scores:
-				if player in self.games[channel.id]["correct_users"]:
-					updated_scores[player] = str(self.correct_emoji) + " " + str(updated_scores[player]) + " (+{})".format(scores_to_add[player])
-				else:
-					updated_scores[player] = str(self.incorrect_emoji) + " " + str(updated_scores[player])
-			updated_scores = OrderedDict(sorted(updated_scores.items(), key=lambda kv: kv))
-			output_scores = ""
-			for scores in updated_scores:
-				output_scores += "{}: {}\n".format(scores, updated_scores[scores])
-
-			await ctx.send(output_scores)
+			await ctx.send(embed=self.display_leaderboard(channel, scores_to_add))
 
 			# Display that
 			# Final checks for next question
@@ -164,8 +178,12 @@ class Trivia:
 
 		# Game Ends
 		# Some stuff here displaying score
+		final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
 		self.games.pop(channel.id)
-		await ctx.send("GAME END")
+		winner = self.bot.get_user(list(final_scores.keys())[0])
+		winning_score = list(final_scores.values())[0]
+		await ctx.send(embed=discord.Embed(
+			description="{} won with a score of {}".format(winner.mention, winning_score)))
 
 	# Discord Events
 
@@ -230,7 +248,7 @@ class Trivia:
 
 		# Waiting for players
 		await ctx.send("Game Successfully created. Starting in 20 seconds...")
-		#await asyncio.sleep(20)
+		await asyncio.sleep(20)
 
 		# Get questions
 		questions = self.get_questions(length[amount])
