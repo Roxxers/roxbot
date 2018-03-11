@@ -184,7 +184,7 @@ class Trivia:
 					self.games[channel.id]["players_answered"].append(user.id)
 					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
 						self.games[channel.id]["correct_users"][user.id] = time
-					return 
+					return
 				else:
 					return await message.remove_reaction(reaction, user)
 			else:
@@ -196,7 +196,7 @@ class Trivia:
 
 	@commands.group(aliases=["tr"])
 	async def trivia(self, ctx):
-		pass
+		pass # TODO: Cool screen here that displays the license of the DB and the cool title card.
 
 	@trivia.command()
 	@commands.bot_has_permissions(manage_messages=True)
