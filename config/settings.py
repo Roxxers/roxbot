@@ -97,7 +97,7 @@ class Settings:
 				with open(avaimg, 'wb') as f:
 					f.write(await img.read())
 		with open(avaimg, 'rb') as f:
-			await self.bot.edit_profile(avatar=f.read())
+			await self.bot.user.edit(avatar=f.read())
 		os.remove(avaimg)
 		asyncio.sleep(2)
 		return await ctx.send(":ok_hand:")
