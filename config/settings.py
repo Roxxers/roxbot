@@ -79,6 +79,7 @@ class Settings:
 	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
 	@is_owner()
 	async def changeavatar(self, ctx, url=None):
+		# TODO: Organise the non-settings group commands to be better and support gifs and shit. Also not hidden and the better check.
 		"""
 		Usage:
 			{command_prefix}setavatar [url]
@@ -113,6 +114,7 @@ class Settings:
 	@bot.command(pass_context=True, hidden=True, aliases=["setgame", "game"])
 	@is_owner()
 	async def changegame(self, ctx, *, game: str):
+		# TODO: Update for new presence changes
 		if game.lower() == "none":
 			game_name = None
 		else:
