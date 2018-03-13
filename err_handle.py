@@ -7,15 +7,13 @@ from discord.ext import commands
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = False  # For debugging
-		self.owner = self.bot.get_user(self.bot.owner_id)
-		print(self.owner)
+		self.dev = True  # For debugging
 
 	async def on_error(self, event, *args, **kwargs):
 		if self.dev:
 			traceback.print_exc()
 		else:
-			embed = discord.Embed(title="Roxbot Error", colour=0xe74c3c) #Red
+			embed = discord.Embed(title="Roxbot Error", colour=0xe74c3c) # Red
 			embed.add_field(name='Event', value=event)
 			embed.description = '```py\n{}\n```'.format(traceback.format_exc())
 			embed.timestamp = datetime.datetime.utcnow()
@@ -23,13 +21,13 @@ class ErrHandle:
 
 	async def on_command_error(self, ctx, error):
 		self.owner = self.bot.get_user(self.bot.owner_id)
-		print(self.owner)
 		err_colour = 0x992d22
 		if isinstance(error, commands.CommandInvokeError):
 			if self.dev:
 				raise error
 			else:
-				embed = discord.Embed(title=':x: Command Error', colour=err_colour) #Dark Red
+				embed = discord.Embed(title='Command Error', colour=err_colour)
+				embed.description = error.original
 				embed.add_field(name='Error', value=str(error))
 				embed.add_field(name='Server', value=ctx.guild)
 				embed.add_field(name='Channel', value=ctx.channel.mention)
