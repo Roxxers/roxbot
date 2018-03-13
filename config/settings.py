@@ -164,11 +164,11 @@ class Settings:
 	async def printsettings(self, ctx):
 		"OWNER OR ADMIN ONLY: Prints the servers config file."
 		self.serverconfig = self.con.load_config()
-		config = self.serverconfig[str(ctx.message.guild.id)]
+		config = self.serverconfig[str(ctx.guild.id)]
 		em = discord.Embed(colour=0xDEADBF)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
 		for settings in config:
-			if settings != "custom_commands" and settings != "warnings":
+			if settings != "custom_commands" and settings != "admin":
 				settingcontent = ""
 				for x in config[settings].items():
 					settingcontent += str(x).strip("()") + "\n"
