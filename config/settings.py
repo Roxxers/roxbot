@@ -397,5 +397,5 @@ class Settings:
 			return await ctx.send("I now know this server is NOT anal")
 
 
-def setup(Bot):
-	Bot.add_cog(Settings(Bot))
+def setup(bot_client):
+	bot_client.add_cog(Settings(bot_client))
