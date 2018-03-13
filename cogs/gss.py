@@ -8,22 +8,22 @@ from config.server_config import ServerConfig
 
 
 def is_gss():
-	return commands.check(lambda ctx: ctx.message.server.id == "393764974444675073")
+	return commands.check(lambda ctx: ctx.guild.id == 393764974444675073)
 
 def is_not_nsfw_disabled():
 	def predicate(ctx):
-		role = utils.get(ctx.message.server.roles, id="397866388145831937")
-		return role not in ctx.message.author.roles
+		role = utils.get(ctx.guild.roles, id=397866388145831937)
+		return role not in ctx.author.roles
 	return commands.check(lambda ctx: predicate(ctx))
 
 class GaySoundsShitposting():
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 		self.con = ServerConfig()
 		self.servers = self.con.servers
-		self.guild = self.bot.get_server("393764974444675073")
-		self.nsfw_image_role = utils.get(self.guild.roles, id="394941004043649036")
-		self.selfie_role = utils.get(self.guild.roles, id="394939389823811584")
+		self.guild = self.bot.get_guild(393764974444675073)
+		self.nsfw_image_role = utils.get(self.guild.roles, id=394941004043649036)
+		self.selfie_role = utils.get(self.guild.roles, id=394939389823811584)
 
 	def tatsumaki_api_call(self, member):
 		base = "https://api.tatsumaki.xyz/"
@@ -35,27 +35,22 @@ class GaySoundsShitposting():
 	@bot.command(pass_context=True)
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
-		member = ctx.message.author
+		member = ctx.author
 		required_score = int(self.servers[self.guild.id]["gss"]["required_score"])
 		days = int(self.servers[self.guild.id]["gss"]["required_days"])
-		logging = self.servers[self.guild.id]["gss"]["log_channel"]
 		data = self.tatsumaki_api_call(member)
 
 		if self.selfie_role in member.roles:
-			await self.bot.remove_roles(member, self.selfie_role)
-			if logging:
-				await self.bot.send_message(self.bot.get_channel(logging), content="{} has removed the {} role.".format(member.mention, self.nsfw_image_role.name))
-			return await self.bot.say("You already had {}. It has now been removed.".format(self.selfie_role.name))
+			await member.remove_roles(self.selfie_role, reason="Requested removal of Selfie Perms")
+			return await ctx.send("You already had {}. It has now been removed.".format(self.selfie_role.name))
 
-		time = datetime.datetime.now() - ctx.message.author.joined_at
+		time = datetime.datetime.now() - ctx.author.joined_at
 
 		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
-			await self.bot.add_roles(member, self.selfie_role)
-			await self.bot.say("You have now have the {} role".format(self.selfie_role.name))
-			if logging:
-				return await self.bot.send_message(self.bot.get_channel(logging), content="{} has requested the {} role.".format(member.mention, self.selfie_role.name))
+			await member.add_roles(member, self.selfie_role, reason="Requested Selfie perms")
+			await ctx.send("You have now have the {} role".format(self.selfie_role.name))
 		else:
-			return await self.bot.say(
+			return await ctx.send(
 				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
 			)
 
@@ -64,29 +59,24 @@ class GaySoundsShitposting():
 	@bot.command(pass_context=True)
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
-		member = ctx.message.author
+		member = ctx.author
 		required_score = int(self.servers[self.guild.id]["gss"]["required_score"])
 		days = int(self.servers[self.guild.id]["gss"]["required_days"])
-		logging = self.servers[self.guild.id]["gss"]["log_channel"]
 		data = self.tatsumaki_api_call(member)
 
 		if self.nsfw_image_role in member.roles:
-			await self.bot.remove_roles(member, self.nsfw_image_role)
-			if logging:
-				await self.bot.send_message(self.bot.get_channel(logging), content="{} has removed the {} role.".format(member.mention, self.nsfw_image_role.name))
-			return await self.bot.say("You already had {}. It has now been removed.".format(self.nsfw_image_role.name))
+			await member.remove_roles(self.nsfw_image_role, reason="Requested removal of NSFW Perms")
+			return await ctx.send("You already had {}. It has now been removed.".format(self.nsfw_image_role.name))
 
-		time = datetime.datetime.now() - ctx.message.author.joined_at
+		time = datetime.datetime.now() - ctx.author.joined_at
 
 		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
-			await self.bot.add_roles(member, self.nsfw_image_role)
-			await self.bot.say("You have now have the {} role".format(self.nsfw_image_role.name))
-			if logging:
-				return await self.bot.send_message(self.bot.get_channel(logging), content="{} has given themselves the {} role.".format(member.mention, self.nsfw_image_role.name))
+			await member.add_roles(self.nsfw_image_role, reason="Requested NSFW perms")
+			await ctx.send("You have now have the {} role".format(self.nsfw_image_role.name))
 		else:
-			return await self.bot.say(
+			return await ctx.send(
 				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
 			)
 
-def setup(Bot):
-	Bot.add_cog(GaySoundsShitposting(Bot))
+def setup(bot_client):
+	bot_client.add_cog(GaySoundsShitposting(bot_client))
