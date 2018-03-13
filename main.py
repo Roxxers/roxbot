@@ -75,13 +75,13 @@ async def on_message(message):
 @bot.command()
 async def about(ctx):
 	"""
-	Outputs info about RoxBot, showing uptime, what settings where set in prefs.ini and credits.
+	Outputs info about RoxBot, showing uptime, how to report issues, what settings where set in prefs.ini and credits.
 	"""
-	ownername = await bot.get_user_info(load_config.owner)
+	owner = bot.get_user(load_config.owner)
 	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
 	em.add_field(name="Command Prefix", value=load_config.command_prefix)
-	em.add_field(name="Owner", value=str(ownername))
+	em.add_field(name="Owner", value=str(owner))
 	em.add_field(name="Owner ID", value=load_config.owner)
 	em.add_field(name="Bot Version", value=load_config.__version__)
 	em.add_field(name="Author", value=load_config.__author__)
@@ -109,5 +109,5 @@ if __name__ == "__main__":
 
 	start_time = time.time()
 	bot.load_extension("config.settings")
-	#bot.load_extension("err_handle")
+	bot.load_extension("err_handle")
 	bot.run(load_config.token)
