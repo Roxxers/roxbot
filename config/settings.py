@@ -183,7 +183,7 @@ class Settings:
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 		self.serverconfig = self.con.load_config()
-		self.guild_id = str(ctx.message.guild.id)
+		self.guild_id = str(ctx.guild.id)
 
 	@settings.command(aliases=["sa"])
 	async def selfassign(self, ctx, selection, *, changes = None):
@@ -254,7 +254,7 @@ class Settings:
 			self.serverconfig[ctx.message.guild.id]["goodbyes"]["goodbye-channel"] = channel.id
 			await ctx.send("{} has been set as the goodbye channel!".format(channel.mention))
 		elif selection == "custommessage":
-			self.serverconfig[ctx.message.guild.id]["greets"]["custom-message"] = changes
+			self.serverconfig[self.guild_id]["greets"]["custom-message"] = changes
 			await ctx.send("Custom message set to '{}'".format(changes))
 		else:
 			return await ctx.send("No valid option given.")
@@ -270,14 +270,14 @@ class Settings:
 		"""
 		selection = selection.lower()
 		if selection == "enable":
-			self.serverconfig[ctx.guild.id]["twitch"]["enabled"] = 1
+			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 1
 			await ctx.send("'twitch' was enabled!")
 		elif selection == "disable":
-			self.serverconfig[ctx.guild.id]["twitch"]["enabled"] = 0
+			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 0
 			await ctx.send("'twitch' was disabled :cry:")
 		elif selection == "channel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[ctx.guild.id]["twitch"]["channel"] = channel.id
+			self.serverconfig[self.guild_id]["twitch"]["channel"] = channel.id
 			await ctx.send("{} has been set as the twitch shilling channel!".format(channel.mention))
 		# Is lacking whitelist options. Might be added or might be depreciated.
 		# Turns out this is handled in the cog and I don't think it needs changing but may be confusing.

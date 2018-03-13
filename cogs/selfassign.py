@@ -19,12 +19,12 @@ class SelfAssign():
 		Usage:
 			{command_prefix}listroles
 		"""
-		if not self.servers[ctx.guild.id]["self_assign"]["enabled"]:
+		if not self.servers[str(ctx.guild.id)]["self_assign"]["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 		roles = []
-		for role in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+		for role in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
 			for serverrole in ctx.guild.roles:
 				if role == serverrole.id:
 					roles.append("**"+serverrole.name+"**")
@@ -42,7 +42,7 @@ class SelfAssign():
 		Example:
 			.iam OverwatchPing
 		"""
-		if not self.servers[ctx.guild.id]["self_assign"]["enabled"]:
+		if not self.servers[str(ctx.guild.id)]["self_assign"]["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
@@ -56,7 +56,7 @@ class SelfAssign():
 		if role in user.roles:
 			return await ctx.send("You already have that role.")
 
-		if role.id in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+		if role.id in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
 			await user.add_roles(role, reason="'iam' command triggered.")
 			return await ctx.send("Yay {}! You now have the {} role!".format(user.mention, role.name))
 		else:
@@ -71,7 +71,7 @@ class SelfAssign():
 		Example:
 			.iamn OverwatchPing
 		"""
-		if not self.servers[ctx.guild.id]["self_assign"]["enabled"]:
+		if not self.servers[str(ctx.guild.id)]["self_assign"]["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
@@ -79,10 +79,10 @@ class SelfAssign():
 		user = ctx.author
 		server = ctx.guild
 
-		if role in user.roles and role.id in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+		if role in user.roles and role.id in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
 			await user.remove_roles(role, reason="'iamn' command triggered.")
 			return await ctx.send("{} has been successfully removed.".format(role.name))
-		elif role not in user.roles and role.id in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+		elif role not in user.roles and role.id in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
 			return await ctx.send("You do not have {}.".format(role.name))
 		else:
 			return await ctx.send("That role is not self-assignable.")
