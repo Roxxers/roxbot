@@ -134,11 +134,12 @@ class Util():
 	async def upload_err(self, ctx, error):
 		return await ctx.send("File couldn't be uploaded. {}".format(error))
 
-
-	@bot.command(aliases=["emoji"]) # This command will only work with normal emoji once I can put in something to get the svgs for twiemoji and convert em
+	@bot.command(aliases=["emoji"]) 
 	async def emote(self, ctx, emote: discord.Emoji = None):
 		"""
-		Uploads the emote given. Useful for downloading emotes. ONLY WORKS WITH CUSTOM EMOJI
+		Uploads the emote given. Useful for downloading emotes.
+		Usage:
+			;emote [emote]
 		"""
 		if emote.animated:
 			imgname = "emote.gif"
