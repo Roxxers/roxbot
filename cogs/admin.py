@@ -3,7 +3,7 @@ import time
 import checks
 import discord
 from config.server_config import ServerConfig
-from discord.ext.commands import bot, group
+from discord.ext.commands import bot, group, guild_only
 
 
 class Admin():
@@ -38,7 +38,7 @@ class Admin():
 			else:
 				pass
 
-	@checks.not_pm()
+	@guild_only()
 	@checks.is_admin_or_mod()
 	@bot.command(pass_context=True)
 	async def slowmode(self, ctx, time):
