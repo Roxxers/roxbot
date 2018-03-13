@@ -13,8 +13,8 @@ def blacklisted(user):
 
 
 class CustomCommands():
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 
@@ -28,17 +28,17 @@ class CustomCommands():
 			return
 		if msg.startswith(self.bot.command_prefix):
 			if msg.split(self.bot.command_prefix)[1] in self.servers[server]["custom_commands"]["1"]:
-				return await self.bot.send_message(channel, self.servers[server]["custom_commands"]["1"][msg.split(self.bot.command_prefix)[1]])
+				return await channel.send(self.servers[server]["custom_commands"]["1"][msg.split(self.bot.command_prefix)[1]])
 		elif len(msg.split(" ")) < 2:
 			if msg.split(" ")[0] in self.servers[server]["custom_commands"]["0"]:
-				return await self.bot.send_message(channel, self.servers[server]["custom_commands"]["0"][msg.split(" ")[0]])
+				return await channel.send(self.servers[server]["custom_commands"]["0"][msg.split(" ")[0]])
 
 	@group(pass_context=True, aliases=["cc"])
 	@checks.is_owner_or_admin()
 	async def custom(self, ctx):
 		"A group of commands to manage custom commands for your server."
 		if ctx.invoked_subcommand is None:
-			return await self.bot.say('Missing Argument')
+			return await ctx.send('Missing Argument')
 
 	@custom.command(pass_context=True)
 	async def add(self, ctx, command, output, prefix_required = "0"):
@@ -46,60 +46,60 @@ class CustomCommands():
 		self.servers = self.con.load_config()
 		command = command.lower()
 		output = output
-		zero = self.servers[ctx.message.server.id]["custom_commands"]["0"]
-		one = self.servers[ctx.message.server.id]["custom_commands"]["1"]
+		zero = self.servers[str(ctx.guild.id)]["custom_commands"]["0"]
+		one = self.servers[str(ctx.guild.id)]["custom_commands"]["1"]
 
 		if ctx.message.mentions:
-			return await self.bot.say("Custom Commands cannot mention people.")
+			return await ctx.send("Custom Commands cannot mention people.")
 		elif len(output) > 1999: # This probably wont happen atm since the command itself would make the whole message over len 2000 which would be impossible to send. But this is here incase we need to adjust this number.
-			return await self.bot.say("The output is too long")
+			return await ctx.send("The output is too long")
 		elif command in self.bot.commands and prefix_required == "1":
-			return await self.bot.say("This is already the name of a built in command.")
+			return await ctx.send("This is already the name of a built in command.")
 		elif command in zero or command in one:
-			return await self.bot.say("Custom Command already exists.")
+			return await ctx.send("Custom Command already exists.")
 		elif prefix_required != "1" and prefix_required != "0":
-			return await self.bot.say("No prefix setting set.")
+			return await ctx.send("No prefix setting set.")
 
-		self.servers[ctx.message.server.id]["custom_commands"][prefix_required][command] = output
+		self.servers[str(ctx.guild.id)]["custom_commands"][prefix_required][command] = output
 		self.con.update_config(self.servers)
-		return await self.bot.say("{} has been added with the output: '{}'".format(command, output))
+		return await ctx.send("{} has been added with the output: '{}'".format(command, output))
 
 	@custom.command(pass_context=True)
 	async def edit(self, ctx, command, edit):
 		"Edits an existing custom command."
 		self.servers = self.con.load_config()
-		zero = self.servers[ctx.message.server.id]["custom_commands"]["0"]
-		one = self.servers[ctx.message.server.id]["custom_commands"]["1"]
+		zero = self.servers[str(ctx.guild.id)]["custom_commands"]["0"]
+		one = self.servers[str(ctx.guild.id)]["custom_commands"]["1"]
 
 		if ctx.message.mentions:
-			return await self.bot.say("Custom Commands cannot mention people.")
+			return await ctx.send("Custom Commands cannot mention people.")
 
 		if command in zero:
-			self.servers[ctx.message.server.id]["custom_commands"]["0"][command] = edit
+			self.servers[str(ctx.guild.id)]["custom_commands"]["0"][command] = edit
 			self.con.update_config(self.servers)
-			return await self.bot.say("Edit made. {} now outputs {}".format(command, edit))
+			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
 		elif command in one:
-			self.servers[ctx.message.server.id]["custom_commands"]["1"][command] = edit
+			self.servers[str(ctx.guild.id)]["custom_commands"]["1"][command] = edit
 			self.con.update_config(self.servers)
-			return await self.bot.say("Edit made. {} now outputs {}".format(command, edit))
+			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
 		else:
-			return await self.bot.say("That Custom Command doesn't exist.")
+			return await ctx.send("That Custom Command doesn't exist.")
 
 	@custom.command(pass_context=True)
 	async def remove(self, ctx, command):
 		"Removes a custom command."
 		self.servers = self.con.load_config()
 		command = command.lower()
-		if command in self.servers[ctx.message.server.id]["custom_commands"]["1"]:
-			self.servers[ctx.message.server.id]["custom_commands"]["1"].pop(command)
+		if command in self.servers[str(ctx.guild.id)]["custom_commands"]["1"]:
+			self.servers[str(ctx.guild.id)]["custom_commands"]["1"].pop(command)
 			self.con.update_config(self.servers)
-			return await self.bot.say("Removed {} custom command".format(command))
-		elif command in self.servers[ctx.message.server.id]["custom_commands"]["0"]:
-			self.servers[ctx.message.server.id]["custom_commands"]["0"].pop(command)
+			return await ctx.send("Removed {} custom command".format(command))
+		elif command in self.servers[str(ctx.guild.id)]["custom_commands"]["0"]:
+			self.servers[str(ctx.guild.id)]["custom_commands"]["0"].pop(command)
 			self.con.update_config(self.servers)
-			return await self.bot.say("Removed {} custom command".format(command))
+			return await ctx.send("Removed {} custom command".format(command))
 		else:
-			return await self.bot.say("Custom Command doesn't exist.")
+			return await ctx.send("Custom Command doesn't exist.")
 
 
 	@custom.command(pass_context=True)
@@ -108,7 +108,7 @@ class CustomCommands():
 		if debug != "0" and debug != "1":
 			debug = "0"
 		self.servers = self.con.load_config()
-		l = self.servers[ctx.message.server.id]["custom_commands"]
+		l = self.servers[str(ctx.guild.id)]["custom_commands"]
 		listzero = ""
 		listone = ""
 
@@ -130,7 +130,7 @@ class CustomCommands():
 		em = discord.Embed(title="Here is the list of Custom Commands", color=load_config.embedcolour)
 		em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
 		em.add_field(name="Commands that don't:", value=listzero, inline=False)
-		return await self.bot.say(embed=em)
+		return await ctx.send(embed=em)
 
-def setup(Bot):
-	Bot.add_cog(CustomCommands(Bot))
+def setup(bot_client):
+	bot_client.add_cog(CustomCommands(bot_client))
