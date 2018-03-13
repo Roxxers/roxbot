@@ -43,6 +43,11 @@ class Admin():
 	@bot_has_permissions(manage_messages=True)
 	@bot.command()
 	async def slowmode(self, ctx, time):
+		"""Puts the current channel in slowmode.
+		Usage:
+			;slowmode [time/"off"]
+			time = time of the cooldown between messages a user has.
+			off = turns off slowmode for this channel"""
 		if time == "off" and self.slow_mode: # Turn Slow Mode off
 			self.slow_mode = False
 			self.slow_mode_channels.pop(ctx.channel.id)
@@ -65,6 +70,11 @@ class Admin():
 	@checks.is_admin_or_mod()
 	@group()
 	async def warn(self, ctx):
+		"""Group of commands handling warnings
+		Options:
+			add
+			remove
+			list"""
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 
