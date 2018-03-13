@@ -23,20 +23,18 @@ class ErrHandle:
 	async def on_command_error(self, ctx, error):
 		self.owner = self.bot.get_user(self.bot.owner_id)
 		err_colour = 0x992d22
-		if isinstance(error, commands.CommandInvokeError):
-			if self.dev:
-				raise error
-			else:
-				embed = discord.Embed(title='Command Error', colour=err_colour)
-				embed.description = error.original
-				embed.add_field(name='Error', value=str(error))
-				embed.add_field(name='Server', value=ctx.guild)
-				embed.add_field(name='Channel', value=ctx.channel.mention)
-				embed.add_field(name='User', value=ctx.author)
-				embed.add_field(name='Message', value=ctx.message.content)
-				embed.timestamp = datetime.datetime.utcnow()
-				await self.owner.send(embed=embed)
-
+		if self.dev:
+			raise error
+		elif isinstance(error, commands.CommandInvokeError):
+			embed = discord.Embed(title='Command Error', colour=err_colour)
+			embed.description = error.original
+			embed.add_field(name='Error', value=str(error))
+			embed.add_field(name='Server', value=ctx.guild)
+			embed.add_field(name='Channel', value=ctx.channel.mention)
+			embed.add_field(name='User', value=ctx.author)
+			embed.add_field(name='Message', value=ctx.message.content)
+			embed.timestamp = datetime.datetime.utcnow()
+			await self.owner.send(embed=embed)
 		else:
 			if isinstance(error, commands.NoPrivateMessage):
 				embed = discord.Embed(description="This command cannot be used in private messages.")

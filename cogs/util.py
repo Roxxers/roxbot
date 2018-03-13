@@ -105,52 +105,54 @@ class Util():
 			"https://vidga.me/",
 			"https://pomf.pyonpyon.moe/"
 		] # List of pomf clone sites and upload limits
-
-		async with ctx.channel.typing():
-			if ctx.message.attachments:
-				# Site choice, shouldn't need an upload size check since max upload for discord atm is 50MB
-				site = random.choice(sites)
-				urls = []
-				for attachment in ctx.message.attachments:
-					name = attachment['url'].split("/")[-1]
-					# Download File
-					with aiohttp.ClientSession() as session:
-						async with session.get(attachment['url']) as img:
-							with open(name, 'wb') as f:
-								f.write(await img.read())
-					# Upload file
-					with open(name, 'rb') as f:
-						answer = requests.post(url=site+"upload.php",files={'files[]': f.read()})
-						response = json.loads(answer.text)
-						file_name_1 = response["files"][0]["url"].replace("\\", "")
-					urls.append(file_name_1)
-					os.remove(name)
-				msg = "".join(urls)
-				return await ctx.send(msg)
-			else:
-				return await ctx.send("Send me stuff to upload.")
+		if ctx.message.attachments:
+			# Site choice, shouldn't need an upload size check since max upload for discord atm is 50MB
+			site = random.choice(sites)
+			urls = []
+			for attachment in ctx.message.attachments:
+				name = attachment['url'].split("/")[-1]
+				# Download File
+				with aiohttp.ClientSession() as session:
+					async with session.get(attachment['url']) as img:
+						with open(name, 'wb') as f:
+							f.write(await img.read())
+				# Upload file
+				with open(name, 'rb') as f:
+					answer = requests.post(url=site+"upload.php",files={'files[]': f.read()})
+					response = json.loads(answer.text)
+					file_name_1 = response["files"][0]["url"].replace("\\", "")
+				urls.append(file_name_1)
+				os.remove(name)
+			msg = "".join(urls)
+			return await ctx.send(msg)
+		else:
+			return await ctx.send("Send me stuff to upload.")
 
 	@upload.error
 	async def upload_err(self, ctx, error):
 		return await ctx.send("File couldn't be uploaded. {}".format(error))
 
 	@bot.command(aliases=["emoji"])
-	async def emote(self, ctx, emote: discord.Emoji = None):
+	async def emote(self, ctx, emote):
 		"""
 		Uploads the emote given. Useful for downloading emotes.
 		Usage:
 			;emote [emote]
 		"""
-		if emote.animated:
+		emote = emote.strip("<>").split(":")
+		if emote[0] == "a":
 			imgname = "emote.gif"
+			emoji_id = emote[2]
 		else:
-			imgname = "img.png"
+			imgname = "emote.png"
+			emoji_id = emote[1]
+		url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
 
 		async with aiohttp.ClientSession() as session:
-			async with session.get(emote.url) as img:
+			async with session.get(url) as img:
 				with open(imgname, 'wb') as f:
 					f.write(await img.read())
-		await ctx.send(file=imgname)
+		await ctx.send(file=discord.File(imgname))
 		os.remove(imgname)
 
 	@bot.command()
