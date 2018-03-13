@@ -21,7 +21,7 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
-#### v1.3_3
+#### v1.3.4
 ###### Performance
 - Changed the warning listing command do that it isn't slow.
 ###### Bug Fixes
