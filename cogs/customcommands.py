@@ -19,11 +19,11 @@ class CustomCommands():
 		self.servers = self.con.servers
 
 	async def on_message(self, message):
-		if blacklisted(message.author) or message.channel.type == discord.ChannelType.private:
+		if blacklisted(message.author) or type(message.channel) != discord.TextChannel:
 			return
 		msg = message.content.lower()
 		channel = message.channel
-		server = str(message.server.id)
+		server = str(message.guild.id)
 		if message.author == self.bot.user:
 			return
 		if msg.startswith(self.bot.command_prefix):

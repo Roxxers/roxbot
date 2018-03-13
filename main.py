@@ -37,13 +37,12 @@ async def on_ready():
 	server_config.error_check(bot.guilds)
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
-	#
 
-	#print("Cogs Loaded:")
-	#for cog in load_config.cogs:
-	#	bot.load_extension(cog)
-	#	print(cog)
-	#print("")
+	print("Cogs Loaded:")
+	for cog in load_config.cogs:
+		bot.load_extension(cog)
+		print(cog)
+	print("")
 
 	print("Servers I am currently in:")
 	for server in bot.guilds:
