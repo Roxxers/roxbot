@@ -1,3 +1,4 @@
+import discord
 from discord.ext import commands
 
 import checks
@@ -21,23 +22,17 @@ class Twitch():
 
 	async def on_member_update(self, member_b, member_a):
 		# Twitch Shilling Part
-		if blacklisted(member_b):
+		if blacklisted(member_b) or not self.servers[member_a.server.id]["twitch"]["enabled"]:
 			return
-		# Check to see if member_before game exists. Avoids crashes at line 24
-		if member_b.game:
-			typeb = member_b.game.type
-		else:
-			typeb = False
-		if member_a.game:
-			if member_a.game.type and not typeb: # Hopefully this fucking fixes it
-				ts_enabled = self.servers[member_a.server.id]["twitch"]["enabled"]
+
+		if member_a.activitiy:
+			if member_a.activity.type == discord.ActivityType.streaming and member_b.activity.type != discord.ActivityType.streaming:
 				ts_whitelist = self.servers[member_a.server.id]["twitch"]["whitelist"]["enabled"]
-				if ts_enabled:
-					if not ts_whitelist or member_a.id in \
-							self.servers[member_a.server.id]["twitch"]["whitelist"]["list"]:
-						channel = self.bot.get_channel(self.servers[member_a.server.id]["twitch"]["twitch-channel"])
-						return await channel.send(":video_game:** {} is live!** :video_game:\n{}\n{}".format(
-															   member_a.name, member_a.game.name, member_a.game.url))
+				if not ts_whitelist or member_a.id in self.servers[member_a.server.id]["twitch"]["whitelist"]["list"]:
+					channel = self.bot.get_channel(self.servers[member_a.server.id]["twitch"]["twitch-channel"])
+					return await channel.send(":video_game:** {} is live!** :video_game:\n{}\n{}".format(
+														   member_a.name, member_a.game.name, member_a.game.url))
+
 	@commands.group()
 	@checks.is_admin_or_mod()
 	async def whitelist(self, ctx):
@@ -54,11 +49,11 @@ class Twitch():
 		if not self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"]:
 			self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 1
 			self.con.update_config(self.servers)
-			return await self.bot.reply("Whitelist for Twitch shilling has been enabled.")
+			return await ctx.send("Whitelist for Twitch shilling has been enabled.")
 		else:
 			self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 0
 			self.con.update_config(self.servers)
-			return await self.bot.reply("Whitelist for Twitch shilling has been disabled.")
+			return await ctx.send("Whitelist for Twitch shilling has been disabled.")
 
 	@whitelist.command()
 	async def edit(self, ctx, option, mentions = None):
