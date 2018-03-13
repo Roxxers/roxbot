@@ -134,7 +134,7 @@ class Util():
 	async def upload_err(self, ctx, error):
 		return await ctx.send("File couldn't be uploaded. {}".format(error))
 
-	@bot.command(aliases=["emoji"]) 
+	@bot.command(aliases=["emoji"])
 	async def emote(self, ctx, emote: discord.Emoji = None):
 		"""
 		Uploads the emote given. Useful for downloading emotes.

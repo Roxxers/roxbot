@@ -1,7 +1,7 @@
 import discord
 from discord.ext import commands
 
-import checks
+import load_config
 from config.server_config import ServerConfig
 
 
@@ -10,6 +10,7 @@ class SelfAssign():
 		self.bot = Bot
 		self.con = ServerConfig()
 		self.servers = self.con.servers
+		self.embed_colour = load_config.embedcolour
 
 	@commands.command(pass_context=True)
 	async def listroles(self, ctx):
@@ -18,19 +19,19 @@ class SelfAssign():
 		Usage:
 			{command_prefix}listroles
 		"""
-		if not self.servers[ctx.message.server.id]["self_assign"]["enabled"]:
-			embed = discord.Embed(colour=discord.Colour(0xDEADBF),  # Make Embed colour a constant
+		if not self.servers[ctx.guild.id]["self_assign"]["enabled"]:
+			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
-			return await self.bot.say(embed=embed)
+			return await ctx.send(embed=embed)
 		roles = []
-		for role in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
-			for serverrole in ctx.message.server.roles:
+		for role in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+			for serverrole in ctx.guild.roles:
 				if role == serverrole.id:
 					roles.append("**"+serverrole.name+"**")
 		roles = '\n'.join(roles)
-		embed = discord.Embed(colour=discord.Colour(0xDEADBF), # Make Embed colour a constant
+		embed = discord.Embed(colour=self.embed_colour,
 							  description="The self-assignable roles for this server are: \n"+roles)
-		return await self.bot.say(embed=embed)
+		return await ctx.send(embed=embed)
 
 	@commands.command(pass_context=True)
 	async def iam(self, ctx, *, role: discord.Role = None):
@@ -41,26 +42,25 @@ class SelfAssign():
 		Example:
 			.iam OverwatchPing
 		"""
-		self.servers = self.con.load_config()
-		if not self.servers[ctx.message.server.id]["self_assign"]["enabled"]:
-			return
+		if not self.servers[ctx.guild.id]["self_assign"]["enabled"]:
+			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
+								  description="SelfAssignable roles are not enabled on this server")
+			return await ctx.send(embed=embed)
 
-		user = ctx.message.author
-		server = ctx.message.server
+		user = ctx.author
+		server = ctx.guild
 
 		if role not in server.roles:
-			return await self.bot.say("That role doesn't exist. Roles are case sensitive. ")
+			return await ctx.send("That role doesn't exist. Roles are case sensitive. ")
 
 		if role in user.roles:
-			return await self.bot.say("You already have that role.")
+			return await ctx.send("You already have that role.")
 
-		if role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
-			await self.bot.add_roles(user, role)
-			print("{} added {} to themselves in {} on {}".format(user.display_name, role.name, ctx.message.channel,
-																 ctx.message.server))
-			return await self.bot.say("Yay {}! You now have the {} role!".format(user.mention, role.name))
+		if role.id in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+			await user.add_roles(role, reason="'iam' command triggered.")
+			return await ctx.send("Yay {}! You now have the {} role!".format(user.mention, role.name))
 		else:
-			return await self.bot.say("That role is not self-assignable.")
+			return await ctx.send("That role is not self-assignable.")
 
 	@commands.command(pass_context=True)
 	async def iamn(self, ctx, *, role: discord.Role = None):
@@ -71,28 +71,31 @@ class SelfAssign():
 		Example:
 			.iamn OverwatchPing
 		"""
-		self.servers = self.con.load_config()
-		if not self.servers[ctx.message.server.id]["self_assign"]["enabled"]:
-			print("Self Assign is Disabled")
-			return
+		if not self.servers[ctx.guild.id]["self_assign"]["enabled"]:
+			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
+								  description="SelfAssignable roles are not enabled on this server")
+			return await ctx.send(embed=embed)
 
-		user = ctx.message.author
-		server = ctx.message.server
+		user = ctx.author
+		server = ctx.guild
 
-		if role not in server.roles:
-			return await self.bot.say("That role doesn't exist. Roles are case sensitive. ")
-
-		elif role in user.roles and role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
-			print("passed in server check")
-			await self.bot.remove_roles(user, role)
-			return await self.bot.reply("{} has been successfully removed.".format(role.name))
-
-		elif role not in user.roles and role.id in self.servers[ctx.message.server.id]["self_assign"]["roles"]:
-			return await self.bot.reply("You do not have {}.".format(role.name))
+		if role in user.roles and role.id in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+			await user.remove_roles(role, reason="'iamn' command triggered.")
+			return await ctx.send("{} has been successfully removed.".format(role.name))
+		elif role not in user.roles and role.id in self.servers[ctx.guild.id]["self_assign"]["roles"]:
+			return await ctx.send("You do not have {}.".format(role.name))
 		else:
-			return await self.bot.say("That role is not self-assignable.")
+			return await ctx.send("That role is not self-assignable.")
 
+	@iam.error
+	async def iam_err(self, ctx, error):
+		if isinstance(error, commands.BadArgument):
+			return await ctx.send("This role doesn't exist. Reminder, roles are case-sensitive.")
 
+	@iamn.error
+	async def iamn_err(self, ctx, error):
+		if isinstance(error, commands.BadArgument):
+			return await ctx.send("This role doesn't exist. Reminder, roles are case-sensitive.")
 
 def setup(Bot):
 	Bot.add_cog(SelfAssign(Bot))
