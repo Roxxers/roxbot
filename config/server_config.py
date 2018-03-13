@@ -22,7 +22,7 @@ class ServerConfig():
 				},
 				"twitch": {
 					"enabled": 0,
-					"twitch-channel": "",
+					"channel": "",
 					"whitelist": {
 						"enabled": 0,
 						"list": []

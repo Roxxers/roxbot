@@ -8,7 +8,7 @@ import load_config
 from config.server_config import ServerConfig
 
 import discord
-from discord.ext.commands import bot, group, is_owner
+from discord.ext.commands import bot, group, is_owner, bot_has_permissions
 
 
 class Settings:
@@ -26,12 +26,14 @@ class Settings:
 		else:
 			return self.bot.get_channel(channel)
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	@checks.is_owner_or_admin()
 	async def blacklist(self, ctx, option):
 		"""
-		OWNER OR ADMIN ONLY: Add or remove users to the blacklist.
-		Blacklisted users are forbidden from using bot commands.
+		Add or remove users to the blacklist. Blacklisted users are forbidden from using bot commands.
+		Usage:
+			;blacklist [add|+ OR remove|-] @user#0000
+		OWNER OR ADMIN ONLY
 		"""
 		blacklist_amount = 0
 		mentions = ctx.message.mentions
@@ -76,55 +78,61 @@ class Settings:
 							blacklist_amount += 1
 				return await ctx.send('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
-	@bot.command(pass_context=True, hidden=True, aliases=["setava", "setavatar"])
+	@bot.command(aliases=["setavatar"])
 	@is_owner()
 	async def changeavatar(self, ctx, url=None):
-		# TODO: Organise the non-settings group commands to be better and support gifs and shit. Also not hidden and the better check.
 		"""
+		Changes the bot's avatar. Can't be a gif.
 		Usage:
-			{command_prefix}setavatar [url]
-		Changes the bot's avatar.
+			;changeavatar [url]
 		Attaching a file and leaving the url parameter blank also works.
 		"""
+		avaimg = 'avaimg'
 		if ctx.message.attachments:
-			thing = ctx.message.attachments[0]['url']
+			await ctx.message.attachments[0].save(avaimg)
 		else:
 			thing = url.strip('<>')
 
-		avaimg = 'avaimg'
-		async with aiohttp.ClientSession() as session:
-			async with session.get(thing) as img:
-				with open(avaimg, 'wb') as f:
-					f.write(await img.read())
+			async with aiohttp.ClientSession() as session:
+				async with session.get(thing) as img:
+					with open(avaimg, 'wb') as f:
+						f.write(await img.read())
 		with open(avaimg, 'rb') as f:
 			await self.bot.user.edit(avatar=f.read())
 		os.remove(avaimg)
 		asyncio.sleep(2)
 		return await ctx.send(":ok_hand:")
 
-	@bot.command(pass_context=True, hidden=True, aliases=["nick"])
+	@bot.command(aliases=["nick", "nickname"])
 	@is_owner()
-	async def changenickname(self, ctx, *nick):
-		if ctx.message.channel.permissions_for(ctx.message.server.me).change_nickname:
-			await self.bot.change_nickname(ctx.message.server.me, ' '.join(nick))
-			return await ctx.send(":thumbsup:")
-		else:
-			return await ctx.send("I don't have permission to do that :sob:", delete_after=self.con.delete_after)
+	@bot_has_permissions(change_nickname=True)
+	async def changenickname(self, ctx, *, nick):
+		"""Changes the bot's nickname in the guild.
+		Usage:
+			;nickname [nickname]"""
+		await self.bot.change_nickname(ctx.message.server.me, nick)
+		return await ctx.send(":thumbsup:")
 
-	@bot.command(pass_context=True, hidden=True, aliases=["setgame", "game"])
+
+	@bot.command(aliases=["activity"])
 	@is_owner()
-	async def changegame(self, ctx, *, game: str):
-		# TODO: Update for new presence changes
+	async def changeactivity(self, ctx, *, game: str):
+		"""Changes the "playing" status of the bot.
+		Usage:
+			;changeactivity` [game]"""
 		if game.lower() == "none":
-			game_name = None
+			game= None
 		else:
-			game_name = discord.Game(name=game, type=0)
-		await self.bot.change_presence(game=game_name, afk=False)
-		return await ctx.send(":ok_hand: Game set to {}".format(str(game_name)))
+			game = discord.Game(game)
+		await self.bot.change_presence(activity=game)
+		return await ctx.send(":ok_hand: Activity set to {}".format(str(game)))
 
-	@bot.command(pass_context=True, hidden=True, aliases=["status"])
+	@bot.command(aliases=["status"])
 	@is_owner()
 	async def changestatus(self, ctx, status: str):
+		"""Changes the status of the bot.
+		Usage:
+			;changesatus [game]"""
 		status = status.lower()
 		if status == 'offline' or status == 'invisible':
 			discordStatus = discord.Status.invisible
@@ -137,19 +145,21 @@ class Settings:
 		await self.bot.change_presence(status=discordStatus)
 		await ctx.send("**:ok:** Status set to {}".format(discordStatus))
 
-	@bot.command(hidden=True)
+	@bot.command()
 	@is_owner()
 	async def restart(self):
+		"""Restarts the bot."""
 		await self.bot.logout()
 		return os.execl(sys.executable, sys.executable, *sys.argv)
 
-	@bot.command(hidden=True)
+	@bot.command()
 	@is_owner()
 	async def shutdown(self):
+		"""Shuts down the bot."""
 		await self.bot.logout()
 		return exit(0)
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	@checks.is_owner_or_admin()
 	async def printsettings(self, ctx):
 		"OWNER OR ADMIN ONLY: Prints the servers config file."
@@ -167,7 +177,7 @@ class Settings:
 				em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
 		return await ctx.send(embed=em)
 
-	@group(pass_context=True)
+	@group()
 	@checks.is_admin_or_mod()
 	async def settings(self, ctx):
 		if ctx.invoked_subcommand is None:
@@ -175,11 +185,13 @@ class Settings:
 		self.serverconfig = self.con.load_config()
 		self.guild_id = str(ctx.message.guild.id)
 
-	@settings.command(pass_context=True, aliases=["sa"])
+	@settings.command(aliases=["sa"])
 	async def selfassign(self, ctx, selection, *, changes = None):
-		"""
-		Adds a role to the list of roles that can be self assigned for that server.
-		Removes a role from the list of self assignable roles for that server.
+		"""Edits settings for self assign cog.
+
+		Options:
+			enable/disable: Enable/disables the cog.
+			addrole/removerole: adds or removes a role that can be self assigned in the server.
 		"""
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
@@ -207,8 +219,17 @@ class Settings:
 			return await ctx.send("No valid option given.")
 		return self.con.update_config(self.serverconfig)
 
-	@settings.command(pass_context=True, aliases=["jl"])
+	@settings.command(aliases=["jl"])
 	async def joinleave(self, ctx, selection, *, changes = None):
+		"""Edits settings for joinleave cog.
+
+		Options:
+			enable/disable: Enable/disables parts of the cog. Needs to specify which part.
+				Example:
+					;settings joinleave enable greets|goodbyes
+			welcomechannel/goodbyeschannel: Sets the channels for either option. Must be a ID or mention.
+			custommessage: specifies a custom message for the greet messages.
+		"""
 		selection = selection.lower()
 		if selection == "enable":
 			if changes == "greets":
@@ -228,7 +249,7 @@ class Settings:
 			channel = self.get_channel(ctx, changes)
 			self.serverconfig[ctx.message.guild.id]["greets"]["welcome-channel"] = channel.id
 			await ctx.send("{} has been set as the welcome channel!".format(channel.mention))
-		elif selection == "goodbyeschanel":
+		elif selection == "goodbyeschannel":
 			channel = self.get_channel(ctx, changes)
 			self.serverconfig[ctx.message.guild.id]["goodbyes"]["goodbye-channel"] = channel.id
 			await ctx.send("{} has been set as the goodbye channel!".format(channel.mention))
@@ -239,28 +260,39 @@ class Settings:
 			return await ctx.send("No valid option given.")
 		return self.con.update_config(self.serverconfig)
 
-	@settings.command(pass_context=True)
+	@settings.command()
 	async def twitch(self, ctx, selection, *, changes = None):
+		"""Edits settings for self assign cog.
+
+		Options:
+			enable/disable: Enable/disables the cog.
+			channel: Sets the channel to shill in.
+		"""
 		selection = selection.lower()
 		if selection == "enable":
-			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 1
+			self.serverconfig[ctx.guild.id]["twitch"]["enabled"] = 1
 			await ctx.send("'twitch' was enabled!")
 		elif selection == "disable":
-			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 0
+			self.serverconfig[ctx.guild.id]["twitch"]["enabled"] = 0
 			await ctx.send("'twitch' was disabled :cry:")
 		elif selection == "channel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[ctx.message.guild.id]["twitch"]["twitch-channel"] = channel.id
+			self.serverconfig[ctx.guild.id]["twitch"]["channel"] = channel.id
 			await ctx.send("{} has been set as the twitch shilling channel!".format(channel.mention))
+		# Is lacking whitelist options. Might be added or might be depreciated.
 		else:
 			return await ctx.send("No valid option given.")
 		return self.con.update_config(self.serverconfig)
 
-	@settings.command(pass_context=True, aliases=["perms"])
+	@settings.command(aliases=["perms"])
 	async def permrole(self, ctx, selection, *, changes = None):
-		"""
-		Adds a role to the list of roles that can be self assigned for that server.
-		Removes a role from the list of self assignable roles for that server.
+		"""Edits settings for permission roles.
+
+		Options:
+			addadmin/removeadmin: Adds/Removes admin role.
+			addmod/removemod: Adds/Removes mod role.
+		Example:
+			;settings permrole addadmin Admin
 		"""
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
@@ -293,8 +325,9 @@ class Settings:
 			return await ctx.send("No valid option given.")
 		return self.con.update_config(self.serverconfig)
 
-	@settings.command(pass_context=True)
+	@settings.command()
 	async def gss(self, ctx, selection, *, changes = None):
+		"""Custom Cog for the GaySoundsShitposts Discord Server."""
 		selection = selection.lower()
 		if selection == "loggingchannel":
 			channel = self.get_channel(ctx, changes)
@@ -311,8 +344,17 @@ class Settings:
 		return self.con.update_config(self.serverconfig)
 
 
-	@settings.command(pass_context=True)
+	@settings.command()
 	async def nsfw(self, ctx, selection, *, changes = None):
+		"""Edits settings for the nsfw cog and other nsfw commands.
+		If nsfw is enabled and nsfw channels are added, the bot will only allow nsfw commands in the specified channels.
+
+		Options:
+			enable/disable: Enable/disables nsfw commands.
+			addchannel/removechannel: Adds/Removes a nsfw channel.
+			Example:
+				;settings nsfw addchannel #nsfw_stuff
+		"""
 		selection = selection.lower()
 		if selection == "enable":
 			self.serverconfig[self.guild_id]["nsfw"]["enabled"] = 1
@@ -339,8 +381,10 @@ class Settings:
 		return self.con.update_config(self.serverconfig)
 
 	@checks.is_admin_or_mod()
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def serverisanal(self, ctx):
+		"""Tells the bot where the server is anal or not.
+		This only changes if roxbot can do the suck and spank commands outside of the specified nsfw channels."""
 		self.serverconfig = self.con.load_config()
 		is_anal = self.serverconfig[ctx.message.guild.id]["is_anal"]["y/n"]
 		if is_anal == 0:
