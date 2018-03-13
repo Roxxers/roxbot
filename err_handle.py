@@ -2,12 +2,13 @@ import traceback
 import datetime
 import discord
 from discord.ext import commands
-
+from config.server_config import ServerConfig
 
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.dev = True  # For debugging
+		self.servers = ServerConfig().servers
 
 	async def on_error(self, event, *args, **kwargs):
 		if self.dev:
@@ -50,7 +51,11 @@ class ErrHandle:
 			elif isinstance(error, commands.TooManyArguments):
 				embed = discord.Embed(description="Too many arguments given.")
 			elif isinstance(error, commands.CommandNotFound):
-				embed = discord.Embed(description="That Command doesn't exist.")
+				cc = self.servers[str(ctx.guild.id)]["custom_commands"]
+				if ctx.invoked_with in cc["1"]:
+					embed = None
+				else:
+					embed = discord.Embed(description="That Command doesn't exist.")
 			elif isinstance(error, commands.BotMissingPermissions):
 				embed = discord.Embed(description="I am missing the following permissions: {}".format(str(error.missing_perms).strip("[]")))
 			elif isinstance(error, commands.MissingPermissions):
@@ -62,8 +67,9 @@ class ErrHandle:
 			else:
 				embed = discord.Embed(
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
-			embed.colour = err_colour
-			await ctx.send(embed=embed, delete_after=10)
+			if embed:
+				embed.colour = err_colour
+				await ctx.send(embed=embed, delete_after=10)
 
 
 def setup(bot_client):

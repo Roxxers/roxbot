@@ -23,7 +23,7 @@ class CustomCommands():
 			return
 		msg = message.content.lower()
 		channel = message.channel
-		server = message.server.id
+		server = str(message.server.id)
 		if message.author == self.bot.user:
 			return
 		if msg.startswith(self.bot.command_prefix):
