@@ -21,6 +21,11 @@ A simple Discord Bot used by me personally, written for fun.
 
 ## Changelog
 
+#### v1.3_3
+###### Hottest of Bug Fixes
+- Warn list now actually works for all warnings.
+- Slowmode now ignores mods and admins.
+
 #### v1.3.2
 ###### Bug Fixes
 - Fixed logging for gss cog again...
