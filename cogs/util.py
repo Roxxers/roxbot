@@ -74,8 +74,8 @@ class Util():
 		roles = ""
 		count = 0
 
-		for role in member.roles.reverse():
-			if role == ctx.server.default_role:
+		for role in member.roles:
+			if role == ctx.guild.default_role:
 				pass
 			else:
 				roles += role.name + ", "
