@@ -1,19 +1,11 @@
 import random
-from json import JSONDecodeError
 import checks
 import requests
 from discord.ext.commands import bot
-from config.server_config import ServerConfig
-
 
 class NFSW():
-	def __init__(self, Bot):
-		self.bot = Bot
-		self.con = ServerConfig()
-		self.servers = self.con.servers
-
-	def is_nsfw_enabled(self, server_id):
-		return self.servers[server_id]["nsfw"]["enabled"] == "1"
+	def __init__(self, bot_client):
+		self.bot = bot_client
 
 	def gelbooru_clone(self, base_url, tags):
 		# Maybe a page randomiser
@@ -37,9 +29,9 @@ class NFSW():
 		url = base_url + 'post/index.json?tags=' + tags + '&limit=' + str(limit)
 		req = requests.get(url, headers = {'User-agent': 'RoxBot Discord Bot'})
 		if str(req.content) == "b'[]'": # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
-			return await self.bot.say("Nothing was found. *psst, check the tags you gave me.*")
+			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 		post = random.choice(req.json())
-		return await self.bot.say(post["file_url"])
+		return await ctx.send(post["file_url"])
 
 	@bot.command(pass_context=True)
 	@checks.is_nfsw_enabled()
@@ -50,9 +42,9 @@ class NFSW():
 		base_url = "https://rule34.xxx"
 		post = self.gelbooru_clone(base_url, tags)
 		if not post:
-			return await self.bot.say("Nothing was found. *psst, check the tags you gave me.*")
+			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 		url = "https://img.rule34.xxx/images/" + post["directory"] + "/" + post["image"]
-		return await self.bot.say(url)
+		return await ctx.send(url)
 
 	@bot.command(pass_context=True)
 	@checks.is_nfsw_enabled()
@@ -63,10 +55,10 @@ class NFSW():
 		base_url = "https://gelbooru.com"
 		post = self.gelbooru_clone(base_url, tags)
 		if not post:
-			return await self.bot.say("Nothing was found. *psst, check the tags you gave me.*")
+			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 		url = "https://simg3.gelbooru.com/images/" + ''.join(post["directory"].split("\\")) + "/" + post["image"]
-		return await self.bot.say(url)
+		return await ctx.send(url)
 
 
-def setup(Bot):
-	Bot.add_cog(NFSW(Bot))
+def setup(bot_client):
+	bot_client.add_cog(NFSW(bot_client))
