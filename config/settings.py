@@ -280,6 +280,7 @@ class Settings:
 			self.serverconfig[ctx.guild.id]["twitch"]["channel"] = channel.id
 			await ctx.send("{} has been set as the twitch shilling channel!".format(channel.mention))
 		# Is lacking whitelist options. Might be added or might be depreciated.
+		# Turns out this is handled in the cog and I don't think it needs changing but may be confusing.
 		else:
 			return await ctx.send("No valid option given.")
 		return self.con.update_config(self.serverconfig)

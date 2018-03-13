@@ -1,5 +1,4 @@
-import discord
-from discord.ext.commands import group
+from discord.ext import commands
 
 import checks
 from config.server_config import ServerConfig
@@ -15,8 +14,8 @@ class Twitch():
 	"""
 	A cog that handles posting when users go live on Twitch
 	"""
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 
@@ -36,18 +35,21 @@ class Twitch():
 				if ts_enabled:
 					if not ts_whitelist or member_a.id in \
 							self.servers[member_a.server.id]["twitch"]["whitelist"]["list"]:
-						channel = discord.Object(self.servers[member_a.server.id]["twitch"]["twitch-channel"])
-						return await self.bot.send_message(channel,
-														   content=":video_game:** {} is live!** :video_game:\n{}\n{}".format(
+						channel = self.bot.get_channel(self.servers[member_a.server.id]["twitch"]["twitch-channel"])
+						return await channel.send(":video_game:** {} is live!** :video_game:\n{}\n{}".format(
 															   member_a.name, member_a.game.name, member_a.game.url))
-	@group(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
-	async def twitch(self, ctx):
+	@commands.group()
+	@checks.is_admin_or_mod()
+	async def whitelist(self, ctx):
+		"""Command group that handles the twitch cog's whitelist."""
 		if ctx.invoked_subcommand is None:
-			return await self.bot.say('Missing Argument')
+			return await ctx.send('Missing Argument')
 
-	@twitch.command(pass_context=True, hidden=True)
-	async def enablewhitelist(self, ctx):
+	@whitelist.command()
+	async def enable(self, ctx):
+		"""Enables the twitch shilling whitelist. Repeat the command to disable.
+		Usage:
+			;whitelist enable"""
 		self.servers = self.con.load_config()
 		if not self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"]:
 			self.servers[ctx.server.id]["twitch"]["whitelist"]["enabled"] = 1
@@ -58,37 +60,37 @@ class Twitch():
 			self.con.update_config(self.servers)
 			return await self.bot.reply("Whitelist for Twitch shilling has been disabled.")
 
-	@twitch.command(pass_context=True, hidden=True)
-	async def whitelistadd(self, ctx, option, *mentions):
+	@whitelist.command()
+	async def edit(self, ctx, option, mentions = None):
+		"""Adds or removes users to the whitelist. Exactly the same as the blacklist command in usage."""
 		whitelist_count = 0
 
 		if not ctx.message.mentions and option != 'list':
-			return await self.bot.reply("You haven't mentioned anyone to whitelist.")
+			return await ctx.send("You haven't mentioned anyone to whitelist.")
 
 		if option not in ['+', '-', 'add', 'remove', 'list']:
-			return await self.bot.say('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
+			return await ctx.send('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
 
 		if option in ['+', 'add']:
 			self.servers = self.con.load_config()
 			for user in ctx.message.mentions:
 				self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"].append(user.id)
-				self.con.update_config(self.servers)
 				whitelist_count += 1
-			return await self.bot.say('{} user(s) have been added to the whitelist'.format(whitelist_count))
+			self.con.update_config(self.servers)
+			return await ctx.send('{} user(s) have been added to the whitelist'.format(whitelist_count))
 
 		elif option in ['-', 'remove']:
 			self.servers = self.con.load_config()
 			for user in ctx.message.mentions:
 				if user.id in self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"]:
 					self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"].remove(user.id)
-					self.con.update_config(self.servers)
 					whitelist_count += 1
-			return await self.bot.say('{} user(s) have been removed to the whitelist'.format(whitelist_count))
+			self.con.update_config(self.servers)
+			return await ctx.send('{} user(s) have been removed to the whitelist'.format(whitelist_count))
 
 		elif option == 'list':
-			return await self.bot.say(
-				self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"])
+			return await ctx.send(self.servers[ctx.message.server.id]["twitch"]["whitelist"]["list"])
 
 
-def setup(Bot):
-	Bot.add_cog(Twitch(Bot))
+def setup(bot_client):
+	bot_client.add_cog(Twitch(bot_client))
