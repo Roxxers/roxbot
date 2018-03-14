@@ -70,16 +70,13 @@ class Admin():
 	@checks.is_admin_or_mod()
 	@group()
 	async def warn(self, ctx):
-		"""Group of commands handling warnings
-		Options:
-			add
-			remove
-			list"""
+		"""Group of commands handling warnings"""
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 
 	@warn.command()
 	async def add(self, ctx, user: discord.User = None, *, warning = ""):
+		"""Adds a warning to a user."""
 		# Warning in the config is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		self.servers = self.con.load_config()
 		warning_limit = 2
@@ -106,6 +103,7 @@ class Admin():
 
 	@warn.command()
 	async def list(self, ctx, *, user: discord.User = None):
+		"""Lists all or just the warnings for one user."""
 		if user == None:
 			output = ""
 			for member in self.servers[str(ctx.guild.id)]["warnings"]:
@@ -143,6 +141,7 @@ class Admin():
 
 	@warn.command()
 	async def remove(self, ctx, user: discord.User = None, index = None):
+		"""Removes one or all of the warnings for a user."""
 		self.servers = self.con.load_config()
 		if index:
 			try:
