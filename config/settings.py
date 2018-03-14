@@ -168,7 +168,7 @@ class Settings:
 		em = discord.Embed(colour=0xDEADBF)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
 		for settings in config:
-			if settings != "custom_commands" and settings != "admin":
+			if settings != "custom_commands" and settings != "warnings":
 				settingcontent = ""
 				for x in config[settings].items():
 					settingcontent += str(x).strip("()") + "\n"
@@ -377,6 +377,18 @@ class Settings:
 				await ctx.send("'{}' has been removed from the nsfw channel list.".format(channel.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
+		elif selection == "addbadtag":
+			if changes not in self.serverconfig[ctx.guild.id]["nsfw"]["blacklist"]:
+				self.serverconfig[ctx.guild.id]["nsfw"]["blacklist"].append(changes)
+				await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
+			else:
+				return await ctx.send("'{}' is already in the list.".format(changes))
+		elif selection == "removebadtag":
+			try:
+				self.serverconfig[ctx.guild.id]["nsfw"]["blacklist"].remove(changes)
+				await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
+			except ValueError:
+				return await ctx.send("That tag was not in the blacklisted tag list.")
 		else:
 			return await ctx.send("No valid option given.")
 		return self.con.update_config(self.serverconfig)
