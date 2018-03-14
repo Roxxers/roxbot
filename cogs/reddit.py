@@ -9,29 +9,6 @@ import checks
 # Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
 # There is redundant code here that if removed would make it easier. But it might be handy in the future and isn't that bad.
 
-
-class RedditMedia:
-	def get(self, url):
-		return url
-
-
-class Gfycat():
-	def __init__(self):
-		pass
-
-	def url_get(self,url):
-		urlsplit = url.split("/")
-		urlsplit[2] = "giant." + urlsplit[2]
-		urlsplit[-1] += ".gif"
-		urlnew = "/".join(urlsplit)
-		return urlnew
-
-	def get(self,url):
-		#url2 = self.url_get(url)
-		url2 = url
-		return url2
-
-
 class Imgur():
 	"""Class for all interactions with Imgur"""
 	def __init__(self):
@@ -71,7 +48,6 @@ class Imgur():
 					links[0] = "https:" + links[0]
 				return links[0]
 
-
 class Eroshare():
 	def __init__(self):
 		pass
@@ -91,12 +67,6 @@ class Eroshare():
 			if "i." in link and "thumb" not in link:
 				return "https:" + link
 
-
-class Tumblr():
-	def get(self,url):
-		return url
-
-
 class Scrapper():
 	def __init__(self):
 		pass
@@ -114,19 +84,14 @@ class Scrapper():
 		return reddit
 
 	def retriveurl(self, url):
-		url2 = ""
+		if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv", "webm", "mp4", "webp"):
+			return url
 		if "imgur" in url:
-			url2 = Imgur().get(url)
-		elif "gfycat" in url:
-			url2 = Gfycat().get(url)
+			return Imgur().get(url)
 		elif "eroshare" in url:
-			url2 = Eroshare().get(url)
-		elif "redd.it" in url or "i.reddituploads" in url:
-			url2 = RedditMedia().get(url)
-		elif "media.tumblr" in url:
-			url2 = Tumblr().get(url)
-		return url2
-
+			return Eroshare().get(url)
+		elif "gfycat" in url or "redd.it" in url or "i.reddituploads" in url or "media.tumblr" in url or "streamable" in url:
+			return url
 
 class Reddit():
 	def __init__(self, bot_client):
