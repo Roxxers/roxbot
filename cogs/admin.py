@@ -80,54 +80,54 @@ class Admin():
 		# Warning in the config is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		self.servers = self.con.load_config()
 		warning_limit = 2
-		id = str(ctx.guild.id)
+		guild_id = str(ctx.guild.id)
 		warning_dict = {
 			"warned-by": ctx.author.id,
 			"date": time.time(),
 			"warning": warning
 		}
-
-		if not user.id in self.servers[id]["warnings"]:
-			self.servers[id]["warnings"][user.id] = []
-		self.servers[id]["warnings"][user.id].append(warning_dict)
+		user.id = str(user.id)
+		if not user.id in self.servers[guild_id]["warnings"]:
+			self.servers[guild_id]["warnings"][user.id] = []
+		self.servers[guild_id]["warnings"][user.id].append(warning_dict)
 
 		self.con.update_config(self.servers)
 
-		amount_warnings = len(self.servers[id]["warnings"][user.id])
+		amount_warnings = len(self.servers[guild_id]["warnings"][user.id])
 		if amount_warnings > warning_limit:
 			await ctx.author.send("{} has been reported {} time(s). This is a reminder that this is over the set limit of {}.".format(
 					str(user), amount_warnings, warning_limit))
 
-		return await ctx.send("Reported {}.".format(user.name+"#"+user.discriminator))
-
+		return await ctx.send("Reported {}.".format(str(user)))
 
 	@warn.command()
 	async def list(self, ctx, *, user: discord.User = None):
 		"""Lists all or just the warnings for one user."""
+		guild_id = str(ctx.guild.id)
 		if user == None:
 			output = ""
-			for member in self.servers[str(ctx.guild.id)]["warnings"]:
+			for member in self.servers[guild_id]["warnings"]:
 				# Remove users with no warning here instead of remove cause im lazy
-				if not self.servers[str(ctx.guild.id)]["warnings"][member]:
-					self.servers[str(ctx.guild.id)]["warnings"].pop(member)
+				if not self.servers[guild_id]["warnings"][member]:
+					self.servers[guild_id]["warnings"].pop(member)
 				else:
 					member_obj = discord.utils.get(ctx.guild.members, id=int(member))
 					if member_obj:
 						output += "{}: {} Warning(s)\n".format(str(member_obj), len(
-							self.servers[str(ctx.guild.id)]["warnings"][member]))
+							self.servers[guild_id]["warnings"][member]))
 					else:
 						output += "{}: {} Warning(s)\n".format(member, len(
-							self.servers[str(ctx.guild.id)]["warnings"][member]))
+							self.servers[guild_id]["warnings"][member]))
 			return await ctx.send(output)
-
-		if not self.servers[str(ctx.guild.id)]["warnings"][str(user.id)]:
-			self.servers[str(ctx.guild.id)]["warnings"].pop(str(user.id))
-		if not user.id in self.servers[str(ctx.guild.id)]["warnings"]:
+		user.id = str(user.id)
+		if not self.servers[guild_id]["warnings"][user.id]:
+			self.servers[guild_id]["warnings"].pop(user.id)
+		if not user.id in self.servers[guild_id]["warnings"]:
 			return await ctx.send("This user doesn't have any warning on record.")
 		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
 		em.set_thumbnail(url=user.avatar_url)
 		x = 1
-		userlist = self.servers[str(ctx.guild.id)]["warnings"][user.id]
+		userlist = self.servers[guild_id]["warnings"][user.id]
 		for warning in userlist:
 			try:
 				warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
@@ -143,13 +143,15 @@ class Admin():
 	async def remove(self, ctx, user: discord.User = None, index = None):
 		"""Removes one or all of the warnings for a user."""
 		self.servers = self.con.load_config()
+		user.id = str(user.id)
+		guild_id = str(ctx.guild.id)
 		if index:
 			try:
 				index = int(index)
 				index -= 1
-				self.servers[str(ctx.guild.id)]["warnings"][user.id].pop(index)
-				if not self.servers[str(ctx.guild.id)]["warnings"][user.id]:
-					self.servers[str(ctx.guild.id)]["warnings"].pop(user.id)
+				self.servers[guild_id]["warnings"][user.id].pop(index)
+				if not self.servers[guild_id]["warnings"][user.id]:
+					self.servers[guild_id]["warnings"].pop(user.id)
 
 				self.con.update_config(self.servers)
 				return await ctx.send("Removed Warning {} from {}".format(index+1, str(user)))
@@ -165,7 +167,7 @@ class Admin():
 					raise e
 		else:
 			try:
-				self.servers[str(ctx.guild.id)]["warnings"].pop(user.id)
+				self.servers[guild_id]["warnings"].pop(user.id)
 				self.con.update_config(self.servers)
 				return await ctx.send("Removed all warnings for {}".format(str(user)))
 			except KeyError:
