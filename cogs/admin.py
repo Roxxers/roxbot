@@ -27,14 +27,14 @@ class Admin():
 			if self.slow_mode and channel.id in self.slow_mode_channels:
 				if author.id not in self.users[channel.id]:
 					# If user hasn't sent a message in this channel after slow mode was turned on
-					self.users[channel.id][author.id] = message.timestamp
+					self.users[channel.id][author.id] = message.created_at
 				else:
 					# Else, check when their last message was and if time is smaller than the timer, delete the message.
 					timer = datetime.timedelta(seconds=self.slow_mode_channels[channel.id])
 					if message.timestamp - self.users[channel.id][author.id] < timer:
 						await message.delete()
 					else:
-						self.users[message.channel.id][author.id] = message.timestamp
+						self.users[message.channel.id][author.id] = message.created_at
 			else:
 				pass
 

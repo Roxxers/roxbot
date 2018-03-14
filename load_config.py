@@ -31,5 +31,5 @@ cogs = [
 	"cogs.selfassign",
 	"cogs.twitch",
 	"cogs.util",
-	"cogs.gss"
+	#"cogs.gss"
 ]
