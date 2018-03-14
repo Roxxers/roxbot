@@ -7,7 +7,7 @@ from config.server_config import ServerConfig
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = True  # For debugging
+		self.dev = False  # For debugging
 		self.servers = ServerConfig().servers
 
 	async def on_error(self, event, *args, **kwargs):
@@ -67,7 +67,7 @@ class ErrHandle:
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
 			if embed:
 				embed.colour = err_colour
-				await ctx.send(embed=embed, delete_after=10)
+				await ctx.send(embed=embed)
 
 
 def setup(bot_client):
