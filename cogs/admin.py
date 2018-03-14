@@ -31,7 +31,7 @@ class Admin():
 				else:
 					# Else, check when their last message was and if time is smaller than the timer, delete the message.
 					timer = datetime.timedelta(seconds=self.slow_mode_channels[channel.id])
-					if message.timestamp - self.users[channel.id][author.id] < timer:
+					if message.created_at - self.users[channel.id][author.id] < timer:
 						await message.delete()
 					else:
 						self.users[message.channel.id][author.id] = message.created_at
