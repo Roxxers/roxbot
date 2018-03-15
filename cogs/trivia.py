@@ -44,7 +44,7 @@ class Trivia:
 			description="")
 
 		embed.set_author(name="Question {}".format(counter))
-		embed.set_footer(text="Difficulty: {} | Category: {}".format(question["category"], question["difficulty"].title()))
+		embed.set_footer(text="Difficulty: {} | Category: {} | Time Left: ".format(question["category"], question["difficulty"].title()))
 
 		if question["type"] == "boolean":
 			# List of possible answers
@@ -126,7 +126,8 @@ class Trivia:
 			message = await ctx.send(embed=output)
 			await self.add_question_reactions(message, question)
 			output.description = answers
-			output.set_footer(text="Time left to answer question: 20")
+			footer = str(output.footer.text)
+			output.set_footer(text=output.footer.text+str(20))
 			await message.edit(embed=output)
 			time_asked = datetime.datetime.now()
 
@@ -147,7 +148,7 @@ class Trivia:
 				if not players_yet_to_answer:
 					break
 				else:
-					output.set_footer(text="Time left to answer question: {}".format(20 - (x + 1)))
+					output.set_footer(text=footer+str(20 - (x + 1)))
 					await message.edit(embed=output)
 					await asyncio.sleep(1)
 
