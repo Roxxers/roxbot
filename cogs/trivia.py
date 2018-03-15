@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import checks
 import discord
 import asyncio
 import requests
@@ -138,18 +139,18 @@ class Trivia:
 				# Code for checking if there are still players in the game goes here to make sure nothing breaks.
 				if not self.games[channel.id]["players"]:
 					await message.clear_reactions()
-					await ctx.send(discord.Embed(description="Game ending due to lack of players.", colour=self.error_colour))
-					return
-
-				output.set_footer(text="Time left to answer question: {}".format(20-(x+1)))
-				await message.edit(embed=output)
+					await ctx.send(embed=discord.Embed(description="Game ending due to lack of players.", colour=self.error_colour))
+					return False
 				for answered in self.games[channel.id]["players_answered"]:
 					if answered in players_yet_to_answer:
 						players_yet_to_answer.remove(answered)
 				if not players_yet_to_answer:
 					break
 				else:
+					output.set_footer(text="Time left to answer question: {}".format(20 - (x + 1)))
+					await message.edit(embed=output)
 					await asyncio.sleep(1)
+
 			output.set_footer(text="")
 			await message.edit(embed=output)
 
@@ -211,7 +212,25 @@ class Trivia:
 
 	@commands.group(aliases=["tr"])
 	async def trivia(self, ctx):
-		pass # TODO: Cool screen here that displays the license of the DB and the cool title card.
+		if ctx.invoked_subcommand == self.start:
+			embed = discord.Embed(colour=0xDEADBF)
+			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
+			await ctx.send(embed=embed)
+		elif ctx.invoked_subcommand == None:
+			await ctx.invoke(self.about)
+
+	@trivia.command()
+	async def about(self, ctx):
+		embed = discord.Embed(
+			title="About Roxbot Trivia",
+			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
+			colour=0xDEADBF)
+		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
+		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by adding either short (5 questions) or long (15 questions) at the end of the start command. `{}trivia start short`. The default is 10 and this is the medium option.".format(self.bot.command_prefix))
+		embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+		embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
+		return await ctx.send(embed=embed)
 
 	@trivia.command()
 	@commands.bot_has_permissions(manage_messages=True)
@@ -278,6 +297,7 @@ class Trivia:
 
 	@trivia.command()
 	async def join(self, ctx):
+		"""Joins a trivia game. Can only be done when a game is waiting for players to join. Not when a game is currently active."""
 		channel = ctx.channel
 		# Checks if game is in this channel. Then if one isn't active, then if the player has already joined.
 		if channel.id in self.games:
@@ -296,6 +316,7 @@ class Trivia:
 
 	@trivia.command()
 	async def leave(self, ctx):
+		"""Leaves the game in this channel. Can be done anytime in the game."""
 		channel = ctx.channel
 		player = ctx.author
 		# CAN LEAVE:  Game is started or has been activated
@@ -304,9 +325,24 @@ class Trivia:
 			if player.id in self.games[channel.id]["players"]:
 				self.games[channel.id]["players"].pop(player.id)
 				await ctx.send(embed=discord.Embed(description="{} has left the game.".format(player.mention), colour=self.trivia_colour))
-				return await ctx.message.delete()
 			else:
 				await ctx.send(embed=discord.Embed(description="You are not in this game",
+							   colour=self.error_colour))
+		else:
+			await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
+
+	@checks.is_admin_or_mod()
+	@trivia.command()
+	async def kick(self, ctx, user: discord.Member):
+		"""Mod command to kick users out of the game. Useful if a user is AFK."""
+		channel = ctx.channel
+		player = user
+		if channel.id in self.games:
+			if player.id in self.games[channel.id]["players"]:
+				self.games[channel.id]["players"].pop(player.id)
+				await ctx.send(embed=discord.Embed(description="{} has been kicked from the game.".format(player.mention), colour=self.trivia_colour))
+			else:
+				await ctx.send(embed=discord.Embed(description="This user is not in the game",
 							   colour=self.error_colour))
 		else:
 			await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
