@@ -1,6 +1,7 @@
 import discord
 import random
 import checks
+import requests
 from discord.ext.commands import bot
 
 
@@ -131,6 +132,14 @@ class Fun:
 		convert = str(' '.join(convert)).translate(WIDE_MAP)
 		return await ctx.send(convert)
 
+	@bot.command(aliases=["ft", "frog"])
+	async def frogtips(self, ctx):
+		"""RETURNS FROG TIPS FOR YOU FROG."""
+		endpoint = "https://frog.tips/api/1/tips/"
+		croak = requests.get(endpoint)
+		tip = random.choice(croak.json()["tips"])
+		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=discord.Colour(0x4C943D))
+		return await ctx.send(embed=embed)
 
 def setup(bot_client):
 	bot_client.add_cog(Fun(bot_client))
