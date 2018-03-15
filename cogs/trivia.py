@@ -6,6 +6,7 @@ import requests
 import datetime
 from html import unescape
 from random import shuffle
+from operator import itemgetter
 from collections import OrderedDict
 from discord.ext import commands
 
@@ -80,7 +81,7 @@ class Trivia:
 
 	def sort_leaderboard(self, scores):
 		# TODO: Fix this so it works.
-		return OrderedDict(sorted(scores.items(), key=lambda kv: kv))
+		return OrderedDict(sorted(scores.items(), key=scores.get))
 
 	def display_leaderboard(self, channel, scores_to_add):
 		updated_scores = dict(self.games[channel.id]["players"])
@@ -144,7 +145,7 @@ class Trivia:
 			if not self.games[channel.id]["players"]:
 				await message.clear_reactions()
 				await ctx.send("No more players to play the game")
-				break
+				return False
 
 			# Clean up when answers have been submitted
 			self.games[channel.id]["current_question"] = None

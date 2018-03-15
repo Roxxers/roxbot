@@ -29,6 +29,7 @@ cogs = [
 	"cogs.nsfw",
 	"cogs.reddit",
 	"cogs.selfassign",
+	"cogs.trivia",
 	"cogs.twitch",
 	"cogs.util",
 	#"cogs.gss"
