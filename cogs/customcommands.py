@@ -29,9 +29,10 @@ class CustomCommands():
 		if msg.startswith(self.bot.command_prefix):
 			if msg.split(self.bot.command_prefix)[1] in self.servers[server]["custom_commands"]["1"]:
 				return await channel.send(self.servers[server]["custom_commands"]["1"][msg.split(self.bot.command_prefix)[1]])
-		elif len(msg.split(" ")) < 2:
-			if msg.split(" ")[0] in self.servers[server]["custom_commands"]["0"]:
-				return await channel.send(self.servers[server]["custom_commands"]["0"][msg.split(" ")[0]])
+		else:
+			for command in self.servers[server]["custom_commands"]["0"]:
+				if msg == command:
+					return await channel.send(self.servers[server]["custom_commands"]["0"][command])
 
 	@group(pass_context=True, aliases=["cc"])
 	@checks.is_owner_or_admin()
