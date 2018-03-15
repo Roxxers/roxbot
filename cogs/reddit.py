@@ -1,7 +1,6 @@
 from discord.ext.commands import bot
 from config.server_config import ServerConfig
 from lxml import html
-import os
 import random
 import requests
 from bs4 import BeautifulSoup
@@ -9,29 +8,6 @@ import checks
 
 # Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
 # There is redundant code here that if removed would make it easier. But it might be handy in the future and isn't that bad.
-
-
-class RedditMedia:
-	def get(self, url):
-		return url
-
-
-class Gfycat():
-	def __init__(self):
-		pass
-
-	def url_get(self,url):
-		urlsplit = url.split("/")
-		urlsplit[2] = "giant." + urlsplit[2]
-		urlsplit[-1] += ".gif"
-		urlnew = "/".join(urlsplit)
-		return urlnew
-
-	def get(self,url):
-		#url2 = self.url_get(url)
-		url2 = url
-		return url2
-
 
 class Imgur():
 	"""Class for all interactions with Imgur"""
@@ -49,11 +25,6 @@ class Imgur():
 	def get(self, url):
 		if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv"):
 			return url
-		#elif url.split(".")[-1] == "gifv":
-		#	urlsplit = url.split(".")
-		#	urlsplit[-1] = "gif"
-		#	url = ".".join(urlsplit)
-		#	return url"""
 		else:
 			if self.removed(url):
 				return False
@@ -77,22 +48,9 @@ class Imgur():
 					links[0] = "https:" + links[0]
 				return links[0]
 
-
 class Eroshare():
 	def __init__(self):
 		pass
-
-	def album_create(self, name):
-		self.album_create.hasbeencalled = True
-		charlist = ("<", ">", '"', ":", "/", "|", "?", "*")
-		# Can't use these in Windows Dir so next code used to remove chars from title
-		for char in charlist:
-			if char in name:
-				name = name.replace(char, "")
-		if name not in os.listdir("./"):
-			os.mkdir("./" + name)
-		os.chdir("./" + name)
-
 
 	def get(self, url, name=None):
 		if url.contains("eroshare"):
@@ -102,32 +60,12 @@ class Eroshare():
 		links = tree.xpath('//source[@src]/@src')
 		if links:
 			return False
-			#self.album_create(name)
-			#for link in links:
-			#	if "lowres" not in link:
-			#		wget.download(link)
-			#		print("Downloaded ", link)
 		links = tree.xpath('//*[@src]/@src')
-		if len(links) > 2: #and not self.album_create.hasbeencalled:
+		if len(links) > 2:
 			return False
-			#self.album_create(name)
 		for link in links:
 			if "i." in link and "thumb" not in link:
 				return "https:" + link
-				#if link.split("/")[-1] not in os.listdir("./"):
-					#wget.download("https:" + link)
-					#print("Downloaded ", link)
-				#else:
-				#	print("Already exists")
-		#if album_create.hasbeencalled:
-		#	os.chdir("../")
-		#	album_create.hasbeencalled = False
-
-
-class Tumblr():
-	def get(self,url):
-		return url
-
 
 class Scrapper():
 	def __init__(self):
@@ -146,130 +84,80 @@ class Scrapper():
 		return reddit
 
 	def retriveurl(self, url):
-		url2 = ""
+		if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv", "webm", "mp4", "webp"):
+			return url
 		if "imgur" in url:
-			url2 = Imgur().get(url)
-		elif "gfycat" in url:
-			url2 = Gfycat().get(url)
+			return Imgur().get(url)
 		elif "eroshare" in url:
-			url2 = Eroshare().get(url)
-		elif "redd.it" in url or "i.reddituploads" in url:
-			url2 = RedditMedia().get(url)
-		elif "media.tumblr" in url:
-			url2 = Tumblr().get(url)
-		return url2
-
+			return Eroshare().get(url)
+		elif "gfycat" in url or "redd.it" in url or "i.reddituploads" in url or "media.tumblr" in url or "streamable" in url:
+			return url
 
 class Reddit():
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def subreddit(self, ctx, subreddit):
 		"""
-		Grabs an image (png, gif, gifv, webm) from the subreddit inputted.
-		Exmaple:
+		Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.
+		Example:
 		{command_prefix}subreddit pics
 		"""
+		subreddit = subreddit.lower()
 		links = Scrapper().linkget(subreddit, True)
 		title = ""
 		if not links:
-			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 		url = ""
 		for x in range(10):
 			choice = random.choice(links)
 			title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
 			if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
-				return await self.bot.say("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
+				return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 			url = Scrapper().retriveurl(choice["data"]["url"])
 			if url:
 				break
 		if not url:
-			return await self.bot.say("I couldn't find any images from that subreddit.")
+			return await ctx.send("I couldn't find any images from that subreddit.")
 
 		if url.split("/")[-2] == "a":
 			text = "This is an album, click on the link to see more. "
 		else:
 			text = ""
 
-		return await self.bot.say(title + text + url)
+		return await ctx.send(title + text + url)
 
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def aww(self, ctx):
 		"""
 		Gives you cute pics from reddit
 		"""
 		subreddit = "aww"
-		links = Scrapper().linkget(subreddit, True)
-		if not links:
-			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
-		choice = random.choice(links)
-		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-		if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
-			return await self.bot.say(
-				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
-		url = Scrapper().retriveurl(choice["data"]["url"])
-
-		if url.split("/")[-2] == "a":
-			text = "This is an album, click on the link to see more. "
-		else:
-			text = ""
-		return await self.bot.say(title + text + url)
-
-
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def feedme(self, ctx):
 		"""
-		Feeds you with food porn. Uses multiple subreddits
+		Feeds you with food porn. Uses multiple subreddits.
 		Yes, I was very hungry when trying to find the subreddits for this command.
+		Subreddits: "foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "Pizza", "grilledcheese", "PutAnEggOnIt", "sushi"
 		"""
 		subreddits = ["foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "Pizza", "grilledcheese", "PutAnEggOnIt", "sushi"]
-		subreddit = random.choice(subreddits)
-		links = Scrapper().linkget(subreddit, True)
-		if not links:
-			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+		subreddit_choice = random.choice(subreddits)
+		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
 
-		choice = random.choice(links)
-		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-		if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
-			return await self.bot.say(
-				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
-		url = Scrapper().retriveurl(choice["data"]["url"])
-
-		if url.split("/")[-2] == "a":
-			text = "This is an album, click on the link to see more. "
-		else:
-			text = ""
-		return await self.bot.say(title + text + url)
-
-
-	@bot.command(pass_context=True)
+	@bot.command(aliases=["gssp"])
 	async def gss(self, ctx):
 		"""
 		Gives you the best trans memes ever
 		"""
 		subreddit = "gaysoundsshitposts"
-		links = Scrapper().linkget(subreddit, True)
-		if not links:
-			return await self.bot.say("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
-
-		choice = random.choice(links)
-		title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
-		if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
-			return await self.bot.say(
-				"This server doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
-		url = Scrapper().retriveurl(choice["data"]["url"])
-
-		if url.split("/")[-2] == "a":
-			text = "This is an album, click on the link to see more. "
-		else:
-			text = ""
-		return await self.bot.say(title + text + url)
+		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
 
-def setup(Bot):
-	Bot.add_cog(Reddit(Bot))
+def setup(bot_client):
+	bot_client.add_cog(Reddit(bot_client))

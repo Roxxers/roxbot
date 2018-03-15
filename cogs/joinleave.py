@@ -13,35 +13,33 @@ class JoinLeave():
 		Greets users when they join a server.
 		"""
 		self.con.load_config()
-		if not self.servers[member.server.id]["greets"]["enabled"]:
+		if not self.servers[str(member.guild.id)]["greets"]["enabled"]:
 			return
 
-		if self.servers[member.server.id]["greets"]["custom-message"]:
-			message = self.servers[member.server.id]["greets"]["custom-message"]
+		if self.servers[str(member.guild.id)]["greets"]["custom-message"]:
+			message = self.servers[str(member.guild.id)]["greets"]["custom-message"]
 		else:
-			message = self.servers[member.server.id]["greets"]["default-message"]
+			message = self.servers[str(member.guild.id)]["greets"]["default-message"]
 		em = discord.Embed(
 			title="Welcome to {}!".format(member.server),
 			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.server, message),
 			colour=0xDEADBF)
 		em.set_thumbnail(url=member.avatar_url)
 
-		if self.servers[member.server.id]["greets"]["welcome-channel"]:
-			channel = discord.Object(self.servers[member.server.id]["greets"]["welcome-channel"])
-		else:
-			channel = member.server.default_channel
-		return await self.bot.send_message(channel, embed=em)
+		channel = self.bot.get_channel(self.servers[str(member.guild.id)]["greets"]["welcome-channel"])
+		return await channel.send(embed=em)
 
 	async def on_member_remove(self, member):
 		"""
 		The same but the opposite
 		"""
 		self.con.load_config()
-		channel = self.servers[member.server.id]["goodbyes"]["goodbye-channel"]
-		if not self.servers[member.server.id]["goodbyes"]["enabled"]:
+		channel = self.servers[str(member.guild.id)]["goodbyes"]["goodbye-channel"]
+		if not self.servers[str(member.guild.id)]["goodbyes"]["enabled"]:
 			return
 		else:
-			return await self.bot.send_message(self.bot.get_channel(channel) ,embed=discord.Embed(
+			channel = self.bot.get_channel(channel)
+			return await channel.send(embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=0xDEADBF))
 
 

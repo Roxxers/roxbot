@@ -1,20 +1,19 @@
 import os
 import json
-import checks
 import random
 import aiohttp
 import discord
 import requests
-from discord.ext.commands import bot
+from discord.ext.commands import bot, is_owner
 
 class Util():
 	"""
 	A cog that offers utility commands.
 	"""
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def avatar(self, ctx, *,user: discord.User = None):
 		"""
 		Returns a mentioned users avatar
@@ -23,19 +22,22 @@ class Util():
 		{command_prefix}avatar RoxBot
 		"""
 		if not user:
-			user = ctx.message.author
+			user = ctx.author
 
 		url = user.avatar_url
-		avaimg = 'avaimg.webp'
+		if url.split(".")[-1] == "gif":
+			avaimg = 'avaimg.gif'
+		else:
+			avaimg = 'avaimg.webp'
 
 		async with aiohttp.ClientSession() as session:
 			async with session.get(url) as img:
 				with open(avaimg, 'wb') as f:
 					f.write(await img.read())
-		await self.bot.send_file(ctx.message.channel, avaimg)
+		await ctx.send(file=discord.File(avaimg))
 		os.remove(avaimg)
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def info(self, ctx, member: discord.Member = None):
 		"""
 		Gets info for a mentioned user
@@ -44,25 +46,23 @@ class Util():
 		{command_prefix}info RoxBot
 		"""
 		if not member:
-			member = ctx.message.author
-		name_disc = member.name + "#" + member.discriminator
-		if member.game:
-			if member.game.type:
-				game = "**" + member.game.name + "**"
-				desc = "Streaming "
-			else:
-				game = "**" + member.game.name + "**"
-				desc = "Playing "
+			member = ctx.author
+
+		if member.activity.type == discord.ActivityType.playing:
+			activity = "Playing **{}**".format(member.activity.name)
+		elif member.activity.type == discord.ActivityType.streaming:
+			activity = "Streaming **{}**".format(member.activity.name)
+		elif member.activity.tyoe == discord.ActivityType.listening:
+			activity = "Listening to **{} by {}**".format(member.activity.title, member.activity.artist)
 		else:
-			desc = ""
-			game = ""
+			activity = ""
 
 		colour = member.colour.value
 		avatar = member.avatar_url
 
-		embed = discord.Embed(colour=colour, description=desc+game)
+		embed = discord.Embed(colour=colour, description=activity)
 		embed.set_thumbnail(url=avatar)
-		embed.set_author(name=name_disc, icon_url=avatar)
+		embed.set_author(name=str(member), icon_url=avatar)
 
 		embed.add_field(name="ID", value=member.id)
 		embed.add_field(name="Status", value=member.status)
@@ -75,7 +75,7 @@ class Util():
 		count = 0
 
 		for role in member.roles:
-			if role == ctx.message.server.default_role:
+			if role == ctx.guild.default_role:
 				pass
 			else:
 				roles += role.name + ", "
@@ -84,9 +84,9 @@ class Util():
 			roles = "None"
 			count = 0
 		embed.add_field(name="Roles [{}]".format(count), value=roles.strip(", "))
-		return await self.bot.say(embed=embed)
+		return await ctx.send(embed=embed)
 
-	@bot.command(pass_context=True)
+	@bot.command()
 	async def upload(self, ctx):
 		"""
 		Uploads selected file to the host, thanks to the fact that
@@ -105,8 +105,6 @@ class Util():
 			"https://vidga.me/",
 			"https://pomf.pyonpyon.moe/"
 		] # List of pomf clone sites and upload limits
-
-		await self.bot.send_typing(ctx.message.channel)
 		if ctx.message.attachments:
 			# Site choice, shouldn't need an upload size check since max upload for discord atm is 50MB
 			site = random.choice(sites)
@@ -119,77 +117,51 @@ class Util():
 						with open(name, 'wb') as f:
 							f.write(await img.read())
 				# Upload file
-				try:
-					with open(name, 'rb') as f:
-						answer = requests.post(url=site+"upload.php",files={'files[]': f.read()})
-						response = json.loads(answer.text)
-						file_name_1 = response["files"][0]["url"].replace("\\", "")
-					urls.append(file_name_1)
-				except Exception as e:
-					print(e)
-					print(name + ' couldn\'t be uploaded to ' + site)
+				with open(name, 'rb') as f:
+					answer = requests.post(url=site+"upload.php",files={'files[]': f.read()})
+					response = json.loads(answer.text)
+					file_name_1 = response["files"][0]["url"].replace("\\", "")
+				urls.append(file_name_1)
 				os.remove(name)
 			msg = "".join(urls)
-			return await self.bot.say(msg)
+			return await ctx.send(msg)
 		else:
-			return await self.bot.say("Send me stuff to upload.")
+			return await ctx.send("Send me stuff to upload.")
 
-	@bot.command(pass_context=True, aliases=["emoji"]) # This command will only work with normal emoji once I can put in something to get the svgs for twiemoji and convert em
+	@upload.error
+	async def upload_err(self, ctx, error):
+		return await ctx.send("File couldn't be uploaded. {}".format(error))
+
+	@bot.command(aliases=["emoji"])
 	async def emote(self, ctx, emote):
 		"""
-		Uploads the emote given. Useful for downloading emotes. ONLY WORKS WITH CUSTOM EMOJI
+		Uploads the emote given. Useful for downloading emotes.
+		Usage:
+			;emote [emote]
 		"""
-		emoteid = emote.split(":")[-1].strip("<>")
-		if not emoteid.isdigit():
-			return await self.bot.say("This command only works with custom emotes.")
-		url = "https://discordapp.com/api/emojis/{}.png".format(emoteid)
-		imgname = 'img.png'
-		async with aiohttp.ClientSession() as session:
-			async with session.get(url) as img:
-				with open(imgname, 'wb') as f:
-					f.write(await img.read())
-		await self.bot.send_file(ctx.message.channel, imgname)
-		os.remove(imgname)
-		#return await self.bot.say(url)
-
-	@bot.command(pass_context=True, enabled=False, hidden=True)
-	@checks.is_bot_owner()
-	async def emoterob(self, ctx, emote, name=None):
-		"""
-		Gets a emoji and adds it to the custom emoji list. ONLY WORKS WITH CUSTOM EMOJI
-		"""
-		emoteid = emote.split(":")[-1].strip("<>")
-		if not emoteid.isdigit():
-			return await self.bot.say("This command only works with custom emotes.")
-		url = "https://discordapp.com/api/emojis/{}.png".format(emoteid)
-		imgname = 'img.png'
-		async with aiohttp.ClientSession() as session:
-			async with session.get(url) as img:
-				with open(imgname, 'wb') as f:
-					f.write(await img.read())
-		with open(imgname, "rb") as f:
-			return await self.bot.create_custom_emoji(ctx.message.server, name=name, image=f)
-
-	@bot.command(pass_context=True, hidden=True)
-	@checks.is_bot_owner()
-	async def echo(self, ctx, channel, *, message: str):
-		if ctx.message.channel_mentions: # If Mentioned
-			for channel in ctx.message.channel_mentions:
-				await self.bot.send_message(channel, content=message)
-			return await self.bot.say(":point_left:")
-
-		elif channel.isdigit(): # If ID is given
-			channel = ctx.message.server.get_channel(channel)
-			await self.bot.send_message(channel, content=message)
-			return await self.bot.say(":point_left:")
-
+		emote = emote.strip("<>").split(":")
+		if emote[0] == "a":
+			imgname = "emote.gif"
+			emoji_id = emote[2]
 		else:
-			return await self.bot.say("You did something wrong smh")
+			imgname = "emote.png"
+			emoji_id = emote[1]
+		url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
 
-	@bot.command(pass_context=True, enabled=False, hidden=True)
-	async def say(self, ctx, *, echo):
-		return await self.bot.say(echo)
+		async with aiohttp.ClientSession() as session:
+			async with session.get(url) as img:
+				with open(imgname, 'wb') as f:
+					f.write(await img.read())
+		await ctx.send(file=discord.File(imgname))
+		os.remove(imgname)
+
+	@bot.command()
+	@is_owner()
+	async def echo(self, ctx, channel, *, message: str):
+		channel = self.bot.get_channel(channel)
+		await channel.send(message)
+		return await ctx.send(":point_left:")
 
 
-def setup(Bot):
-	Bot.add_cog(Util(Bot))
+def setup(bot_client):
+	bot_client.add_cog(Util(bot_client))
