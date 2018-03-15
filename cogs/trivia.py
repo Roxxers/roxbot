@@ -214,7 +214,7 @@ class Trivia:
 	@commands.group(aliases=["tr"])
 	async def trivia(self, ctx):
 		"""Command group for the Roxbot Trivia game."""
-		if ctx.invoked_subcommand == self.start and not self.games[ctx.channel.id]:
+		if ctx.invoked_subcommand == self.start and ctx.channel.id not in self.games:
 			embed = discord.Embed(colour=0xDEADBF)
 			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
