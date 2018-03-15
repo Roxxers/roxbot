@@ -33,7 +33,7 @@ class ErrHandle:
 			embed.add_field(name='User', value=ctx.author)
 			embed.add_field(name='Message', value=ctx.message.content)
 			embed.timestamp = datetime.datetime.utcnow()
-			await self.owner.send(embed=embed)
+			await ctx.send(embed=embed)
 		else:
 			if isinstance(error, commands.NoPrivateMessage):
 				embed = discord.Embed(description="This command cannot be used in private messages.")
