@@ -34,7 +34,7 @@ class Util():
 			async with session.get(url) as img:
 				with open(avaimg, 'wb') as f:
 					f.write(await img.read())
-		await ctx.send(file=avaimg)
+		await ctx.send(file=discord.File(avaimg))
 		os.remove(avaimg)
 
 	@bot.command()

@@ -9,7 +9,7 @@ A simple Discord Bot used by me personally, written for fun.
 ## Simple setup
 
 1. Copy settings/preferences_example.ini to settings/preferences.ini and fill in the details
-2. Run pip install -r requirements.txt in the root directory of the bot
+2. Run pip install -r requirements.txt in the root directory of the bot (This wont install the 1.0 version of discord.py which Roxbot now requires.)
 3. Add the bot to your server by generating an OAuth link with bot scope only
 4. Run main.py to generate config files for the server
 5. Stop RoxBot
@@ -20,6 +20,24 @@ A simple Discord Bot used by me personally, written for fun.
 *Coming soon*
 
 ## Changelog
+
+#### v1.4.0
+
+###### New Stuff!
+- A whole trivia game, right in your discords. Using the Open Trivia DB!
+- A complete overhaul of the settings cog so that the settings commands no longer suck and should be easier to use.
+- Most, if not all, commands now have documentation in the bot on what they do and how to use them.
+- Added error handling that will actually tell people when errors occur instead of being silent.
+
+###### Boring Stuff
+- Roxbot has been ported over to the 1.0 version of discord.py. Meaning that she will actually be upto date with new discord changes for once. This also means that there is quite a few new features and bug fixes with this version. 
+- New fil structure that will be easier to read and know whats going on.
+- servers.json is no longer versioned 
+- Unhidden all commands so that it should be easier for mods to know the mod commands.
+
+###### Bug Fixes
+- emoji command works with animated emoji
+- avatar command works with animated avatars
 
 #### v1.3.4
 ###### Performance
