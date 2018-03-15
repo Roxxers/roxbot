@@ -49,9 +49,9 @@ class CustomCommands():
 		zero = self.servers[str(ctx.guild.id)]["custom_commands"]["0"]
 		one = self.servers[str(ctx.guild.id)]["custom_commands"]["1"]
 
-		if ctx.message.mentions:
-			return await ctx.send("Custom Commands cannot mention people.")
-		elif len(output) > 1999: # This probably wont happen atm since the command itself would make the whole message over len 2000 which would be impossible to send. But this is here incase we need to adjust this number.
+		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
+			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
+		elif len(output) > 1800:
 			return await ctx.send("The output is too long")
 		elif command in self.bot.commands and prefix_required == "1":
 			return await ctx.send("This is already the name of a built in command.")
@@ -59,6 +59,8 @@ class CustomCommands():
 			return await ctx.send("Custom Command already exists.")
 		elif prefix_required != "1" and prefix_required != "0":
 			return await ctx.send("No prefix setting set.")
+		elif len(command.split(" ")) > 1 and prefix_required == "1":
+			return await ctx.send("Custom commands with a prefix can only be one word with no spaces.")
 
 		self.servers[str(ctx.guild.id)]["custom_commands"][prefix_required][command] = output
 		self.con.update_config(self.servers)
@@ -71,8 +73,8 @@ class CustomCommands():
 		zero = self.servers[str(ctx.guild.id)]["custom_commands"]["0"]
 		one = self.servers[str(ctx.guild.id)]["custom_commands"]["1"]
 
-		if ctx.message.mentions:
-			return await ctx.send("Custom Commands cannot mention people.")
+		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
+			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
 
 		if command in zero:
 			self.servers[str(ctx.guild.id)]["custom_commands"]["0"][command] = edit
