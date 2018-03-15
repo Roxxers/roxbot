@@ -102,10 +102,11 @@ class Reddit():
 	@bot.command()
 	async def subreddit(self, ctx, subreddit):
 		"""
-		Grabs an image (png, gif, gifv, webm) from the subreddit inputted.
+		Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.
 		Example:
 		{command_prefix}subreddit pics
 		"""
+		subreddit = subreddit.lower()
 		links = Scrapper().linkget(subreddit, True)
 		title = ""
 		if not links:
