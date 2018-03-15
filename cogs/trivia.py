@@ -27,6 +27,8 @@ class Trivia:
 		self.incorrect_emoji = self.bot.get_emoji(421526796379488256)
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
 		self.games = {}
+		self.error_colour = 0x992d22
+		self.trivia_colour = 0x6f90f5
 
 	# Game Functions
 
@@ -37,7 +39,7 @@ class Trivia:
 	def parse_question(self, question, counter):
 		embed = discord.Embed(
 			title=unescape(question["question"]),
-			colour=discord.Colour(0xDEADBF),
+			colour=discord.Colour(self.trivia_colour),
 			description="")
 
 		embed.set_author(name="Question {}".format(counter))
@@ -87,21 +89,21 @@ class Trivia:
 		output_scores = ""
 		count = 1
 		for scores in updated_scores:
-			player = str(self.bot.get_user(scores))
+			player = self.bot.get_user(scores)
 			if not player:
 				player = scores
-			if player in self.games[channel.id]["correct_users"]:
+			if scores in self.games[channel.id]["correct_users"]:
 				emoji = self.correct_emoji
 			else:
 				emoji = self.incorrect_emoji
-			output_scores += "{}) {}: {} {}".format(count, player, emoji, updated_scores[scores])
+			output_scores += "{}) {}: {} {}".format(count, player.mention, emoji, updated_scores[scores])
 			if scores in scores_to_add:
 				output_scores += "(+{})\n".format(scores_to_add[scores])
 			else:
 				output_scores += "\n"
 			count += 1
 
-		return discord.Embed(title="Scores", description=output_scores)
+		return discord.Embed(title="Scores", description=output_scores, colour=discord.Colour(self.trivia_colour))
 
 	async def add_question_reactions(self, message, question):
 		if question["type"] == "boolean":
@@ -113,7 +115,6 @@ class Trivia:
 
 	async def game(self, ctx, channel, questions):
 		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
-		# TODO: Defo needs some cleaning up
 		question_count = 1
 		for question in questions:
 			# Parse question dictionary into something usable
@@ -133,9 +134,14 @@ class Trivia:
 			self.games[channel.id]["current_question"] = message
 
 			# Wait for answers
-			count = 1
 			for x in range(20):
-				output.set_footer(text="Time left to answer question: {}".format(20-count))
+				# Code for checking if there are still players in the game goes here to make sure nothing breaks.
+				if not self.games[channel.id]["players"]:
+					await message.clear_reactions()
+					await ctx.send(discord.Embed(description="Game ending due to lack of players.", colour=self.error_colour))
+					return
+
+				output.set_footer(text="Time left to answer question: {}".format(20-(x+1)))
 				await message.edit(embed=output)
 				for answered in self.games[channel.id]["players_answered"]:
 					if answered in players_yet_to_answer:
@@ -143,16 +149,9 @@ class Trivia:
 				if not players_yet_to_answer:
 					break
 				else:
-					count += 1
 					await asyncio.sleep(1)
 			output.set_footer(text="")
 			await message.edit(embed=output)
-
-			# Code for checking if there are still players in the game goes here to make sure nothing breaks.
-			if not self.games[channel.id]["players"]:
-				await message.clear_reactions()
-				await ctx.send("No more players to play the game")
-				return False
 
 			# Clean up when answers have been submitted
 			self.games[channel.id]["current_question"] = None
@@ -182,9 +181,6 @@ class Trivia:
 			self.games[channel.id]["correct_users"] = {}
 			self.games[channel.id]["players_answered"] = []
 			question_count += 1
-
-
-
 
 	# Discord Events
 
@@ -225,7 +221,7 @@ class Trivia:
 		# Check if a game is already running and if so exit.
 		if channel.id in self.games:
 			# Game active in this channel already
-			await ctx.send("A game is already being run in this channel.", delete_after=2)
+			await ctx.send(discord.Embed(description="A game is already being run in this channel.", colour=self.error_colour))
 			await asyncio.sleep(2)
 			return await ctx.message.delete()
 
@@ -248,8 +244,8 @@ class Trivia:
 		self.games[channel.id] = game
 
 		# Waiting for players
-		await ctx.send("Game Successfully created. Starting in 20 seconds...")
-		await asyncio.sleep(20)
+		await ctx.send(embed=discord.Embed(description="Starting Roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour))
+		#await asyncio.sleep(20)
 
 		# Get questions
 		questions = self.get_questions(length[amount])
@@ -257,27 +253,27 @@ class Trivia:
 		# Checks if there is any players to play the game still
 		if not self.games[channel.id]["players"]:
 			self.games.pop(channel.id)
-			return await ctx.send("Abandoning game due to lack of players.")
+			return await ctx.send(embed=discord.Embed(description="Abandoning game due to lack of players.", colour=self.error_colour))
 
 		# Starts game
 		self.games[channel.id]["active"] = 1
-		await ctx.send("GAME START")
 		await self.game(ctx, channel, questions["results"])
 
 		# Game Ends
 		# Some stuff here displaying score
-		final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
+		if self.games[channel.id]["players"]:
+			final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
+			winner = self.bot.get_user(list(final_scores.keys())[0])
+			winning_score = list(final_scores.values())[0]
+			embed = discord.Embed(description="{} won with a score of {}".format(winner.mention, winning_score), colour=0xd4af3a)
+			await ctx.send(embed=embed)
 		self.games.pop(channel.id)
-		winner = self.bot.get_user(list(final_scores.keys())[0])
-		winning_score = list(final_scores.values())[0]
-		embed = discord.Embed(description="{} won with a score of {}".format(winner.mention, winning_score))
-		await ctx.send(embed=embed)
 
 	@trivia.error
 	async def trivia_err(self, ctx, error):
 		# This is here to make sure that if an error occurs, the game will be removed from the dict and will safely exit the game, then raise the error like normal.
 		self.games.pop(ctx.channel.id)
-		await ctx.send("An error has occured ;-; Exiting the game...")
+		await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...", colour=self.error_colour))
 		raise error
 
 	@trivia.command()
@@ -289,20 +285,14 @@ class Trivia:
 				player = ctx.author
 				if player.id not in self.games[channel.id]["players"]:
 					self.games[channel.id]["players"][player.id] = 0
-					return await ctx.send("Player {} joined the game".format(player.mention))
+					return await ctx.send(embed=discord.Embed(description="Player {} joined the game".format(player.mention), colour=self.trivia_colour))
 				# Failures
 				else:
-					await ctx.send("You have already joined the game. If you want to leave, do `{}trivia leave`".format(self.bot.command_prefix), delete_after=2)
-					await asyncio.sleep(2)
-					return await ctx.message.delete()
+					return await ctx.send(embed=discord.Embed(description="You have already joined the game. If you want to leave, do `{}trivia leave`".format(self.bot.command_prefix), colour=self.error_colour))
 			else:
-				await ctx.send("Game is already in progress.", delete_after=2)
-				await asyncio.sleep(2)
-				return await ctx.message.delete()
+				return await ctx.send(embed=discord.Embed(description="Game is already in progress.",colour=self.error_colour))
 		else:
-			await ctx.send("Game isn't being played here.", delete_after=2)
-			await asyncio.sleep(2)
-			return await ctx.message.delete()
+			return await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
 	@trivia.command()
 	async def leave(self, ctx):
@@ -313,21 +303,13 @@ class Trivia:
 		if channel.id in self.games:
 			if player.id in self.games[channel.id]["players"]:
 				self.games[channel.id]["players"].pop(player.id)
-				await ctx.send("{} has left the game.".format(player.mention))
+				await ctx.send(embed=discord.Embed(description="{} has left the game.".format(player.mention), colour=self.trivia_colour))
 				return await ctx.message.delete()
 			else:
-				await ctx.send("You are not in this game", delete_after=2)
-				await asyncio.sleep(2)
-				return await ctx.message.delete()
+				await ctx.send(embed=discord.Embed(description="You are not in this game",
+							   colour=self.error_colour))
 		else:
-			await ctx.send("Game isn't being played here.", delete_after=2)
-			await asyncio.sleep(2)
-			return await ctx.message.delete()
-
-	@commands.command()
-	async def emojid(self, ctx, emoji: discord.Emoji = None):
-		return await ctx.send(emoji.id)
-
+			await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
 def setup(Bot):
 	Bot.add_cog(Trivia(Bot))
