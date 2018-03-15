@@ -161,21 +161,28 @@ class Settings:
 
 	@bot.command()
 	@checks.is_owner_or_admin()
-	async def printsettings(self, ctx):
+	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers config file."
 		self.serverconfig = self.con.load_config()
 		config = self.serverconfig[str(ctx.guild.id)]
 		em = discord.Embed(colour=0xDEADBF)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
-		for settings in config:
-			if settings != "custom_commands" and settings != "warnings":
-				settingcontent = ""
-				for x in config[settings].items():
-					settingcontent += str(x).strip("()") + "\n"
-				em.add_field(name=settings, value=settingcontent, inline=False)
-			elif settings == "custom_commands":
-				em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
-		return await ctx.send(embed=em)
+		if option in config:
+			settingcontent = ""
+			for x in config[option].items():
+				settingcontent += str(x).strip("()") + "\n"
+			em.add_field(name=option, value=settingcontent, inline=False)
+			return await ctx.send(embed=em)
+		else:
+			for settings in config:
+				if settings != "custom_commands" and settings != "warnings":
+					settingcontent = ""
+					for x in config[settings].items():
+						settingcontent += str(x).strip("()") + "\n"
+					em.add_field(name=settings, value=settingcontent, inline=False)
+				elif settings == "custom_commands":
+					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
+			return await ctx.send(embed=em)
 
 	@group()
 	@checks.is_admin_or_mod()

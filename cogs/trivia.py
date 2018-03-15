@@ -213,7 +213,8 @@ class Trivia:
 
 	@commands.group(aliases=["tr"])
 	async def trivia(self, ctx):
-		if ctx.invoked_subcommand == self.start:
+		"""Command group for the Roxbot Trivia game."""
+		if ctx.invoked_subcommand == self.start and not self.games[ctx.channel.id]:
 			embed = discord.Embed(colour=0xDEADBF)
 			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
@@ -223,6 +224,7 @@ class Trivia:
 
 	@trivia.command()
 	async def about(self, ctx):
+		"""He;p using the trivia game."""
 		embed = discord.Embed(
 			title="About Roxbot Trivia",
 			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
@@ -237,12 +239,13 @@ class Trivia:
 	@trivia.command()
 	@commands.bot_has_permissions(manage_messages=True)
 	async def start(self, ctx, amount = "medium"):
+		"""Starts a trivia game and waits 20 seconds for other people to join."""
 		channel = ctx.channel
 		player = ctx.author
 		# Check if a game is already running and if so exit.
 		if channel.id in self.games:
 			# Game active in this channel already
-			await ctx.send(discord.Embed(description="A game is already being run in this channel.", colour=self.error_colour))
+			await ctx.send(embed=discord.Embed(description="A game is already being run in this channel.", colour=self.error_colour))
 			await asyncio.sleep(2)
 			return await ctx.message.delete()
 
