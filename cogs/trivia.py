@@ -6,7 +6,6 @@ import requests
 import datetime
 from html import unescape
 from random import shuffle
-from operator import itemgetter
 from collections import OrderedDict
 from discord.ext import commands
 
@@ -66,10 +65,10 @@ class Trivia:
 			answers += "{} {}\n".format(str(self.emojis[x]), choices[x])
 		return embed, answers, correct
 
-	def calculate_scores(self, channel, message):
+	def calculate_scores(self, channel, time_asked):
 		score_added = {}
 		for user, time in self.games[channel.id]["correct_users"].items():
-			seconds = (time - message.edited_at).total_seconds()
+			seconds = (time - time_asked).total_seconds()
 			seconds = round(seconds, 1)
 			if seconds < 10:
 				score = (10 - seconds) * 100
@@ -80,17 +79,10 @@ class Trivia:
 		return score_added
 
 	def sort_leaderboard(self, scores):
-		# TODO: Fix this so it works.
-		return OrderedDict(sorted(scores.items(), key=scores.get))
+		return OrderedDict(sorted(scores.items(), key=lambda x:x[1], reverse=True))
 
 	def display_leaderboard(self, channel, scores_to_add):
 		updated_scores = dict(self.games[channel.id]["players"])
-		for player in updated_scores:
-			if player in self.games[channel.id]["correct_users"]:
-				updated_scores[player] = str(self.correct_emoji) + " " + str(updated_scores[player]) + " (+{})".format(
-					scores_to_add[player])
-			else:
-				updated_scores[player] = str(self.incorrect_emoji) + " " + str(updated_scores[player])
 		updated_scores = self.sort_leaderboard(updated_scores)
 		output_scores = ""
 		count = 1
@@ -98,8 +90,15 @@ class Trivia:
 			player = str(self.bot.get_user(scores))
 			if not player:
 				player = scores
-
-			output_scores += "{}) {}: {}\n".format(count, player, updated_scores[scores])
+			if player in self.games[channel.id]["correct_users"]:
+				emoji = self.correct_emoji
+			else:
+				emoji = self.incorrect_emoji
+			output_scores += "{}) {}: {} {}".format(count, player, emoji, updated_scores[scores])
+			if scores in scores_to_add:
+				output_scores += "(+{})\n".format(scores_to_add[scores])
+			else:
+				output_scores += "\n"
 			count += 1
 
 		return discord.Embed(title="Scores", description=output_scores)
@@ -125,21 +124,29 @@ class Trivia:
 			message = await ctx.send(embed=output)
 			await self.add_question_reactions(message, question)
 			output.description = answers
+			output.set_footer(text="Time left to answer question: 20")
 			await message.edit(embed=output)
+			time_asked = datetime.datetime.now()
 
 			# Set up variables for checking the question and if it's being answered
 			players_yet_to_answer = list(self.games[channel.id]["players"].keys())
 			self.games[channel.id]["current_question"] = message
 
 			# Wait for answers
+			count = 1
 			for x in range(20):
+				output.set_footer(text="Time left to answer question: {}".format(20-count))
+				await message.edit(embed=output)
 				for answered in self.games[channel.id]["players_answered"]:
 					if answered in players_yet_to_answer:
 						players_yet_to_answer.remove(answered)
 				if not players_yet_to_answer:
 					break
 				else:
+					count += 1
 					await asyncio.sleep(1)
+			output.set_footer(text="")
+			await message.edit(embed=output)
 
 			# Code for checking if there are still players in the game goes here to make sure nothing breaks.
 			if not self.games[channel.id]["players"]:
@@ -163,7 +170,7 @@ class Trivia:
 			await ctx.send(embed=embed)
 
 			# Scores
-			scores_to_add = self.calculate_scores(channel, message)
+			scores_to_add = self.calculate_scores(channel, time_asked)
 			for user in scores_to_add:
 				self.games[channel.id]["players"][user] += scores_to_add[user]
 
@@ -177,14 +184,7 @@ class Trivia:
 			question_count += 1
 
 
-		# Game Ends
-		# Some stuff here displaying score
-		final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
-		self.games.pop(channel.id)
-		winner = self.bot.get_user(list(final_scores.keys())[0])
-		winning_score = list(final_scores.values())[0]
-		await ctx.send(embed=discord.Embed(
-			description="{} won with a score of {}".format(winner.mention, winning_score)))
+
 
 	# Discord Events
 
@@ -263,6 +263,22 @@ class Trivia:
 		self.games[channel.id]["active"] = 1
 		await ctx.send("GAME START")
 		await self.game(ctx, channel, questions["results"])
+
+		# Game Ends
+		# Some stuff here displaying score
+		final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
+		self.games.pop(channel.id)
+		winner = self.bot.get_user(list(final_scores.keys())[0])
+		winning_score = list(final_scores.values())[0]
+		embed = discord.Embed(description="{} won with a score of {}".format(winner.mention, winning_score))
+		await ctx.send(embed=embed)
+
+	@trivia.error
+	async def trivia_err(self, ctx, error):
+		# This is here to make sure that if an error occurs, the game will be removed from the dict and will safely exit the game, then raise the error like normal.
+		self.games.pop(ctx.channel.id)
+		await ctx.send("An error has occured ;-; Exiting the game...")
+		raise error
 
 	@trivia.command()
 	async def join(self, ctx):
