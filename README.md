@@ -35,8 +35,8 @@ RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.
 ###### Boring Stuff
 - Roxbot has been ported over to the 1.0 version of discord.py. Meaning that she will actually be upto date with new discord changes for once. This also means that there is quite a few new features and bug fixes with this version. 
 - New fil structure that will be easier to read and know whats going on.
-- servers.json is no longer versioned .
-- Unhidden all commands so that it should be easier for mods to know the mod commands..
+- servers.json is no longer versioned.
+- Unhidden all commands so that it should be easier for mods to know the mod commands.
 
 ###### Bug Fixes
 - emoji command works with animated emoji.
