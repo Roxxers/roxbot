@@ -226,7 +226,7 @@ class Trivia:
 			title="About Roxbot Trivia",
 			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
 			colour=0xDEADBF)
-		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
+		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
 		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by adding either short (5 questions) or long (15 questions) at the end of the start command. `{}trivia start short`. The default is 10 and this is the medium option.".format(self.bot.command_prefix))
 		embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 		embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
@@ -264,7 +264,7 @@ class Trivia:
 
 		# Waiting for players
 		await ctx.send(embed=discord.Embed(description="Starting Roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour))
-		#await asyncio.sleep(20)
+		await asyncio.sleep(20)
 
 		# Get questions
 		questions = self.get_questions(length[amount])
