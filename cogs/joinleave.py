@@ -21,8 +21,8 @@ class JoinLeave():
 		else:
 			message = self.servers[str(member.guild.id)]["greets"]["default-message"]
 		em = discord.Embed(
-			title="Welcome to {}!".format(member.server),
-			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.server, message),
+			title="Welcome to {}!".format(member.guild),
+			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.guild, message),
 			colour=0xDEADBF)
 		em.set_thumbnail(url=member.avatar_url)
 
