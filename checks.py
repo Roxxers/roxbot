@@ -22,7 +22,9 @@ def is_admin_or_mod():
 			mod_roles = ServerConfig().load_config()[str(ctx.guild.id)]["perm_roles"]["mod"]
 			print(admin_roles)
 			print(mod_roles)
-			for role in ctx.message.author.roles:
+			for role in ctx.author.roles:
+				print(role.id in mod_roles)
+				print(role.id in admin_roles)
 				if role.id in mod_roles or role.id in admin_roles:
 					return True
 		return False
