@@ -51,6 +51,8 @@ class ErrHandle:
 				cc = self.servers[str(ctx.guild.id)]["custom_commands"]
 				if ctx.invoked_with in cc["1"]:
 					embed = None
+				elif len(ctx.message.content) < 6: # Should avoid puncutation emoticons while also not being big enough to trigger for mispelt commands,
+					embed = None
 				else:
 					embed = discord.Embed(description="That Command doesn't exist.")
 			elif isinstance(error, commands.BotMissingPermissions):
