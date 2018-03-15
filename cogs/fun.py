@@ -134,11 +134,14 @@ class Fun:
 
 	@bot.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
-		"""RETURNS FROG TIPS FOR YOU FROG."""
+		"""RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG"""
 		endpoint = "https://frog.tips/api/1/tips/"
 		croak = requests.get(endpoint)
 		tip = random.choice(croak.json()["tips"])
 		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=discord.Colour(0x4C943D))
+		embed.set_author(name="HOW TO OPERATE YOUR FROG")
+		embed.set_image(url="https://frog.tips/static/frog.png")
+		embed.set_footer(text="https://frog.tips")
 		return await ctx.send(embed=embed)
 
 def setup(bot_client):
