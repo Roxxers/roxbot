@@ -7,7 +7,7 @@ from config.server_config import ServerConfig
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = False  # For debugging
+		self.dev = True  # For debugging
 		self.servers = ServerConfig().servers
 
 	async def on_error(self, event, *args, **kwargs):
@@ -27,8 +27,7 @@ class ErrHandle:
 			raise error
 		elif isinstance(error, commands.CommandInvokeError):
 			embed = discord.Embed(title='Command Error', colour=err_colour)
-			embed.description = error.original
-			embed.add_field(name='Error', value=str(error))
+			embed.description = str(error)
 			embed.add_field(name='Server', value=ctx.guild)
 			embed.add_field(name='Channel', value=ctx.channel.mention)
 			embed.add_field(name='User', value=ctx.author)
