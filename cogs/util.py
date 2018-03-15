@@ -47,16 +47,16 @@ class Util():
 		"""
 		if not member:
 			member = ctx.author
-		try:
+		if member.activity:
 			if member.activity.type == discord.ActivityType.playing:
 				activity = "Playing **{}**".format(member.activity.name)
 			elif member.activity.type == discord.ActivityType.streaming:
 				activity = "Streaming **{}**".format(member.activity.name)
-			elif member.activity.tyoe == discord.ActivityType.listening:
+			elif member.activity.type == discord.ActivityType.listening:
 				activity = "Listening to **{} by {}**".format(member.activity.title, member.activity.artist)
 			else:
 				activity = ""
-		except AttributeError:
+		else:
 			activity = ""
 
 		colour = member.colour.value
