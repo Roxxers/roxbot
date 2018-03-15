@@ -10,8 +10,8 @@ class Admin():
 	"""
 	Admin Commands for those admins
 	"""
-	def __init__(self, Bot):
-		self.bot = Bot
+	def __init__(self, bot_client):
+		self.bot = bot_client
 		self.slow_mode = False
 		self.slow_mode_channels = {}
 		self.users = {}
@@ -174,5 +174,5 @@ class Admin():
 				return await ctx.send("Could not find user in warning list.")
 
 
-def setup(Bot):
-	Bot.add_cog(Admin(Bot))
+def setup(bot_client):
+	bot_client.add_cog(Admin(bot_client))
