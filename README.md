@@ -4,7 +4,7 @@
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://github.com/RainbowDinoaur/roxbot/)
 [![Say Thanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?style=flat-square)](https://saythanks.io/to/Roxxers)
 
-A simple Discord Bot used by me personally, written for fun.
+RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py)
 
 ## Simple setup
 
@@ -27,17 +27,24 @@ A simple Discord Bot used by me personally, written for fun.
 - A whole trivia game, right in your discords. Using the Open Trivia DB!
 - A complete overhaul of the settings cog so that the settings commands no longer suck and should be easier to use.
 - Most, if not all, commands now have documentation in the bot on what they do and how to use them.
+- Bot may be easier to use. I am unsure though.
 - Added error handling that will actually tell people when errors occur instead of being silent.
+- NSFW now has a blacklist feature that can be edited by mods and admins. Just basic tag filters.
+- **FROGTIPS**
 
 ###### Boring Stuff
 - Roxbot has been ported over to the 1.0 version of discord.py. Meaning that she will actually be upto date with new discord changes for once. This also means that there is quite a few new features and bug fixes with this version. 
 - New fil structure that will be easier to read and know whats going on.
-- servers.json is no longer versioned 
-- Unhidden all commands so that it should be easier for mods to know the mod commands.
+- servers.json is no longer versioned .
+- Unhidden all commands so that it should be easier for mods to know the mod commands..
 
 ###### Bug Fixes
-- emoji command works with animated emoji
-- avatar command works with animated avatars
+- emoji command works with animated emoji.
+- avatar command works with animated avatars.
+- Non-prefix multi word custom commands should work now and should be removable.
+- Fixed issues with the warning commands when a warned user wasn't in the server.
+- Fixed bug where capitalisation in the subreddit command would return nothing.
+- Twitch shilling now doesn't trigger when someone uses spotify thanks to discord.py update. Also the code is a lot nicer now.
 
 #### v1.3.4
 ###### Performance
