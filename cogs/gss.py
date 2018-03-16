@@ -8,7 +8,7 @@ from config.server_config import ServerConfig
 
 
 def is_gss():
-	return commands.check(lambda ctx: ctx.guild.id == "393764974444675073")
+	return commands.check(lambda ctx: ctx.guild.id == str(393764974444675073))
 
 def is_not_nsfw_disabled():
 	def predicate(ctx):
