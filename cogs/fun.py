@@ -1,5 +1,6 @@
 import discord
 import random
+import re
 import checks
 import requests
 from discord.ext.commands import bot
@@ -19,96 +20,90 @@ class Fun:
 		Example:
 			.roll 2d20h1 + 7 # Rolls two D20s takes the highest 1, then adds 7
 		"""
-		times = 1
-		# sanitise input by removing all spaces, converting to lower case, and making all terms separate with a + even if negative
-		expression = expression.lower().replace(' ','').replace('-','+-')
+		# sanitise input by removing all spaces, converting to lower case
+		expression = expression.lower().replace(' ','')
 		# check end of expression for a 'x<number>'
 		parts = expression.split('x',1)
+		times = 1
 		if len(parts) == 2:
 			try:
 				times = int(parts[1])
+				if times < 1:
+					time = 1;
 			except ValueError:
 				times = 1##might want to add error report to user to say its not valid so they dont make the mistake again
-		dice = parts[0].split('+')
-		#each element of dice should be one of:
-		#	<number>
-		#	d<number(positive)>
-		#	<number>d<number(positive)>[selector][number(positive)]
-		exp = []
-		for i in range(len(dice)):
-			temp = dice[i].split('d',1)
-			if temp[0]=='':
-				temp[0] = 1
-			temp=temp+temp[1].split('l',1)
-			del temp[1]
-			if len(temp)==3:
-				temp[2] = '-' + temp[2]
+		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])
+		if m == []:
+			return await ctx.send('Ase TBTerra to write proper useage')
+		dice = []
+		for item in m:
+			temp = [0]*5
+			temp[0] = 1 if item[0] == '' else -1
+			if 'd' in item[1]:
+				if item[2] == '':
+					temp[1] = 1
+					temp[2] = int(item[3])
+				else:
+					temp[1] = int(item[2])
+					temp[2] = int(item[3])
 			else:
-				temp = temp + temp[1].split('h',1)
-				del temp[1]
-			for j in range(len(temp)):
-				try:
-					temp[j] = int(temp[j])
-				except ValueError:
-					##big error but its hard to tell what caused it
-					return await ctx.send("Something went wrong. check your formatting, or stop putting words in the expression")
-			dice[i] = temp
+				temp[1] = int(item[1])
+				temp[2] = 1
+			temp[3] = 0 if item[4] == '' else int(item[4][1:])
+			if item[5] == '':
+				temp[4] = 0
+			else:
+				if item[5][0] == 'h':
+					temp[4] = int(item[5][1:])
+				else:
+					temp[4] = -int(item[5][1:])
+			dice.append(temp)
 		response = ''
 		for i in range(times):
-			if times > 1:
-				response += 'roll {}: '.format(i)
 			total = 0
-			for die in dice:
-				if len(die) == 1:
-					total += die[0]
-					if die[0] >= 0:
-						response += '+'
-					response += '{}'.format(die[0])
-				elif len(die) == 2:
-					if die[0] >= 0:
-						response += '+('
-					else:
-						response += '-('
-					for j in range(abs(die[0])):
-						temp = random.randint(1,die[1])
-						response += '{},'.format(temp)
-						if die[0] >= 0:
-							total += temp
-						else:
-							total -= temp
-					response = response[:-1]+')'
-				elif len(die) == 3:
-					mul=0
-					if die[0] >= 0:
-						response += '+('
-						mul= 1
-					else:
-						response += '-('
-						mul= -1
-					temp=[]
-					for j in range(abs(die[0])):
-						temp.append(random.randint(1,die[1]))
-					temp.sort(reverse=True)
-					for j in range(abs(die[0])):
-						if die[2] > 0:
-							if j < die[2]:
-								response += '{},'.format(temp[j])
-								total += mul * temp[j]
-							else:
-								response += '~~{}~~,'.format(temp[j])
-						else:
-							if j >= abs(die[0])+die[2]:
-								response += '{},'.format(temp[j])
-								total += mul * temp[j]
-							else:
-								response += '~~{}~~,'.format(temp[j])
-					response = response[:-1]+')'
+			if times > 1:
+				response += 'Roll {}: '.format(i+1)
+			else:
+				response += 'Rolled: '
+			for j in range(len(dice)):
+				if j != 0:
+					response += ' + '
+				if dice[j][0] == -1:
+					response += '-'
+				if dice[j][2] == 1:
+					response += '{}'.format(dice[j][1])
+					total += dice[j][0] * dice[j][1]
 				else:
-					##something bizarre happened
-					return await ctx.send("Out of cheese error. Please reboot universe")
-			response += ' total:{}'.format(total)
-			if i < (times-1):
-				response += '\n'
+					response += '('
+					temp = []
+					for k in range(dice[j][1]):
+						t = [0,'']
+						t[0] = random.randint(1,dice[j][2])
+						t[1] = '{}'.format(t[0])
+						if t[0] <= dice[j][3]:
+							t[0] = random.randint(1,dice[j][2])
+							t[1] += '__{}__'.format(t[0])
+						temp.append(t)
+					def takeFirst(ele):
+						return ele[0]
+					if dice[j][4] > 0:
+						temp.sort(key=takeFirst, reverse=True)
+						for k in range(len(temp)):
+							if k >= dice[j][4]:
+								temp[k][1] = '~~' + temp[k][1] + '~~'
+								temp[k][0] = 0
+					if dice[j][4] < 0:
+						temp.sort(key=takeFirst)
+						for k in range(len(temp)):
+							if k >= -dice[j][4]:
+								temp[k][1] = '~~' + temp[k][1] + '~~'
+								temp[k][0] = 0
+					for k in range(len(temp)):
+						response += '{},'.format(temp[k][1])
+						total+= dice[j][0] * temp[k][0]
+					response = response[:-1] + ')'
+			response += ' Totaling: {}'.format(total)
+			if i < (times-1): response += '\n'
 		return await ctx.send(response)
 
 	@checks.isnt_anal()
