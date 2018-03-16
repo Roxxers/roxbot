@@ -22,6 +22,8 @@ class GaySoundsShitposting():
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 		self.guild = self.bot.get_guild(393764974444675073)
+		print(self.guild)
+		print(self.guild.id == 393764974444675073)
 		self.nsfw_image_role = utils.get(self.guild.roles, id=394941004043649036)
 		self.selfie_role = utils.get(self.guild.roles, id=394939389823811584)
 
