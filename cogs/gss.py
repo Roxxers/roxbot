@@ -27,7 +27,7 @@ class GaySoundsShitposting():
 
 	def tatsumaki_api_call(self, member):
 		base = "https://api.tatsumaki.xyz/"
-		url = base + "guilds/" + self.guild.id + "/members/" + member.id + "/stats"
+		url = base + "guilds/" + str(self.guild.id) + "/members/" + member.id + "/stats"
 		r = requests.get(url,headers={"Authorization":load_config.tat_token})
 		return r.json()
 
