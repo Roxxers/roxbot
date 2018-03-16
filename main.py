@@ -53,14 +53,14 @@ async def on_ready():
 @bot.event
 async def on_server_join(server):
 	server_config.servers = server_config.load_config()
-	server_config.servers[server.id] = server_config.servers_template["example"]
+	server_config.servers[str(server.id)] = server_config.servers_template["example"]
 	server_config.update_config(server_config.servers)
 
 
 @bot.event
 async def on_server_remove(server):
 	server_config.servers = server_config.load_config()
-	server_config.servers.pop(server.id)
+	server_config.servers.pop(str(server.id))
 	server_config.update_config(server_config.servers)
 
 
@@ -69,7 +69,6 @@ async def on_message(message):
 	if blacklisted(message.author):
 		return
 	return await bot.process_commands(message)
-
 
 @bot.command()
 async def about(ctx):

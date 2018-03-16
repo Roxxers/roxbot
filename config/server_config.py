@@ -64,25 +64,25 @@ class ServerConfig():
 	def error_check(self, servers):
 		for server in servers:
 			# Server ID needs to be made a string for this statement because keys have to be strings in JSON. Which is annoying now we use int for ids.
-			server.id = str(server.id)
-			if str(server.id) not in self.servers:
-				self.servers[server.id] = self.servers_template["example"]
+			server_id = str(server.id)
+			if str(server_id) not in self.servers:
+				self.servers[server_id] = self.servers_template["example"]
 				self.update_config(self.servers)
 				print(
 					"WARNING: The config file for {} was not found. A template has been loaded and saved. All cogs are turned off by default.".format(
 						server.name.upper()))
 			else:
 				for cog_setting in self.servers_template["example"]:
-					if cog_setting not in self.servers[server.id]:
-						self.servers[server.id][cog_setting] = self.servers_template["example"][
+					if cog_setting not in self.servers[server_id]:
+						self.servers[server_id][cog_setting] = self.servers_template["example"][
 							cog_setting]
 						self.update_config(self.servers)
 						print(
 							"WARNING: The config file for {} was missing the {} cog. This has been fixed with the template version. It is disabled by default.".format(
 								server.name.upper(), cog_setting.upper()))
 					for setting in self.servers_template["example"][cog_setting]:
-						if setting not in self.servers[server.id][cog_setting]:
-							self.servers[server.id][cog_setting][setting] = self.servers_template["example"][
+						if setting not in self.servers[server_id][cog_setting]:
+							self.servers[server_id][cog_setting][setting] = self.servers_template["example"][
 								cog_setting][setting]
 							self.update_config(self.servers)
 							print(
