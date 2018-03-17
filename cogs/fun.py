@@ -131,7 +131,7 @@ class Fun:
 		WIDE_MAP[0x20] = 0x3000
 		convert = str(' '.join(convert)).translate(WIDE_MAP)
 		if ctx.guild.id == 393764974444675073:
-			self.bot.get_channel(394959819796381697).send("{} used the aesthetics command passing the argument '{}'".format(str(ctx.author), ' '.join(convert)))
+			await self.bot.get_channel(394959819796381697).send("{} used the aesthetics command passing the argument '{}'".format(str(ctx.author), ' '.join(convert)))
 		return await ctx.send(convert)
 
 	@bot.command(aliases=["ft", "frog"])
