@@ -36,8 +36,8 @@ class GaySoundsShitposting():
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
 		member = ctx.author
-		required_score = int(self.servers[self.guild.id]["gss"]["required_score"])
-		days = int(self.servers[self.guild.id]["gss"]["required_days"])
+		required_score = int(self.servers[str(self.guild.id)]["gss"]["required_score"])
+		days = int(self.servers[str(self.guild.id)]["gss"]["required_days"])
 		data = self.tatsumaki_api_call(member)
 
 		if self.selfie_role in member.roles:
@@ -60,8 +60,8 @@ class GaySoundsShitposting():
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
 		member = ctx.author
-		required_score = int(self.servers[self.guild.id]["gss"]["required_score"])
-		days = int(self.servers[self.guild.id]["gss"]["required_days"])
+		required_score = int(self.servers[str(self.guild.id)]["gss"]["required_score"])
+		days = int(self.servers[str(self.guild.id)]["gss"]["required_days"])
 		data = self.tatsumaki_api_call(member)
 
 		if self.nsfw_image_role in member.roles:
