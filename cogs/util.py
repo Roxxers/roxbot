@@ -159,8 +159,7 @@ class Util():
 
 	@bot.command()
 	@is_owner()
-	async def echo(self, ctx, channel, *, message: str):
-		channel = self.bot.get_channel(channel)
+	async def echo(self, ctx, channel: discord.TextChannel, *, message: str):
 		await channel.send(message)
 		return await ctx.send(":point_left:")
 
