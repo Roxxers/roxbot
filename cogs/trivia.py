@@ -152,7 +152,8 @@ class Trivia:
 					await message.edit(embed=output)
 					await asyncio.sleep(1)
 
-			output.set_footer(text="")
+			footer = output.footer.text.split("|")
+			output.set_footer(text="{}|{}| Time Left: Answered".format(footer[0], footer[1]))
 			await message.edit(embed=output)
 
 			# Clean up when answers have been submitted
