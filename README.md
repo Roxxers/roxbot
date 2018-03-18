@@ -21,6 +21,11 @@ RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.
 
 ## Changelog
 
+#### v1.4.1
+###### Bug Fixes
+- Lots of small bug fixes todo with the move over to int ID's and the internal settings being :b:roke.
+
+
 #### v1.4.0
 
 ###### New Stuff!
