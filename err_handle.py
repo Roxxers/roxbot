@@ -48,6 +48,7 @@ class ErrHandle:
 			elif isinstance(error, commands.TooManyArguments):
 				embed = discord.Embed(description="Too many arguments given.")
 			elif isinstance(error, commands.CommandNotFound):
+				self.servers = ServerConfig().load_config()
 				cc = self.servers[str(ctx.guild.id)]["custom_commands"]
 				if ctx.invoked_with in cc["1"]:
 					embed = None
