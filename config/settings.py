@@ -209,15 +209,15 @@ class Settings:
 			self.serverconfig[self.guild_id]["self_assign"]["enabled"] = 0
 			await ctx.send("'self_assign' was disabled :cry:")
 		elif selection == "addrole":
-			if role.id in self.serverconfig[ctx.message.guild.id]["self_assign"]["roles"]:
+			if role.id in self.serverconfig[self.guild_id]["self_assign"]["roles"]:
 				return await ctx.send("{} is already a self-assignable role.".format(role.name),
 										  delete_after=self.con.delete_after)
 
-			self.serverconfig[ctx.message.guild.id]["self_assign"]["roles"].append(role.id)
+			self.serverconfig[self.guild_id]["self_assign"]["roles"].append(role.id)
 			await ctx.send('Role "{}" added'.format(str(role)))
 		elif selection == "removerole":
-			if role.id in self.serverconfig[ctx.message.guild.id]["self_assign"]["roles"]:
-				self.serverconfig[ctx.message.guild.id]["self_assign"]["roles"].remove(role.id)
+			if role.id in self.serverconfig[self.guild_id]["self_assign"]["roles"]:
+				self.serverconfig[self.guild_id]["self_assign"]["roles"].remove(role.id)
 				self.con.update_config(self.serverconfig)
 				await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
 			else:
@@ -254,11 +254,11 @@ class Settings:
 				await ctx.send("'goodbyes' was disabled :cry:")
 		elif selection == "welcomechannel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[ctx.message.guild.id]["greets"]["welcome-channel"] = channel.id
+			self.serverconfig[self.guild_id]["greets"]["welcome-channel"] = channel.id
 			await ctx.send("{} has been set as the welcome channel!".format(channel.mention))
 		elif selection == "goodbyeschannel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[ctx.message.guild.id]["goodbyes"]["goodbye-channel"] = channel.id
+			self.serverconfig[self.guild_id]["goodbyes"]["goodbye-channel"] = channel.id
 			await ctx.send("{} has been set as the goodbye channel!".format(channel.mention))
 		elif selection == "custommessage":
 			self.serverconfig[self.guild_id]["greets"]["custom-message"] = changes
@@ -305,26 +305,26 @@ class Settings:
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
 		if selection == "addadmin":
-			if role.id not in self.serverconfig[ctx.message.guild.id]["perm_roles"]["admin"]:
-				self.serverconfig[ctx.message.guild.id]["perm_roles"]["admin"].append(role.id)
+			if role.id not in self.serverconfig[self.guild_id]["perm_roles"]["admin"]:
+				self.serverconfig[self.guild_id]["perm_roles"]["admin"].append(role.id)
 				await ctx.send("'{}' has been added to the Admin role list.".format(role.name))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(role.name))
 		elif selection == "addmod":
-			if role.id not in self.serverconfig[ctx.message.guild.id]["perm_roles"]["mod"]:
-				self.serverconfig[ctx.message.guild.id]["perm_roles"]["mod"].append(role.id)
+			if role.id not in self.serverconfig[self.guild_id]["perm_roles"]["mod"]:
+				self.serverconfig[self.guild_id]["perm_roles"]["mod"].append(role.id)
 				await ctx.send("'{}' has been added to the Mod role list.".format(role.name))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(role.name))
 		elif selection == "removeadmin":
 			try:
-				self.serverconfig[ctx.message.guild.id]["perm_roles"]["admin"].remove(role.id)
+				self.serverconfig[self.guild_id]["perm_roles"]["admin"].remove(role.id)
 				await ctx.send("'{}' has been removed from the Admin role list.".format(role.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
 		elif selection == "removemod":
 			try:
-				self.serverconfig[ctx.message.guild.id]["perm_roles"]["mod"].remove(role.id)
+				self.serverconfig[self.guild_id]["perm_roles"]["mod"].remove(role.id)
 				await ctx.send("'{}' has been removed from the Mod role list.".format(role.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
@@ -339,13 +339,13 @@ class Settings:
 		selection = selection.lower()
 		if selection == "loggingchannel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[ctx.message.guild.id]["gss"]["log_channel"] = channel.id
+			self.serverconfig[self.guild_id]["gss"]["log_channel"] = channel.id
 			await ctx.send("Logging Channel set to '{}'".format(channel.name))
 		elif selection == "requireddays":
-			self.serverconfig[ctx.message.guild.id]["gss"]["required_days"] = int(changes)
+			self.serverconfig[self.guild_id]["gss"]["required_days"] = int(changes)
 			await ctx.send("Required days set to '{}'".format(str(changes)))
 		elif selection == "requiredscore":
-			self.serverconfig[ctx.message.guild.id]["gss"]["required_score"] = int(changes)
+			self.serverconfig[self.guild_id]["gss"]["required_score"] = int(changes)
 			await ctx.send("Required score set to '{}'".format(str(changes)))
 		else:
 			return await ctx.send("No valid option given.")
@@ -372,27 +372,27 @@ class Settings:
 			await ctx.send("'nsfw' was disabled :cry:")
 		elif selection == "addchannel":
 			channel = self.get_channel(ctx, changes)
-			if channel.id not in self.serverconfig[ctx.message.guild.id]["nsfw"]["channels"]:
-				self.serverconfig[ctx.message.guild.id]["nsfw"]["channels"].append(channel.id)
+			if channel.id not in self.serverconfig[self.guild_id]["nsfw"]["channels"]:
+				self.serverconfig[self.guild_id]["nsfw"]["channels"].append(channel.id)
 				await ctx.send("'{}' has been added to the nsfw channel list.".format(channel.name))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(channel.name))
 		elif selection == "removechannel":
 			channel = self.get_channel(ctx, changes)
 			try:
-				self.serverconfig[ctx.message.guild.id]["nsfw"]["channels"].remove(channel.id)
+				self.serverconfig[self.guild_id]["nsfw"]["channels"].remove(channel.id)
 				await ctx.send("'{}' has been removed from the nsfw channel list.".format(channel.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
 		elif selection == "addbadtag":
-			if changes not in self.serverconfig[ctx.guild.id]["nsfw"]["blacklist"]:
-				self.serverconfig[ctx.guild.id]["nsfw"]["blacklist"].append(changes)
+			if changes not in self.serverconfig[self.guild_id]["nsfw"]["blacklist"]:
+				self.serverconfig[self.guild_id]["nsfw"]["blacklist"].append(changes)
 				await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(changes))
 		elif selection == "removebadtag":
 			try:
-				self.serverconfig[ctx.guild.id]["nsfw"]["blacklist"].remove(changes)
+				self.serverconfig[self.guild_id]["nsfw"]["blacklist"].remove(changes)
 				await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
 			except ValueError:
 				return await ctx.send("That tag was not in the blacklisted tag list.")
@@ -406,13 +406,13 @@ class Settings:
 		"""Tells the bot where the server is anal or not.
 		This only changes if roxbot can do the suck and spank commands outside of the specified nsfw channels."""
 		self.serverconfig = self.con.load_config()
-		is_anal = self.serverconfig[ctx.message.guild.id]["is_anal"]["y/n"]
+		is_anal = self.serverconfig[self.guild_id]["is_anal"]["y/n"]
 		if is_anal == 0:
-			self.serverconfig[ctx.message.guild.id]["is_anal"]["y/n"] = 1
+			self.serverconfig[self.guild_id]["is_anal"]["y/n"] = 1
 			self.con.update_config(self.serverconfig)
 			return await ctx.send("I now know this server is anal")
 		else:
-			self.serverconfig[ctx.message.guild.id]["is_anal"]["y/n"] = 0
+			self.serverconfig[self.guild_id]["is_anal"]["y/n"] = 0
 			self.con.update_config(self.serverconfig)
 			return await ctx.send("I now know this server is NOT anal")
 
