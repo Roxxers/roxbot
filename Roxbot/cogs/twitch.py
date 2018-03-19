@@ -1,11 +1,11 @@
 import discord
 from discord.ext import commands
 
-import checks
-from config.server_config import ServerConfig
+from Roxbot import checks
+from Roxbot.settings.guild_settings import ServerConfig
 
 def blacklisted(user):
-	with open("config/blacklist.txt", "r") as fp:
+	with open("settings/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
 			if user.id+"\n" == line:
 				return True

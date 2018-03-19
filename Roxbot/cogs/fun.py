@@ -1,6 +1,6 @@
 import discord
 import random
-import checks
+from Roxbot import checks
 import requests
 from discord.ext.commands import bot
 

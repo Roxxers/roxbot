@@ -3,9 +3,8 @@ import sys
 import aiohttp
 import asyncio
 
-import checks
-import load_config
-from config.server_config import ServerConfig
+from Roxbot import checks, load_config
+from Roxbot.settings.guild_settings import ServerConfig
 
 import discord
 from discord.ext.commands import bot, group, is_owner, bot_has_permissions
@@ -51,13 +50,13 @@ class Settings:
 				mentions.remove(user)
 
 		if option in ['+', 'add']:
-			with open("config/blacklist.txt", "r") as fp:
+			with open("settings/blacklist.txt", "r") as fp:
 				for user in mentions:
 					for line in fp.readlines():
 						if user.id + "\n" in line:
 							mentions.remove(user)
 
-			with open("config/blacklist.txt", "a+") as fp:
+			with open("settings/blacklist.txt", "a+") as fp:
 				lines = fp.readlines()
 				for user in mentions:
 					if user.id not in lines:
@@ -66,9 +65,9 @@ class Settings:
 			return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
 
 		elif option in ['-', 'remove']:
-			with open("config/blacklist.txt", "r") as fp:
+			with open("settings/blacklist.txt", "r") as fp:
 				lines = fp.readlines()
-			with open("config/blacklist.txt", "w") as fp:
+			with open("settings/blacklist.txt", "w") as fp:
 				for user in mentions:
 					for line in lines:
 						if user.id + "\n" != line:
@@ -162,7 +161,7 @@ class Settings:
 	@bot.command()
 	@checks.is_owner_or_admin()
 	async def printsettings(self, ctx, option=None):
-		"OWNER OR ADMIN ONLY: Prints the servers config file."
+		"OWNER OR ADMIN ONLY: Prints the servers settings file."
 		self.serverconfig = self.con.load_config()
 		config = self.serverconfig[str(ctx.guild.id)]
 		em = discord.Embed(colour=0xDEADBF)

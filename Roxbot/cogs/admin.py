@@ -1,8 +1,8 @@
 import datetime
 import time
-import checks
+from Roxbot import checks
 import discord
-from config.server_config import ServerConfig
+from Roxbot.settings.guild_settings import ServerConfig
 from discord.ext.commands import bot, group, guild_only, bot_has_permissions
 
 
@@ -77,7 +77,7 @@ class Admin():
 	@warn.command()
 	async def add(self, ctx, user: discord.User = None, *, warning = ""):
 		"""Adds a warning to a user."""
-		# Warning in the config is a dictionary of user ids. The user ids are equal to a list of dictionaries.
+		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		self.servers = self.con.load_config()
 		warning_limit = 2
 		guild_id = str(ctx.guild.id)

@@ -2,7 +2,7 @@ import traceback
 import datetime
 import discord
 from discord.ext import commands
-from config.server_config import ServerConfig
+from Roxbot.settings.guild_settings import ServerConfig
 
 class ErrHandle:
 	def __init__(self, bot_client):

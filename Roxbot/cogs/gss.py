@@ -1,10 +1,10 @@
 import datetime
 import requests
-import load_config
+from Roxbot import load_config
 from discord import utils
 from discord.ext import commands
 from discord.ext.commands import bot
-from config.server_config import ServerConfig
+from Roxbot.settings.guild_settings import ServerConfig
 
 
 def is_gss():
@@ -26,7 +26,7 @@ class GaySoundsShitposting():
 	def tatsumaki_api_call(self, member):
 		base = "https://api.tatsumaki.xyz/"
 		url = base + "guilds/" + str(self.guild.id) + "/members/" + str(member.id) + "/stats"
-		r = requests.get(url,headers={"Authorization":load_config.tat_token})
+		r = requests.get(url, headers={"Authorization": load_config.tat_token})
 		return r.json()
 
 	@is_gss()

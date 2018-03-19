@@ -1,5 +1,5 @@
 import discord
-from config.server_config import ServerConfig
+from Roxbot.settings.guild_settings import ServerConfig
 
 
 class JoinLeave():

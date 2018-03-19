@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import checks
+from Roxbot import checks
 import discord
 import asyncio
 import requests

@@ -1,8 +1,8 @@
 import discord
 from discord.ext import commands
 
-import load_config
-from config.server_config import ServerConfig
+from Roxbot import load_config
+from Roxbot.settings.guild_settings import ServerConfig
 
 
 class SelfAssign():

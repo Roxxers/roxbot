@@ -1,8 +1,8 @@
 import random
-import checks
+from Roxbot import checks
 import requests
 from discord.ext.commands import bot
-from config.server_config import ServerConfig
+from Roxbot.settings.guild_settings import ServerConfig
 
 class NFSW():
 	def __init__(self, bot_client):

@@ -6,8 +6,8 @@ import os.path
 import datetime
 import discord
 from discord.ext import commands
-import load_config
-from config.server_config import ServerConfig
+from Roxbot import load_config
+from Roxbot.settings.guild_settings import ServerConfig
 
 
 # Sets up Logging that discord.py does on its own
@@ -26,7 +26,7 @@ bot = commands.Bot(
 )
 
 def blacklisted(user):
-	with open("config/blacklist.txt", "r") as fp:
+	with open("settings/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
 			if user.id+"\n" == line:
 				return True
@@ -101,11 +101,11 @@ if __name__ == "__main__":
 			"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
 		exit(0)
 
-	if not os.path.isfile("config/servers.json"):
-		with open("config/servers.json", "w+") as fp:
+	if not os.path.isfile("settings/servers.json"):
+		with open("settings/servers.json", "w+") as fp:
 			fp.write("{}")
 
 	start_time = time.time()
-	bot.load_extension("config.settings")
+	bot.load_extension("settings.settings")
 	bot.load_extension("err_handle")
 	bot.run(load_config.token)

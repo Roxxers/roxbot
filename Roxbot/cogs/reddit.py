@@ -1,10 +1,11 @@
 from discord.ext.commands import bot
-from config.server_config import ServerConfig
+from Roxbot.settings.guild_settings import ServerConfig
 from lxml import html
 import random
 import requests
 from bs4 import BeautifulSoup
-import checks
+from Roxbot import checks
+
 
 # Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
 # There is redundant code here that if removed would make it easier. But it might be handy in the future and isn't that bad.

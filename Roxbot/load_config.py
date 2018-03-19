@@ -1,7 +1,7 @@
 import configparser
 
 settings = configparser.ConfigParser()
-settings.read("settings/preferences.ini")
+settings.read("roxbot/settings/preferences.ini")
 
 command_prefix = settings["Roxbot"]["Command_Prefix"]
 token = settings["Roxbot"]["Token"]
@@ -22,15 +22,15 @@ embedcolour = 0xDEADBF
 # IF YOU ARE TESTING OR NOT IN THE GSS DISCORD, REMOVE "cogs.gss" FROM THE LIST
 
 cogs = [
-	"cogs.admin",
-	"cogs.fun",
-	"cogs.customcommands",
-	"cogs.joinleave",
-	"cogs.nsfw",
-	"cogs.reddit",
-	"cogs.selfassign",
-	"cogs.trivia",
-	"cogs.twitch",
-	"cogs.util",
-	#"cogs.gss"
+	"roxbot.cogs.admin",
+	"roxbot.cogs.fun",
+	"roxbot.cogs.customcommands",
+	"roxbot.cogs.joinleave",
+	"roxbot.cogs.nsfw",
+	"roxbot.cogs.reddit",
+	"roxbot.cogs.selfassign",
+	"roxbot.cogs.trivia",
+	"roxbot.cogs.twitch",
+	"roxbot.cogs.util",
+	#"roxbot.cogs.gss"
 ]
