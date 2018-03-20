@@ -1,7 +1,7 @@
 import configparser
 
 settings = configparser.ConfigParser()
-settings.read("roxbot/settings/preferences.ini")
+settings.read("Roxbot/preferences.ini")
 
 command_prefix = settings["Roxbot"]["Command_Prefix"]
 token = settings["Roxbot"]["Token"]

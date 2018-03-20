@@ -1,5 +1,19 @@
 import json
 
+
+def get(guilds):
+	guild_list = []
+	for guild in guilds:
+		guild = GuildSettings(guild)
+		guild_list.append(guild)
+	return guild_list
+
+def get_guild(guilds, wanted_guild):
+	for guild in guilds:
+		if guild.id == wanted_guild.id:
+			return guild
+	return None
+
 class GuildSettings(object):
 
 	__slots__ = ["settings", "id", "nsfw", "self_assign", "greets", "goodbyes", "twitch", "perm_roles", "custom_commands", "warnings", "is_anal", "gss", "guild_template"]
@@ -61,6 +75,7 @@ class GuildSettings(object):
 
 	def _error_check(self):
 		for server in self.settings:
+			print(server)
 			# Server ID needs to be made a string for this statement because keys have to be strings in JSON. Which is annoying now we use int for ids.
 			server_id = str(server.id)
 			if str(server_id) not in self.settings:
@@ -90,8 +105,10 @@ class GuildSettings(object):
 		print("")
 
 	def get_settings(self):
-		with open('settings/servers.json', 'r') as config_file:
+		with open('Roxbot/settings/servers.json', 'r') as config_file:
 			self.settings = json.load(config_file)
+		print(self.settings)
+		print(type(self.settings))
 		self._error_check()
 		self.nsfw = self.settings[str(self.id)]["nsfw"]
 		self.self_assign = self.settings[str(self.id)]["self_assign"]
