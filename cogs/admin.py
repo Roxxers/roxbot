@@ -86,14 +86,14 @@ class Admin():
 			"date": time.time(),
 			"warning": warning
 		}
-		user.id = str(user.id)
-		if not user.id in self.servers[guild_id]["warnings"]:
-			self.servers[guild_id]["warnings"][user.id] = []
-		self.servers[guild_id]["warnings"][user.id].append(warning_dict)
+		user_id = str(user.id)
+		if not user_id in self.servers[guild_id]["warnings"]:
+			self.servers[guild_id]["warnings"][user_id] = []
+		self.servers[guild_id]["warnings"][user_id].append(warning_dict)
 
 		self.con.update_config(self.servers)
 
-		amount_warnings = len(self.servers[guild_id]["warnings"][user.id])
+		amount_warnings = len(self.servers[guild_id]["warnings"][user_id])
 		if amount_warnings > warning_limit:
 			await ctx.author.send("{} has been reported {} time(s). This is a reminder that this is over the set limit of {}.".format(
 					str(user), amount_warnings, warning_limit))
@@ -119,10 +119,10 @@ class Admin():
 						output += "{}: {} Warning(s)\n".format(member, len(
 							self.servers[guild_id]["warnings"][member]))
 			return await ctx.send(output)
-		user.id = str(user.id)
-		if not self.servers[guild_id]["warnings"][user.id]:
-			self.servers[guild_id]["warnings"].pop(user.id)
-		if not user.id in self.servers[guild_id]["warnings"]:
+		user_id = str(user.id)
+		if not self.servers[guild_id]["warnings"][user_id]:
+			self.servers[guild_id]["warnings"].pop(user_id)
+		if not user_id in self.servers[guild_id]["warnings"]:
 			return await ctx.send("This user doesn't have any warning on record.")
 		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
 		em.set_thumbnail(url=user.avatar_url)
@@ -143,15 +143,15 @@ class Admin():
 	async def remove(self, ctx, user: discord.User = None, index = None):
 		"""Removes one or all of the warnings for a user."""
 		self.servers = self.con.load_config()
-		user.id = str(user.id)
+		user_id = str(user.id)
 		guild_id = str(ctx.guild.id)
 		if index:
 			try:
 				index = int(index)
 				index -= 1
-				self.servers[guild_id]["warnings"][user.id].pop(index)
-				if not self.servers[guild_id]["warnings"][user.id]:
-					self.servers[guild_id]["warnings"].pop(user.id)
+				self.servers[guild_id]["warnings"][user_id].pop(index)
+				if not self.servers[guild_id]["warnings"][user_id]:
+					self.servers[guild_id]["warnings"].pop(user_id)
 
 				self.con.update_config(self.servers)
 				return await ctx.send("Removed Warning {} from {}".format(index+1, str(user)))
