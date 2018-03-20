@@ -98,7 +98,7 @@ class Fun:
 		"""
 		mentions = ctx.message.mentions
 		if not mentions:
-			return await self.bot.reply("You didn't mention anyone for me to rate.", delete_after=10)
+			return await ctx.send("You didn't mention anyone for me to rate.", delete_after=10)
 
 		rating = random.randrange(1, 11)
 		if rating <= 2:
