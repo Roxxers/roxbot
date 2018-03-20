@@ -146,14 +146,14 @@ class Settings:
 
 	@bot.command()
 	@is_owner()
-	async def restart(self):
+	async def restart(self, ctx):
 		"""Restarts the bot."""
 		await self.bot.logout()
 		return os.execl(sys.executable, sys.executable, *sys.argv)
 
 	@bot.command()
 	@is_owner()
-	async def shutdown(self):
+	async def shutdown(self, ctx):
 		"""Shuts down the bot."""
 		await self.bot.logout()
 		return exit(0)
