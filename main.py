@@ -7,7 +7,7 @@ import datetime
 import discord
 from discord.ext import commands
 from Roxbot import load_config
-from Roxbot.settings import guild_settings
+from Roxbot.settings import guild_settings as gs
 
 
 # Sets up Logging that discord.py does on its own
@@ -24,8 +24,6 @@ bot = commands.Bot(
 	activity=discord.Game(name="v{}".format(load_config.__version__), type=0)
 )
 
-
-
 def blacklisted(user):
 	with open("Roxbot/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
@@ -35,10 +33,7 @@ def blacklisted(user):
 
 @bot.event
 async def on_ready():
-	guild_set = guild_settings.get(bot.guilds)
-	for guild in bot.guilds:
-		guild.settings = guild_settings.get_guild(guild_set, guild)
-		print(guild.settings)
+	bot.settings = gs.get(bot.guilds)
 
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
@@ -56,14 +51,14 @@ async def on_ready():
 
 
 @bot.event
-async def on_server_join(server):
-	pass
+async def on_server_join(guild):
+	bot.settings = gs.get(guild)
 
 
 @bot.event
-async def on_server_remove(server):
-	pass
-
+async def on_server_remove(guild):
+	gs.remove_guild(guild)
+	bot.settings = gs.get(bot.guilds)
 
 @bot.event
 async def on_message(message):
