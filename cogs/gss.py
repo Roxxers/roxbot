@@ -47,7 +47,7 @@ class GaySoundsShitposting():
 		time = datetime.datetime.now() - ctx.author.joined_at
 
 		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
-			await member.add_roles(member, selfie_role, reason="Requested Selfie perms")
+			await member.add_roles(selfie_role, reason="Requested Selfie perms")
 			await ctx.send("You have now have the {} role".format(selfie_role.name))
 		else:
 			return await ctx.send(
