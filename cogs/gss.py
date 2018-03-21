@@ -22,8 +22,6 @@ class GaySoundsShitposting():
 		self.con = ServerConfig()
 		self.servers = self.con.servers
 		self.guild = self.bot.get_guild(393764974444675073)
-		self.nsfw_image_role = utils.get(self.guild.roles, id=394941004043649036)
-		self.selfie_role = utils.get(self.guild.roles, id=394939389823811584)
 
 	def tatsumaki_api_call(self, member):
 		base = "https://api.tatsumaki.xyz/"
@@ -35,6 +33,7 @@ class GaySoundsShitposting():
 	@bot.command(pass_context=True)
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
+		self.selfie_role = utils.get(self.guild.roles, id=394939389823811584)
 		member = ctx.author
 		required_score = int(self.servers[str(self.guild.id)]["gss"]["required_score"])
 		days = int(self.servers[str(self.guild.id)]["gss"]["required_days"])
@@ -59,6 +58,7 @@ class GaySoundsShitposting():
 	@bot.command(pass_context=True)
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
+		self.nsfw_image_role = utils.get(self.guild.roles, id=394941004043649036)
 		member = ctx.author
 		required_score = int(self.servers[str(self.guild.id)]["gss"]["required_score"])
 		days = int(self.servers[str(self.guild.id)]["gss"]["required_days"])
