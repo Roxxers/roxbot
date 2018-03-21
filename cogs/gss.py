@@ -33,21 +33,21 @@ class GaySoundsShitposting():
 	@bot.command(pass_context=True)
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
-		self.selfie_role = utils.get(self.guild.roles, id=394939389823811584)
+		selfie_role = utils.get(ctx.guild.roles, id=394939389823811584)
 		member = ctx.author
 		required_score = int(self.servers[str(self.guild.id)]["gss"]["required_score"])
 		days = int(self.servers[str(self.guild.id)]["gss"]["required_days"])
 		data = self.tatsumaki_api_call(member)
 
-		if self.selfie_role in member.roles:
-			await member.remove_roles(self.selfie_role, reason="Requested removal of Selfie Perms")
-			return await ctx.send("You already had {}. It has now been removed.".format(self.selfie_role.name))
+		if selfie_role in member.roles:
+			await member.remove_roles(selfie_role, reason="Requested removal of Selfie Perms")
+			return await ctx.send("You already had {}. It has now been removed.".format(selfie_role.name))
 
 		time = datetime.datetime.now() - ctx.author.joined_at
 
 		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
-			await member.add_roles(member, self.selfie_role, reason="Requested Selfie perms")
-			await ctx.send("You have now have the {} role".format(self.selfie_role.name))
+			await member.add_roles(member, selfie_role, reason="Requested Selfie perms")
+			await ctx.send("You have now have the {} role".format(selfie_role.name))
 		else:
 			return await ctx.send(
 				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
