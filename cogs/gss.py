@@ -34,6 +34,7 @@ class GaySoundsShitposting():
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
 		selfie_role = utils.get(ctx.guild.roles, id=394939389823811584)
+		print(selfie_role)
 		member = ctx.author
 		required_score = int(self.servers[str(self.guild.id)]["gss"]["required_score"])
 		days = int(self.servers[str(self.guild.id)]["gss"]["required_days"])
