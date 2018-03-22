@@ -1,5 +1,6 @@
 import discord
 import random
+import re
 import checks
 import requests
 from discord.ext.commands import bot
@@ -10,46 +11,100 @@ class Fun:
 		self.bot = bot_client
 
 	@bot.command()
-	async def roll(self, ctx, die):
+	async def roll(self, ctx, expression):
 		"""
-		Rolls a die using ndx format.
+		Rolls a die using ndx like format.
 		Usage:
-			{command_prefix}roll ndx
+			{command_prefix}roll expression
+			spaces in expression are ignored
 		Example:
-			.roll 2d20 # Rolls two D20s
+			.roll 2d20h1 + 7 # Rolls two D20s takes the highest 1, then adds 7
 		"""
-		dice = 0
-		if die[0].isdigit():
-			if die[1].isdigit() or die[0] == 0:
-				return await ctx.send("I only support multipliers from 1-9")
-			multiplier = int(die[0])
-		else:
-			multiplier = 1
-		if die[1].lower() != "d" and die[0].lower() != "d":
-			return await ctx.send("Use the format 'ndx'.")
-		options = (4, 6, 8, 10, 12, 20, 100)
-		for option in options:
-			if die.endswith(str(option)):
-				dice = option
-		if dice == 0:
-			return await ctx.send("You didn't give a die to use.")
-
-		rolls = []
-		if dice == 100:
-			step = 10
-		else:
-			step = 1
-
-		total = 0
-		if multiplier > 1:
-			for x in range(multiplier):
-				rolls.append(random.randrange(step, dice+1, step))
-			for r in rolls:
-				total += r
-			return await ctx.send("{} rolled **{}**. Totaling **{}**".format(ctx.message.author.mention, rolls, total))
-		else:
-			roll = random.randrange(step, dice + 1, step)
-			return await ctx.send("{} rolled a **{}**".format(ctx.message.author.mention, roll))
+		# sanitise input by removing all spaces, converting to lower case
+		expression = expression.lower().replace(' ','')
+		# check end of expression for a 'x<number>'
+		parts = expression.split('x',1)
+		times = 1
+		if len(parts) == 2:
+			try:
+				times = int(parts[1])
+				if times < 1:
+					time = 1;
+			except ValueError:
+				times = 1##might want to add error report to user to say its not valid so they dont make the mistake again
+		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])
+		if m == []:
+			return await ctx.send('Ase TBTerra to write proper useage')
+		dice = []
+		for item in m:
+			temp = [0]*5
+			temp[0] = 1 if item[0] == '' else -1
+			if 'd' in item[1]:
+				if item[2] == '':
+					temp[1] = 1
+					temp[2] = int(item[3])
+				else:
+					temp[1] = int(item[2])
+					temp[2] = int(item[3])
+			else:
+				temp[1] = int(item[1])
+				temp[2] = 1
+			temp[3] = 0 if item[4] == '' else int(item[4][1:])
+			if item[5] == '':
+				temp[4] = 0
+			else:
+				if item[5][0] == 'h':
+					temp[4] = int(item[5][1:])
+				else:
+					temp[4] = -int(item[5][1:])
+			dice.append(temp)
+		response = ''
+		for i in range(times):
+			total = 0
+			if times > 1:
+				response += 'Roll {}: '.format(i+1)
+			else:
+				response += 'Rolled: '
+			for j in range(len(dice)):
+				if j != 0:
+					response += ' + '
+				if dice[j][0] == -1:
+					response += '-'
+				if dice[j][2] == 1:
+					response += '{}'.format(dice[j][1])
+					total += dice[j][0] * dice[j][1]
+				else:
+					response += '('
+					temp = []
+					for k in range(dice[j][1]):
+						t = [0,'']
+						t[0] = random.randint(1,dice[j][2])
+						t[1] = '{}'.format(t[0])
+						if t[0] <= dice[j][3]:
+							t[0] = random.randint(1,dice[j][2])
+							t[1] += '__{}__'.format(t[0])
+						temp.append(t)
+					def takeFirst(ele):
+						return ele[0]
+					if dice[j][4] > 0:
+						temp.sort(key=takeFirst, reverse=True)
+						for k in range(len(temp)):
+							if k >= dice[j][4]:
+								temp[k][1] = '~~' + temp[k][1] + '~~'
+								temp[k][0] = 0
+					if dice[j][4] < 0:
+						temp.sort(key=takeFirst)
+						for k in range(len(temp)):
+							if k >= -dice[j][4]:
+								temp[k][1] = '~~' + temp[k][1] + '~~'
+								temp[k][0] = 0
+					for k in range(len(temp)):
+						response += '{},'.format(temp[k][1])
+						total+= dice[j][0] * temp[k][0]
+					response = response[:-1] + ')'
+			response += ' Totaling: {}'.format(total)
+			if i < (times-1): response += '\n'
+		return await ctx.send(response)
 
 	@checks.isnt_anal()
 	@bot.command()
