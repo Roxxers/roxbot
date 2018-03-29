@@ -119,7 +119,6 @@ def get(guild):
 	:param guild:
 	:return Single GuildSettings Object: :type GuildSettings:
 	"""
-	error_check(guild)
 	return GuildSettings(guild)
 
 def get_guild(guilds, wanted_guild):
@@ -167,4 +166,6 @@ class GuildSettings(object):
 			self.settings[setting] = changed_dict
 		else:
 			self.settings = changed_dict
-		_write_changes(self.settings)
+		json = _open_config()
+		json[str(self.id)] = self.settings
+		_write_changes(json)
