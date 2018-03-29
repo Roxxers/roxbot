@@ -54,7 +54,7 @@ async def on_ready():
 
 @bot.event
 async def on_server_join(guild):
-	bot.settings = gs.get_all(bot.guilds)
+	gs.error_check(bot.guilds)
 
 @bot.event
 async def on_server_remove(guild):
@@ -112,6 +112,6 @@ if __name__ == "__main__":
 			fp.write("{}")
 
 	start_time = time.time()
-	#bot.load_extension("Roxbot.settings.settings")
+	bot.load_extension("Roxbot.settings.settings")
 	#bot.load_extension("Roxbot.err_handle")
 	bot.run(load_config.token)

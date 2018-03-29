@@ -4,7 +4,7 @@ import aiohttp
 import asyncio
 
 from Roxbot import checks, load_config
-from Roxbot.settings import guild_settings as settings
+from Roxbot.settings import guild_settings
 
 import discord
 from discord.ext.commands import bot, group, is_owner, bot_has_permissions
@@ -16,7 +16,6 @@ class Settings:
 	"""
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.settings = settings
 
 	def get_channel(self, ctx, channel):
 		if ctx.message.channel_mentions:
@@ -160,20 +159,20 @@ class Settings:
 	@checks.is_owner_or_admin()
 	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers settings file."
-		config = self.settings.get(ctx.guild)
+		config = guild_settings.get(ctx.guild)
 		em = discord.Embed(colour=0xDEADBF)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
-		if option in config:
+		if option in config.settings:
 			settingcontent = ""
-			for x in config[option].items():
+			for x in config.settings[option].items():
 				settingcontent += str(x).strip("()") + "\n"
 			em.add_field(name=option, value=settingcontent, inline=False)
 			return await ctx.send(embed=em)
 		else:
-			for settings in config:
+			for settings in config.settings:
 				if settings != "custom_commands" and settings != "warnings":
 					settingcontent = ""
-					for x in config[settings].items():
+					for x in config.settings[settings].items():
 						settingcontent += str(x).strip("()") + "\n"
 					em.add_field(name=settings, value=settingcontent, inline=False)
 				elif settings == "custom_commands":
@@ -185,7 +184,7 @@ class Settings:
 	async def settings(self, ctx):
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
-		self.guild_settings = self.settings.get(ctx.guild)
+		self.guild_settings = guild_settings.get(ctx.guild)
 
 	@settings.command(aliases=["sa"])
 	async def selfassign(self, ctx, selection, *, changes = None):
