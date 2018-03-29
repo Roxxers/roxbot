@@ -4,7 +4,7 @@ import aiohttp
 import asyncio
 
 from Roxbot import checks, load_config
-from Roxbot.settings.guild_settings import ServerConfig
+from Roxbot.settings import guild_settings as settings
 
 import discord
 from discord.ext.commands import bot, group, is_owner, bot_has_permissions
@@ -16,8 +16,7 @@ class Settings:
 	"""
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.con = ServerConfig()
-		self.serverconfig = self.con.servers
+		self.settings = settings
 
 	def get_channel(self, ctx, channel):
 		if ctx.message.channel_mentions:
@@ -112,7 +111,6 @@ class Settings:
 		await self.bot.change_nickname(ctx.message.server.me, nick)
 		return await ctx.send(":thumbsup:")
 
-
 	@bot.command(aliases=["activity"])
 	@is_owner()
 	async def changeactivity(self, ctx, *, game: str):
@@ -162,8 +160,7 @@ class Settings:
 	@checks.is_owner_or_admin()
 	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers settings file."
-		self.serverconfig = self.con.load_config()
-		config = self.serverconfig[str(ctx.guild.id)]
+		config = self.settings.get(ctx.guild)
 		em = discord.Embed(colour=0xDEADBF)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
 		if option in config:
@@ -188,8 +185,7 @@ class Settings:
 	async def settings(self, ctx):
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
-		self.serverconfig = self.con.load_config()
-		self.guild_id = str(ctx.guild.id)
+		self.guild_settings = self.settings.get(ctx.guild)
 
 	@settings.command(aliases=["sa"])
 	async def selfassign(self, ctx, selection, *, changes = None):
@@ -201,29 +197,28 @@ class Settings:
 		"""
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
+		self_assign = self.guild_settings.self_assign
+
 		if selection == "enable":
-			self.serverconfig[self.guild_id]["self_assign"]["enabled"] = 1
+			self_assign["enabled"] = 1
 			await ctx.send("'self_assign' was enabled!")
 		elif selection == "disable":
-			self.serverconfig[self.guild_id]["self_assign"]["enabled"] = 0
+			self_assign["enabled"] = 0
 			await ctx.send("'self_assign' was disabled :cry:")
 		elif selection == "addrole":
-			if role.id in self.serverconfig[self.guild_id]["self_assign"]["roles"]:
-				return await ctx.send("{} is already a self-assignable role.".format(role.name),
-										  delete_after=self.con.delete_after)
-
-			self.serverconfig[self.guild_id]["self_assign"]["roles"].append(role.id)
+			if role.id in self_assign["roles"]:
+				return await ctx.send("{} is already a self-assignable role.".format(role.name))
+			self_assign["roles"].append(role.id)
 			await ctx.send('Role "{}" added'.format(str(role)))
 		elif selection == "removerole":
-			if role.id in self.serverconfig[self.guild_id]["self_assign"]["roles"]:
-				self.serverconfig[self.guild_id]["self_assign"]["roles"].remove(role.id)
-				self.con.update_config(self.serverconfig)
+			if role.id in self_assign["roles"]:
+				self_assign["roles"].remove(role.id)
 				await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
 			else:
 				return await ctx.send("That role was not in the list.")
 		else:
 			return await ctx.send("No valid option given.")
-		return self.con.update_config(self.serverconfig)
+		return self.guild_settings.update(self_assign, "self_assign")
 
 	@settings.command(aliases=["jl"])
 	async def joinleave(self, ctx, selection, *, changes = None):
@@ -233,38 +228,50 @@ class Settings:
 			enable/disable: Enable/disables parts of the cog. Needs to specify which part.
 				Example:
 					;settings joinleave enable greets|goodbyes
-			welcomechannel/goodbyeschannel: Sets the channels for either option. Must be a ID or mention.
+			greetschannel/goodbyeschannel: Sets the channels for either option. Must be a ID or mention.
 			custommessage: specifies a custom message for the greet messages.
 		"""
 		selection = selection.lower()
-		if selection == "enable":
-			if changes == "greets":
-				self.serverconfig[self.guild_id]["greets"]["enabled"] = 1
+		channel = self.get_channel(ctx, changes)
+		greets = self.guild_settings.greets
+		goodbyes = self.guild_settings.goodbyes
+
+		if changes == "greets":
+			if selection == "enable":
+				greets["enabled"] = 1
 				await ctx.send("'greets' was enabled!")
-			elif changes == "goodbyes":
-				self.serverconfig[self.guild_id]["goodbyes"]["enabled"] = 1
-				await ctx.send("'goodbyes' was enabled!")
-		elif selection == "disable":
-			if changes == "greets":
-				self.serverconfig[self.guild_id]["greets"]["enabled"] = 0
+			elif selection == "disable":
+				greets["enabled"] = 0
 				await ctx.send("'greets' was disabled :cry:")
-			elif changes == "goodbyes":
-				self.serverconfig[self.guild_id]["goodbyes"]["enabled"] = 0
+
+		elif changes == "goodbyes":
+			if selection == "enable":
+				goodbyes["enabled"] = 1
+				await ctx.send("'goodbyes' was enabled!")
+			elif selection == "disable":
+				goodbyes["enabled"] = 0
 				await ctx.send("'goodbyes' was disabled :cry:")
-		elif selection == "welcomechannel":
-			channel = self.get_channel(ctx, changes)
-			self.serverconfig[self.guild_id]["greets"]["welcome-channel"] = channel.id
-			await ctx.send("{} has been set as the welcome channel!".format(channel.mention))
-		elif selection == "goodbyeschannel":
-			channel = self.get_channel(ctx, changes)
-			self.serverconfig[self.guild_id]["goodbyes"]["goodbye-channel"] = channel.id
-			await ctx.send("{} has been set as the goodbye channel!".format(channel.mention))
-		elif selection == "custommessage":
-			self.serverconfig[self.guild_id]["greets"]["custom-message"] = changes
-			await ctx.send("Custom message set to '{}'".format(changes))
+
 		else:
-			return await ctx.send("No valid option given.")
-		return self.con.update_config(self.serverconfig)
+			if selection == "greetschannel":
+				greets["welcome-channel"] = channel.id
+				changes = "greets"
+				await ctx.send("{} has been set as the welcome channel!".format(channel.mention))
+			elif selection == "goodbyeschannel":
+				goodbyes["goodbye-channel"] = channel.id
+				changes = "goodbyes"
+				await ctx.send("{} has been set as the goodbye channel!".format(channel.mention))
+			elif selection == "custommessage":
+				greets["custom-message"] = changes
+				changes = "greets"
+				await ctx.send("Custom message set to '{}'".format(changes))
+			else:
+				return await ctx.send("No valid option given.")
+
+		if changes == "greets":
+			return self.guild_settings.update(greets, "greets")
+		elif changes == "goodbyes":
+			return self.guild_settings.update(goodbyes, "goodbyes")
 
 	@settings.command()
 	async def twitch(self, ctx, selection, *, changes = None):
@@ -275,21 +282,23 @@ class Settings:
 			channel: Sets the channel to shill in.
 		"""
 		selection = selection.lower()
+		twitch = self.guild_settings.twitch
+
 		if selection == "enable":
-			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 1
+			twitch["enabled"] = 1
 			await ctx.send("'twitch' was enabled!")
 		elif selection == "disable":
-			self.serverconfig[self.guild_id]["twitch"]["enabled"] = 0
+			twitch["enabled"] = 0
 			await ctx.send("'twitch' was disabled :cry:")
 		elif selection == "channel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[self.guild_id]["twitch"]["channel"] = channel.id
+			twitch["channel"] = channel.id
 			await ctx.send("{} has been set as the twitch shilling channel!".format(channel.mention))
 		# Is lacking whitelist options. Might be added or might be depreciated.
 		# Turns out this is handled in the cog and I don't think it needs changing but may be confusing.
 		else:
 			return await ctx.send("No valid option given.")
-		return self.con.update_config(self.serverconfig)
+		return self.guild_settings.update(twitch, "twitch")
 
 	@settings.command(aliases=["perms"])
 	async def permrole(self, ctx, selection, *, changes = None):
@@ -303,52 +312,56 @@ class Settings:
 		"""
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
+		perm_roles = self.guild_settings.perm_roles
+
 		if selection == "addadmin":
-			if role.id not in self.serverconfig[self.guild_id]["perm_roles"]["admin"]:
-				self.serverconfig[self.guild_id]["perm_roles"]["admin"].append(role.id)
+			if role.id not in perm_roles["admin"]:
+				perm_roles["admin"].append(role.id)
 				await ctx.send("'{}' has been added to the Admin role list.".format(role.name))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(role.name))
 		elif selection == "addmod":
-			if role.id not in self.serverconfig[self.guild_id]["perm_roles"]["mod"]:
-				self.serverconfig[self.guild_id]["perm_roles"]["mod"].append(role.id)
+			if role.id not in perm_roles["mod"]:
+				perm_roles["mod"].append(role.id)
 				await ctx.send("'{}' has been added to the Mod role list.".format(role.name))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(role.name))
 		elif selection == "removeadmin":
 			try:
-				self.serverconfig[self.guild_id]["perm_roles"]["admin"].remove(role.id)
+				perm_roles["admin"].remove(role.id)
 				await ctx.send("'{}' has been removed from the Admin role list.".format(role.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
 		elif selection == "removemod":
 			try:
-				self.serverconfig[self.guild_id]["perm_roles"]["mod"].remove(role.id)
+				perm_roles["mod"].remove(role.id)
 				await ctx.send("'{}' has been removed from the Mod role list.".format(role.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
 
 		else:
 			return await ctx.send("No valid option given.")
-		return self.con.update_config(self.serverconfig)
+		return self.guild_settings.update(perm_roles, "perm_roles")
 
 	@settings.command()
 	async def gss(self, ctx, selection, *, changes = None):
 		"""Custom Cog for the GaySoundsShitposts Discord Server."""
 		selection = selection.lower()
+		gss = self.guild_settings.gss
+
 		if selection == "loggingchannel":
 			channel = self.get_channel(ctx, changes)
-			self.serverconfig[self.guild_id]["gss"]["log_channel"] = channel.id
+			gss["log_channel"] = channel.id
 			await ctx.send("Logging Channel set to '{}'".format(channel.name))
 		elif selection == "requireddays":
-			self.serverconfig[self.guild_id]["gss"]["required_days"] = int(changes)
+			gss["required_days"] = int(changes)
 			await ctx.send("Required days set to '{}'".format(str(changes)))
 		elif selection == "requiredscore":
-			self.serverconfig[self.guild_id]["gss"]["required_score"] = int(changes)
+			gss["required_score"] = int(changes)
 			await ctx.send("Required score set to '{}'".format(str(changes)))
 		else:
 			return await ctx.send("No valid option given.")
-		return self.con.update_config(self.serverconfig)
+		return self.guild_settings.update(gss, "gss")
 
 
 	@settings.command()
@@ -363,57 +376,59 @@ class Settings:
 				;settings nsfw addchannel #nsfw_stuff
 		"""
 		selection = selection.lower()
+		nsfw = self.guild_settings.nsfw
+
 		if selection == "enable":
-			self.serverconfig[self.guild_id]["nsfw"]["enabled"] = 1
+			nsfw["enabled"] = 1
 			await ctx.send("'nsfw' was enabled!")
 		elif selection == "disable":
-			self.serverconfig[self.guild_id]["nsfw"]["enabled"] = 0
+			nsfw["enabled"] = 0
 			await ctx.send("'nsfw' was disabled :cry:")
 		elif selection == "addchannel":
 			channel = self.get_channel(ctx, changes)
-			if channel.id not in self.serverconfig[self.guild_id]["nsfw"]["channels"]:
-				self.serverconfig[self.guild_id]["nsfw"]["channels"].append(channel.id)
+			if channel.id not in nsfw["channels"]:
+				nsfw["channels"].append(channel.id)
 				await ctx.send("'{}' has been added to the nsfw channel list.".format(channel.name))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(channel.name))
 		elif selection == "removechannel":
 			channel = self.get_channel(ctx, changes)
 			try:
-				self.serverconfig[self.guild_id]["nsfw"]["channels"].remove(channel.id)
+				nsfw["channels"].remove(channel.id)
 				await ctx.send("'{}' has been removed from the nsfw channel list.".format(channel.name))
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
 		elif selection == "addbadtag":
-			if changes not in self.serverconfig[self.guild_id]["nsfw"]["blacklist"]:
-				self.serverconfig[self.guild_id]["nsfw"]["blacklist"].append(changes)
+			if changes not in nsfw["nsfw"]["blacklist"]:
+				nsfw["blacklist"].append(changes)
 				await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
 			else:
 				return await ctx.send("'{}' is already in the list.".format(changes))
 		elif selection == "removebadtag":
 			try:
-				self.serverconfig[self.guild_id]["nsfw"]["blacklist"].remove(changes)
+				nsfw["blacklist"].remove(changes)
 				await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
 			except ValueError:
 				return await ctx.send("That tag was not in the blacklisted tag list.")
 		else:
 			return await ctx.send("No valid option given.")
-		return self.con.update_config(self.serverconfig)
+		return self.guild_settings.update(nsfw, "nsfw")
 
 	@checks.is_admin_or_mod()
 	@bot.command()
 	async def serverisanal(self, ctx):
 		"""Tells the bot where the server is anal or not.
 		This only changes if roxbot can do the suck and spank commands outside of the specified nsfw channels."""
-		self.serverconfig = self.con.load_config()
-		is_anal = self.serverconfig[self.guild_id]["is_anal"]["y/n"]
-		if is_anal == 0:
-			self.serverconfig[self.guild_id]["is_anal"]["y/n"] = 1
-			self.con.update_config(self.serverconfig)
-			return await ctx.send("I now know this server is anal")
+		is_anal = self.guild_settings.is_anal
+		if is_anal["y/n"] == 0:
+			is_anal["y/n"] = 1
+			self.guild_settings.update(is_anal, "is_anal")
+			await ctx.send("I now know this server is anal")
 		else:
-			self.serverconfig[self.guild_id]["is_anal"]["y/n"] = 0
-			self.con.update_config(self.serverconfig)
-			return await ctx.send("I now know this server is NOT anal")
+			is_anal["y/n"] = 0
+			self.guild_settings.update(is_anal, "is_anal")
+			await ctx.send("I now know this server is NOT anal")
+		return self.guild_settings.update()
 
 
 def setup(bot_client):

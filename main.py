@@ -49,19 +49,25 @@ async def on_ready():
 		print(server)
 	print("")
 
+# In the next two functions, I was gunna user bot.settings for something but I don't think it's possible.
+# So while I don't use it, the function still will do their jobs of adding and removing the settings.
 
 @bot.event
 async def on_server_join(guild):
-	bot.settings = gs.get(guild)
-
+	bot.settings = gs.get_all(bot.guilds)
 
 @bot.event
 async def on_server_remove(guild):
 	gs.remove_guild(guild)
-	bot.settings = gs.get(bot.guilds)
+	bot.settings = gs.get_all(bot.guilds)
 
 @bot.event
 async def on_message(message):
+	"""
+	Checks if the user is blacklisted, if not, process the message for commands as usual.
+	:param message:
+	:return:
+	"""
 	if blacklisted(message.author):
 		return
 	return await bot.process_commands(message)

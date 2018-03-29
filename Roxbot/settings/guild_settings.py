@@ -50,10 +50,19 @@ guild_template = {
 
 
 def _open_config():
+	"""
+	Opens the guild settings file
+	:return settings file: :type dict:
+	"""
 	with open('Roxbot/settings/servers.json', 'r') as config_file:
 		return json.load(config_file)
 
 def _write_changes(config):
+	"""
+	Writes given config to disk.
+	:param config: :type dict:
+	:return:
+	"""
 	with open('Roxbot/settings/servers.json', 'w') as conf_file:
 		json.dump(config, conf_file)
 
@@ -91,13 +100,27 @@ def error_check(servers):
 							"WARNING: The settings file for {} was missing the {} setting in the {} cog. This has been fixed with the template version. It is disabled by default.".format(
 								server.name.upper(), setting.upper(), cog_setting.upper()))
 
-def get(guilds):
+def get_all(guilds):
+	"""
+	Returns a list of GuildSettings for all guilds the bot can see.
+	:param guilds:
+	:return list of GuildSettings: :type list:
+	"""
 	error_check(guilds)
 	guild_list = []
 	for guild in guilds:
 		guild = GuildSettings(guild)
 		guild_list.append(guild)
 	return guild_list
+
+def get(guild):
+	"""
+	Gets a single GuildSettings Object representing the settings of that guild
+	:param guild:
+	:return Single GuildSettings Object: :type GuildSettings:
+	"""
+	error_check(guild)
+	return GuildSettings(guild)
 
 def get_guild(guilds, wanted_guild):
 	for guild in guilds:
@@ -106,17 +129,23 @@ def get_guild(guilds, wanted_guild):
 	return None
 
 class GuildSettings(object):
-
+	"""
+	An Object to store all settings for one guild.
+	The goal is to make editing settings a lot easier and make it so you don't have to handle things like ID's which caused a lot of issues when moving over to discord.py 1.0
+	"""
 	__slots__ = ["settings", "id", "name", "nsfw", "self_assign", "greets", "goodbyes", "twitch", "perm_roles", "custom_commands", "warnings", "is_anal", "gss"]
 
 	def __init__(self, guild):
 		self.id = guild.id
 		self.name = str(guild)
-		self.settings = _open_config()[str(self.id)]
+		self.settings = self.refresh()
 		self.get_settings()
 
 	def __str__(self):
 		return self.name
+
+	def refresh(self):
+		return _open_config()[str(self.id)]
 
 	def get_settings(self):
 		self.nsfw = self.settings["nsfw"]
@@ -131,12 +160,11 @@ class GuildSettings(object):
 		# Add custom cog settings loading here
 		self.gss = self.settings["gss"]
 
-	def update_settings(self, changed_dict, setting = None):
+	def update(self, changed_dict, setting = None):
+		self.settings = self.refresh()
 		self.get_settings()
 		if setting is not None:
-			self.settings[str(self.id)][setting] = changed_dict
+			self.settings[setting] = changed_dict
 		else:
-			self.settings[str(self.id)] = changed_dict
-		settings = _open_config()
-		settings[str(self.id)] = self.settings
-		_write_changes(settings)
+			self.settings = changed_dict
+		_write_changes(self.settings)
