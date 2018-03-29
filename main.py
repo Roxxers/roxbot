@@ -33,7 +33,7 @@ def blacklisted(user):
 
 @bot.event
 async def on_ready():
-	bot.settings = gs.get(bot.guilds)
+	bot.settings = gs.get_all(bot.guilds)
 
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
