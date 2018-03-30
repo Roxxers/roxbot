@@ -1,5 +1,4 @@
 from discord.ext.commands import bot
-from Roxbot.settings.guild_settings import ServerConfig
 from lxml import html
 import random
 import requests
@@ -44,7 +43,6 @@ class Imgur():
 			if len(links) > 1:
 				return url
 			else:
-				print(links)
 				if not "http" in links[0]:
 					links[0] = "https:" + links[0]
 				return links[0]
@@ -97,8 +95,6 @@ class Scrapper():
 class Reddit():
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.con = ServerConfig()
-		self.servers = self.con.servers
 
 	@bot.command()
 	async def subreddit(self, ctx, subreddit):
