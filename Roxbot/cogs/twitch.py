@@ -5,7 +5,7 @@ from Roxbot import checks
 from Roxbot.settings import guild_settings
 
 def blacklisted(user):
-	with open("settings/blacklist.txt", "r") as fp:
+	with open("Roxbot/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
 			if user.id+"\n" == line:
 				return True
