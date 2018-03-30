@@ -169,3 +169,4 @@ class GuildSettings(object):
 		json = _open_config()
 		json[str(self.id)] = self.settings
 		_write_changes(json)
+		self.get_settings()
