@@ -5,6 +5,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import bot
 from Roxbot.settings import guild_settings
+from json import JSONDecodeError
 
 
 def is_gss():
@@ -19,21 +20,31 @@ def is_not_nsfw_disabled():
 class GaySoundsShitposting():
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.acceptable_roles = [394939389823811584, 394941004043649036]
 
 	def tatsumaki_api_call(self, member, guild):
 		base = "https://api.tatsumaki.xyz/"
 		url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
 		r = requests.get(url, headers={"Authorization": load_config.tat_token})
-		return r.json()
+		try:
+			return r.json()
+		except JSONDecodeError:
+			return False
 
 	@bot.command(hidden=True)
 	async def perms(self, ctx, *, role: discord.Role):
 		"""Shell command to do the perm assigning. Only should be invoked by another command."""
+		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
+		if role.id not in self.acceptable_roles:
+			print("lol no")
+			return False
 		settings = guild_settings.get(ctx.guild)
 		member = ctx.author
 		required_score = settings.gss["required_score"]
 		days = int(settings.gss["required_days"])
 		data = self.tatsumaki_api_call(member, ctx.guild)
+		if not data:
+			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
 
 		if role in member.roles:
 			await member.remove_roles(role, reason="Requested removal of {0.name}".format(role))
