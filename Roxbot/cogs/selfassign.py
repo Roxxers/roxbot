@@ -2,14 +2,12 @@ import discord
 from discord.ext import commands
 
 from Roxbot import load_config
-from Roxbot.settings.guild_settings import ServerConfig
+from Roxbot.settings import guild_settings as gs
 
 
 class SelfAssign():
 	def __init__(self, Bot):
 		self.bot = Bot
-		self.con = ServerConfig()
-		self.servers = self.con.servers
 		self.embed_colour = load_config.embedcolour
 
 	@commands.command(pass_context=True)
@@ -19,12 +17,13 @@ class SelfAssign():
 		Usage:
 			{command_prefix}listroles
 		"""
-		if not self.servers[str(ctx.guild.id)]["self_assign"]["enabled"]:
+		settings = gs.get(ctx.guild)
+		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 		roles = []
-		for role in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
+		for role in settings.self_assign["roles"]:
 			for serverrole in ctx.guild.roles:
 				if role == serverrole.id:
 					roles.append("**"+serverrole.name+"**")
@@ -42,23 +41,20 @@ class SelfAssign():
 		Example:
 			.iam OverwatchPing
 		"""
-		if not self.servers[str(ctx.guild.id)]["self_assign"]["enabled"]:
+		settings = gs.get(ctx.guild)
+		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
-		user = ctx.author
-		server = ctx.guild
+		member = ctx.author
 
-		if role not in server.roles:
-			return await ctx.send("That role doesn't exist. Roles are case sensitive. ")
-
-		if role in user.roles:
+		if role in member.roles:
 			return await ctx.send("You already have that role.")
 
-		if role.id in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
-			await user.add_roles(role, reason="'iam' command triggered.")
-			return await ctx.send("Yay {}! You now have the {} role!".format(user.mention, role.name))
+		if role.id in settings.self_assign["roles"]:
+			await member.add_roles(role, reason="'iam' command triggered.")
+			return await ctx.send("Yay {}! You now have the {} role!".format(member.mention, role.name))
 		else:
 			return await ctx.send("That role is not self-assignable.")
 
@@ -71,18 +67,18 @@ class SelfAssign():
 		Example:
 			.iamn OverwatchPing
 		"""
-		if not self.servers[str(ctx.guild.id)]["self_assign"]["enabled"]:
+		settings = gs.get(ctx.guild)
+		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
-		user = ctx.author
-		server = ctx.guild
+		member = ctx.author
 
-		if role in user.roles and role.id in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
-			await user.remove_roles(role, reason="'iamn' command triggered.")
+		if role in member.roles and role.id in settings.self_assign["roles"]:
+			await member.remove_roles(role, reason="'iamn' command triggered.")
 			return await ctx.send("{} has been successfully removed.".format(role.name))
-		elif role not in user.roles and role.id in self.servers[str(ctx.guild.id)]["self_assign"]["roles"]:
+		elif role not in member.roles and role.id in settings.self_assign["roles"]:
 			return await ctx.send("You do not have {}.".format(role.name))
 		else:
 			return await ctx.send("That role is not self-assignable.")
