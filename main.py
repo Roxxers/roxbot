@@ -38,11 +38,11 @@ async def on_ready():
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
 
-	#print("Cogs Loaded:")
-	#for cog in load_config.cogs:
-	#	bot.load_extension(cog)
-	#	print(cog)
-	#print("")
+	print("Cogs Loaded:")
+	for cog in load_config.cogs:
+		bot.load_extension(cog)
+		print(cog.split(".")[2])
+	print("")
 
 	print("Servers I am currently in:")
 	for server in bot.guilds:
@@ -114,5 +114,4 @@ if __name__ == "__main__":
 	start_time = time.time()
 	bot.load_extension("Roxbot.settings.settings")
 	bot.load_extension("Roxbot.err_handle")
-	bot.load_extension("Roxbot.cogs.customcommands")
 	bot.run(load_config.token)

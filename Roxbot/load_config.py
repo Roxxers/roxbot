@@ -22,15 +22,15 @@ embedcolour = 0xDEADBF
 # IF YOU ARE TESTING OR NOT IN THE GSS DISCORD, REMOVE "cogs.gss" FROM THE LIST
 
 cogs = [
-	"roxbot.cogs.admin",
-	"roxbot.cogs.fun",
-	"roxbot.cogs.customcommands",
-	"roxbot.cogs.joinleave",
-	"roxbot.cogs.nsfw",
-	"roxbot.cogs.reddit",
-	"roxbot.cogs.selfassign",
-	"roxbot.cogs.trivia",
-	"roxbot.cogs.twitch",
-	"roxbot.cogs.util",
-	#"roxbot.cogs.gss"
+	"Roxbot.cogs.admin",
+	"Roxbot.cogs.fun",
+	"Roxbot.cogs.customcommands",
+	"Roxbot.cogs.joinleave",
+	"Roxbot.cogs.nsfw",
+	"Roxbot.cogs.reddit",
+	"Roxbot.cogs.selfassign",
+	"Roxbot.cogs.trivia",
+	"Roxbot.cogs.twitch",
+	"Roxbot.cogs.util",
+	#"Roxbot.cogs.gss"
 ]
