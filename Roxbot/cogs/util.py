@@ -4,7 +4,8 @@ import random
 import aiohttp
 import discord
 import requests
-from discord.ext.commands import bot, is_owner
+from discord.ext import commands
+from discord.ext.commands import bot
 
 class Util():
 	"""
@@ -88,6 +89,47 @@ class Util():
 		embed.add_field(name="Roles [{}]".format(count), value=roles.strip(", "))
 		return await ctx.send(embed=embed)
 
+	@commands.guild_only()
+	@bot.command(aliases=["server"])
+	async def guild(self, ctx):
+		"""Returns info on the current guild(server)."""
+		guild = ctx.guild
+		guild_icon_url = "https://cdn.discordapp.com/icons/{}/{}.png".format(guild.id, guild.icon)
+		guild_splash_url = "https:/cdn.discordapp.com/splashes/{}/{}.png".format(guild.id, guild.splash)
+		embed = discord.Embed(title=guild.name, colour=guild.me.colour.value)
+		embed.set_thumbnail(url=guild_icon_url)
+		embed.add_field(name="ID", value=guild.id, inline=False)
+		embed.add_field(name="Created at", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(discord.utils.snowflake_time(guild.id)), inline=False)
+		embed.add_field(name="Voice Region", value=guild.region, inline=False)
+		embed.add_field(name="AFK Timeout", value="{} Minutes".format(guild.afk_timeout/60), inline=False)
+		if guild.afk_channel:
+			embed.add_field(name="AFK Channel", value=guild.afk_channel, inline=False)
+
+		embed.add_field(name="Owner", value="{} ({})".format(self.bot.get_user(guild.owner_id), guild.owner_id), inline=False)
+		embed.add_field(name="Verification Level", value=guild.verification_level, inline=False)
+		embed.add_field(name="Explicit Content Filtering", value=guild.explicit_content_filter, inline=False)
+		embed.add_field(name="Roles [{}]".format(len(guild.roles)), value="For all roles, use `{}guild roles`.", inline=False)
+		embed.add_field(name="Emotes [{}]".format(len(guild.emojis)), value="For all emotes, use `{}guild emotes`.".format(self.bot.command_prefix), inline=False)
+
+		if guild.features:
+			embed.add_field(name="Extra Features", value=guild.features)
+		if guild.splash:
+			embed.set_image(url=guild_splash_url)
+
+		return await ctx.send(embed=embed)
+
+	@commands.guild_only()
+	@bot.command()
+	async def role(self, ctx, *, role: discord.Role):
+		"""Displays the info on a role"""
+		embed = discord.Embed(title="Role '{}'".format(role.name), colour=role.colour.value)
+		embed.add_field(name="ID", value=role.id, inline=False)
+		embed.add_field(name="Created at", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(discord.utils.snowflake_time(role.id)), inline=False)
+		embed.add_field(name="Colour", value="#{}".format(str(hex(role.colour.value)).strip("0x")), inline=False)
+		embed.add_field(name="Hoisted", value=str(role.hoist), inline=False)
+		embed.add_field(name="Managed", value=str(role.managed), inline=False)
+		return await ctx.send(embed=embed)
+
 	@bot.command()
 	async def upload(self, ctx):
 		"""
@@ -158,7 +200,7 @@ class Util():
 		os.remove(imgname)
 
 	@bot.command()
-	@is_owner()
+	@commands.is_owner()
 	async def echo(self, ctx, channel: discord.TextChannel, *, message: str):
 		await channel.send(message)
 		return await ctx.send(":point_left:")
