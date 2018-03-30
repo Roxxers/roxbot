@@ -2,7 +2,7 @@ import datetime
 import time
 from Roxbot import checks
 import discord
-from Roxbot.settings.guild_settings import ServerConfig
+from Roxbot.settings import guild_settings as gs
 from discord.ext.commands import bot, group, guild_only, bot_has_permissions
 
 
@@ -15,8 +15,6 @@ class Admin():
 		self.slow_mode = False
 		self.slow_mode_channels = {}
 		self.users = {}
-		self.con = ServerConfig()
-		self.servers = self.con.servers
 
 	async def on_message(self, message):
 		# Slow Mode Code
@@ -73,27 +71,27 @@ class Admin():
 		"""Group of commands handling warnings"""
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
+		self.settings = gs.get(ctx.guild)
 
 	@warn.command()
 	async def add(self, ctx, user: discord.User = None, *, warning = ""):
 		"""Adds a warning to a user."""
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
-		self.servers = self.con.load_config()
 		warning_limit = 2
-		guild_id = str(ctx.guild.id)
 		warning_dict = {
 			"warned-by": ctx.author.id,
 			"date": time.time(),
 			"warning": warning
 		}
 		user_id = str(user.id)
-		if not user_id in self.servers[guild_id]["warnings"]:
-			self.servers[guild_id]["warnings"][user_id] = []
-		self.servers[guild_id]["warnings"][user_id].append(warning_dict)
 
-		self.con.update_config(self.servers)
+		if not user_id in self.settings.warnings:
+			self.settings.warnings[user_id] = []
 
-		amount_warnings = len(self.servers[guild_id]["warnings"][user_id])
+		self.settings.warnings[user_id].append(warning_dict)
+		self.settings.update(self.settings.warnings, "warnings")
+
+		amount_warnings = len(self.settings.warnings[user_id])
 		if amount_warnings > warning_limit:
 			await ctx.author.send("{} has been reported {} time(s). This is a reminder that this is over the set limit of {}.".format(
 					str(user), amount_warnings, warning_limit))
@@ -103,35 +101,37 @@ class Admin():
 	@warn.command()
 	async def list(self, ctx, *, user: discord.User = None):
 		"""Lists all or just the warnings for one user."""
-		guild_id = str(ctx.guild.id)
 		if user == None:
 			output = ""
-			for member in self.servers[guild_id]["warnings"]:
+			for member in self.settings.warnings:
 				# Remove users with no warning here instead of remove cause im lazy
-				if not self.servers[guild_id]["warnings"][member]:
-					self.servers[guild_id]["warnings"].pop(member)
+				if not self.settings.warnings[member]:
+					self.settings.warnings.pop(member)
 				else:
 					member_obj = discord.utils.get(ctx.guild.members, id=int(member))
 					if member_obj:
 						output += "{}: {} Warning(s)\n".format(str(member_obj), len(
-							self.servers[guild_id]["warnings"][member]))
+							self.settings.warnings[member]))
 					else:
 						output += "{}: {} Warning(s)\n".format(member, len(
-							self.servers[guild_id]["warnings"][member]))
+							self.settings.warnings[member]))
 			return await ctx.send(output)
 		user_id = str(user.id)
-		if not self.servers[guild_id]["warnings"][user_id]:
-			self.servers[guild_id]["warnings"].pop(user_id)
-		if not user_id in self.servers[guild_id]["warnings"]:
+
+		if not self.settings.warnings[user_id]:
+			self.settings.warnings.pop(user_id)
+			self.settings.update(self.settings.warnings, "warnings")
+		if not user_id in self.settings.warnings:
 			return await ctx.send("This user doesn't have any warning on record.")
+
 		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
 		em.set_thumbnail(url=user.avatar_url)
 		x = 1
-		userlist = self.servers[guild_id]["warnings"][user.id]
+		userlist = self.settings.warnings[user.id]
 		for warning in userlist:
 			try:
 				warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
-			except:
+			except discord.ClientException:
 				warned_by = warning["warned-by"]
 			date = datetime.datetime.fromtimestamp(warning["date"]).strftime('%c')
 			warn_reason = warning["warning"]
@@ -142,18 +142,16 @@ class Admin():
 	@warn.command()
 	async def remove(self, ctx, user: discord.User = None, index = None):
 		"""Removes one or all of the warnings for a user."""
-		self.servers = self.con.load_config()
 		user_id = str(user.id)
-		guild_id = str(ctx.guild.id)
 		if index:
 			try:
 				index = int(index)
 				index -= 1
-				self.servers[guild_id]["warnings"][user_id].pop(index)
-				if not self.servers[guild_id]["warnings"][user_id]:
-					self.servers[guild_id]["warnings"].pop(user_id)
+				self.settings.warnings[user_id].pop(index)
+				if not self.settings.warnings[user_id]:
+					self.settings.warnings.pop(user_id)
 
-				self.con.update_config(self.servers)
+				self.settings.update(self.settings.warnings, "warnings")
 				return await ctx.send("Removed Warning {} from {}".format(index+1, str(user)))
 
 			except Exception as e:
@@ -167,8 +165,8 @@ class Admin():
 					raise e
 		else:
 			try:
-				self.servers[guild_id]["warnings"].pop(user.id)
-				self.con.update_config(self.servers)
+				self.settings.warnings.pop(user.id)
+				self.settings.update(self.settings.warnings, "warnings")
 				return await ctx.send("Removed all warnings for {}".format(str(user)))
 			except KeyError:
 				return await ctx.send("Could not find user in warning list.")
