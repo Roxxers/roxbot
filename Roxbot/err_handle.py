@@ -38,8 +38,6 @@ class ErrHandle:
 				embed = discord.Embed(description="This command cannot be used in private messages.")
 			elif isinstance(error, commands.DisabledCommand):
 				embed = discord.Embed(description="This command is disabled.")
-			elif isinstance(error, commands.CheckFailure):
-				embed = discord.Embed(description="You do not have permission to do this. Back off, thot!")
 			elif isinstance(error, commands.MissingRequiredArgument):
 				embed = discord.Embed(description="Argument missing.")
 			elif isinstance(error, commands.BadArgument):
@@ -62,6 +60,8 @@ class ErrHandle:
 				embed = discord.Embed(description="You do not have permission to do this. You are not Roxie!")
 			elif isinstance(error, commands.CommandOnCooldown):
 				embed = discord.Embed(description="This command is on cooldown, please wait {} seconds before trying again.".format(error.retry_after))
+			elif isinstance(error, commands.CheckFailure):
+				embed = discord.Embed(description="You do not have permission to do this. Back off, thot!")
 			else:
 				embed = discord.Embed(
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))

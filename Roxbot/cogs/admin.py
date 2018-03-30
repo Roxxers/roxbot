@@ -3,7 +3,7 @@ import time
 from Roxbot import checks
 import discord
 from Roxbot.settings import guild_settings as gs
-from discord.ext.commands import bot, group, guild_only, bot_has_permissions
+from discord.ext.commands import bot, group, guild_only, bot_has_permissions, has_permissions
 
 
 class Admin():
@@ -176,6 +176,29 @@ class Admin():
 			except KeyError:
 				return await ctx.send("Could not find user in warning list.")
 
+	@has_permissions(kick_members=True)
+	@bot_has_permissions(kick_members=True)
+	@bot.command()
+	async def kick(self, ctx, member:discord.Member, *, reason = ""):
+		"""Kicks mentioned user. Allows you to give a reason."""
+		await member.kick(reason=reason)
+		return await ctx.send("Kicked {} with reason: '{}'".format(member, reason))
+
+	@has_permissions(ban_members=True)
+	@bot_has_permissions(ban_members=True)
+	@bot.command()
+	async def ban(self, ctx, member:discord.Member, *, reason = ""):
+		"""Bans mentioned user. Allows you to give a reason."""
+		await member.ban(reason=reason, delete_message_days=0)
+		return await ctx.send("Banned {} with reason: '{}'".format(member, reason))
+
+	@has_permissions(ban_members=True)
+	@bot_has_permissions(ban_members=True)
+	@bot.command()
+	async def unban(self, ctx, member:discord.Member, *, reason = ""):
+		"""Unbans mentioned user. Allows you to give a reason."""
+		await member.unban(reason=reason)
+		return await ctx.send("Unbanned {} with reason: '{}'".format(member, reason))
 
 def setup(bot_client):
 	bot_client.add_cog(Admin(bot_client))
