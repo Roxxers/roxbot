@@ -2,16 +2,15 @@ import random
 from Roxbot import checks
 import requests
 from discord.ext.commands import bot
-from Roxbot.settings.guild_settings import ServerConfig
+from Roxbot.settings import guild_settings as gs
 
 class NFSW():
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.servers = ServerConfig().load_config()
 
 	def tag_blacklist(self, ctx):
 		blacklist = ""
-		for tag in self.servers[str(ctx.guild.id)]["nsfw"]["blacklist"]:
+		for tag in gs.get(ctx.guild).nsfw["blacklist"]:
 			blacklist += "-{} ".format(tag)
 		return blacklist
 
@@ -35,7 +34,6 @@ class NFSW():
 		Returns an image from e621.com and can use tags you provide.
 		"""
 		tags = tags + self.tag_blacklist(ctx)
-		print(tags)
 		base_url = "https://e621.net/"
 		limit = 150
 		url = base_url + 'post/index.json?tags=' + tags + '&limit=' + str(limit)
