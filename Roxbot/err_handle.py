@@ -2,13 +2,12 @@ import traceback
 import datetime
 import discord
 from discord.ext import commands
-from Roxbot.settings.guild_settings import ServerConfig
+from Roxbot.settings import guild_settings
 
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = False  # For debugging
-		self.servers = ServerConfig().servers
+		self.dev = True  # For debugging
 
 	async def on_error(self, event, *args, **kwargs):
 		if self.dev:
@@ -48,8 +47,7 @@ class ErrHandle:
 			elif isinstance(error, commands.TooManyArguments):
 				embed = discord.Embed(description="Too many arguments given.")
 			elif isinstance(error, commands.CommandNotFound):
-				self.servers = ServerConfig().load_config() # Delete this when we update this system.
-				cc = self.servers[str(ctx.guild.id)]["custom_commands"]
+				cc =guild_settings.get(ctx.guild).custom_commands # Delete this when we update this system.
 				if ctx.invoked_with in cc["1"]:
 					embed = None
 				elif len(ctx.message.content) < 6: # Should avoid puncutation emoticons while also not being big enough to trigger for mispelt commands,
