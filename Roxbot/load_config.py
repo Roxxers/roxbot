@@ -23,8 +23,8 @@ embedcolour = 0xDEADBF
 
 cogs = [
 	"Roxbot.cogs.admin",
-	"Roxbot.cogs.fun",
 	"Roxbot.cogs.customcommands",
+	"Roxbot.cogs.fun",
 	"Roxbot.cogs.joinleave",
 	"Roxbot.cogs.nsfw",
 	"Roxbot.cogs.reddit",
