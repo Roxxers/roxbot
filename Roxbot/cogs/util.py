@@ -147,7 +147,7 @@ class Util():
 			emoji_id = emote[2]
 		else:
 			imgname = "emote.png"
-			emoji_id = emote[1]
+			emoji_id = emote[2]
 		url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
 
 		async with aiohttp.ClientSession() as session:
