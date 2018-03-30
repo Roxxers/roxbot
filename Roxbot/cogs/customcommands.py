@@ -1,11 +1,11 @@
 import discord
 from Roxbot import checks, load_config
 from discord.ext.commands import group
-from Roxbot.settings.guild_settings import ServerConfig
+from Roxbot.settings import guild_settings
 
 
 def blacklisted(user):
-	with open("settings/blacklist.txt", "r") as fp:
+	with open("Roxbot/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
 			if user.id+"\n" == line:
 				return True
@@ -15,24 +15,24 @@ def blacklisted(user):
 class CustomCommands():
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.con = ServerConfig()
-		self.servers = self.con.servers
 
 	async def on_message(self, message):
-		if blacklisted(message.author) or type(message.channel) != discord.TextChannel:
-			return
+		settings = guild_settings.get(message.guild)
 		msg = message.content.lower()
 		channel = message.channel
-		server = str(message.guild.id)
+
+		if blacklisted(message.author) or type(message.channel) != discord.TextChannel:
+			return
 		if message.author == self.bot.user:
 			return
+
 		if msg.startswith(self.bot.command_prefix):
-			if msg.split(self.bot.command_prefix)[1] in self.servers[server]["custom_commands"]["1"]:
-				return await channel.send(self.servers[server]["custom_commands"]["1"][msg.split(self.bot.command_prefix)[1]])
+			if msg.split(self.bot.command_prefix)[1] in settings.custom_commands["1"]:
+				return await channel.send(settings.custom_commands["1"][msg.split(self.bot.command_prefix)[1]])
 		else:
-			for command in self.servers[server]["custom_commands"]["0"]:
+			for command in settings.custom_commands["0"]:
 				if msg == command:
-					return await channel.send(self.servers[server]["custom_commands"]["0"][command])
+					return await channel.send(settings.custom_commands["0"][command])
 
 	@group(pass_context=True, aliases=["cc"])
 	@checks.is_owner_or_admin()
@@ -44,11 +44,11 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def add(self, ctx, command, output, prefix_required = "0"):
 		"Adds a custom command to the list of custom commands."
-		self.servers = self.con.load_config()
+		settings = guild_settings.get(ctx.guild)
 		command = command.lower()
 		output = output
-		zero = self.servers[str(ctx.guild.id)]["custom_commands"]["0"]
-		one = self.servers[str(ctx.guild.id)]["custom_commands"]["1"]
+		zero = settings.custom_commands["0"]
+		one = settings.custom_commands["1"]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
 			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
@@ -63,27 +63,27 @@ class CustomCommands():
 		elif len(command.split(" ")) > 1 and prefix_required == "1":
 			return await ctx.send("Custom commands with a prefix can only be one word with no spaces.")
 
-		self.servers[str(ctx.guild.id)]["custom_commands"][prefix_required][command] = output
-		self.con.update_config(self.servers)
+		settings.custom_commands[prefix_required][command] = output
+		settings.update(settings.custom_commands, "custom_commands")
 		return await ctx.send("{} has been added with the output: '{}'".format(command, output))
 
 	@custom.command(pass_context=True)
 	async def edit(self, ctx, command, edit):
 		"Edits an existing custom command."
-		self.servers = self.con.load_config()
-		zero = self.servers[str(ctx.guild.id)]["custom_commands"]["0"]
-		one = self.servers[str(ctx.guild.id)]["custom_commands"]["1"]
+		settings = guild_settings.get(ctx.guild)
+		zero = settings.custom_commands["0"]
+		one = settings.custom_commands["1"]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
 			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
 
 		if command in zero:
-			self.servers[str(ctx.guild.id)]["custom_commands"]["0"][command] = edit
-			self.con.update_config(self.servers)
+			settings.custom_commands["0"][command] = edit
+			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
 		elif command in one:
-			self.servers[str(ctx.guild.id)]["custom_commands"]["1"][command] = edit
-			self.con.update_config(self.servers)
+			settings.custom_commands["1"][command] = edit
+			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
 		else:
 			return await ctx.send("That Custom Command doesn't exist.")
@@ -91,15 +91,15 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def remove(self, ctx, command):
 		"Removes a custom command."
-		self.servers = self.con.load_config()
+		settings = guild_settings.get(ctx.guild)
 		command = command.lower()
-		if command in self.servers[str(ctx.guild.id)]["custom_commands"]["1"]:
-			self.servers[str(ctx.guild.id)]["custom_commands"]["1"].pop(command)
-			self.con.update_config(self.servers)
+		if command in settings.custom_commands["1"]:
+			settings.custom_commands["1"].pop(command)
+			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Removed {} custom command".format(command))
-		elif command in self.servers[str(ctx.guild.id)]["custom_commands"]["0"]:
-			self.servers[str(ctx.guild.id)]["custom_commands"]["0"].pop(command)
-			self.con.update_config(self.servers)
+		elif command in settings.custom_commands["0"]:
+			settings.custom_commands["0"].pop(command)
+			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Removed {} custom command".format(command))
 		else:
 			return await ctx.send("Custom Command doesn't exist.")
@@ -110,18 +110,18 @@ class CustomCommands():
 		"Lists all custom commands for this server."
 		if debug != "0" and debug != "1":
 			debug = "0"
-		self.servers = self.con.load_config()
-		l = self.servers[str(ctx.guild.id)]["custom_commands"]
+		settings = guild_settings.get(ctx.guild)
+		l = settings.custom_commands
 		listzero = ""
 		listone = ""
 
 		for command in l["0"]:
 			if debug == "1":
-				command += command + " - {}".format(l["0"][command])
+				command += " - {}".format(l["0"][command])
 			listzero = listzero + "- " + command + "\n"
 		for command in l["1"]:
 			if debug == "1":
-				command += command + " - {}".format(l["1"][command])
+				command += " - {}".format(l["1"][command])
 			listone = listone + "- " + command + "\n"
 		if not listone:
 			listone = "There are no commands setup.\n"

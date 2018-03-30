@@ -12,7 +12,7 @@ from Roxbot.settings import guild_settings as gs
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
-logger.setLevel(logging.WARN)
+logger.setLevel(logging.INFO)
 handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
@@ -113,5 +113,6 @@ if __name__ == "__main__":
 
 	start_time = time.time()
 	bot.load_extension("Roxbot.settings.settings")
-	#bot.load_extension("Roxbot.err_handle")
+	bot.load_extension("Roxbot.err_handle")
+	bot.load_extension("Roxbot.cogs.customcommands")
 	bot.run(load_config.token)
