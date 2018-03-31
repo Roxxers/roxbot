@@ -183,24 +183,33 @@ class Admin():
 	@bot.command()
 	async def kick(self, ctx, member:discord.Member, *, reason = ""):
 		"""Kicks mentioned user. Allows you to give a reason."""
-		await member.kick(reason=reason)
-		return await ctx.send("Kicked {} with reason: '{}'".format(member, reason))
+		try:
+			await member.kick(reason=reason)
+			return await ctx.send("Kicked {} with reason: '{}'".format(member, reason))
+		except discord.Forbidden:
+			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
 	@has_permissions(ban_members=True)
 	@bot_has_permissions(ban_members=True)
 	@bot.command()
 	async def ban(self, ctx, member:discord.Member, *, reason = ""):
 		"""Bans mentioned user. Allows you to give a reason."""
-		await member.ban(reason=reason, delete_message_days=0)
-		return await ctx.send("Banned {} with reason: '{}'".format(member, reason))
+		try:
+			await member.ban(reason=reason, delete_message_days=0)
+			return await ctx.send("Banned {} with reason: '{}'".format(member, reason))
+		except discord.Forbidden:
+			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
 	@has_permissions(ban_members=True)
 	@bot_has_permissions(ban_members=True)
 	@bot.command()
 	async def unban(self, ctx, member:discord.Member, *, reason = ""):
 		"""Unbans mentioned user. Allows you to give a reason."""
-		await member.unban(reason=reason)
-		return await ctx.send("Unbanned {} with reason: '{}'".format(member, reason))
+		try:
+			await member.unban(reason=reason)
+			return await ctx.send("Unbanned {} with reason: '{}'".format(member, reason))
+		except discord.Forbidden:
+			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
 def setup(bot_client):
 	bot_client.add_cog(Admin(bot_client))
