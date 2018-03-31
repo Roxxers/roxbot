@@ -147,6 +147,17 @@ class Reddit():
 		subreddit_choice = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
 
+	@bot.command()
+	async def feedmevegan(self, ctx):
+		"""
+		Feeds you with vegan food porn. Uses multiple subreddits.
+		Yes, I was very hungry when trying to find the subreddits for this command.
+		Subreddits: "veganrecipes", "vegangifrecipes", "veganfoodporn"
+		"""
+		subreddits = ["veganrecipes", "vegangifrecipes", "VeganFoodPorn"]
+		subreddit_choice = random.choice(subreddits)
+		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
+
 	@bot.command(aliases=["gssp"])
 	async def gss(self, ctx):
 		"""
