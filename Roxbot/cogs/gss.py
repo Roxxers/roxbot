@@ -20,7 +20,7 @@ def is_not_nsfw_disabled():
 class GaySoundsShitposts():
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.acceptable_roles = [394939389823811584, 394941004043649036]
+		self.acceptable_roles = (394939389823811584, 394941004043649036)
 
 	def tatsumaki_api_call(self, member, guild):
 		base = "https://api.tatsumaki.xyz/"
