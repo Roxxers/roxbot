@@ -41,9 +41,6 @@ class SelfAssign():
 		Example:
 			.iam OverwatchPing
 		"""
-		if role is None:
-			raise commands.BadArgument
-
 		settings = gs.get(ctx.guild)
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
@@ -70,9 +67,6 @@ class SelfAssign():
 		Example:
 			.iamn OverwatchPing
 		"""
-		if role is None:
-			raise commands.BadArgument
-	
 		settings = gs.get(ctx.guild)
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
