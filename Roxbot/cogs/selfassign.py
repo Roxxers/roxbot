@@ -33,7 +33,7 @@ class SelfAssign():
 		return await ctx.send(embed=embed)
 
 	@commands.command(pass_context=True)
-	async def iam(self, ctx, *, role: discord.Role = None):
+	async def iam(self, ctx, role: discord.Role = None):
 		"""
 		Self-assign yourself a role. Only one role at a time.
 		Usage:
@@ -62,7 +62,7 @@ class SelfAssign():
 			return await ctx.send("That role is not self-assignable.")
 
 	@commands.command(pass_context=True)
-	async def iamn(self, ctx, *, role: discord.Role = None):
+	async def iamn(self, ctx, role: discord.Role = None):
 		"""
 		Remove a self-assigned role
 		Usage:
