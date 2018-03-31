@@ -99,7 +99,7 @@ class Util():
 		embed = discord.Embed(title=guild.name, colour=guild.me.colour.value)
 		embed.set_thumbnail(url=guild_icon_url)
 		embed.add_field(name="ID", value=guild.id, inline=False)
-		embed.add_field(name="Created at", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(discord.utils.snowflake_time(guild.id)), inline=False)
+		embed.add_field(name="Created at", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(guild.created_at, inline=False))
 		embed.add_field(name="Voice Region", value=guild.region, inline=False)
 		embed.add_field(name="AFK Timeout", value="{} Minutes".format(guild.afk_timeout/60), inline=False)
 		if guild.afk_channel:
@@ -110,6 +110,7 @@ class Util():
 		embed.add_field(name="Explicit Content Filtering", value=guild.explicit_content_filter, inline=False)
 		embed.add_field(name="Roles [{}]".format(len(guild.roles)), value="For all roles, use `{}guild roles`.", inline=False)
 		embed.add_field(name="Emotes [{}]".format(len(guild.emojis)), value="For all emotes, use `{}guild emotes`.".format(self.bot.command_prefix), inline=False)
+		embed.add_field(name="Channels [{}]".format(len(guild.channels)), value="{} Channel Categories\n{} Text Channels\n{} Voice Channels".format(len(guild.categories), len(guild.text_channels), len(guild.voice_channels)))
 
 		if guild.features:
 			embed.add_field(name="Extra Features", value=guild.features)
