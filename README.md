@@ -20,6 +20,7 @@ _Coming Soon_
 - New Ban, Kick, and Unban commands
 - New Guild and Role Util commands.
 - New feedmevegan command for hungry vegan friends.
+- inviteme command for quickly creating an invite link for the bot.
 - Added new error catching for the GSSP cog in case the Tatsumaki API dies or something.
 ###### Refactoring
 - Brand new way of storing, saving, and interacting with the guild settings. The new system should be better to read, understand, and shouldn't be as broken as the old version. Really only a note for those looking at the source code as all functionality should be the same other than roxbot should no longer require rebooting to have up to date settings.
