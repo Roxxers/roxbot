@@ -17,7 +17,7 @@ def is_not_nsfw_disabled():
 		return role not in ctx.author.roles
 	return commands.check(lambda ctx: predicate(ctx))
 
-class GaySoundsShitposting():
+class GaySoundsShitposts():
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.acceptable_roles = [394939389823811584, 394941004043649036]
@@ -76,4 +76,4 @@ class GaySoundsShitposting():
 		return await ctx.invoke(self.perms, role=role)
 
 def setup(bot_client):
-	bot_client.add_cog(GaySoundsShitposting(bot_client))
+	bot_client.add_cog(GaySoundsShitposts(bot_client))
