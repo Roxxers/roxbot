@@ -8,18 +8,28 @@ RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.
 
 ## Simple setup
 
-1. Copy settings/preferences_example.ini to settings/preferences.ini and fill in the details
-2. Run pip install -r requirements.txt in the root directory of the bot (This wont install the 1.0 version of discord.py which Roxbot now requires.)
-3. Add the bot to your server by generating an OAuth link with bot scope only
-4. Run main.py to generate config files for the server
-5. Stop RoxBot
-6. Open servers.json and populate with config options for your server
-7. Enjoy!
+_Coming Soon_
 
 ## Command Docs
 *Coming soon*
 
 ## Changelog
+
+#### v1.5.0
+###### New Features
+- New Ban, Kick, and Unban commands
+- New Guild and Role Util commands.
+- Added new error catching for the GSSP cog in case the Tatsumaki API dies or something.
+###### Refactoring
+- Brand new way of storing, saving, and interacting with the guild settings. The new system should be better to read, understand, and shouldn't be as broken as the old version. Really only a note for those looking at the source code as all functionality should be the same other than roxbot should no longer require rebooting to have upto settings.
+- Also a new file structure layout so it looks nice.
+###### Bug Fixes
+- Fixed bug where using the ;emoji command on a static emoji would return an empty file.
+- Fixed bug where roxbot would not have up to date settings at times.
+- Fixed the shutdown and reboot commands so they aren't broken anymore.
+- Fixed bugs in the gss cog which caused issues from time to time for no reason.
+- Fixed an issue where the check failure error would be picked up before it's sub errors meaning they would never be catched by the error handler.
+- Fixed the biggest bugs of Roxbot. Fun and CustomCommands where ordered the wrong way in the cog loader, and the GSSP cog's class being called "GaySoundsShitposting" which is just disgusting.
 
 #### v1.4.1
 ###### Bug Fixes
