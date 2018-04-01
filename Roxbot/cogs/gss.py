@@ -32,7 +32,7 @@ class GaySoundsShitposts():
 			return False
 
 	@bot.command(hidden=True)
-	async def perms(self, ctx, *, role: discord.Role):
+	async def perms(self, ctx, *, role: discord.Role = None):
 		"""Shell command to do the perm assigning. Only should be invoked by another command."""
 		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
 		if role.id not in self.acceptable_roles:
