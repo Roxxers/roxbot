@@ -26,6 +26,7 @@ _Coming Soon_
 ###### Refactoring
 - Brand new way of storing, saving, and interacting with the guild settings. The new system should be better to read, understand, and shouldn't be as broken as the old version. Really only a note for those looking at the source code as all functionality should be the same other than roxbot should no longer require rebooting to have up to date settings.
 - Also a new file structure layout so it looks nice.
+- Changed the name of the welcome channel to the greets channel externally.
 ###### Bug Fixes
 - Fixed bug where using the ;emoji command on a static emoji would return an empty file.
 - Fixed bug where roxbot would not have up to date settings at times.
