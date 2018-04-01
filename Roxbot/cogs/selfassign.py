@@ -44,8 +44,8 @@ class SelfAssign():
 		settings = gs.get(ctx.guild)
 
 		if role is None:
-			raise commands.BadArgument
-		
+			raise commands.MissingRequiredArgument
+
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
 								  description="SelfAssignable roles are not enabled on this server")
@@ -74,7 +74,7 @@ class SelfAssign():
 		settings = gs.get(ctx.guild)
 
 		if role is None:
-			raise commands.BadArgument
+			raise commands.MissingRequiredArgument
 
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
