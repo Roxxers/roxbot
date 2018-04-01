@@ -64,6 +64,7 @@ class GaySoundsShitposts():
 	@bot.command()
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
+		# This shit is dumb and can go away soon.
 		arg = None
 		for role in ctx.guild.roles:
 			if role.id == 394939389823811584:
