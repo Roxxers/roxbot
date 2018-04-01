@@ -35,6 +35,7 @@ _Coming Soon_
 - Fixed an issue where the check failure error would be picked up before it's sub errors meaning they would never be catched by the error handler.
 - Fixed the biggest bugs of Roxbot. Fun and CustomCommands where ordered the wrong way in the cog loader, and the GSSP cog's class being called "GaySoundsShitposting" which is just disgusting.
 - Fixed bug where conversion error in iam commands didn't raise an exception.
+- Added error handling to when you did the self assign commands without any arguments.
 
 #### v1.4.1
 ###### Bug Fixes
