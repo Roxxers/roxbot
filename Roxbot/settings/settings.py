@@ -288,8 +288,8 @@ class Settings:
 				await ctx.send("{} has been set as the goodbye channel!".format(channel.mention))
 			elif selection == "custommessage":
 				greets["custom-message"] = changes
-				changes = "greets"
 				await ctx.send("Custom message set to '{}'".format(changes))
+				changes = "greets"
 			else:
 				return await ctx.send("No valid option given.")
 
