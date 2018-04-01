@@ -108,7 +108,7 @@ if __name__ == "__main__":
 		exit(0)
 
 	if not os.path.isfile("Roxbot/settings/servers.json"):
-		with open("settings/servers.json", "w+") as fp:
+		with open("Roxbot/settings/servers.json", "w") as fp:
 			fp.write("{}")
 
 	start_time = time.time()
