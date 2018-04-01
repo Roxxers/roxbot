@@ -64,16 +64,26 @@ class GaySoundsShitposts():
 	@bot.command()
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
-		role = discord.utils.get(ctx.guild.roles, id=394939389823811584)
-		return await ctx.invoke(self.perms, role)
+		arg = None
+		for role in ctx.guild.roles:
+			if role.id == 394939389823811584:
+				arg = role
+		if not arg:
+			return ctx.send("Error, message roxie thanks.")
+		return await ctx.invoke(self.perms, arg)
 
 	@is_not_nsfw_disabled()
 	@is_gss()
 	@bot.command()
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
-		role = discord.utils.get(ctx.guild.roles, id=394941004043649036)
-		return await ctx.invoke(self.perms, role)
+		arg = None
+		for role in ctx.guild.roles:
+			if role.id == 394941004043649036:
+				arg = role
+		if not arg:
+			return ctx.send("Error, message roxie thanks.")
+		return await ctx.invoke(self.perms, arg)
 
 def setup(bot_client):
 	bot_client.add_cog(GaySoundsShitposts(bot_client))
