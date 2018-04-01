@@ -53,7 +53,7 @@ class GaySoundsShitposts():
 		time = datetime.datetime.now() - ctx.author.joined_at
 
 		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
-			await member.add_roles(member, role, reason="Requested {0.name}".format(role))
+			await member.add_roles(role, reason="Requested {0.name}".format(role))
 			await ctx.send("You have now have the {0.name} role".format(role))
 		else:
 			return await ctx.send(
