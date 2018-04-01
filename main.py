@@ -114,4 +114,5 @@ if __name__ == "__main__":
 	start_time = time.time()
 	bot.load_extension("Roxbot.settings.settings")
 	bot.load_extension("Roxbot.err_handle")
+	bot.load_extension("Roxbot.logging")
 	bot.run(load_config.token)

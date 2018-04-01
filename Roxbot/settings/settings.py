@@ -186,6 +186,32 @@ class Settings:
 			return await ctx.send('Missing Argument')
 		self.guild_settings = guild_settings.get(ctx.guild)
 
+	@settings.command(aliases=["log"])
+	async def logging(self, ctx, selection, *, changes = None):
+		"""Edits the logging settings.
+
+		Options:
+			enable/disable: Enable/disables logging.
+			channel: sets the channel.
+		"""
+		selection = selection.lower()
+		settings = guild_settings.get(ctx.guild)
+
+		if selection == "enable":
+			settings.logging["enabled"] = 1
+			await ctx.send("'logging' was enabled!")
+		elif selection == "disable":
+			settings.logging["enabled"] = 0
+			await ctx.send("'logging' was disabled :cry:")
+		elif selection == "channel":
+			channel = self.get_channel(ctx, changes)
+			settings.logging["channel"] = channel.id
+			await ctx.send("{} has been set as the logging channel!".format(channel.mention))
+		else:
+			return await ctx.send("No valid option given.")
+		return self.guild_settings.update(settings.logging, "logging")
+
+
 	@settings.command(aliases=["sa"])
 	async def selfassign(self, ctx, selection, *, changes = None):
 		"""Edits settings for self assign cog.

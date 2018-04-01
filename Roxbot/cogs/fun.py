@@ -1,8 +1,12 @@
-import discord
 import random
-from Roxbot import checks
+import discord
 import requests
 from discord.ext.commands import bot
+
+from Roxbot import checks
+from Roxbot.settings import guild_settings
+from Roxbot.logging import Logging
+
 
 
 class Fun:
@@ -125,14 +129,16 @@ class Fun:
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
 	@bot.command()
-	async def aesthetics(self, ctx, *convert):
+	async def aesthetics(self, ctx, *, convert):
 		"""Converts text to be more  a e s t h e t i c s"""
 		WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 		WIDE_MAP[0x20] = 0x3000
-		convert = str(' '.join(convert)).translate(WIDE_MAP)
-		if ctx.guild.id == 393764974444675073:
-			await self.bot.get_channel(394959819796381697).send("{} used the aesthetics command passing the argument '{}'".format(str(ctx.author), ' '.join(convert)))
-		return await ctx.send(convert)
+		converted = str(convert).translate(WIDE_MAP)
+
+		logging = guild_settings.get(ctx.guild).logging
+		if logging["enabled"]:
+			await Logging(self.bot).log(ctx.guild, "aesthetics", user=ctx.author, argument_given=convert)
+		return await ctx.send(converted)
 
 	@bot.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
