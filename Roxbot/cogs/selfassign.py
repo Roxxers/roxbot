@@ -44,7 +44,9 @@ class SelfAssign():
 		settings = gs.get(ctx.guild)
 
 		if role is None:
-			raise commands.MissingRequiredArgument
+			# Hacky way to get the error I want
+			from inspect import Parameter
+			raise commands.MissingRequiredArgument(Parameter("role", False))
 
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
@@ -74,7 +76,8 @@ class SelfAssign():
 		settings = gs.get(ctx.guild)
 
 		if role is None:
-			raise commands.MissingRequiredArgument
+			from inspect import Parameter
+			raise commands.MissingRequiredArgument(Parameter("role", False))
 
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
