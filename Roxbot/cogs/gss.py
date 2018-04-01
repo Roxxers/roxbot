@@ -32,7 +32,7 @@ class GaySoundsShitposts():
 			return False
 
 	@bot.command(hidden=True)
-	async def perms(self, ctx, *, role: discord.Role = None):
+	async def perms(self, ctx, role):
 		"""Shell command to do the perm assigning. Only should be invoked by another command."""
 		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
 		if role.id not in self.acceptable_roles:
@@ -64,16 +64,16 @@ class GaySoundsShitposts():
 	@bot.command()
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
-		role = 394939389823811584
-		return await ctx.invoke(self.perms, role=role)
+		role = discord.utils.get(ctx.guild.roles, id=394939389823811584)
+		return await ctx.invoke(self.perms, role)
 
 	@is_not_nsfw_disabled()
 	@is_gss()
 	@bot.command()
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
-		role = 394941004043649036
-		return await ctx.invoke(self.perms, role=role)
+		role = discord.utils.get(ctx.guild.roles, id=394941004043649036)
+		return await ctx.invoke(self.perms, role)
 
 def setup(bot_client):
 	bot_client.add_cog(GaySoundsShitposts(bot_client))
