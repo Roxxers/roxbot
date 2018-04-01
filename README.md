@@ -17,8 +17,9 @@ _Coming Soon_
 
 #### v1.5.0
 ###### New Features
-- New Ban, Kick, and Unban commands
+- New Ban, Kick, and Unban commands.
 - New Guild and Role Util commands.
+- Logging is now a thing. Just limited to what I was using hack code to do in GSSP. Clean code, happy Roxie.ye
 - New feedmevegan command for hungry vegan friends.
 - inviteme command for quickly creating an invite link for the bot.
 - Added new error catching for the GSSP cog in case the Tatsumaki API dies or something.
