@@ -1,7 +1,16 @@
 import discord
-from discord.ext.commands import bot
 from Roxbot.settings import guild_settings
 from Roxbot.load_config import embedcolour
+
+
+async def log(guild, channel, command_name, **kwargs):
+	logging = guild_settings.get(guild).logging
+	if logging["enabled"]:
+		embed = discord.Embed(title="{} command logging".format(command_name), colour=embedcolour)
+		for key, value in kwargs.items():
+			embed.add_field(name=key, value=value)
+		return await channel.send(embed=embed)
+
 
 class Logging:
 	def __init__(self, bot_client):
@@ -27,14 +36,6 @@ class Logging:
 			embed = discord.Embed(description="{} left the server".format(member), colour=embedcolour)
 			return await channel.send(embed=embed)
 
-	async def log(self, guild, command_name, **kwargs):
-		logging = guild_settings.get(guild).logging
-		if logging["enabled"]:
-			channel = self.bot.get_channel(logging["channel"])
-			embed=discord.Embed(title="{} command logging".format(command_name), colour=embedcolour)
-			for key, value in kwargs.items():
-				embed.add_field(name=key, value=value)
-			return await channel.send(embed=embed)
 
 def setup(bot_client):
 	bot_client.add_cog(Logging(bot_client))
