@@ -17,9 +17,11 @@ _Coming Soon_
 
 #### v1.6.0
 ###### New Features
+
 ###### Minor Changes
 - Logging is now easier internally.
 - The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
+- waifurate command can now do husbando and spousu rates as well.
 ###### Bug Fixes
 
 #### v1.5.1

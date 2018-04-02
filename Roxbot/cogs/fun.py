@@ -92,14 +92,22 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to hug")
 		return await ctx.send(":blush: *{} hugs {}*".format(self.bot.user.name, user.name))
 
-	@bot.command(aliases=["wf"])
+	@bot.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx):
 		"""
-		Rates the mentioned waifu(s)
+		Rates the mentioned waifu(s). husbando/spousurate also work.
 		Usage:
 			{command_prefix}waifurate @user#9999
+		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
 		"""
 		mentions = ctx.message.mentions
+		if ctx.invoked_with in ["hr", "husbandorate"]:
+			waifu = "husbando"
+		elif ctx.invoked_with in ["sr", "spousurate"]:
+			waifu = "spousu"
+		else:
+			waifu = "waifu"
+
 		if not mentions:
 			return await ctx.send("You didn't mention anyone for me to rate.", delete_after=10)
 
@@ -118,9 +126,9 @@ class Fun:
 			emoji = ":heart_eyes:"
 
 		if len(mentions) > 1:
-			return await ctx.send("Oh poly waifu rating? :smirk: Your combined waifu rating is {}/10. {}".format(rating, emoji))
+			return await ctx.send("Oh poly {} rating? :smirk: Your combined waifu rating is {}/10. {}".format(waifu, rating, emoji))
 		else:
-			return await ctx.send("Oh that's your waifu? I rate them a {}/10. {}".format(rating, emoji))
+			return await ctx.send("Oh that's your {}? I rate them a {}/10. {}".format(waifu, rating, emoji))
 
 	@bot.command(aliases=["cf"])
 	async def coinflip(self, ctx):
