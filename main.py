@@ -95,10 +95,6 @@ async def about(ctx):
 
 	return await ctx.channel.send(embed=em)
 
-@bot.command()
-async def test(ctx):
-	return await ctx.send(ctx.guild.settings)
-
 
 if __name__ == "__main__":
 	# Pre-Boot checks
