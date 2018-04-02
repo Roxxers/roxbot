@@ -15,6 +15,13 @@ _Coming Soon_
 
 ## Changelog
 
+#### v1.6.0
+###### New Features
+###### Minor Changes
+- Logging is now easier internally.
+- The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
+###### Bug Fixes
+
 #### v1.5.1
 ##### Hot Fixes
 - inviteme is hidden and added an extra warning for people not to use it.

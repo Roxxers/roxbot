@@ -1,9 +1,13 @@
-from discord.ext.commands import bot
-from lxml import html
 import random
 import requests
+
+from lxml import html
 from bs4 import BeautifulSoup
+from discord.ext.commands import bot
+
 from Roxbot import checks
+from Roxbot.logging import log
+from Roxbot.settings import guild_settings
 
 
 # Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much. Just lazily edited old code and bodged it into this one.
@@ -127,6 +131,12 @@ class Reddit():
 			text = "This is an album, click on the link to see more. "
 		else:
 			text = ""
+
+		if ctx.invoked_with == "subreddit":
+			# Only log the command when it is this command being used. Not the inbuilt commands.
+			logging = guild_settings.get(ctx.guild).logging
+			log_channel = self.bot.get_channel(logging["channel"])
+			await log(ctx.guild, log_channel, "subreddit", User=ctx.author, Subreddit=subreddit, Returned="<{}>".format(url), Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
 
 		return await ctx.send(title + text + url)
 

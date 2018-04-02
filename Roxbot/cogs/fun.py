@@ -5,8 +5,7 @@ from discord.ext.commands import bot
 
 from Roxbot import checks
 from Roxbot.settings import guild_settings
-from Roxbot.logging import Logging
-
+from Roxbot.logging import log
 
 
 class Fun:
@@ -134,11 +133,11 @@ class Fun:
 		WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 		WIDE_MAP[0x20] = 0x3000
 		converted = str(convert).translate(WIDE_MAP)
+		await ctx.send(converted)
 
 		logging = guild_settings.get(ctx.guild).logging
-		if logging["enabled"]:
-			await Logging(self.bot).log(ctx.guild, "aesthetics", user=ctx.author, argument_given=convert)
-		return await ctx.send(converted)
+		log_channel = self.bot.get_channel(logging["channel"])
+		await log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
 
 	@bot.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
@@ -150,6 +149,7 @@ class Fun:
 		embed.set_author(name="HOW TO OPERATE YOUR FROG")
 		embed.set_footer(text="https://frog.tips")
 		return await ctx.send(embed=embed)
+
 
 def setup(bot_client):
 	bot_client.add_cog(Fun(bot_client))
