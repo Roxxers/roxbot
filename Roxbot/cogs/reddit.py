@@ -77,9 +77,9 @@ class Scrapper():
 			subreddit += choice
 		html = requests.get("https://reddit.com/r/"+subreddit, headers = {'User-agent': 'RoxBot Discord Bot'})
 		try:
-			reddit = html.json()["data"]["children"]
+			reddit = html.json()["data"]
 		except KeyError:
-			return False
+			return {}
 		return reddit
 
 	def retriveurl(self, url):
@@ -108,9 +108,12 @@ class Reddit():
 		title = ""
 		if not links:
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+		else:
+			if not links["after"]:
+				return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 		url = ""
 		for x in range(10):
-			choice = random.choice(links)
+			choice = random.choice(links["children"])
 			title = "**{}** from /r/{}\n".format(choice["data"]["title"], subreddit)
 			if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
 				return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
