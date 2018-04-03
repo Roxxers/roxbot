@@ -25,6 +25,7 @@ class Fun:
 			.roll #will give brief overview of dice expression format
 		"""
 		response = ''
+		rollVerbose = True
 		# sanitise input by removing all spaces, converting to lower case
 		expression = expression.lower().replace(' ','')
 		# check end of expression for a 'x<number>'
@@ -47,13 +48,16 @@ class Fun:
 		dice = []
 		for item in m:
 			temp = [0]*5
-			temp[0] = 1 if item[0] == '' else -1
-			if 'd' in item[1]:
-				if item[2] == '':
+			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
+			if 'd' in item[1]:#if its a dice/set of dice rather than a number
+				if item[2] == '':#if its just a dY rather than an XdY
 					temp[1] = 1
 					temp[2] = int(item[3])
 				else:
 					temp[1] = int(item[2])
+					if temp[1] > 10 and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
+						rollVerbose = False
+						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
 					temp[2] = int(item[3])
 			else:
 				temp[1] = int(item[1])
@@ -74,15 +78,17 @@ class Fun:
 			else:
 				response += 'Rolled: '
 			for j in range(len(dice)):
-				if j != 0:
+				if j != 0 and rollVerbose:
 					response += ' + '
-				if dice[j][0] == -1:
+				if dice[j][0] == -1 and rollVerbose:
 					response += '-'
 				if dice[j][2] == 1:
-					response += '{}'.format(dice[j][1])
+					if rollVerbose:
+						response += '{}'.format(dice[j][1])
 					total += dice[j][0] * dice[j][1]
 				else:
-					response += '('
+					if rollVerbose:
+						response += '('
 					temp = []
 					for k in range(dice[j][1]):
 						t = [0,'']
@@ -107,10 +113,15 @@ class Fun:
 								temp[k][1] = '~~' + temp[k][1] + '~~'
 								temp[k][0] = 0
 					for k in range(len(temp)):
-						response += '{},'.format(temp[k][1])
+						if rollVerbose:
+							response += '{},'.format(temp[k][1])
 						total+= dice[j][0] * temp[k][0]
-					response = response[:-1] + ')'
-			response += ' Totaling: {}'.format(total)
+					if rollVerbose:
+						response = response[:-1] + ')'
+			if rollVerbose:
+				response += ' Totaling: {}'.format(total)
+			else:
+				response += ' Total: {}'.format(total)
 			if i < (times-1): response += '\n'
 		return await ctx.send(response)
 
