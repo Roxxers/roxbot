@@ -200,11 +200,11 @@ class Util():
 		await ctx.send(file=discord.File(imgname))
 		os.remove(imgname)
 
-	@bot.command()
+	@bot.command(hidden=True)
 	async def inviteme(self, ctx):
 		"""Returns an invite link to invite the bot to your server."""
 		link = discord.utils.oauth_url(self.bot.user.id, discord.Permissions.all_channel())
-		return await ctx.send("Here is a link to invite me to your server! <{}>".format(link))
+		return await ctx.send("WARNING: This is only for Roxie to use atm. Here is a link to invite me to your server! <{}>".format(link))
 
 	@bot.command()
 	@commands.is_owner()
