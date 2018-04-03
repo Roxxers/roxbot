@@ -17,12 +17,12 @@ _Coming Soon_
 
 #### v1.6.0
 ###### New Features
-- waifurate command can now do husbando and spousu rates as well.
-- pet command for your headpats needs.
+- `waifurate` command can now do husbando and spousu rates as well.
+- `pet` command for your headpats needs.
 ###### Minor Changes
 - Logging is now easier internally.
 - The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
-- Added who the wiafu command is dedicated to in the command description.
+- Added who the waifu command is dedicated to in the command description.
 ###### Bug Fixes
 
 #### v1.5.1
