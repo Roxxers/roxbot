@@ -60,8 +60,8 @@ class Fun:
 		"""
 		Spanks the mentioned user ;)
 		Usage:
-			{command_prefix}spank @Roxbot_client#4170
-			{command_prefix}spank Roxbot_client
+			{command_prefix}spank @Roxbot#4170
+			{command_prefix}spank Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to spank")
@@ -73,8 +73,8 @@ class Fun:
 		"""
 		Sucks the mentioned user ;)
 		Usage:
-			{command_prefix}suck @Roxbot_client#4170
-			{command_prefix}suck Roxbot_client
+			{command_prefix}suck @Roxbot#4170
+			{command_prefix}suck Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to suck")
@@ -85,12 +85,24 @@ class Fun:
 		"""
 		Hugs the mentioned user :3
 		Usage:
-			{command_prefix}hug @Roxbot_client#4170
-			{command_prefix}hug Roxbot_client
+			{command_prefix}hug @Roxbot#4170
+			{command_prefix}hug Roxbott
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to hug")
 		return await ctx.send(":blush: *{} hugs {}*".format(self.bot.user.name, user.name))
+
+	@bot.command(aliases=["headpat"])
+	async def pet(self, ctx, *, user: discord.User = None):
+		"""
+		Gives headpats to the mentioned user :3
+		Usage:
+			{command_prefix}pet @Roxbot#4170
+			{command_prefix}pet Roxbot
+		"""
+		if not user:
+			return await ctx.send("You didn't mention someone for me to headpat")
+		return await ctx.send("Nyaa! :3 *{} gives headpats to {}*".format(self.bot.user.name, user.name))
 
 	@bot.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx):
