@@ -15,6 +15,11 @@ _Coming Soon_
 
 ## Changelog
 
+#### v1.5.1
+##### Hot Fixes
+- inviteme is hidden and added an extra warning for people not to use it.
+- subreddit command shouldnt break now if you give it a subreddit that is pretty close to an actual sub but isn't one.
+
 #### v1.5.0
 ###### New Features
 - New Ban, Kick, and Unban commands.
