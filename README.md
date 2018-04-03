@@ -19,6 +19,7 @@ _Coming Soon_
 ##### Hot Fixes
 - inviteme is hidden and added an extra warning for people not to use it.
 - subreddit command shouldnt break now if you give it a subreddit that is pretty close to an actual sub but isn't one.
+- Fixed config errors when leaving and joining servers.
 
 #### v1.5.0
 ###### New Features
