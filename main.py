@@ -53,13 +53,12 @@ async def on_ready():
 # So while I don't use it, the function still will do their jobs of adding and removing the settings.
 
 @bot.event
-async def on_server_join(guild):
-	gs.error_check(bot.guilds)
+async def on_guild_join(guild):
+	gs.add_guild(guild)
 
 @bot.event
-async def on_server_remove(guild):
+async def on_guild_remove(guild):
 	gs.remove_guild(guild)
-	bot.settings = gs.get_all(bot.guilds)
 
 @bot.event
 async def on_message(message):

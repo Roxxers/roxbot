@@ -75,6 +75,11 @@ def remove_guild(guild):
 	settings.pop(str(guild.id))
 	_write_changes(settings)
 
+def add_guild(guild):
+	settings = _open_config()
+	settings[str(guild.id)] = guild_template["example"]
+	_write_changes(settings)
+
 def error_check(servers):
 	settings = _open_config()
 	for server in servers:
