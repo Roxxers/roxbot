@@ -2,6 +2,7 @@ import os
 import sys
 import aiohttp
 import asyncio
+import datetime
 
 from Roxbot import checks, load_config
 from Roxbot.settings import guild_settings
@@ -16,12 +17,31 @@ class Settings:
 	"""
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.bg_task = self.bot.loop.create_task(self.auto_backups())
 
 	def get_channel(self, ctx, channel):
 		if ctx.message.channel_mentions:
 			return ctx.message.channel_mentions[0]
 		else:
 			return self.bot.get_channel(channel)
+
+	async def auto_backups(self):
+		await self.bot.wait_until_ready()
+		raw_settings = guild_settings._open_config()
+		while not self.bot.is_closed():
+			if raw_settings != guild_settings._open_config():
+				raw_settings = guild_settings._open_config()
+				time = datetime.datetime.now()
+				guild_settings.backup(raw_settings, "{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
+			await asyncio.sleep(300)
+
+	@bot.command()
+	@is_owner()
+	async def backup(self, ctx):
+		time = datetime.datetime.now()
+		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
+		guild_settings.backup(guild_settings._open_config(), filename)
+		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
 
 	@bot.command()
 	@checks.is_owner_or_admin()

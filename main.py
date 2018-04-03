@@ -33,11 +33,17 @@ def blacklisted(user):
 
 @bot.event
 async def on_ready():
+	# Load Roxbots inbuilt cogs and settings
+	bot.load_extension("Roxbot.settings.settings")
+	bot.load_extension("Roxbot.settings.backup")
+	bot.load_extension("Roxbot.err_handle")
+	bot.load_extension("Roxbot.logging")
 	bot.settings = gs.get_all(bot.guilds)
 
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
 
+	# Load Extension Cogs
 	print("Cogs Loaded:")
 	for cog in load_config.cogs:
 		bot.load_extension(cog)
@@ -94,7 +100,6 @@ async def about(ctx):
 
 	return await ctx.channel.send(embed=em)
 
-
 if __name__ == "__main__":
 	# Pre-Boot checks
 	if not os.path.isfile("Roxbot/preferences.ini"):
@@ -107,7 +112,4 @@ if __name__ == "__main__":
 			fp.write("{}")
 
 	start_time = time.time()
-	bot.load_extension("Roxbot.settings.settings")
-	bot.load_extension("Roxbot.err_handle")
-	bot.load_extension("Roxbot.logging")
 	bot.run(load_config.token)
