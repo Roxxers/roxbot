@@ -35,6 +35,7 @@ class Fun:
 					add l<number> #only sum the <number> lowest rolls rather than all of them
 				+<number> # Add this number to the sum.
 				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
+		Credit: TBTerra#5677
 		"""
 		response = ''
 		rollVerbose = True
