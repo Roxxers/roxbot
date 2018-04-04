@@ -20,6 +20,7 @@ _Coming Soon_
 - `waifurate` command can now do husbando and spousu rates as well.
 - `pet` command for your headpats needs.
 - Internal settings now have automatic and manual local backups.
+- `roll` command rewrite by TBTerra#5677. It can now do a lot more complex rolls that makes it actually useful!
 ###### Minor Changes
 - Logging is now easier internally.
 - The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
