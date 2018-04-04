@@ -1,4 +1,5 @@
 import random
+import re
 import discord
 import requests
 from discord.ext.commands import bot
@@ -13,46 +14,128 @@ class Fun:
 		self.bot = bot_client
 
 	@bot.command()
-	async def roll(self, ctx, die):
+	async def roll(self, ctx, expression = ""):
 		"""
-		Rolls a die using ndx format.
+		Rolls a die using dice expression format.
 		Usage:
-			{command_prefix}roll ndx
+			{command_prefix}roll expression
+			spaces in expression are ignored
 		Example:
-			.roll 2d20 # Rolls two D20s
+			.roll 2d20h1 + 7 # Rolls two D20s takes the highest 1, then adds 7
+			.roll #will give brief overview of dice expression format
+
+		Dice expression format:
+			An expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.
+			Sub expressions can be of many types:
+				<number> #add this number to the total
+				d<sides> #roll a dice with that many sides and add it to the total
+				<n>d<sides> #roll n dice. each of those dice have <sides> number of sides, sum all the dice and add to the total
+					add r<number> #reroll any rolls below <number>
+					add h<number> #only sum the <number> highest rolls rather than all of them
+					add l<number> #only sum the <number> lowest rolls rather than all of them
+				+<number> # Add this number to the sum.
+				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
 		"""
-		dice = 0
-		if die[0].isdigit():
-			if die[1].isdigit() or die[0] == 0:
-				return await ctx.send("I only support multipliers from 1-9")
-			multiplier = int(die[0])
-		else:
-			multiplier = 1
-		if die[1].lower() != "d" and die[0].lower() != "d":
-			return await ctx.send("Use the format 'ndx'.")
-		options = (4, 6, 8, 10, 12, 20, 100)
-		for option in options:
-			if die.endswith(str(option)):
-				dice = option
-		if dice == 0:
-			return await ctx.send("You didn't give a die to use.")
-
-		rolls = []
-		if dice == 100:
-			step = 10
-		else:
-			step = 1
-
-		total = 0
-		if multiplier > 1:
-			for x in range(multiplier):
-				rolls.append(random.randrange(step, dice+1, step))
-			for r in rolls:
-				total += r
-			return await ctx.send("{} rolled **{}**. Totaling **{}**".format(ctx.message.author.mention, rolls, total))
-		else:
-			roll = random.randrange(step, dice + 1, step)
-			return await ctx.send("{} rolled a **{}**".format(ctx.message.author.mention, roll))
+		response = ''
+		rollVerbose = True
+		# sanitise input by removing all spaces, converting to lower case
+		expression = expression.lower().replace(' ','')
+		# check end of expression for a 'x<number>'
+		parts = expression.split('x',1)
+		times = 1
+		if len(parts) == 2:
+			try:
+				times = int(parts[1])
+				if times < 1:
+					times = 1
+				if times > 10:
+					response += "*Warning:* cannot roll an expression more than 10 times. will roll 10 times rather than {}.\n".format(times)
+					times = 10
+			except ValueError:
+				times = 1
+				response += "*Warning:* was unable to resolve how many times this command was meant to run. defaulted to once.\n"
+		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])
+		if m == []:
+			return await ctx.send("Expression missing. If you are unsure of what the format should be, please use `{}help roll`".format(ctx.prefix))
+		dice = []
+		for item in m:
+			temp = [0]*5
+			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
+			if 'd' in item[1]:#if its a dice/set of dice rather than a number
+				if item[2] == '':#if its just a dY rather than an XdY
+					temp[1] = 1
+					temp[2] = int(item[3])
+				else:
+					temp[1] = int(item[2])
+					if temp[1] > 10 and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
+						rollVerbose = False
+						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
+					temp[2] = int(item[3])
+			else:
+				temp[1] = int(item[1])
+				temp[2] = 1
+			temp[3] = 0 if item[4] == '' else int(item[4][1:])
+			if item[5] == '':
+				temp[4] = 0
+			else:
+				if item[5][0] == 'h':
+					temp[4] = int(item[5][1:])
+				else:
+					temp[4] = -int(item[5][1:])
+			dice.append(temp)
+		for i in range(times):
+			total = 0
+			if times > 1:
+				response += 'Roll {}: '.format(i+1)
+			else:
+				response += 'Rolled: '
+			for j in range(len(dice)):
+				if j != 0 and rollVerbose:
+					response += ' + '
+				if dice[j][0] == -1 and rollVerbose:
+					response += '-'
+				if dice[j][2] == 1:
+					if rollVerbose:
+						response += '{}'.format(dice[j][1])
+					total += dice[j][0] * dice[j][1]
+				else:
+					if rollVerbose:
+						response += '('
+					temp = []
+					for k in range(dice[j][1]):
+						t = [0,'']
+						t[0] = random.randint(1,dice[j][2])
+						t[1] = '{}'.format(t[0])
+						if t[0] <= dice[j][3]:
+							t[0] = random.randint(1,dice[j][2])
+							t[1] += '__{}__'.format(t[0])
+						temp.append(t)
+					def takeFirst(ele):
+						return ele[0]
+					if dice[j][4] > 0:
+						temp.sort(key=takeFirst, reverse=True)
+						for k in range(len(temp)):
+							if k >= dice[j][4]:
+								temp[k][1] = '~~' + temp[k][1] + '~~'
+								temp[k][0] = 0
+					if dice[j][4] < 0:
+						temp.sort(key=takeFirst)
+						for k in range(len(temp)):
+							if k >= -dice[j][4]:
+								temp[k][1] = '~~' + temp[k][1] + '~~'
+								temp[k][0] = 0
+					for k in range(len(temp)):
+						if rollVerbose:
+							response += '{},'.format(temp[k][1])
+						total+= dice[j][0] * temp[k][0]
+					if rollVerbose:
+						response = response[:-1] + ')'
+			if rollVerbose:
+				response += ' Totaling: {}'.format(total)
+			else:
+				response += ' Total: {}'.format(total)
+			if i < (times-1): response += '\n'
+		return await ctx.send(response)
 
 	@checks.isnt_anal()
 	@bot.command()
