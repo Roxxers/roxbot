@@ -14,7 +14,7 @@ class Fun:
 		self.bot = bot_client
 
 	@bot.command()
-	async def roll(self, ctx, expression):
+	async def roll(self, ctx, expression = ""):
 		"""
 		Rolls a die using dice expression format.
 		Usage:
@@ -23,6 +23,18 @@ class Fun:
 		Example:
 			.roll 2d20h1 + 7 # Rolls two D20s takes the highest 1, then adds 7
 			.roll #will give brief overview of dice expression format
+
+		Dice expression format:
+			An expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.
+			Sub expressions can be of many types:
+				<number> #add this number to the total
+				d<sides> #roll a dice with that many sides and add it to the total
+				<n>d<sides> #roll n dice. each of those dice have <sides> number of sides, sum all the dice and add to the total
+					add r<number> #reroll any rolls below <number>
+					add h<number> #only sum the <number> highest rolls rather than all of them
+					add l<number> #only sum the <number> lowest rolls rather than all of them
+				+<number> # Add this number to the sum.
+				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
 		"""
 		response = ''
 		rollVerbose = True
@@ -44,7 +56,7 @@ class Fun:
 				response += "*Warning:* was unable to resolve how many times this command was meant to run. defaulted to once.\n"
 		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])
 		if m == []:
-			return await ctx.send("Dice expression format:\n\nAn expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.\n\nSub expressions can be of many types:\n<number> #add this number to the total\nd<sides> #roll a dice with that many sides and add it to the total\n<n>d<sides> #roll n dice. each of those dice have <sides> number of sides, sum all the dice and add to the total\n\tadd r<number> #reroll any rolls below <number>\n\tadd h<number> #only sum the <number> highest rolls rather than all of them\n\tadd l<number> #only sum the <number> lowest rolls rather than all of them\nx<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
+			return await ctx.send("Expression missing. If you are unsure of what the format should be, please use `{}help roll`".format(ctx.prefix))
 		dice = []
 		for item in m:
 			temp = [0]*5
