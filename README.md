@@ -25,6 +25,7 @@ _Coming Soon_
 - Logging is now easier internally.
 - The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
 - Added who the waifu command is dedicated to in the command description.
+- Added more helpful error handling for missing argument errors.
 ###### Bug Fixes
 
 #### v1.5.1
