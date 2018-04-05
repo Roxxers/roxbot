@@ -46,7 +46,7 @@ class SelfAssign():
 		if role is None:
 			# Hacky way to get the error I want
 			from inspect import Parameter
-			raise commands.MissingRequiredArgument(Parameter("role", False))
+			raise commands.MissingRequiredArgument(Parameter("Role", False))
 
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=discord.Colour(self.embed_colour),

@@ -39,7 +39,7 @@ class ErrHandle:
 			elif isinstance(error, commands.DisabledCommand):
 				embed = discord.Embed(description="This command is disabled.")
 			elif isinstance(error, commands.MissingRequiredArgument):
-				embed = discord.Embed(description="Argument missing.")
+				embed = discord.Embed(description="Argument missing. {}".format(error.args[0]))
 			elif isinstance(error, commands.BadArgument):
 				embed = discord.Embed(description="Invalid Argument given. Please check arguments given.")
 			elif isinstance(error, commands.TooManyArguments):
