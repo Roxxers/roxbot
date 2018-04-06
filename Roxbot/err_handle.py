@@ -46,11 +46,11 @@ class ErrHandle:
 			elif isinstance(error, commands.TooManyArguments):
 				embed = discord.Embed(description="Too many arguments given.")
 			elif isinstance(error, commands.CommandNotFound):
-				cc =guild_settings.get(ctx.guild).custom_commands # Delete this when we update this system.
+				cc = guild_settings.get(ctx.guild).custom_commands
 				if ctx.invoked_with in cc["1"]:
 					embed = None
-				elif ctx.message.content.strip(ctx.prefix)[0] in string.punctuation:
-					# Should avoid punctuation emoticons
+				elif any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]):
+					# Should avoid punctuation emoticons. Checks all of the command for punctuation in the string.
 					embed = None
 				else:
 					embed = discord.Embed(description="That Command doesn't exist.")
