@@ -251,7 +251,7 @@ class Fun:
 		if len(mentions) > 1:
 			return await ctx.send("Oh poly {} rating? :smirk: Your combined waifu rating is {}/10. {}".format(waifu, rating, emoji))
 		else:
-			return await ctx.send("Oh that's your {}? I rate them a {}/10. {}".format(waifu, rating, emoji))
+			return await ctx.send("Oh that's your {}? I rate your pairing a {}/10. {}".format(waifu, rating, emoji))
 
 	@bot.command(aliases=["cf"])
 	async def coinflip(self, ctx):
