@@ -37,6 +37,7 @@ class Fun:
 				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
 		Credit: TBTerra#5677
 		"""
+		###TODO: parametrise limits such that they could be set in server config in future
 		response = ''
 		rollVerbose = True
 		# sanitise input by removing all spaces, converting to lower case
@@ -71,6 +72,8 @@ class Fun:
 					if temp[1] > 10 and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
 						rollVerbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
+					if temp[1] > 1000
+						return await ctx.send("I'm sorry {}, I'm afraid I cant do that. (To many dice to roll)".format(self.bot.user.name))
 					temp[2] = int(item[3])
 			else:
 				temp[1] = int(item[1])
