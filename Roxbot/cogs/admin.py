@@ -72,17 +72,17 @@ class Admin():
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)
 	@bot.command()
-	async def purge(self, ctx, limit=0,*, author: discord.Member = None):
+	async def purge(self, ctx, limit=0, *, author: discord.User = None):
 		"""Purges messages from the text channel.
 		Limit = Limit of messages to be deleted
 		Author (optional) =  If given, Roxbot will selectively only delete this user's messages."""
+		# Sadly I cant find an elegant way for the bot to be able to purge members that have left.
 		if author:
-			predicate = lambda message: message.author.id == author.id
+			predicate = lambda message: message.author.id == author.id and message.id != ctx.message.id
 		else:
-			predicate = None
+			predicate = lambda message: message.id != ctx.message.id
 		messages = await ctx.channel.purge(limit=limit, check=predicate)
 		return await ctx.send("{} message(s) purged from chat.".format(len(messages)))
-
 
 	@checks.is_admin_or_mod()
 	@commands.group()
