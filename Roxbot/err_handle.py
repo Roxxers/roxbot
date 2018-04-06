@@ -55,9 +55,9 @@ class ErrHandle:
 				else:
 					embed = discord.Embed(description="That Command doesn't exist.")
 			elif isinstance(error, commands.BotMissingPermissions):
-				embed = discord.Embed(description="I am missing the following permissions: {}".format(str(error.missing_perms).strip("[]")))
+				embed = discord.Embed(description="{}".format(error.args[0].replace("Bot", "Roxbot")))
 			elif isinstance(error, commands.MissingPermissions):
-				embed = discord.Embed(description="You are missing the following permissions: {}".format(str(error.missing_perms).strip("[]")))
+				embed = discord.Embed(description="{}".format(error.args[0]))
 			elif isinstance(error, commands.NotOwner):
 				embed = discord.Embed(description="You do not have permission to do this. You are not Roxie!")
 			elif isinstance(error, commands.CommandOnCooldown):
