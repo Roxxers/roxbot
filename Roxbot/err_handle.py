@@ -1,6 +1,7 @@
-import traceback
-import datetime
+import string
 import discord
+import datetime
+import traceback
 from discord.ext import commands
 from Roxbot.settings import guild_settings
 
@@ -48,7 +49,8 @@ class ErrHandle:
 				cc =guild_settings.get(ctx.guild).custom_commands # Delete this when we update this system.
 				if ctx.invoked_with in cc["1"]:
 					embed = None
-				elif len(ctx.message.content) < 6: # Should avoid puncutation emoticons while also not being big enough to trigger for mispelt commands,
+				elif ctx.message.content.strip(ctx.prefix)[0] in string.punctuation:
+					# Should avoid punctuation emoticons
 					embed = None
 				else:
 					embed = discord.Embed(description="That Command doesn't exist.")
