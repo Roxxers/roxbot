@@ -13,7 +13,7 @@ class Fun:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 
-	@bot.command()
+	@bot.command() # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
 	async def roll(self, ctx, expression = ""):
 		"""
 		Rolls a die using dice expression format.
@@ -126,7 +126,7 @@ class Fun:
 							if k >= dice[j][4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
 								temp[k][1] = '~~' + temp[k][1] + '~~'
 								temp[k][0] = 0
-					if dice[j][4] < 0::#if its selecting lowest
+					if dice[j][4] < 0:#if its selecting lowest
 						temp.sort(key=takeFirst)
 						for k in range(len(temp)):#sort the rolled dice. lowest first
 							if k >= -dice[j][4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
