@@ -64,6 +64,8 @@ class ErrHandle:
 				embed = discord.Embed(description="This command is on cooldown, please wait {:.2f} seconds before trying again.".format(error.retry_after))
 			elif isinstance(error, commands.CheckFailure):
 				embed = discord.Embed(description="You do not have permission to do this. Back off, thot!")
+			elif isinstance(error, commands.CommandError):
+				embed = discord.Embed(description="Command Error. {}".format(error.args[0]))
 			else:
 				embed = discord.Embed(
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
