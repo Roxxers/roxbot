@@ -1,7 +1,8 @@
 import time
 import discord
 import datetime
-from discord.ext.commands import bot, group, guild_only, bot_has_permissions, has_permissions
+from discord.ext import commands
+from discord.ext.commands import bot
 
 from Roxbot import checks
 from Roxbot.settings import guild_settings as gs
@@ -38,9 +39,9 @@ class Admin():
 			else:
 				pass
 
-	@guild_only()
+	@commands.guild_only()
 	@checks.is_admin_or_mod()
-	@bot_has_permissions(manage_messages=True)
+	@commands.bot_has_permissions(manage_messages=True)
 	@bot.command()
 	async def slowmode(self, ctx, time):
 		"""Puts the current channel in slowmode.
@@ -67,8 +68,24 @@ class Admin():
 		else:
 			pass
 
+	@commands.has_permissions(manage_messages=True)
+	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
+	@commands.cooldown(1, 5)
+	@bot.command()
+	async def purge(self, ctx, limit=0,*, author: discord.Member = None):
+		"""Purges messages from the text channel.
+		Limit = Limit of messages to be deleted
+		Author (optional) =  If given, Roxbot will selectively only delete this user's messages."""
+		if author:
+			predicate = lambda message: message.author.id == author.id
+		else:
+			predicate = None
+		messages = await ctx.channel.purge(limit=limit, check=predicate)
+		return await ctx.send("{} message(s) purged from chat.".format(len(messages)))
+
+
 	@checks.is_admin_or_mod()
-	@group()
+	@commands.group()
 	async def warn(self, ctx):
 		"""Group of commands handling warnings"""
 		if ctx.invoked_subcommand is None:
@@ -178,8 +195,8 @@ class Admin():
 			except KeyError:
 				return await ctx.send("Could not find user in warning list.")
 
-	@has_permissions(kick_members=True)
-	@bot_has_permissions(kick_members=True)
+	@commands.has_permissions(kick_members=True)
+	@commands.bot_has_permissions(kick_members=True)
 	@bot.command()
 	async def kick(self, ctx, member:discord.Member, *, reason = ""):
 		"""Kicks mentioned user. Allows you to give a reason."""
@@ -189,8 +206,8 @@ class Admin():
 		except discord.Forbidden:
 			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
-	@has_permissions(ban_members=True)
-	@bot_has_permissions(ban_members=True)
+	@commands.has_permissions(ban_members=True)
+	@commands.bot_has_permissions(ban_members=True)
 	@bot.command()
 	async def ban(self, ctx, member:discord.Member, *, reason = ""):
 		"""Bans mentioned user. Allows you to give a reason."""
@@ -200,8 +217,8 @@ class Admin():
 		except discord.Forbidden:
 			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
-	@has_permissions(ban_members=True)
-	@bot_has_permissions(ban_members=True)
+	@commands.has_permissions(ban_members=True)
+	@commands.bot_has_permissions(ban_members=True)
 	@bot.command()
 	async def unban(self, ctx, member:discord.Member, *, reason = ""):
 		"""Unbans mentioned user. Allows you to give a reason."""
