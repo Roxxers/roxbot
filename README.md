@@ -26,7 +26,7 @@ _Coming Soon_
 - The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
 - Added who the waifu command is dedicated to in the command description.
 - Added more helpful error handling for missing argument errors.
-- Reddit cog got some lovely refactoring.
+- Reddit cog got some lovely refactoring, which includes some author credit when posting.
 ###### Bug Fixes
 - ;-; now no longer raises the CommandNotFound error with a better way of stopping t
 
