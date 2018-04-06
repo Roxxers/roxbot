@@ -47,21 +47,22 @@ class Fun:
 		# check end of expression for a 'x<number>'
 		parts = expression.split('x',1)
 		times = 1
-		if len(parts) == 2:
-			try:
+		if len(parts) == 2:#if theres a x
+			try:#try and work out the number after the x
 				times = int(parts[1])
-				if times < 1:
+				if times < 1:#cant roll less than once
 					times = 1
-				if times > rollMaxRolls:
+				if times > rollMaxRolls:#dont want to lag the bot/spam the chat by rolling hundreds of times
 					response += "*Warning:* cannot roll an expression more than {0} times. will roll {0} times rather than {1}.\n".format(rollMaxRolls,times)
 					times = rollMaxRolls
-			except ValueError:
+			except ValueError:#probably an input syntax error. safest to just roll once.
 				times = 1
 				response += "*Warning:* was unable to resolve how many times this command was meant to run. defaulted to once.\n"
-		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])
-		if m == []:
+		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])#voodoo magic regex (matches A,dB,AdB,AdBrC and AdBh/lD all at once, and splits them up to be processed)
+		if m == []:#either there were no arguments, or the expression contained nothing that could be seen as a number or roll
 			return await ctx.send("Expression missing. If you are unsure of what the format should be, please use `{}help roll`".format(ctx.prefix))
-		dice = []
+		dice = []#this is the list of all dice sets to be rolled
+		#each element of the list is a 5 element list, containing the sign of the set, how many dice it has, how many sides on each dice, what numbers to re-roll, and how many to select(in that order)
 		for item in m:
 			temp = [0]*5
 			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
@@ -69,73 +70,74 @@ class Fun:
 				if item[2] == '':#if its just a dY rather than an XdY
 					temp[1] = 1
 					temp[2] = int(item[3])
-				else:
+				else:#its a XdY type unknown if it has r,h,l modifyers, but they dont matter when sorting out the number and sides of dice
 					temp[1] = int(item[2])
+					if temp[1] > rollMaxDice:#if there are an unreasonable number of dice, error out. almost no-one needs to roll 9999d20
+						return await ctx.send("I'm sorry {}, I'm afraid I cant do that. (To many dice to roll, max {})".format(self.bot.user.name,rollMaxDice))
 					if temp[1] > rollMaxVerbose and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
 						rollVerbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
-					if temp[1] > rollMaxDice
-						return await ctx.send("I'm sorry {}, I'm afraid I cant do that. (To many dice to roll, max {})".format(self.bot.user.name,rollMaxDice))
 					temp[2] = int(item[3])
-			else:
+			else:#numbers are stored as N, 1 sided dice
 				temp[1] = int(item[1])
 				temp[2] = 1
-			temp[3] = 0 if item[4] == '' else int(item[4][1:])
-			if item[5] == '':
+			temp[3] = 0 if item[4] == '' else int(item[4][1:])#if it has a reroll value use that. if not, reroll on 0
+			if item[5] == '':#it has no select requirment
 				temp[4] = 0
 			else:
-				if item[5][0] == 'h':
+				if item[5][0] == 'h':#select highest use positive select argument
 					temp[4] = int(item[5][1:])
-				else:
+				else:#select lowest so use negative select argument
 					temp[4] = -int(item[5][1:])
 			dice.append(temp)
+		#at this point dice contains everything needed to do a roll. if you saved dice then you could roll it again without having to re-parse everything (possible roll saving feature in future?)
 		for i in range(times):
 			total = 0
 			if times > 1:
 				response += 'Roll {}: '.format(i+1)
 			else:
 				response += 'Rolled: '
-			for j in range(len(dice)):
-				if j != 0 and rollVerbose:
+			for j in range(len(dice)):#for each dice set in the expression
+				if j != 0 and rollVerbose:#dont need the + before the first element
 					response += ' + '
-				if dice[j][0] == -1 and rollVerbose:
+				if dice[j][0] == -1 and rollVerbose:#all the dice sets will return positive numbers so the sign is set entirely by the sign value (element 0)
 					response += '-'
-				if dice[j][2] == 1:
+				if dice[j][2] == 1:#its just a number
 					if rollVerbose:
 						response += '{}'.format(dice[j][1])
 					total += dice[j][0] * dice[j][1]
-				else:
+				else:#its a dice or set of dice
 					if rollVerbose:
 						response += '('
 					temp = []
-					for k in range(dice[j][1]):
+					for k in range(dice[j][1]):#for each dice in number of dice
 						t = [0,'']
-						t[0] = random.randint(1,dice[j][2])
+						t[0] = random.randint(1,dice[j][2])#roll the dice
 						t[1] = '{}'.format(t[0])
-						if t[0] <= dice[j][3]:
+						if t[0] <= dice[j][3]:#if its below or equal to the re-roll value, then re-roll it
 							t[0] = random.randint(1,dice[j][2])
-							t[1] += '__{}__'.format(t[0])
+							t[1] += '__{}__'.format(t[0])#underline the re-roll so its clear thats the one to pay attention to
 						temp.append(t)
 					def takeFirst(ele):
 						return ele[0]
-					if dice[j][4] > 0:
-						temp.sort(key=takeFirst, reverse=True)
+					if dice[j][4] > 0:#if its selecting highest
+						temp.sort(key=takeFirst, reverse=True)#sort the rolled dice. highest first
 						for k in range(len(temp)):
-							if k >= dice[j][4]:
+							if k >= dice[j][4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
 								temp[k][1] = '~~' + temp[k][1] + '~~'
 								temp[k][0] = 0
-					if dice[j][4] < 0:
+					if dice[j][4] < 0::#if its selecting lowest
 						temp.sort(key=takeFirst)
-						for k in range(len(temp)):
-							if k >= -dice[j][4]:
+						for k in range(len(temp)):#sort the rolled dice. lowest first
+							if k >= -dice[j][4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
 								temp[k][1] = '~~' + temp[k][1] + '~~'
 								temp[k][0] = 0
-					for k in range(len(temp)):
+					for k in range(len(temp)):##loop through all dice rolled and add them to the total. also print them if in verbose mode
 						if rollVerbose:
 							response += '{},'.format(temp[k][1])
 						total+= dice[j][0] * temp[k][0]
 					if rollVerbose:
-						response = response[:-1] + ')'
+						response = response[:-1] + ')'#clip the trailing ',' and replace it with a ')'
 			if rollVerbose:
 				response += ' Totaling: {}'.format(total)
 			else:
