@@ -42,7 +42,7 @@ class ErrHandle:
 			elif isinstance(error, commands.MissingRequiredArgument):
 				embed = discord.Embed(description="Argument missing. {}".format(error.args[0]))
 			elif isinstance(error, commands.BadArgument):
-				embed = discord.Embed(description="Invalid Argument given. Please check arguments given.")
+				embed = discord.Embed(description="Invalid Argument given. {}".format(error.args[0]))
 			elif isinstance(error, commands.TooManyArguments):
 				embed = discord.Embed(description="Too many arguments given.")
 			elif isinstance(error, commands.CommandNotFound):
@@ -69,7 +69,7 @@ class ErrHandle:
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
 			if embed:
 				embed.colour = err_colour
-				await ctx.send(embed=embed)
+				await ctx.send(embed=embed, delete_after=8)
 
 
 def setup(bot_client):
