@@ -203,6 +203,12 @@ class Fun:
 			{command_prefix}waifurate @user#9999
 		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
 		"""
+		##new design concept
+		#get list of people involved in command (caller and all mentioned peeps)(list of names(discord ids))
+		#sort them into alphabetical order
+		#concatenate them
+		#hash it mod10
+		#use that to give the rating
 		mentions = ctx.message.mentions
 		if ctx.invoked_with in ["hr", "husbandorate"]:
 			waifu = "husbando"
