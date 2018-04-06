@@ -119,7 +119,7 @@ class Reddit():
 				return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 			url = parse_url(choice["data"]["url"])
 			if url:
-				title = "**{}** by */u/{}* from /r/{}\n".format(choice["data"]["title"], choice["data"]["author"], subreddit)
+				title = "**{}** \nby /u/{} from /r/{}\n".format(choice["data"]["title"], choice["data"]["author"], subreddit)
 				break
 		if not url:
 			return await ctx.send("I couldn't find any images from that subreddit.")
