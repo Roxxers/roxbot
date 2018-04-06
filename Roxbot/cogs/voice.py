@@ -1,9 +1,11 @@
 import asyncio
-
 import discord
 import youtube_dl
-
 from discord.ext import commands
+
+# Can't pretend I wrote most of this. It's mostly copied from the example given in Discord.py. Then edited because the example was basic ofc.
+# And like actually getting it to play was too complicated for me to care. But I don't mind working on it past
+# getting the bot to play the thing.
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -11,7 +13,7 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
 	'format': 'bestaudio/best',
-	'outtmpl': '%(extractor)s-%(id)s-%(title)s.%(ext)s',
+	'outtmpl': './Roxbot/cache/%(extractor)s-%(id)s-%(title)s.%(ext)s',
 	'restrictfilenames': True,
 	'noplaylist': True,
 	'nocheckcertificate': True,
@@ -56,11 +58,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Music:
 	def __init__(self, bot):
 		self.bot = bot
+		self.playlist = []
 
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel):
 		"""Joins a voice channel"""
-
+		# TODO: This doesn't have automatic detection of the summoners voice channel
 		if ctx.voice_client is not None:
 			return await ctx.voice_client.move_to(channel)
 
@@ -69,7 +72,7 @@ class Music:
 	@commands.command()
 	async def play(self, ctx, *, query):
 		"""Plays a file from the local filesystem"""
-
+		# TODO: Playlist stuff
 		source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
 		ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
@@ -98,11 +101,11 @@ class Music:
 	@commands.command()
 	async def volume(self, ctx, volume: int):
 		"""Changes the player's volume"""
-
+		# TODO: Permission based usage. maybe set in guild settings.
 		if ctx.voice_client is None:
 			return await ctx.send("Not connected to a voice channel.")
 
-		ctx.voice_client.source.volume = volume
+		ctx.voice_client.source.volume = volume / 100
 		await ctx.send("Changed volume to {}%".format(volume))
 
 	@commands.command()
@@ -110,6 +113,8 @@ class Music:
 		"""Stops and disconnects the bot from voice"""
 
 		await ctx.voice_client.disconnect()
+
+	# TODO: Pause command
 
 	@play.before_invoke
 	@yt.before_invoke
@@ -119,7 +124,6 @@ class Music:
 			if ctx.author.voice:
 				await ctx.author.voice.channel.connect()
 			else:
-				await ctx.send("You are not connected to a voice channel.")
 				raise commands.CommandError("Author not connected to a voice channel.")
 		elif ctx.voice_client.is_playing():
 			ctx.voice_client.stop()
