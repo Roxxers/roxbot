@@ -37,7 +37,9 @@ class Fun:
 				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
 		Credit: TBTerra#5677
 		"""
-		###TODO: parametrise limits such that they could be set in server config in future
+		rollMaxRolls = 10
+		rollMaxVerbose = 10
+		rollMaxDice = 1000
 		response = ''
 		rollVerbose = True
 		# sanitise input by removing all spaces, converting to lower case
@@ -50,9 +52,9 @@ class Fun:
 				times = int(parts[1])
 				if times < 1:
 					times = 1
-				if times > 10:
-					response += "*Warning:* cannot roll an expression more than 10 times. will roll 10 times rather than {}.\n".format(times)
-					times = 10
+				if times > rollMaxRolls:
+					response += "*Warning:* cannot roll an expression more than {0} times. will roll {0} times rather than {1}.\n".format(rollMaxRolls,times)
+					times = rollMaxRolls
 			except ValueError:
 				times = 1
 				response += "*Warning:* was unable to resolve how many times this command was meant to run. defaulted to once.\n"
@@ -69,11 +71,11 @@ class Fun:
 					temp[2] = int(item[3])
 				else:
 					temp[1] = int(item[2])
-					if temp[1] > 10 and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
+					if temp[1] > rollMaxVerbose and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
 						rollVerbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
-					if temp[1] > 1000
-						return await ctx.send("I'm sorry {}, I'm afraid I cant do that. (To many dice to roll)".format(self.bot.user.name))
+					if temp[1] > rollMaxDice
+						return await ctx.send("I'm sorry {}, I'm afraid I cant do that. (To many dice to roll, max {})".format(self.bot.user.name,rollMaxDice))
 					temp[2] = int(item[3])
 			else:
 				temp[1] = int(item[1])
