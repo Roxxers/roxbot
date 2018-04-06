@@ -8,7 +8,7 @@ from Roxbot.settings import guild_settings
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = False  # For debugging
+		self.dev = True  # For debugging
 
 	async def on_error(self, event, *args, **kwargs):
 		if self.dev:
@@ -61,7 +61,7 @@ class ErrHandle:
 			elif isinstance(error, commands.NotOwner):
 				embed = discord.Embed(description="You do not have permission to do this. You are not Roxie!")
 			elif isinstance(error, commands.CommandOnCooldown):
-				embed = discord.Embed(description="This command is on cooldown, please wait {} seconds before trying again.".format(error.retry_after))
+				embed = discord.Embed(description="This command is on cooldown, please wait {:.2f} seconds before trying again.".format(error.retry_after))
 			elif isinstance(error, commands.CheckFailure):
 				embed = discord.Embed(description="You do not have permission to do this. Back off, thot!")
 			else:
