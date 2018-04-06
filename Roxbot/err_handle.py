@@ -1,6 +1,7 @@
-import traceback
-import datetime
+import string
 import discord
+import datetime
+import traceback
 from discord.ext import commands
 from Roxbot.settings import guild_settings
 
@@ -39,27 +40,28 @@ class ErrHandle:
 			elif isinstance(error, commands.DisabledCommand):
 				embed = discord.Embed(description="This command is disabled.")
 			elif isinstance(error, commands.MissingRequiredArgument):
-				embed = discord.Embed(description="Argument missing.")
+				embed = discord.Embed(description="Argument missing. {}".format(error.args[0]))
 			elif isinstance(error, commands.BadArgument):
-				embed = discord.Embed(description="Invalid Argument given. Please check arguments given.")
+				embed = discord.Embed(description="Invalid Argument given. {}".format(error.args[0]))
 			elif isinstance(error, commands.TooManyArguments):
 				embed = discord.Embed(description="Too many arguments given.")
 			elif isinstance(error, commands.CommandNotFound):
-				cc =guild_settings.get(ctx.guild).custom_commands # Delete this when we update this system.
+				cc = guild_settings.get(ctx.guild).custom_commands
 				if ctx.invoked_with in cc["1"]:
 					embed = None
-				elif len(ctx.message.content) < 6: # Should avoid puncutation emoticons while also not being big enough to trigger for mispelt commands,
+				elif any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]):
+					# Should avoid punctuation emoticons. Checks all of the command for punctuation in the string.
 					embed = None
 				else:
 					embed = discord.Embed(description="That Command doesn't exist.")
 			elif isinstance(error, commands.BotMissingPermissions):
-				embed = discord.Embed(description="I am missing the following permissions: {}".format(str(error.missing_perms).strip("[]")))
+				embed = discord.Embed(description="{}".format(error.args[0].replace("Bot", "Roxbot")))
 			elif isinstance(error, commands.MissingPermissions):
-				embed = discord.Embed(description="You are missing the following permissions: {}".format(str(error.missing_perms).strip("[]")))
+				embed = discord.Embed(description="{}".format(error.args[0]))
 			elif isinstance(error, commands.NotOwner):
 				embed = discord.Embed(description="You do not have permission to do this. You are not Roxie!")
 			elif isinstance(error, commands.CommandOnCooldown):
-				embed = discord.Embed(description="This command is on cooldown, please wait {} seconds before trying again.".format(error.retry_after))
+				embed = discord.Embed(description="This command is on cooldown, please wait {:.2f} seconds before trying again.".format(error.retry_after))
 			elif isinstance(error, commands.CheckFailure):
 				embed = discord.Embed(description="You do not have permission to do this. Back off, thot!")
 			else:
@@ -67,7 +69,7 @@ class ErrHandle:
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
 			if embed:
 				embed.colour = err_colour
-				await ctx.send(embed=embed)
+				await ctx.send(embed=embed, delete_after=8)
 
 
 def setup(bot_client):

@@ -70,6 +70,10 @@ def _write_changes(config):
 	with open('Roxbot/settings/servers.json', 'w') as conf_file:
 		json.dump(config, conf_file)
 
+def backup(config, name):
+	with open('Roxbot/settings/backups/{}.json'.format(name), "w") as f:
+		json.dump(config, f)
+
 def remove_guild(guild):
 	settings = _open_config()
 	settings.pop(str(guild.id))

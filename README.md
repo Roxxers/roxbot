@@ -15,6 +15,22 @@ _Coming Soon_
 
 ## Changelog
 
+#### v1.6.0
+###### New Features
+- `waifurate` command can now do husbando and spousu rates as well.
+- `pet` command for your headpats needs.
+- `roll` command rewrite by TBTerra#5677. It can now do a lot more complex rolls that makes it actually useful!
+- `purge` command added for clearing a chat. Only available to users with the `manage_messages` perms.
+- Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
+###### Minor Changes
+- Logging is now easier internally.
+- The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
+- Added who the waifu command is dedicated to in the command description.
+- Added more helpful error handling for MissingRequiredArgument, BadArgument, MissingPermissions, and BotMissingPermissions errors.
+- Reddit cog got some lovely refactoring, which includes some author credit when posting.
+###### Bug Fixes
+- ";-;" and other similar text emoticons now no longer raises the CommandNotFound error.
+
 #### v1.5.1
 ##### Hot Fixes
 - inviteme is hidden and added an extra warning for people not to use it.
