@@ -203,12 +203,6 @@ class Fun:
 			{command_prefix}waifurate @user#9999
 		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
 		"""
-		##new design concept
-		#get list of people involved in command (caller and all mentioned peeps)(list of names(discord ids))
-		#sort them into alphabetical order
-		#concatenate them
-		#hash it mod10
-		#use that to give the rating
 		mentions = ctx.message.mentions
 		if ctx.invoked_with in ["hr", "husbandorate"]:
 			waifu = "husbando"
@@ -220,7 +214,27 @@ class Fun:
 		if not mentions:
 			return await ctx.send("You didn't mention anyone for me to rate.", delete_after=10)
 
-		rating = random.randrange(1, 11)
+		#get list of people involved in command (caller and all mentioned peeps)(list of names(discord ids))
+		peeps = [self.bot.user.id]
+		for m in mentions:
+			peeps.append(m.id)
+		peeps.sort()#sort them into alphabetical order
+		shipname = ''#concatenate them
+		for p in peeps:
+			shipname += p
+		
+		#hash them
+		def hash32(str):
+			#FNV1a 32bit hash. other hashs are available, this one is just small,fast and has good low-bit spread
+			hashV = 0x811c9dc5
+			for s in str:
+				hashV = hashV ^ ord(s)
+				hashV = (hashV * 0x01000193)  & 0xFFFFFFFF
+			return hashV
+
+		#use hash result to decide rating
+		rating = 1+(hash32(shipname)%10)
+
 		if rating <= 2:
 			emoji = ":sob:"
 		elif rating <= 4:
