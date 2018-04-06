@@ -20,6 +20,7 @@ _Coming Soon_
 - `waifurate` command can now do husbando and spousu rates as well.
 - `pet` command for your headpats needs.
 - `roll` command rewrite by TBTerra#5677. It can now do a lot more complex rolls that makes it actually useful!
+- `purge` command added for clearing a chat. Only available to users with the `manage_messages` perms.
 - Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
 ###### Minor Changes
 - Logging is now easier internally.
@@ -28,7 +29,7 @@ _Coming Soon_
 - Added more helpful error handling for missing argument errors.
 - Reddit cog got some lovely refactoring, which includes some author credit when posting.
 ###### Bug Fixes
-- ;-; now no longer raises the CommandNotFound error with a better way of stopping t
+- ";-;" and other similar text emoticons now no longer raises the CommandNotFound error.
 
 #### v1.5.1
 ##### Hot Fixes
