@@ -36,9 +36,7 @@ ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 class YTDLSource(discord.PCMVolumeTransformer):
 	def __init__(self, source, *, data, volume=0.5):
 		super().__init__(source, volume)
-
 		self.data = data
-
 		self.title = data.get('title')
 		self.url = data.get('url')
 
@@ -49,7 +47,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 		if 'entries' in data:
 			# take first item from a playlist
-			data = data['entries'][0]
+			data = data['entries'][0] # TODO: Playlist Support
 
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
 		return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
@@ -59,18 +57,21 @@ class Music:
 	def __init__(self, bot):
 		self.bot = bot
 		self.playlist = []
+		self.now_playing = {}
 
 	@commands.command()
-	async def join(self, ctx, *, channel: discord.VoiceChannel):
-		"""Joins a voice channel"""
-		# TODO: This doesn't have automatic detection of the summoners voice channel
+	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
+		"""Joins the voice channel your in, """
+		if channel is None:
+			channel = ctx.author.voice.channel
+
 		if ctx.voice_client is not None:
 			return await ctx.voice_client.move_to(channel)
 
 		await channel.connect()
 
-	@commands.command()
-	async def play(self, ctx, *, query):
+	@commands.command(hidden=True)
+	async def play_local(self, ctx, *, query):
 		"""Plays a file from the local filesystem"""
 		# TODO: Playlist stuff
 		source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
@@ -79,7 +80,7 @@ class Music:
 		await ctx.send('Now playing: {}'.format(query))
 
 	@commands.command()
-	async def yt(self, ctx, *, url):
+	async def play(self, ctx, *, url):
 		"""Plays from a url (almost anything youtube_dl supports)"""
 
 		async with ctx.typing():
