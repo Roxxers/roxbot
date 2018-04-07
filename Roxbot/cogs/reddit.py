@@ -1,6 +1,7 @@
 import random
 import requests
 
+from html import unescape
 from lxml import html
 from bs4 import BeautifulSoup
 from discord.ext.commands import bot
@@ -119,7 +120,7 @@ class Reddit():
 				return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 			url = parse_url(choice["data"]["url"])
 			if url:
-				title = "**{}** \nby /u/{} from /r/{}\n".format(choice["data"]["title"], choice["data"]["author"], subreddit)
+				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["data"]["title"]), unescape(choice["data"]["author"]), subreddit)
 				break
 		if not url:
 			return await ctx.send("I couldn't find any images from that subreddit.")
