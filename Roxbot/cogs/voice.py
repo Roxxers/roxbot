@@ -39,6 +39,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		self.data = data
 		self.title = data.get('title')
 		self.url = data.get('url')
+		self.webpage_url = data.get('webpage_url')
 		self.duration = data.get("duration")
 
 	@classmethod
@@ -58,6 +59,7 @@ class Music:
 	def __init__(self, bot):
 		self.bot = bot
 		self.playlist = {}
+		self.is_skipped = {}
 		for guild in bot.guilds:
 			self.playlist[guild.id] = []
 		self.now_playing = None
@@ -99,13 +101,15 @@ class Music:
 
 	@play.after_invoke
 	async def while_playing(self, ctx):
-		await asyncio.sleep(ctx.voice_client.source.duration)
-		if self.playlist[ctx.guild.id]:
+		if ctx.voice_client.source == self.now_playing:
+			count = 0
+			sleep_for = 0.5
 			while ctx.voice_client.is_playing():
-				await asyncio.sleep(.1) # Just in case of some lag or or something
-
-			player = self.playlist[ctx.guild.id].pop(0)
-			await ctx.invoke(self.play, url=player.url)
+				await asyncio.sleep(sleep_for)
+				count += sleep_for
+			if self.playlist[ctx.guild.id]:
+				player = self.playlist[ctx.guild.id].pop(0)
+				await ctx.invoke(self.play, url=player.webpage_url)
 
 	@commands.command()
 	async def stream(self, ctx, *, url):
@@ -130,10 +134,23 @@ class Music:
 	@commands.command()
 	async def stop(self, ctx):
 		"""Stops and disconnects the bot from voice"""
-
+		self.now_playing = None
 		await ctx.voice_client.disconnect()
 
 	# TODO: Pause command
+
+	@commands.command()
+	async def skip(self, ctx):
+		# This should be fine as the while_playing function should handle moving to the next song.
+		# TODO: Needs voting logic preferably in the future
+		if ctx.voice_client.is_playing():
+			self.now_playing = None
+			ctx.voice_client.stop()
+			# TODO: Title detection
+			return await ctx.send("Skipped song")
+		else:
+			await ctx.send("I'm not playing anything.")
+
 	# TODO: Skip command. That will also need to check for the waiting for the song to be over function
 
 	@play.before_invoke
