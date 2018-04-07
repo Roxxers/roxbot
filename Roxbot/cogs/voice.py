@@ -39,6 +39,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		self.data = data
 		self.title = data.get('title')
 		self.url = data.get('url')
+		self.duration = data.get("duration")
 
 	@classmethod
 	async def from_url(cls, url, *, loop=None, stream=False):
@@ -56,8 +57,10 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Music:
 	def __init__(self, bot):
 		self.bot = bot
-		self.playlist = []
-		self.now_playing = {}
+		self.playlist = {}
+		for guild in bot.guilds:
+			self.playlist[guild.id] = []
+		self.now_playing = None
 
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
@@ -82,12 +85,27 @@ class Music:
 	@commands.command()
 	async def play(self, ctx, *, url):
 		"""Plays from a url (almost anything youtube_dl supports)"""
+		if not ctx.voice_client.is_playing():
+			async with ctx.typing():
+				player = await YTDLSource.from_url(url, loop=self.bot.loop)
+				self.now_playing = player
+				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
 
-		async with ctx.typing():
+			await ctx.send('Now playing: {}'.format(player.title))
+		else:
 			player = await YTDLSource.from_url(url, loop=self.bot.loop)
-			ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+			self.playlist[ctx.guild.id].append(player)
+			await ctx.send("{} added to queue".format(player.title))
 
-		await ctx.send('Now playing: {}'.format(player.title))
+	@play.after_invoke
+	async def while_playing(self, ctx):
+		await asyncio.sleep(ctx.voice_client.source.duration)
+		if self.playlist[ctx.guild.id]:
+			while ctx.voice_client.is_playing():
+				await asyncio.sleep(.1) # Just in case of some lag or or something
+
+			player = self.playlist[ctx.guild.id].pop(0)
+			await ctx.invoke(self.play, url=player.url)
 
 	@commands.command()
 	async def stream(self, ctx, *, url):
@@ -116,9 +134,10 @@ class Music:
 		await ctx.voice_client.disconnect()
 
 	# TODO: Pause command
+	# TODO: Skip command. That will also need to check for the waiting for the song to be over function
 
 	@play.before_invoke
-	@yt.before_invoke
+	@play_local.before_invoke
 	@stream.before_invoke
 	async def ensure_voice(self, ctx):
 		if ctx.voice_client is None:
@@ -126,8 +145,6 @@ class Music:
 				await ctx.author.voice.channel.connect()
 			else:
 				raise commands.CommandError("Author not connected to a voice channel.")
-		elif ctx.voice_client.is_playing():
-			ctx.voice_client.stop()
 
 
 def setup(bot_client):
