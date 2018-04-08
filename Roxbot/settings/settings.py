@@ -123,11 +123,11 @@ class Settings:
 	@bot.command(aliases=["nick", "nickname"])
 	@is_owner()
 	@bot_has_permissions(change_nickname=True)
-	async def changenickname(self, ctx, *, nick):
+	async def changenickname(self, ctx, *, nick = None):
 		"""Changes the bot's nickname in the guild.
 		Usage:
 			;nickname [nickname]"""
-		await self.bot.change_nickname(ctx.message.server.me, nick)
+		await ctx.guild.me.edit(nick=nick, reason=";nick command invoked.")
 		return await ctx.send(":thumbsup:")
 
 	@bot.command(aliases=["activity"])
