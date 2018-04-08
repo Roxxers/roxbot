@@ -459,6 +459,53 @@ class Settings:
 			return await ctx.send("No valid option given.")
 		return self.guild_settings.update(nsfw, "nsfw")
 
+	@settings.command()
+	async def voice(self, ctx, setting, change):
+		"""Edits settings for the voice cog.
+		Options:
+			enable/disable: Enable/disables specified change.
+			skipratio: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
+		Possible settings to enable/disable:
+			needperms: specifies whether volume controls and other bot functions need mod/admin perms.
+			skipvoting: specifies whether skipping should need over half of voice users to vote to skip. Bypassed by mods.
+		Example:
+			;settings voice enable skipvoting
+		"""
+		setting = setting.lower()
+		change = change.lower()
+		voice = self.guild_settings.voice
+
+		if setting == "enable":
+			if change == "needperms":
+				voice["need_perms"] = 1
+				await ctx.send("'{}' has been enabled!".format(change))
+			elif change == "skipvoting":
+				voice["skip_voting"] = 1
+				await ctx.send("'{}' has been enabled!".format(change))
+			else:
+				return await ctx.send("Not a valid change.")
+		elif setting == "disable":
+			if change == "needperms":
+				voice["need_perms"] = 1
+				await ctx.send("'{}' was disabled :cry:".format(change))
+			elif change == "skipvoting":
+				voice["skip_voting"] = 1
+				await ctx.send("'{}' was disabled :cry:".format(change))
+			else:
+				return await ctx.send("Not a valid change.")
+		elif setting == "skipratio":
+			if change < 1 and change > 0:
+				voice["skip_ratio"] = change
+			elif change > 0 and change <= 100:
+				change = change/10
+				voice["skip_ratio"] = change
+			else:
+				return await ctx.send("Valid ratio not given.")
+			await ctx.send("Skip Ratio was set to {}".format(change))
+		else:
+			return await ctx.send("Valid option not given.")
+		return self.guild_settings.update(voice, "voice")
+
 	@checks.is_admin_or_mod()
 	@bot.command()
 	async def serverisanal(self, ctx):

@@ -3,9 +3,9 @@ import discord
 import youtube_dl
 from discord.ext import commands
 
-# Can't pretend I wrote most of this. It's mostly copied from the example given in Discord.py. Then edited because the example was basic ofc.
-# And like actually getting it to play was too complicated for me to care. But I don't mind working on it past
-# getting the bot to play the thing.
+from Roxbot import checks
+from Roxbot.load_config import owner
+from Roxbot.settings import guild_settings
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -33,6 +33,24 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
+def volume_perms():
+	def predicate(ctx):
+		gs = guild_settings.get(ctx.guild)
+		if gs.voice["need_perms"]: # Had to copy the admin or mod code cause it wouldn't work ;-;
+			if ctx.message.author.id == owner:
+				return True
+			else:
+				admin_roles = gs.perm_roles["admin"]
+				mod_roles = gs.perm_roles["mod"]
+				for role in ctx.author.roles:
+					if role.id in mod_roles or role.id in admin_roles:
+						return True
+			return False
+		else:
+			return True
+	return commands.check(predicate)
+
+
 class YTDLSource(discord.PCMVolumeTransformer):
 	def __init__(self, source, *, data, volume=0.5):
 		super().__init__(source, volume)
@@ -48,8 +66,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
 		if 'entries' in data:
+			# TODO: Playlist Support
 			# take first item from a playlist
-			data = data['entries'][0] # TODO: Playlist Support
+			data = data['entries'][0]
 
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
 		return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
@@ -64,9 +83,11 @@ class Music:
 			self.playlist[guild.id] = []
 		self.now_playing = None
 
+	# TODO: Better documentation
+
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
-		"""Joins the voice channel your in, """
+		"""Joins the voice channel your in."""
 		if channel is None:
 			channel = ctx.author.voice.channel
 
@@ -77,7 +98,7 @@ class Music:
 
 	@commands.command(hidden=True)
 	async def play_local(self, ctx, *, query):
-		"""Plays a file from the local filesystem"""
+		"""Plays a file from the local filesystem."""
 		# TODO: Playlist stuff
 		source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
 		ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
@@ -121,15 +142,18 @@ class Music:
 
 		await ctx.send('Now playing: {}'.format(player.title))
 
+	@volume_perms()
 	@commands.command()
 	async def volume(self, ctx, volume: int):
 		"""Changes the player's volume"""
-		# TODO: Permission based usage. maybe set in guild settings.
 		if ctx.voice_client is None:
 			return await ctx.send("Not connected to a voice channel.")
 
-		ctx.voice_client.source.volume = volume / 100
-		await ctx.send("Changed volume to {}%".format(volume))
+		if volume > 0 and volume <= 100:
+			ctx.voice_client.source.volume = volume / 100
+		else:
+			raise commands.CommandError("Volume needs to be between 0-100%")
+		return await ctx.send("Changed volume to {}%".format(volume))
 
 	@commands.command()
 	async def stop(self, ctx):

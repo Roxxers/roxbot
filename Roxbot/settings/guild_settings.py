@@ -48,6 +48,11 @@ guild_template = {
 				"logging": {
 					"enabled": 0,
 					"channel": 0
+				},
+				"voice": {
+					"need_perms": 0,
+					"skip_voting": 0,
+					"skip_ratio": 0.6
 				}
 			}
 		}
@@ -145,7 +150,7 @@ class GuildSettings(object):
 	An Object to store all settings for one guild.
 	The goal is to make editing settings a lot easier and make it so you don't have to handle things like ID's which caused a lot of issues when moving over to discord.py 1.0
 	"""
-	__slots__ = ["settings", "id", "name", "logging", "nsfw", "self_assign", "greets", "goodbyes", "twitch", "perm_roles", "custom_commands", "warnings", "is_anal", "gss"]
+	__slots__ = ["settings", "id", "name", "logging", "nsfw", "self_assign", "greets", "goodbyes", "twitch", "perm_roles", "custom_commands", "warnings", "is_anal", "voice", "gss"]
 
 	def __init__(self, guild):
 		self.id = guild.id
@@ -170,6 +175,7 @@ class GuildSettings(object):
 		self.custom_commands = self.settings["custom_commands"]
 		self.warnings = self.settings["warnings"]
 		self.is_anal = self.settings["is_anal"]
+		self.voice = self.settings["voice"]
 		# Add custom cog settings loading here
 		self.gss = self.settings["gss"]
 
