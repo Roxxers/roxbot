@@ -3,7 +3,6 @@ import discord
 import youtube_dl
 from discord.ext import commands
 
-from Roxbot import checks
 from Roxbot.load_config import owner
 from Roxbot.settings import guild_settings
 
