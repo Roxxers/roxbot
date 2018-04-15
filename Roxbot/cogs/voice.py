@@ -120,7 +120,7 @@ class Music:
 			await ctx.send("{} added to queue".format(player.title))
 
 	@play.after_invoke
-	async def while_playing(self, ctx):
+	async def queue_logic(self, ctx):
 		if ctx.voice_client.source == self.now_playing:
 			count = 0
 			sleep_for = 0.5
@@ -146,7 +146,7 @@ class Music:
 	async def volume(self, ctx, volume: int):
 		"""Changes the player's volume"""
 		if ctx.voice_client is None:
-			return await ctx.send("Not connected to a voice channel.")
+			raise commands.CommandError("Roxbot is not in a voice channel.")
 
 		if volume > 0 and volume <= 100:
 			ctx.voice_client.source.volume = volume / 100
@@ -157,8 +157,38 @@ class Music:
 	@commands.command()
 	async def stop(self, ctx):
 		"""Stops and disconnects the bot from voice"""
-		self.now_playing = None
-		await ctx.voice_client.disconnect()
+		if ctx.voice_client is None:
+			raise commands.CommandError("Roxbot is not in a voice channel.")
+		else:
+			self.now_playing = None
+			return await ctx.voice_client.disconnect()
+
+	@commands.command()
+	async def pause(self, ctx):
+		if ctx.voice_client is None:
+			raise commands.CommandError("Roxbot is not in a voice channel.")
+		else:
+			if not ctx.voice_client.is_playing():
+				return await ctx.send("Nothing is playing.")
+			elif ctx.voice_client.is_paused():
+				return await ctx.send("I already am paused!")
+			else:
+				ctx.voice_client.pause()
+				return await ctx.send("Paused {}".format(ctx.voice_client.source.title))
+
+	@commands.command()
+	async def resume(self, ctx):
+		if ctx.voice_client is None:
+			raise commands.CommandError("Roxbot is not in a voice channel.")
+		else:
+			if ctx.voice_client.is_paused():
+				ctx.voice_client.resume()
+				return await ctx.send("Resumed {}".format(ctx.voice_client.source.title))
+			else:
+				if ctx.voice_client.is_playing():
+					return await ctx.send("Can't resume if I'm already playing something!")
+				else:
+					return await ctx.send("Nothing to resume.")
 
 	# TODO: Pause command
 
