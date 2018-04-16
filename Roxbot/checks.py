@@ -13,18 +13,19 @@ def is_owner_or_admin():
 		return False
 	return commands.check(predicate)
 
+def _is_admin_or_mod(ctx):
+	if ctx.message.author.id == load_config.owner:
+		return True
+	else:
+		admin_roles =  gs.get(ctx.guild).perm_roles["admin"]
+		mod_roles = gs.get(ctx.guild).perm_roles["mod"]
+		for role in ctx.author.roles:
+			if role.id in mod_roles or role.id in admin_roles:
+				return True
+	return False
+
 def is_admin_or_mod():
-	def predicate(ctx):
-		if ctx.message.author.id == load_config.owner:
-			return True
-		else:
-			admin_roles =  gs.get(ctx.guild).perm_roles["admin"]
-			mod_roles = gs.get(ctx.guild).perm_roles["mod"]
-			for role in ctx.author.roles:
-				if role.id in mod_roles or role.id in admin_roles:
-					return True
-		return False
-	return commands.check(predicate)
+	return commands.check(_is_admin_or_mod)
 
 def nsfw_predicate(ctx):
 	nsfw = gs.get(ctx.guild).nsfw
