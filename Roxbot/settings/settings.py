@@ -465,6 +465,7 @@ class Settings:
 		Options:
 			enable/disable: Enable/disables specified change.
 			skipratio: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
+			maxlength: Specify (in seconds) the max duration of a video that can be played. Ignored if staff of the server/bot owner.
 		Possible settings to enable/disable:
 			needperms: specifies whether volume controls and other bot functions need mod/admin perms.
 			skipvoting: specifies whether skipping should need over half of voice users to vote to skip. Bypassed by mods.
@@ -494,13 +495,25 @@ class Settings:
 			else:
 				return await ctx.send("Not a valid change.")
 		elif setting == "skipratio":
-			if change < 1 and change > 0:
-				voice["skip_ratio"] = change
-			elif change > 0 and change <= 100:
-				change = change/10
-				voice["skip_ratio"] = change
+			if isinstance(change, int):
+				if change < 1 and change > 0:
+					voice["skip_ratio"] = change
+				elif change > 0 and change <= 100:
+					change = change/10
+					voice["skip_ratio"] = change
+				else:
+					return await ctx.send("Valid ratio not given.")
 			else:
 				return await ctx.send("Valid ratio not given.")
+			await ctx.send("Skip Ratio was set to {}".format(change))
+		elif setting == "maxlength":
+			if isinstance(change, int):
+				if change >= 1:
+					voice["skip_ratio"] = change
+				else:
+					return await ctx.send("Valid max duration not given.")
+			else:
+				return await ctx.send("Valid max duration not given.")
 			await ctx.send("Skip Ratio was set to {}".format(change))
 		else:
 			return await ctx.send("Valid option not given.")

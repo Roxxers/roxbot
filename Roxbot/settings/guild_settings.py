@@ -52,7 +52,8 @@ guild_template = {
 				"voice": {
 					"need_perms": 0,
 					"skip_voting": 0,
-					"skip_ratio": 0.6
+					"skip_ratio": 0.6,
+					"max_length": 600
 				}
 			}
 		}
