@@ -24,6 +24,7 @@ _Coming Soon_
 - Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
 ###### Minor Changes
 - Logging is now easier internally.
+- Logging output has been improved for the aesthetics command.
 - The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
 - Added who the waifu command is dedicated to in the command description.
 - Added more helpful error handling for MissingRequiredArgument, BadArgument, MissingPermissions, and BotMissingPermissions errors.
