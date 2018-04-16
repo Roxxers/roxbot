@@ -495,23 +495,19 @@ class Settings:
 			else:
 				return await ctx.send("Not a valid change.")
 		elif setting == "skipratio":
-			if isinstance(change, int):
-				if change < 1 and change > 0:
-					voice["skip_ratio"] = change
-				elif change > 0 and change <= 100:
-					change = change/10
-					voice["skip_ratio"] = change
-				else:
-					return await ctx.send("Valid ratio not given.")
+			change = float(change)
+			if change < 1 and change > 0:
+				voice["skip_ratio"] = change
+			elif change > 0 and change <= 100:
+				change = change/10
+				voice["skip_ratio"] = change
 			else:
 				return await ctx.send("Valid ratio not given.")
 			await ctx.send("Skip Ratio was set to {}".format(change))
 		elif setting == "maxlength" or setting == "maxduration":
-			if isinstance(change, int):
-				if change >= 1:
-					voice["skip_ratio"] = change
-				else:
-					return await ctx.send("Valid max duration not given.")
+			change = int(change)
+			if change >= 1:
+				voice["skip_ratio"] = change
 			else:
 				return await ctx.send("Valid max duration not given.")
 			await ctx.send("Max Duration was set to {}".format(change))
