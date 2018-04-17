@@ -1,4 +1,3 @@
-import os
 import asyncio
 import discord
 import youtube_dl
@@ -39,9 +38,12 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		super().__init__(source, volume)
 		self.data = data
 		self.title = data.get('title')
+		self.uploader = data.get("uploader")
 		self.url = data.get('url')
-		self.webpage_url = data.get('webpage_url')
 		self.duration = data.get("duration")
+		self.host = data.get("extractor_key")
+		self.webpage_url = data.get('webpage_url')
+		self.thumbnail_url = data.get("thumbnail", "")
 
 	@classmethod
 	async def from_url(cls, url, *, loop=None, stream=False):
@@ -93,9 +95,6 @@ class Music:
 		self.skip_votes[guild.id] = []
 		self.now_playing[guild.id] = None
 
-	# TODO: Better documentation
-	# TODO: Clean up outputs
-
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
 		"""Joins the voice channel your in."""
@@ -107,6 +106,19 @@ class Music:
 
 		await channel.connect()
 
+	async def queue_logic(self, ctx):
+		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
+			sleep_for = 0.5
+			while ctx.voice_client.is_playing():
+				await asyncio.sleep(sleep_for)
+			if self.playlist[ctx.guild.id]:
+				player = self.playlist[ctx.guild.id].pop(0)
+				if player.get("stream", False) is True:
+					command = self.stream
+				else:
+					command = self.play
+				await ctx.invoke(command, url=player.get("webpage_url"))
+
 	@commands.command(hidden=True)
 	async def play_local(self, ctx, *, query):
 		"""Plays a file from the local filesystem."""
@@ -116,6 +128,7 @@ class Music:
 
 		await ctx.send('Now playing: {}'.format(query))
 
+	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def play(self, ctx, *, url):
 		"""Plays from a url (almost anything youtube_dl supports)"""
@@ -128,27 +141,25 @@ class Music:
 		if not ctx.voice_client.is_playing() or self.now_playing[ctx.guild.id] is None:
 			async with ctx.typing():
 				player = await YTDLSource.from_url(url, loop=self.bot.loop)
-
 				self.now_playing[ctx.guild.id] = player
 				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
+			self.bot.loop.create_task(self.queue_logic(ctx))
 			await ctx.send('Now playing: {}'.format(player.title))
 		else:
 			player = ytdl.extract_info(url, download=False)
 			self.playlist[ctx.guild.id].append(player)
 			await ctx.send("{} added to queue".format(player.get("title")))
 
+	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
 		"""Streams from a url (same as yt, but doesn't predownload)"""
-		# TODO: Queuing stuff like with play
 		if not ctx.voice_client.is_playing():
 			async with ctx.typing():
 				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-
 				self.now_playing[ctx.guild.id] = player
 				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
+			self.bot.loop.create_task(self.queue_logic(ctx))
 			await ctx.send('Now playing: {}'.format(player.title))
 		else:
 			player = ytdl.extract_info(url, download=False)
@@ -164,23 +175,7 @@ class Music:
 			if ctx.author.voice:
 				await ctx.author.voice.channel.connect()
 			else:
-				raise commands.CommandError("Author not connected to a voice channel.")
-
-	@play.after_invoke
-	@stream.after_invoke
-	async def queue_logic(self, ctx):
-		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
-			sleep_for = 0.5
-			while ctx.voice_client.is_playing():
-				await asyncio.sleep(sleep_for)
-			ctx.voice_client.stop()
-			if self.playlist[ctx.guild.id]:
-				player = self.playlist[ctx.guild.id].pop(0)
-				if player.get("stream", False) is True:
-					command = self.stream
-				else:
-					command = self.play
-				await ctx.invoke(command, url=player.get("webpage_url"))
+				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
 
 	@volume_perms()
 	@commands.command()
@@ -202,6 +197,7 @@ class Music:
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 		else:
+			self.playlist[ctx.guild.id] = []
 			self.now_playing[ctx.guild.id] = None
 			return await ctx.voice_client.disconnect()
 
@@ -237,7 +233,11 @@ class Music:
 		if self.now_playing[ctx.guild.id] is None:
 			return await ctx.send("Nothing is playing.")
 		else:
-			return await ctx.send("Now playing: {}".format(ctx.voice_client.source.title))
+			np = ctx.voice_client.source
+			embed = discord.Embed(title="Now playing: '{}' from {}".format(np.title, np.host), colour=0xDEADBF)
+			embed.description = "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(np)
+			embed.set_image(url=np.thumbnail_url)
+			return await ctx.send(embed=embed)
 
 	@commands.command()
 	async def skip(self, ctx):
@@ -264,11 +264,14 @@ class Music:
 			# This should be fine as the queue_logic function should handle moving to the next song and all that.
 			self.now_playing[ctx.guild.id] = None
 			ctx.voice_client.stop()
-			print("hello")
 		else:
 			await ctx.send("I'm not playing anything.")
 
 	# TODO: Playlist, Queue, Skip Votes commands
+	# TODO: Speed Improvements, better cooldown, reduce errors
+	# TODO: Better documentation
+	# TODO: Clean up outputs
+	# TODO: Maybe autoclean the cache
 
 def setup(bot_client):
 	bot_client.add_cog(Music(bot_client))
