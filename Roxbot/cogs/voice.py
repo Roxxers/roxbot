@@ -1,3 +1,4 @@
+import os
 import asyncio
 import discord
 import youtube_dl
@@ -6,6 +7,14 @@ from discord.ext import commands
 from Roxbot import checks
 from Roxbot.load_config import owner
 from Roxbot.settings import guild_settings
+
+
+def _clear_cache():
+	"""Clears the cache folder for the music bot. Ignores the ".gitignore" file to avoid deleting versioned files."""
+	for file in os.listdir("Roxbot/cache"):
+		if file != ".gitignore":
+			os.remove("Roxbot/cache/{}".format(file))
+
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -22,7 +31,7 @@ ytdl_format_options = {
 	'quiet': True,
 	'no_warnings': True,
 	'default_search': 'auto',
-	'source_address': '0.0.0.0' # bind to ipv4 since ipv6 addresses cause issues sometimes
+	'source_address': '0.0.0.0'  # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
 
 ffmpeg_options = {
@@ -79,8 +88,11 @@ def volume_perms():
 
 class Music:
 	def __init__(self, bot):
-		self.bot = bot
+		# Auto Cleanup cache files on boot
+		_clear_cache()
+
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
+		self.bot = bot
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
 		self.now_playing = {}  # Currently playing audio
@@ -271,7 +283,6 @@ class Music:
 	# TODO: Speed Improvements, better cooldown, reduce errors
 	# TODO: Better documentation
 	# TODO: Clean up outputs
-	# TODO: Maybe autoclean the cache
 
 def setup(bot_client):
 	bot_client.add_cog(Music(bot_client))
