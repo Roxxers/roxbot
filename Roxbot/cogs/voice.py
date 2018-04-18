@@ -4,6 +4,7 @@ import discord
 import youtube_dl
 from math import ceil
 from discord.ext import commands
+
 from Roxbot import checks
 from Roxbot.load_config import owner
 from Roxbot.settings import guild_settings
@@ -36,7 +37,7 @@ ytdl_format_options = {
 
 ffmpeg_options = {
 	'before_options': '-nostdin',
-	'options': '-vn'
+	'options': '-vn -loglevel panic'
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
@@ -96,27 +97,18 @@ class Music:
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
 		self.now_playing = {}  # Currently playing audio
+		self.am_queuing = {}
 		for guild in bot.guilds:
 			self.playlist[guild.id] = []
 			self.skip_votes[guild.id] = []
 			self.now_playing[guild.id] = None
+			self.am_queuing[guild.id] = False
 
 	async def on_guild_join(self, guild):
 		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
 		self.playlist[guild.id] = []
 		self.skip_votes[guild.id] = []
 		self.now_playing[guild.id] = None
-
-	@commands.command()
-	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
-		"""Joins the voice channel your in."""
-		if channel is None:
-			channel = ctx.author.voice.channel
-
-		if ctx.voice_client is not None:
-			return await ctx.voice_client.move_to(channel)
-
-		await channel.connect()
 
 	async def queue_logic(self, ctx):
 		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
@@ -131,6 +123,17 @@ class Music:
 					command = self.play
 				await ctx.invoke(command, url=player.get("webpage_url"))
 
+	@commands.command()
+	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
+		"""Joins the voice channel your in."""
+		if channel is None:
+			channel = ctx.author.voice.channel
+
+		if ctx.voice_client is not None:
+			return await ctx.voice_client.move_to(channel)
+
+		await channel.connect()
+
 	@commands.command(hidden=True)
 	async def play_local(self, ctx, *, query):
 		"""Plays a file from the local filesystem."""
@@ -142,42 +145,43 @@ class Music:
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
-	async def play(self, ctx, *, url):
+	async def play(self, ctx, *, url, stream=False):
 		"""Plays from a url (almost anything youtube_dl supports)"""
 		voice = guild_settings.get(ctx.guild).voice
+		guild = ctx.guild
 
 		video = ytdl.extract_info(url, download=False)
 		if video.get("duration", 1) > voice["max_length"] and not checks._is_admin_or_mod(ctx):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
-		if not ctx.voice_client.is_playing() or self.now_playing[ctx.guild.id] is None:
+		if not ctx.voice_client.is_playing() and self.am_queuing[guild.id] is False:
+			self.am_queuing[guild.id] = True
+
 			async with ctx.typing():
-				player = await YTDLSource.from_url(url, loop=self.bot.loop)
-				self.now_playing[ctx.guild.id] = player
+				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream)
+				self.now_playing[guild.id] = player
+				self.am_queuing[guild.id] = False
+
 				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+
+			# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
 			self.bot.loop.create_task(self.queue_logic(ctx))
 			await ctx.send('Now playing: {}'.format(player.title))
 		else:
-			player = ytdl.extract_info(url, download=False)
-			self.playlist[ctx.guild.id].append(player)
-			await ctx.send("{} added to queue".format(player.get("title")))
+			video["stream"] = stream
+			video["queued_by"] = ctx.author
+			self.playlist[guild.id].append(video)
+
+			# Sleep because if not, queued up things will send first and probably freak out users or something
+			while self.am_queuing[guild.id] is True:
+				await asyncio.sleep(0.5)
+			await ctx.send("{} added to queue".format(video.get("title")))
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
 		"""Streams from a url (same as yt, but doesn't predownload)"""
-		if not ctx.voice_client.is_playing():
-			async with ctx.typing():
-				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=True)
-				self.now_playing[ctx.guild.id] = player
-				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-			self.bot.loop.create_task(self.queue_logic(ctx))
-			await ctx.send('Now playing: {}'.format(player.title))
-		else:
-			player = ytdl.extract_info(url, download=False)
-			player["stream"] = True
-			self.playlist[ctx.guild.id].append(player)
-			await ctx.send("{} added to queue".format(player.get("title")))
+		return await ctx.invoke(self.play, url=url, stream=True)
 
 	@play.before_invoke
 	@stream.before_invoke
@@ -241,17 +245,6 @@ class Music:
 					return await ctx.send("Nothing to resume.")
 
 	@commands.command()
-	async def np(self, ctx):
-		if self.now_playing[ctx.guild.id] is None:
-			return await ctx.send("Nothing is playing.")
-		else:
-			np = ctx.voice_client.source
-			embed = discord.Embed(title="Now playing: '{}' from {}".format(np.title, np.host), colour=0xDEADBF)
-			embed.description = "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(np)
-			embed.set_image(url=np.thumbnail_url)
-			return await ctx.send(embed=embed)
-
-	@commands.command()
 	async def skip(self, ctx):
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
@@ -279,7 +272,29 @@ class Music:
 		else:
 			await ctx.send("I'm not playing anything.")
 
-	# TODO: Playlist, Queue, Skip Votes commands
+	@commands.command(aliases=["np"])
+	async def nowplaying(self, ctx):
+		if self.now_playing[ctx.guild.id] is None:
+			return await ctx.send("Nothing is playing.")
+		else:
+			np = ctx.voice_client.source
+			embed = discord.Embed(title="Now playing: '{}' from {}".format(np.title, np.host), colour=0xDEADBF)
+			embed.description = "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(np)
+			embed.set_image(url=np.thumbnail_url)
+			return await ctx.send(embed=embed)
+
+	@commands.command()
+	async def queue(self, ctx):
+		output = ""
+		index = 1
+		for video in self.playlist:
+			output += "{}: '{}' queued by {}\n".format(index, video["title"], video["queued_by"])
+			index += 1
+		if output == "":
+			output = "Nothing is up next. Maybe you should add something!"
+		return await ctx.send(output)
+
+	# TODO: Playlist, Skip Votes commands
 	# TODO: Speed Improvements, better cooldown, reduce errors
 	# TODO: Better documentation
 	# TODO: Clean up outputs

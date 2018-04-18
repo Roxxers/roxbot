@@ -17,6 +17,7 @@ _Coming Soon_
 
 #### v1.6.0
 ###### New Features
+- An entire music bot, right in Roxbot! New voice cog that allows for Roxbot to play audio in voice. A well functional discord music bot 
 - `waifurate` command can now do husbando and spousu rates as well.
 - `pet` command for your headpats needs.
 - `roll` command rewrite by TBTerra#5677. It can now do a lot more complex rolls that makes it actually useful!
