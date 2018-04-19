@@ -96,13 +96,15 @@ class Music:
 		self.bot = bot
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
-		self.now_playing = {}  # Currently playing audio
 		self.am_queuing = {}
+		self.now_playing = {}  # Currently playing audio
+		self.queue_logic = {}
 		for guild in bot.guilds:
 			self.playlist[guild.id] = []
 			self.skip_votes[guild.id] = []
-			self.now_playing[guild.id] = None
 			self.am_queuing[guild.id] = False
+			self.now_playing[guild.id] = None
+			self.queue_logic[guild.id] = None
 
 	async def on_guild_join(self, guild):
 		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
@@ -110,7 +112,7 @@ class Music:
 		self.skip_votes[guild.id] = []
 		self.now_playing[guild.id] = None
 
-	async def queue_logic(self, ctx):
+	async def _queue_logic(self, ctx):
 		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
 			sleep_for = 0.5
 			while ctx.voice_client.is_playing():
@@ -165,7 +167,7 @@ class Music:
 				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
 
 			# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
-			self.bot.loop.create_task(self.queue_logic(ctx))
+			self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
 			await ctx.send('Now playing: {}'.format(player.title))
 		else:
 			video["stream"] = stream
@@ -215,6 +217,7 @@ class Music:
 		else:
 			self.playlist[ctx.guild.id] = []
 			self.now_playing[ctx.guild.id] = None
+			self.queue_logic[ctx.guild.id].cancel()
 			return await ctx.voice_client.disconnect()
 
 	@commands.command()
@@ -298,6 +301,7 @@ class Music:
 	# TODO: Speed Improvements, better cooldown, reduce errors
 	# TODO: Better documentation
 	# TODO: Clean up outputs. All commands should have outputs
+
 
 def setup(bot_client):
 	bot_client.add_cog(Music(bot_client))
