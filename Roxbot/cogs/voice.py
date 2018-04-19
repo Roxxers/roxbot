@@ -106,12 +106,6 @@ class Music:
 			self.now_playing[guild.id] = None
 			self.queue_logic[guild.id] = None
 
-	async def on_guild_join(self, guild):
-		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
-		self.playlist[guild.id] = []
-		self.skip_votes[guild.id] = []
-		self.now_playing[guild.id] = None
-
 	async def _queue_logic(self, ctx):
 		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
 			sleep_for = 0.5
@@ -123,7 +117,19 @@ class Music:
 					command = self.stream
 				else:
 					command = self.play
-				await ctx.invoke(command, url=player.get("webpage_url"))
+				await ctx.invoke(command, url=player)
+
+	def _queue_song(self, ctx, video, stream):
+		video["stream"] = stream
+		video["queued_by"] = ctx.author
+		self.playlist[ctx.guild.id].append(video)
+		return video
+
+	async def on_guild_join(self, guild):
+		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
+		self.playlist[guild.id] = []
+		self.skip_votes[guild.id] = []
+		self.now_playing[guild.id] = None
 
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
@@ -152,7 +158,18 @@ class Music:
 		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
 
-		video = ytdl.extract_info(url, download=False)
+		if isinstance(url, dict):  # For internal speed issues. This should make the playlist management quicker when play is being invoked internally due to not downloading info again when it shouldn't need to.
+			video = url
+		else:
+			video = ytdl.extract_info(url, download=False)
+
+		if 'entries' in video:
+			await ctx.send("Looks like you have given me a playlist. I will que up all {} videos in the playlist.".format(len(video.get("entries"))))
+			data = dict(video)
+			video = data["entries"].pop(0)
+			for entry in data["entries"]:
+				self._queue_song(ctx, entry, stream)
+
 		if video.get("duration", 1) > voice["max_length"] and not checks._is_admin_or_mod(ctx):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
@@ -170,9 +187,7 @@ class Music:
 			self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
 			await ctx.send('Now playing: {}'.format(player.title))
 		else:
-			video["stream"] = stream
-			video["queued_by"] = ctx.author
-			self.playlist[guild.id].append(video)
+			self._queue_song(ctx, video, stream)
 
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:
