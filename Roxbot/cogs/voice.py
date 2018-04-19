@@ -61,8 +61,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
 		if 'entries' in data:
-			# TODO: Playlist Support
-			# take first item from a playlist
+			# take first item from a playlist. This shouldn't need to happen but in case it does.
 			data = data['entries'][0]
 
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
@@ -87,7 +86,7 @@ def volume_perms():
 	return commands.check(predicate)
 
 
-class Music:
+class Voice:
 	def __init__(self, bot):
 		# Auto Cleanup cache files on boot
 		_clear_cache()
@@ -118,6 +117,8 @@ class Music:
 				else:
 					command = self.play
 				await ctx.invoke(command, url=player)
+			self.skip_votes[ctx.guild.id] = []
+
 
 	def _queue_song(self, ctx, video, stream):
 		video["stream"] = stream
@@ -129,7 +130,9 @@ class Music:
 		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
 		self.playlist[guild.id] = []
 		self.skip_votes[guild.id] = []
+		self.am_queuing[guild.id] = False
 		self.now_playing[guild.id] = None
+		self.queue_logic[guild.id] = None
 
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
@@ -154,25 +157,32 @@ class Music:
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def play(self, ctx, *, url, stream=False):
-		"""Plays from a url (almost anything youtube_dl supports)"""
+		"""Plays from a url or search query (almost anything youtube_dl supports)"""
 		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
 
-		if isinstance(url, dict):  # For internal speed issues. This should make the playlist management quicker when play is being invoked internally due to not downloading info again when it shouldn't need to.
+		# For internal speed. This should make the playlist management quicker when play is being invoked internally.
+		if isinstance(url, dict):
 			video = url
+			url = video.get("webpage_url")
 		else:
 			video = ytdl.extract_info(url, download=False)
 
-		if 'entries' in video:
+		# Playlist and search handling.
+		if 'entries' in video and video.get("extractor_key") != "YoutubeSearch":
 			await ctx.send("Looks like you have given me a playlist. I will que up all {} videos in the playlist.".format(len(video.get("entries"))))
 			data = dict(video)
 			video = data["entries"].pop(0)
 			for entry in data["entries"]:
 				self._queue_song(ctx, entry, stream)
+		elif 'entries' in video and video.get("extractor_key") == "YoutubeSearch":
+			video = video["entries"][0]
 
+		# Duration limiter handling
 		if video.get("duration", 1) > voice["max_length"] and not checks._is_admin_or_mod(ctx):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
+		# Actual playing stuff section.
 		if not ctx.voice_client.is_playing() and self.am_queuing[guild.id] is False:
 			self.am_queuing[guild.id] = True
 
@@ -197,13 +207,14 @@ class Music:
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
-		"""Streams from a url (same as yt, but doesn't predownload)"""
+		"""Streams given link. Good for Twitch. (same as play, but doesn't predownload)"""
 		return await ctx.invoke(self.play, url=url, stream=True)
 
 	@play.before_invoke
 	@stream.before_invoke
 	@play_local.before_invoke
 	async def ensure_voice(self, ctx):
+		"""Ensures the bot is in a voice channel before continuing and if it cannot auto join, raise an error."""
 		if ctx.voice_client is None:
 			if ctx.author.voice:
 				await ctx.author.voice.channel.connect()
@@ -213,7 +224,7 @@ class Music:
 	@volume_perms()
 	@commands.command()
 	async def volume(self, ctx, volume: int):
-		"""Changes the player's volume"""
+		"""Changes the player's volume. Only accepts integers representing x% between 0-100%"""
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 
@@ -226,7 +237,7 @@ class Music:
 	@checks.is_admin_or_mod()
 	@commands.command()
 	async def stop(self, ctx):
-		"""Stops and disconnects the bot from voice"""
+		"""Stops and disconnects the bot from voice."""
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 		else:
@@ -237,6 +248,7 @@ class Music:
 
 	@commands.command()
 	async def pause(self, ctx):
+		"""Pauses the current video, if playing."""
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 		else:
@@ -250,8 +262,13 @@ class Music:
 
 	@commands.command()
 	async def resume(self, ctx):
+		"""Resumes the bot if paused. Also will play the next thing in the queue if the bot is stuck."""
 		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+			if len(self.playlist[ctx.guild.id]) < 1:
+				raise commands.CommandError("Roxbot is not in a voice channel.")
+			else:
+				video = self.playlist[ctx.guild.id].pop(0)
+				await ctx.invoke(self.play, url=video)
 		else:
 			if ctx.voice_client.is_paused():
 				ctx.voice_client.resume()
@@ -273,7 +290,7 @@ class Music:
 					self.skip_votes[ctx.guild.id].append(ctx.author)
 					# -1 due to the bot being counted in the members generator
 					ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
-					needed_users = ceil(len(ctx.voice_client.channel.members) * voice["skip_ratio"]) - 1
+					needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
 					if ratio >= voice["skip_ratio"]:
 						await ctx.send("{} voted the skip the video.".format(ctx.author))
 						await ctx.send("Votes to skip now playing has been met. Skipping video...")
@@ -312,11 +329,11 @@ class Music:
 			output = "Nothing is up next. Maybe you should add something!"
 		return await ctx.send(output)
 
-	# TODO: Playlistr;queue, Skip Votes commands
+	# TODO: command to remove things from the queue
 	# TODO: Speed Improvements, better cooldown, reduce errors
 	# TODO: Better documentation
 	# TODO: Clean up outputs. All commands should have outputs
 
 
 def setup(bot_client):
-	bot_client.add_cog(Music(bot_client))
+	bot_client.add_cog(Voice(bot_client))

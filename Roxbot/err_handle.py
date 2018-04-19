@@ -8,7 +8,7 @@ from Roxbot.settings import guild_settings
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = False  # For debugging
+		self.dev = True  # For debugging
 
 	async def on_error(self, event, *args, **kwargs):
 		if self.dev:
