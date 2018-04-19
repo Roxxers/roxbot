@@ -106,6 +106,7 @@ class Voice:
 			self.queue_logic[guild.id] = None
 
 	async def _queue_logic(self, ctx):
+		"""Background task designed to help the bot move on to the next video in the queue"""
 		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
 			sleep_for = 0.5
 			while ctx.voice_client.is_playing():
@@ -121,6 +122,7 @@ class Voice:
 
 
 	def _queue_song(self, ctx, video, stream):
+		"""Fuction to queue up a video into the playlist."""
 		video["stream"] = stream
 		video["queued_by"] = ctx.author
 		self.playlist[ctx.guild.id].append(video)
@@ -281,6 +283,7 @@ class Voice:
 
 	@commands.command()
 	async def skip(self, ctx):
+		"""Skips or votes to skip the current video."""
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
 			if voice["skip_voting"]:
@@ -309,6 +312,7 @@ class Voice:
 
 	@commands.command(aliases=["np"])
 	async def nowplaying(self, ctx):
+		"""Displays the videos now playing"""
 		if self.now_playing[ctx.guild.id] is None:
 			return await ctx.send("Nothing is playing.")
 		else:
@@ -320,6 +324,7 @@ class Voice:
 
 	@commands.command()
 	async def queue(self, ctx):
+		"""Displays what videos are queued up and waiting to be played."""
 		output = ""
 		index = 1
 		for video in self.playlist[ctx.guild.id]:
@@ -331,7 +336,6 @@ class Voice:
 
 	# TODO: command to remove things from the queue
 	# TODO: Speed Improvements, better cooldown, reduce errors
-	# TODO: Better documentation
 	# TODO: Clean up outputs. All commands should have outputs
 
 
