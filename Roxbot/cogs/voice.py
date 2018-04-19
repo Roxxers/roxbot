@@ -287,17 +287,17 @@ class Music:
 	async def queue(self, ctx):
 		output = ""
 		index = 1
-		for video in self.playlist:
+		for video in self.playlist[ctx.guild.id]:
 			output += "{}: '{}' queued by {}\n".format(index, video["title"], video["queued_by"])
 			index += 1
 		if output == "":
 			output = "Nothing is up next. Maybe you should add something!"
 		return await ctx.send(output)
 
-	# TODO: Playlist, Skip Votes commands
+	# TODO: Playlistr;queue, Skip Votes commands
 	# TODO: Speed Improvements, better cooldown, reduce errors
 	# TODO: Better documentation
-	# TODO: Clean up outputs
+	# TODO: Clean up outputs. All commands should have outputs
 
 def setup(bot_client):
 	bot_client.add_cog(Music(bot_client))
