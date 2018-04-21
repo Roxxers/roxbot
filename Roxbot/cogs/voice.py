@@ -352,7 +352,7 @@ class Voice:
 			index += 1
 		if output == "":
 			output = "Nothing is up next. Maybe you should add something!"
-		embed = discord.Embed(title="Queue", description=output)
+		embed = discord.Embed(title="Queue", description=output, colour=0xDEADBF)
 		return await ctx.send(embed=embed)
 
 	@checks.is_admin_or_mod()
