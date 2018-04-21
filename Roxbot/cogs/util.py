@@ -99,21 +99,28 @@ class Util():
 		embed = discord.Embed(title=guild.name, colour=guild.me.colour.value)
 		embed.set_thumbnail(url=guild_icon_url)
 		embed.add_field(name="ID", value=guild.id, inline=False)
+		embed.add_field(name="Owner", value="{} ({})".format(self.bot.get_user(guild.owner_id), guild.owner_id), inline=False)
 		embed.add_field(name="Created at", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(guild.created_at, inline=False))
 		embed.add_field(name="Voice Region", value=guild.region, inline=False)
 		embed.add_field(name="AFK Timeout", value="{} Minutes".format(guild.afk_timeout/60), inline=False)
 		if guild.afk_channel:
 			embed.add_field(name="AFK Channel", value=guild.afk_channel, inline=False)
 
-		embed.add_field(name="Owner", value="{} ({})".format(self.bot.get_user(guild.owner_id), guild.owner_id), inline=False)
 		embed.add_field(name="Verification Level", value=guild.verification_level, inline=False)
 		embed.add_field(name="Explicit Content Filtering", value=guild.explicit_content_filter, inline=False)
-		embed.add_field(name="Roles [{}]".format(len(guild.roles)), value="For all roles, use `{}guild roles`.", inline=False)
-		embed.add_field(name="Emotes [{}]".format(len(guild.emojis)), value="For all emotes, use `{}guild emotes`.".format(self.bot.command_prefix), inline=False)
+		embed.add_field(name="Members", value=guild.member_count)
+		number_of_bots = 0
+		for member in guild.members:
+			if member.bot:
+				number_of_bots += 1
+		human_members = guild.member_count - number_of_bots
+		embed.add_field(name="Human Members", value=human_members, inline=False)
+		embed.add_field(name="Roles".format(), value=str(len(guild.roles)), inline=False)
+		embed.add_field(name="Emotes".format(), value=str(len(guild.emojis)), inline=False)
 		embed.add_field(name="Channels [{}]".format(len(guild.channels)), value="{} Channel Categories\n{} Text Channels\n{} Voice Channels".format(len(guild.categories), len(guild.text_channels), len(guild.voice_channels)))
 
 		if guild.features:
-			embed.add_field(name="Extra Features", value=guild.features)
+			embed.add_field(name="Extra Features", value=guild.features, inline=False)
 		if guild.splash:
 			embed.set_image(url=guild_splash_url)
 

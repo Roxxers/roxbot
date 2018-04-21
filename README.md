@@ -11,7 +11,7 @@ RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.
 _Coming Soon_
 
 ## Command Docs
-*Coming soon*
+*Coming Soon*
 
 ## Changelog
 
@@ -25,11 +25,12 @@ _Coming Soon_
 - Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
 ###### Minor Changes
 - Logging is now easier internally.
-- Logging output has been improved for the aesthetics command.
-- The subreddit command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
-- Added who the waifu command is dedicated to in the command description.
-- Added more helpful error handling for MissingRequiredArgument, BadArgument, MissingPermissions, and BotMissingPermissions errors.
+- Logging output has been improved for the `aesthetics` command.
+- The `subreddit` command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
+- Added who the `waifurate` command is dedicated to in the command description.
+- Added more helpful error handling for `MissingRequiredArgument`, `BadArgument`, `MissingPermissions`, and `BotMissingPermissions` errors.
 - Reddit cog got some lovely refactoring, which includes some author credit when posting.
+- Fixed `guild` command because that was really messed up and wasn't at all helpful.
 ###### Bug Fixes
 - ";-;" and other similar text emoticons now no longer raises the CommandNotFound error.
 
