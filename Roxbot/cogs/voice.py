@@ -109,8 +109,11 @@ class Voice:
 		"""Background task designed to help the bot move on to the next video in the queue"""
 		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
 			sleep_for = 0.5
-			while ctx.voice_client.is_playing():
-				await asyncio.sleep(sleep_for)
+			try:
+				while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+					await asyncio.sleep(sleep_for)
+			except AttributeError:
+				return  # This is to stop any errors appearing if the bot suddenly leaves voice chat.
 			if self.playlist[ctx.guild.id]:
 				player = self.playlist[ctx.guild.id].pop(0)
 				if player.get("stream", False) is True:
@@ -119,7 +122,6 @@ class Voice:
 					command = self.play
 				await ctx.invoke(command, url=player)
 			self.skip_votes[ctx.guild.id] = []
-
 
 	def _queue_song(self, ctx, video, stream):
 		"""Fuction to queue up a video into the playlist."""
@@ -136,18 +138,25 @@ class Voice:
 		self.now_playing[guild.id] = None
 		self.queue_logic[guild.id] = None
 
+	@checks.is_admin_or_mod()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
 		"""Joins the voice channel your in."""
+		# Get channel
 		if channel is None:
-			channel = ctx.author.voice.channel
+			try:
+				channel = ctx.author.voice.channel
+			except AttributeError:
+				raise commands.CommandError("Failed to join voice channel. Please specify a channel or join one for Roxbot to join.")
 
+		# Join VoiceChannel
 		if ctx.voice_client is not None:
-			return await ctx.voice_client.move_to(channel)
+			await ctx.voice_client.move_to(channel)
+		else:
+			await channel.connect()
+		return await ctx.send("Joined {0.name} :ok_hand:".format(channel))
 
-		await channel.connect()
-
-	@commands.command(hidden=True)
+	@commands.command(hidden=True, enabled=False)
 	async def play_local(self, ctx, *, query):
 		"""Plays a file from the local filesystem."""
 		# TODO: Playlist stuff maybe
@@ -157,11 +166,18 @@ class Voice:
 		await ctx.send('Now playing: {}'.format(query))
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
-	@commands.command()
+	@commands.command(aliases=["yt"])
 	async def play(self, ctx, *, url, stream=False):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
 		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
+
+		# Checks if invoker is in voice with the bot. Skips admins and mods and owner.
+		if not checks._is_admin_or_mod(ctx):
+			if not ctx.author.voice:
+				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
+			if ctx.author.voice.channel != ctx.voice_client.channel:
+				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 
 		# For internal speed. This should make the playlist management quicker when play is being invoked internally.
 		if isinstance(url, dict):
@@ -185,7 +201,8 @@ class Voice:
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
-		if not ctx.voice_client.is_playing() and self.am_queuing[guild.id] is False:
+		# If not playing and not queuing, and not paused, play the song. Otherwise queue it.
+		if (not ctx.voice_client.is_playing() and self.am_queuing[guild.id] is False) and not ctx.voice_client.is_paused():
 			self.am_queuing[guild.id] = True
 
 			async with ctx.typing():
@@ -197,19 +214,29 @@ class Voice:
 
 			# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
 			self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
-			await ctx.send('Now playing: {}'.format(player.title))
+
+			embed = discord.Embed(
+				title="Now playing: '{0.title}' from {0.host}".format(player),
+				description= "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(player),
+				colour=0xDEADBF
+			)
+			embed.set_image(url=player.thumbnail_url)
+			await ctx.send(embed=embed)
 		else:
+			# Queue the song as there is already a song playing or paused.
 			self._queue_song(ctx, video, stream)
 
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:
 				await asyncio.sleep(0.5)
-			await ctx.send("{} added to queue".format(video.get("title")))
+			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=0xDEADBF)
+			await ctx.send(embed=embed)
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
 		"""Streams given link. Good for Twitch. (same as play, but doesn't predownload)"""
+		# Just invoke the play command with the stream argument as true. Deals with everything else anyway.
 		return await ctx.invoke(self.play, url=url, stream=True)
 
 	@play.before_invoke
@@ -231,22 +258,10 @@ class Voice:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 
 		if 0 < volume <= 100:
-			ctx.voice_client.source.volume = volume / 100
+			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 		else:
 			raise commands.CommandError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
-
-	@checks.is_admin_or_mod()
-	@commands.command()
-	async def stop(self, ctx):
-		"""Stops and disconnects the bot from voice."""
-		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
-		else:
-			self.playlist[ctx.guild.id] = []
-			self.now_playing[ctx.guild.id] = None
-			self.queue_logic[ctx.guild.id].cancel()
-			return await ctx.voice_client.disconnect()
 
 	@commands.command()
 	async def pause(self, ctx):
@@ -260,7 +275,7 @@ class Voice:
 				return await ctx.send("I already am paused!")
 			else:
 				ctx.voice_client.pause()
-				return await ctx.send("Paused {}".format(ctx.voice_client.source.title))
+				return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
 
 	@commands.command()
 	async def resume(self, ctx):
@@ -274,7 +289,7 @@ class Voice:
 		else:
 			if ctx.voice_client.is_paused():
 				ctx.voice_client.resume()
-				return await ctx.send("Resumed {}".format(ctx.voice_client.source.title))
+				return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
 			else:
 				if ctx.voice_client.is_playing():
 					return await ctx.send("Can't resume if I'm already playing something!")
@@ -312,12 +327,17 @@ class Voice:
 
 	@commands.command(aliases=["np"])
 	async def nowplaying(self, ctx):
-		"""Displays the videos now playing"""
+		"""Displays the video now playing."""
 		if self.now_playing[ctx.guild.id] is None:
 			return await ctx.send("Nothing is playing.")
 		else:
 			np = ctx.voice_client.source
-			embed = discord.Embed(title="Now playing: '{}' from {}".format(np.title, np.host), colour=0xDEADBF)
+			if ctx.voice_client.is_paused():
+				x = "Paused"
+			else:
+				x = "Now Playing"
+			title = "{0}: '{1.title}' from {1.host}".format(x, np)
+			embed = discord.Embed(title=title, colour=0xDEADBF)
 			embed.description = "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(np)
 			embed.set_image(url=np.thumbnail_url)
 			return await ctx.send(embed=embed)
@@ -328,15 +348,52 @@ class Voice:
 		output = ""
 		index = 1
 		for video in self.playlist[ctx.guild.id]:
-			output += "{}: '{}' queued by {}\n".format(index, video["title"], video["queued_by"])
+			output += "{}) '{}' queued by {}\n".format(index, video["title"], video["queued_by"])
 			index += 1
 		if output == "":
 			output = "Nothing is up next. Maybe you should add something!"
-		return await ctx.send(output)
+		embed = discord.Embed(title="Queue", description=output)
+		return await ctx.send(embed=embed)
 
-	# TODO: command to remove things from the queue
-	# TODO: Speed Improvements, better cooldown, reduce errors
-	# TODO: Clean up outputs. All commands should have outputs
+	@checks.is_admin_or_mod()
+	@commands.command()
+	async def remove(self, ctx, index):
+		"""Removes a item from the queue with the given index. Can also input all to delete all queued items."""
+		# Try and convert index into an into. If not possible, just move forward
+		try:
+			index = int(index)
+		except ValueError:
+			pass
+
+		# If not str "all" or an int, raise error.
+		if index != "all" and not isinstance(index, int):
+			raise commands.CommandError("No valid option given.")
+		elif index == "all":
+			# Remove all queued items
+			length = len(self.playlist[ctx.guild.id])
+			self.playlist[ctx.guild.id] = []
+			return await ctx.send("Removed all queued videos. ({})".format(length))
+		else:
+			try:
+				# Try and remove item using index.
+				removed = self.playlist[ctx.guild.id].pop(index-1)  # -1 because queue index shown starts from 1, not 0
+				return await ctx.send("Removed '{}' from the queue.".format(removed.get("title", index)))
+			except IndexError:
+				raise commands.CommandError("Valid Index not given.")
+
+	@checks.is_admin_or_mod()
+	@commands.command(alaises=["disconnect"])
+	async def stop(self, ctx):
+		"""Stops and disconnects the bot from voice."""
+		if ctx.voice_client is None:
+			raise commands.CommandError("Roxbot is not in a voice channel.")
+		else:
+			# Clear up variables before stopping.
+			self.playlist[ctx.guild.id] = []
+			self.now_playing[ctx.guild.id] = None
+			self.queue_logic[ctx.guild.id].cancel()
+			await ctx.voice_client.disconnect()
+			return await ctx.send(":wave:")
 
 
 def setup(bot_client):
