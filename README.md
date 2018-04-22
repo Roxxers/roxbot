@@ -35,7 +35,7 @@ _Coming Soon_
 - Reddit cog got some lovely refactoring, code should be more efficient now and speeds should be better. Had some weird bugs with loops.
 - `subreddit` and other subcommands now will provide author credit.
 ###### Bug Fixes
-- ";-;" and other similar text emoticons now no longer raises the CommandNotFound error.
+- ";-;" and other similar text emoticons now no longer raise the CommandNotFound error.
 - `changenickname` has been fixed. Forgot to port some stuff over in there.
 - Fixed `guild` command because that was really messed up and wasn't at all helpful.
 - PM's don't flag a million errors now due a fix of the `on_message` event in custom commands.
