@@ -93,14 +93,14 @@ class Voice:
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
-		self.volume = {}
+		self._volume = {}
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
 		self.am_queuing = {}
 		self.now_playing = {}  # Currently playing audio
 		self.queue_logic = {}
 		for guild in bot.guilds:
-			self.volume[guild.id] = 0.2
+			self._volume[guild.id] = 0.2
 			self.playlist[guild.id] = []
 			self.skip_votes[guild.id] = []
 			self.am_queuing[guild.id] = False
@@ -208,7 +208,7 @@ class Voice:
 			self.am_queuing[guild.id] = True
 
 			async with ctx.typing():
-				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self.volume[ctx.guild.id])
+				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
 				self.now_playing[guild.id] = player
 				self.am_queuing[guild.id] = False
 
@@ -254,14 +254,24 @@ class Voice:
 
 	@volume_perms()
 	@commands.command()
-	async def volume(self, ctx, volume: int):
-		"""Changes the player's volume. Only accepts integers representing x% between 0-100%"""
+	async def volume(self, ctx, volume):
+		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 
+		try:
+			volume = int(volume)
+		except ValueError:
+			pass
+
+		if volume != "show" and not isinstance(volume, int):
+			raise commands.BadArgument("Not int or 'show'")
+		elif volume == "show":
+			return await ctx.send("Volume: {}%".format(self._volume[ctx.guild.id]*100))
+
 		if 0 < volume <= 100:
 			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
-			self.volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
+			self._volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 		else:
 			raise commands.CommandError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
@@ -301,7 +311,7 @@ class Voice:
 
 	@commands.command()
 	async def skip(self, ctx, *, option=""):
-		"""Skips or votes to skip the current video. Use option "--force" if your an admin and need to force skip a track."""
+		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
 			if voice["skip_voting"] or (option == "--force" and checks._is_admin_or_mod(ctx)):  # Admin force skipping
