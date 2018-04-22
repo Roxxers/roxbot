@@ -23,7 +23,7 @@ _Coming Soon_
 - `roll` command rewrite by TBTerra#5677. It can now do a lot more complex rolls that makes it actually useful!
 - `purge` command added for clearing a chat. Only available to users with the `manage_messages` perms.
 - Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
-- `subreddit` and other subcommands should now have a post cache to improve results and reduce similar images appearing.
+- `subreddit` and other subcommands should now have a post cache to improve results and reduce duplicate images appearing.
 ###### Minor Changes
 - Logging is now easier internally.
 - Logging output has been improved for the `aesthetics` command.
