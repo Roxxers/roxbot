@@ -183,7 +183,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to hug")
 		return await ctx.send(":blush: *{} hugs {}*".format(self.bot.user.name, user.name))
 
-	@bot.command(aliases=["headpat"])
+	@bot.command(aliases=["headpat", "pat"])
 	async def pet(self, ctx, *, user: discord.User = None):
 		"""
 		Gives headpats to the mentioned user :3
