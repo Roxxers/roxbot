@@ -310,7 +310,7 @@ class Voice:
 					return await ctx.send("Nothing to resume.")
 
 	@commands.command()
-	async def skip(self, ctx, *, option=""):
+	async def skip(self, ctx, option=""):
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
