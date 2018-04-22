@@ -94,15 +94,6 @@ class SelfAssign():
 		else:
 			return await ctx.send("That role is not self-assignable.")
 
-	@iam.error
-	async def iam_err(self, ctx, error):
-		if isinstance(error, commands.BadArgument):
-			return await ctx.send("This role doesn't exist. Reminder, roles are case-sensitive.")
-
-	@iamn.error
-	async def iamn_err(self, ctx, error):
-		if isinstance(error, commands.BadArgument):
-			return await ctx.send("This role doesn't exist. Reminder, roles are case-sensitive.")
 
 def setup(Bot):
 	Bot.add_cog(SelfAssign(Bot))

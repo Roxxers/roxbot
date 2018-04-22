@@ -212,7 +212,7 @@ class Trivia:
 
 	# Commands
 
-	@commands.group(aliases=["tr"])
+	@commands.group(aliases=["tr"], case_insensitive=True)
 	async def trivia(self, ctx):
 		"""Command group for the Roxbot Trivia game."""
 		if ctx.invoked_subcommand == self.start and ctx.channel.id not in self.games:

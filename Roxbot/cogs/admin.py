@@ -85,7 +85,7 @@ class Admin():
 		return await ctx.send("{} message(s) purged from chat.".format(len(messages)))
 
 	@checks.is_admin_or_mod()
-	@commands.group()
+	@commands.group(case_insensitive=True)
 	async def warn(self, ctx):
 		"""Group of commands handling warnings"""
 		if ctx.invoked_subcommand is None:

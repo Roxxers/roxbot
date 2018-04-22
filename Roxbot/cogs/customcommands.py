@@ -17,6 +17,8 @@ class CustomCommands():
 		self.bot = bot_client
 
 	async def on_message(self, message):
+		if isinstance(message.channel, discord.DMChannel):
+			return
 		settings = guild_settings.get(message.guild)
 		msg = message.content.lower()
 		channel = message.channel

@@ -21,7 +21,8 @@ bot = commands.Bot(
 	command_prefix=load_config.command_prefix,
 	description=load_config.__description__,
 	owner_id=load_config.owner,
-	activity=discord.Game(name="v{}".format(load_config.__version__), type=0)
+	activity=discord.Game(name="v{}".format(load_config.__version__), type=0),
+	case_insensitive=True
 )
 
 def blacklisted(user):

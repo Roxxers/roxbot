@@ -199,7 +199,7 @@ class Settings:
 					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
 			return await ctx.send(embed=em)
 
-	@group()
+	@group(case_insensitive=True)
 	@checks.is_admin_or_mod()
 	async def settings(self, ctx):
 		if ctx.invoked_subcommand is None:

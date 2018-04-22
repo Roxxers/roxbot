@@ -22,20 +22,23 @@ _Coming Soon_
 - `pet` command for your headpats needs.
 - `roll` command rewrite by TBTerra#5677. It can now do a lot more complex rolls that makes it actually useful!
 - `purge` command added for clearing a chat. Only available to users with the `manage_messages` perms.
-- Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
 - `subreddit` and other subcommands should now have a post cache to improve results and reduce duplicate images appearing.
+- Internal settings now have automatic and manual local backups. Manual backups activated by the `backup` command.
+- Commands are finally case-insensitive. But not the arguments! So don't think your out of the woods yet, kid.
 ###### Minor Changes
 - Logging is now easier internally.
 - Logging output has been improved for the `aesthetics` command.
 - The `subreddit` command has logging. Only when it is being directly invoked and not when an inbuilt command is being used.
 - Added who the `waifurate` command is dedicated to in the command description.
 - Added more helpful error handling for `MissingRequiredArgument`, `BadArgument`, `MissingPermissions`, and `BotMissingPermissions` errors.
+- Removed pointless second error with iam commands due to improvement to error handling.
 - Reddit cog got some lovely refactoring, code should be more efficient now and speeds should be better. Had some weird bugs with loops.
 - `subreddit` and other subcommands now will provide author credit.
 ###### Bug Fixes
 - ";-;" and other similar text emoticons now no longer raises the CommandNotFound error.
 - `changenickname` has been fixed. Forgot to port some stuff over in there.
 - Fixed `guild` command because that was really messed up and wasn't at all helpful.
+- PM's don't flag a million errors now due a fix of the `on_message` event in custom commands.
 
 #### v1.5.1
 ##### Hot Fixes
