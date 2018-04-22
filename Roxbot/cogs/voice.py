@@ -314,7 +314,7 @@ class Voice:
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
-			if voice["skip_voting"] or (option == "--force" and checks._is_admin_or_mod(ctx)):  # Admin force skipping
+			if voice["skip_voting"] and not (option == "--force" and checks._is_admin_or_mod(ctx)):  # Admin force skipping
 				if ctx.author in self.skip_votes[ctx.guild.id]:
 					return await ctx.send("You have already voted to skip the current track.")
 				else:
