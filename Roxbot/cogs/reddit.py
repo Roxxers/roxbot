@@ -53,7 +53,7 @@ def imgur_get(url):
 
 
 def ero_get(url):
-	if url.contains("eroshare"):
+	if "eroshare" in url:
 		url = "https://eroshae.com/" + url.split("/")[3]
 	page = requests.get(url)
 	tree = html.fromstring(page.content)
@@ -95,6 +95,9 @@ def parse_url(url):
 class Reddit():
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.post_cache = {}
+		for guild in self.bot.guilds:
+			self.post_cache[guild.id] = [("","")]
 
 	@bot.command()
 	async def subreddit(self, ctx, subreddit):
@@ -106,24 +109,46 @@ class Reddit():
 		subreddit = subreddit.lower()
 		links = subreddit_request(subreddit)
 		title = ""
+		choice = {}
 
-		if not links:
+		if not links or not links.get("after"):  # The second part is if we are given a search page that has links in it.
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
-		else:
-			if not links["after"]: # This is if we are given a search page that has links in it.
-				return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 
 		url = ""
-		for x in range(10):
-			choice = random.choice(links["children"])
-			if choice["data"]["over_18"] and not checks.nsfw_predicate(ctx):
-				return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
-			url = parse_url(choice["data"]["url"])
+		x = 0
+		# While loop here to make sure that we check if there is any image posts in the links we have. If so, just take the first one.
+		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
+		while not url or x > 10:
+			choice = random.choice(links["children"])["data"]
+			url = parse_url(choice["url"])
 			if url:
-				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["data"]["title"]), unescape(choice["data"]["author"]), subreddit)
+				x_old = int(x)
+				# If the url or id are in the cache,  continue the loop. If not, proceed with the post.
+				for cache in self.post_cache[ctx.guild.id]:
+					if url in cache or choice["id"] in cache:
+						x += 1
+						break
+				if x_old != x:  # Has x been incremented
+					url = ""  # Restart search for new post
+					continue
+
+				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]),subreddit)
 				break
-		if not url:
+
+
+
+		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
+		if choice["over_18"] and not checks.nsfw_predicate(ctx):
+			return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
+		if not url:  # If no image posts could be found with the for loop.
 			return await ctx.send("I couldn't find any images from that subreddit.")
+
+		# Put the post ID and url in the cache. The url is used in case of two posts having the same link. Handy to avoid crossposts getting through the cache.
+		cache_amount = 10
+		post = (choice["id"], url)
+		self.post_cache[ctx.guild.id].append(post)
+		if len(self.post_cache[ctx.guild.id]) >= cache_amount:
+			self.post_cache[ctx.guild.id].pop(0)
 
 		if url.split("/")[-2] == "a":
 			text = "This is an album, click on the link to see more.\n"
@@ -136,6 +161,7 @@ class Reddit():
 			log_channel = self.bot.get_channel(logging["channel"])
 			await log(ctx.guild, log_channel, "subreddit", User=ctx.author, Subreddit=subreddit, Returned="<{}>".format(url), Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
 
+		# Not using a embed here because we can't use video in rich embeds but they work in embeds now :/
 		return await ctx.send(title + text + url)
 
 	@bot.command()
