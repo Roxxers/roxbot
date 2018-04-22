@@ -44,7 +44,7 @@ ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
 class YTDLSource(discord.PCMVolumeTransformer):
-	def __init__(self, source, *, data, volume=0.5):
+	def __init__(self, source, *, data, volume=0.2):
 		super().__init__(source, volume)
 		self.data = data
 		self.title = data.get('title')
@@ -56,7 +56,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		self.thumbnail_url = data.get("thumbnail", "")
 
 	@classmethod
-	async def from_url(cls, url, *, loop=None, stream=False):
+	async def from_url(cls, url, *, loop=None, stream=False, volume=0.5):
 		loop = loop or asyncio.get_event_loop()
 		data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
@@ -65,7 +65,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 			data = data['entries'][0]
 
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
-		return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data)
+		return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data, volume=volume)
 
 
 def volume_perms():
@@ -93,12 +93,14 @@ class Voice:
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
+		self.volume = {}
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
 		self.am_queuing = {}
 		self.now_playing = {}  # Currently playing audio
 		self.queue_logic = {}
 		for guild in bot.guilds:
+			self.volume[guild.id] = 0.2
 			self.playlist[guild.id] = []
 			self.skip_votes[guild.id] = []
 			self.am_queuing[guild.id] = False
@@ -206,7 +208,7 @@ class Voice:
 			self.am_queuing[guild.id] = True
 
 			async with ctx.typing():
-				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream)
+				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self.volume[ctx.guild.id])
 				self.now_playing[guild.id] = player
 				self.am_queuing[guild.id] = False
 
@@ -259,6 +261,7 @@ class Voice:
 
 		if 0 < volume <= 100:
 			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
+			self.volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 		else:
 			raise commands.CommandError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
@@ -297,11 +300,11 @@ class Voice:
 					return await ctx.send("Nothing to resume.")
 
 	@commands.command()
-	async def skip(self, ctx):
-		"""Skips or votes to skip the current video."""
+	async def skip(self, ctx, *, option=""):
+		"""Skips or votes to skip the current video. Use option "--force" if your an admin and need to force skip a track."""
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
-			if voice["skip_voting"]:
+			if voice["skip_voting"] or (option == "--force" and checks._is_admin_or_mod(ctx)):  # Admin force skipping
 				if ctx.author in self.skip_votes[ctx.guild.id]:
 					return await ctx.send("You have already voted to skip the current track.")
 				else:
