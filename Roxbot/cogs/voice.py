@@ -122,7 +122,7 @@ class Voice:
 					command = self.stream
 				else:
 					command = self.play
-				await ctx.invoke(command, url=player)
+				await ctx.invoke(command, url=player, from_queue=True)
 			self.skip_votes[ctx.guild.id] = []
 
 	def _queue_song(self, ctx, video, stream):
@@ -169,13 +169,13 @@ class Voice:
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
-	async def play(self, ctx, *, url, stream=False):
+	async def play(self, ctx, *, url, stream=False, from_queue=False):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
 		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner.
-		if not checks._is_admin_or_mod(ctx):
+		if not checks._is_admin_or_mod(ctx) or from_queue:
 			if not ctx.author.voice:
 				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
