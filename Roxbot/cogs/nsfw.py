@@ -18,7 +18,6 @@ class NFSW():
 		# Maybe a page randomiser
 		limit = 200
 		tags = tags + self.tag_blacklist(ctx)
-		print(tags)
 		url = base_url + '/index.php?page=dapi&s=post&q=index&json=1&tags=' + tags + '&limit=' + str(limit)
 		req = requests.get(url, headers={'User-agent': 'RoxBot Discord Bot'})
 		if str(req.content) == "b''": # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
