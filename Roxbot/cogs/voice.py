@@ -1,6 +1,7 @@
 import os
 import asyncio
 import discord
+import datetime
 import youtube_dl
 from math import ceil
 from discord.ext import commands
@@ -49,6 +50,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		self.data = data
 		self.title = data.get('title')
 		self.uploader = data.get("uploader")
+		self.uploader_url = data.get("uploader_url")
 		self.url = data.get('url')
 		self.duration = data.get("duration")
 		self.host = data.get("extractor_key")
@@ -115,15 +117,18 @@ class Voice:
 				while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
 					await asyncio.sleep(sleep_for)
 			except AttributeError:
-				return  # This is to stop any errors appearing if the bot suddenly leaves voice chat.
-			if self.playlist[ctx.guild.id]:
-				player = self.playlist[ctx.guild.id].pop(0)
-				if player.get("stream", False) is True:
-					command = self.stream
-				else:
-					command = self.play
-				await ctx.invoke(command, url=player, from_queue=True)
+				pass  # This is to stop any errors appearing if the bot suddenly leaves voice chat.
+			self.now_playing[ctx.guild.id] = None
 			self.skip_votes[ctx.guild.id] = []
+			if self.playlist[ctx.guild.id] and ctx.voice_client:
+				if not ctx.voice_client.playing():
+					player = self.playlist[ctx.guild.id].pop(0)
+					if player.get("stream", False) is True:
+						command = self.stream
+					else:
+						command = self.play
+					await ctx.invoke(command, url=player, from_queue=True)
+
 
 	def _queue_song(self, ctx, video, stream):
 		"""Fuction to queue up a video into the playlist."""
@@ -131,6 +136,17 @@ class Voice:
 		video["queued_by"] = ctx.author
 		self.playlist[ctx.guild.id].append(video)
 		return video
+
+	def _generate_np_embed(self, guild, playing_status):
+		# TODO: Clean this up as it does end up butchering the source object and why i even made it like it is. Maybe move it all back in that object later but atm im just trying to get it to work.
+		np = self.now_playing[guild.id]
+		title = "{0}: '{1.title}' from {1.host}".format(playing_status, np)
+		duration = datetime.timedelta(seconds=np.duration)
+
+		embed = discord.Embed(title=title, colour=0xDEADBF, url=np.webpage_url)
+		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
+		embed.set_image(url=np.thumbnail_url)
+		return embed
 
 	async def on_guild_join(self, guild):
 		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
@@ -209,6 +225,8 @@ class Voice:
 
 			async with ctx.typing():
 				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
+				player.stream = stream
+				player.queued_by = ctx.author
 				self.now_playing[guild.id] = player
 				self.am_queuing[guild.id] = False
 
@@ -217,12 +235,7 @@ class Voice:
 			# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
 			self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
 
-			embed = discord.Embed(
-				title="Now playing: '{0.title}' from {0.host}".format(player),
-				description= "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(player),
-				colour=0xDEADBF
-			)
-			embed.set_image(url=player.thumbnail_url)
+			embed = self._generate_np_embed(ctx.guild, "Now Playing")
 			await ctx.send(embed=embed)
 		else:
 			# Queue the song as there is already a song playing or paused.
@@ -349,10 +362,7 @@ class Voice:
 				x = "Paused"
 			else:
 				x = "Now Playing"
-			title = "{0}: '{1.title}' from {1.host}".format(x, np)
-			embed = discord.Embed(title=title, colour=0xDEADBF)
-			embed.description = "Uploaded by: {0.uploader}\nURL: {0.webpage_url}".format(np)
-			embed.set_image(url=np.thumbnail_url)
+			embed = self._generate_np_embed(ctx.guild, x)
 			return await ctx.send(embed=embed)
 
 	@commands.command()

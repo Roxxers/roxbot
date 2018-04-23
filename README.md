@@ -2,7 +2,7 @@
 
 [![MIT](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://github.com/RainbowDinoaur/roxbot/)
-[![Say Thanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?style=flat-square)](https://saythanks.io/to/Roxxers)
+[![Say Thanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?style=flat-square)](https://saythanks.io/to/roxxers)
 
 RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py)
 
@@ -14,6 +14,12 @@ _Coming Soon_
 *Coming Soon*
 
 ## Changelog
+
+#### v1.6.1
+###### Small changes
+- `nowplaying` is now more handy and should display more info.
+###### Hot Fixes
+- Voice has received a number of hot fixes to make sure it works properally.
 
 #### v1.6.0
 ###### New Features
