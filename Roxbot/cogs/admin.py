@@ -4,9 +4,20 @@ import datetime
 from discord.ext import commands
 from discord.ext.commands import bot
 
-from Roxbot import checks
+from Roxbot import checks, load_config
 from Roxbot.settings import guild_settings as gs
 
+
+def _is_admin_or_mod(message):
+	if message.author.id == load_config.owner:
+		return True
+	else:
+		admin_roles = gs.get(message.channel.guild).perm_roles["admin"]
+		mod_roles = gs.get(message.channel.guild).perm_roles["mod"]
+		for role in message.author.roles:
+			if role.id in mod_roles or role.id in admin_roles:
+				return True
+	return False
 
 
 class Admin():
@@ -25,7 +36,7 @@ class Admin():
 		author = message.author
 
 		if not author == self.bot.user:
-			if self.slow_mode and channel.id in self.slow_mode_channels:
+			if (self.slow_mode and channel.id in self.slow_mode_channels) and not _is_admin_or_mod(message):
 				if author.id not in self.users[channel.id]:
 					# If user hasn't sent a message in this channel after slow mode was turned on
 					self.users[channel.id][author.id] = message.created_at

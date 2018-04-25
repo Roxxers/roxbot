@@ -17,7 +17,7 @@ def _is_admin_or_mod(ctx):
 	if ctx.message.author.id == load_config.owner:
 		return True
 	else:
-		admin_roles =  gs.get(ctx.guild).perm_roles["admin"]
+		admin_roles = gs.get(ctx.guild).perm_roles["admin"]
 		mod_roles = gs.get(ctx.guild).perm_roles["mod"]
 		for role in ctx.author.roles:
 			if role.id in mod_roles or role.id in admin_roles:
