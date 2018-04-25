@@ -18,6 +18,24 @@ def _clear_cache():
 			os.remove("Roxbot/cache/{}".format(file))
 
 
+def volume_perms():
+	def predicate(ctx):
+		gs = guild_settings.get(ctx.guild)
+		if gs.voice["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
+			if ctx.message.author.id == owner:
+				return True
+			else:
+				admin_roles = gs.perm_roles["admin"]
+				mod_roles = gs.perm_roles["mod"]
+				for role in ctx.author.roles:
+					if role.id in mod_roles or role.id in admin_roles:
+						return True
+			return False
+		else:
+			return True
+	return commands.check(predicate)
+
+
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -44,9 +62,21 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
+class ModifiedFFmpegPMCAudio(discord.FFmpegPCMAudio):
+	"""Modifies the read function of FFmpegPCMAudio to add a timer.
+	Thanks to eliza(nearlynon#3292) for teaching me how to do this"""
+	def __init__(self, source, options):
+		super().__init__(source, **options)
+		self.timer = 0
+
+	def read(self):
+		self.timer += 20
+		return super().read()
+
 class YTDLSource(discord.PCMVolumeTransformer):
-	def __init__(self, source, *, data, volume=0.2):
-		super().__init__(source, volume)
+	def __init__(self, source, *, data, volume):
+		self.source = source
+		super().__init__(self.source, volume)
 		self.data = data
 		self.title = data.get('title')
 		self.uploader = data.get("uploader")
@@ -58,7 +88,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		self.thumbnail_url = data.get("thumbnail", "")
 
 	@classmethod
-	async def from_url(cls, url, *, loop=None, stream=False, volume=0.5):
+	async def from_url(cls, url, *, loop=None, stream=False, volume=0.2):
 		loop = loop or asyncio.get_event_loop()
 		data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
 
@@ -67,25 +97,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 			data = data['entries'][0]
 
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
-		return cls(discord.FFmpegPCMAudio(filename, **ffmpeg_options), data=data, volume=volume)
-
-
-def volume_perms():
-	def predicate(ctx):
-		gs = guild_settings.get(ctx.guild)
-		if gs.voice["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
-			if ctx.message.author.id == owner:
-				return True
-			else:
-				admin_roles = gs.perm_roles["admin"]
-				mod_roles = gs.perm_roles["mod"]
-				for role in ctx.author.roles:
-					if role.id in mod_roles or role.id in admin_roles:
-						return True
-			return False
-		else:
-			return True
-	return commands.check(predicate)
+		return cls(ModifiedFFmpegPMCAudio(filename, ffmpeg_options), data=data, volume=volume)
 
 
 class Voice:
@@ -129,7 +141,6 @@ class Voice:
 						command = self.play
 					await ctx.invoke(command, url=player, from_queue=True)
 
-
 	def _queue_song(self, ctx, video, stream):
 		"""Fuction to queue up a video into the playlist."""
 		video["stream"] = stream
@@ -137,15 +148,27 @@ class Voice:
 		self.playlist[ctx.guild.id].append(video)
 		return video
 
+	def _format_duration(self, duration):
+		hours = duration // 3600
+		minutes = (duration % 3600) // 60
+		seconds = duration % 60
+		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
+		formatted = datetime.time(**format_me)
+		output = "{:%M:%S}".format(formatted)
+		if formatted.hour >= 1:
+			output = "{:%H}".format(formatted) + output
+		return output
+
 	def _generate_np_embed(self, guild, playing_status):
-		# TODO: Clean this up as it does end up butchering the source object and why i even made it like it is. Maybe move it all back in that object later but atm im just trying to get it to work.
 		np = self.now_playing[guild.id]
 		title = "{0}: '{1.title}' from {1.host}".format(playing_status, np)
-		duration = datetime.timedelta(seconds=np.duration)
+		duration = self._format_duration(np.duration)
+		time_played = self._format_duration(np.source.timer/1000)
 
 		embed = discord.Embed(title=title, colour=0xDEADBF, url=np.webpage_url)
 		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
 		embed.set_image(url=np.thumbnail_url)
+		embed.set_footer(text="Timer: {}/{}".format(time_played, duration))
 		return embed
 
 	async def on_guild_join(self, guild):
