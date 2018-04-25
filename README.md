@@ -19,7 +19,8 @@ _Coming Soon_
 ###### Small changes
 - `nowplaying` is now more handy and should display more info.
 ###### Hot Fixes
-- Voice has received a number of hot fixes to make sure it works properally.
+- Voice has received a number of hot fixes to make sure it works properly.
+- Slowmode now doesn't effect mods and admins of that guild.
 
 #### v1.6.0
 ###### New Features
