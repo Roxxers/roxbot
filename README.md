@@ -22,6 +22,7 @@ _Coming Soon_
 - Voice has received a number of hot fixes to make sure it works properly.
 - Slowmode now doesn't effect mods and admins of that guild.
 - Fixed `blacklist` command.
+- Fixed backup system because it didn't keep the backup folder there.
 
 #### v1.6.0
 ###### New Features
