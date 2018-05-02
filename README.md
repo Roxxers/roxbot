@@ -23,6 +23,7 @@ _Coming Soon_
 - Slowmode now doesn't effect mods and admins of that guild.
 - Fixed `blacklist` command.
 - Fixed backup system because it didn't keep the backup folder there.
+- Fixed `unban` command
 
 #### v1.6.0
 ###### New Features

@@ -231,11 +231,17 @@ class Admin():
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@bot.command()
-	async def unban(self, ctx, member:discord.Member, *, reason = ""):
-		"""Unbans mentioned user. Allows you to give a reason."""
+	async def unban(self, ctx, member_id:int, *, reason = ""):
+		"""Unbans user with given ID. Allows you to give a reason."""
+		mem = None
+		for ban in await ctx.guild.bans():
+			if ban.user.id == member_id:
+				mem = ban.user
+		if mem is None:
+			raise bot.CommandError("User not found in bans.")
 		try:
-			await member.unban(reason=reason)
-			return await ctx.send("Unbanned {} with reason: '{}'".format(member, reason))
+			await ctx.guild.unban(mem, reason=reason)
+			return await ctx.send("Unbanned {} with reason: '{}'".format(mem, reason))
 		except discord.Forbidden:
 			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 

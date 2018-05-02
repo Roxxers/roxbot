@@ -28,7 +28,7 @@ bot = commands.Bot(
 def blacklisted(user):
 	with open("Roxbot/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
-			if user.id+"\n" == line:
+			if str(user.id)+"\n" == line:
 				return True
 	return False
 
