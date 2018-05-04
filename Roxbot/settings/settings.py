@@ -417,6 +417,7 @@ class Settings:
 		Options:
 			enable/disable: Enable/disables nsfw commands.
 			addchannel/removechannel: Adds/Removes a nsfw channel.
+			addbadtag/removebadtag: Add/Removes blacklisted tags so that you can avoid em with the commands.
 			Example:
 				;settings nsfw addchannel #nsfw_stuff
 		"""
@@ -444,7 +445,7 @@ class Settings:
 			except ValueError:
 				return await ctx.send("That role was not in the list.")
 		elif selection == "addbadtag":
-			if changes not in nsfw["nsfw"]["blacklist"]:
+			if changes not in nsfw["blacklist"]:
 				nsfw["blacklist"].append(changes)
 				await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
 			else:
