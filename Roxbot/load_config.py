@@ -9,7 +9,7 @@ owner = int(settings["Roxbot"]["OwnerID"])
 tat_token = settings["Roxbot"]["Tatsumaki_Token"]
 embedcolour = 0xDEADBF
 
-# IF YOU ARE TESTING OR NOT IN THE GSS DISCORD, REMOVE "cogs.gss" FROM THE LIST
+# REMEMBER TO UNCOMMENT THE GSS LINE, ROXIE
 
 cogs = [
 	"Roxbot.cogs.admin",
