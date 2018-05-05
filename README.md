@@ -19,6 +19,7 @@ _Coming Soon_
 ###### New Features
 - NSFW commands now have the same system of preventing dupe outputs
 ###### Minor Changes
+- `avatar` now outputs a png if the image is static.
 - Moved NSFW commands to use aiohttp instead of requests which hopefully will wield quicker response times.
 - Minor refactoring in places, which involves some directory movement.
 ###### Bug Fixes

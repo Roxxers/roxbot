@@ -25,11 +25,11 @@ class Util():
 		if not user:
 			user = ctx.author
 
-		url = user.avatar_url
+		url = user.avatar_url_as(static_format="png")
 		if url.split(".")[-1] == "gif":
-			avaimg = 'avaimg.gif'
+			avaimg = '{0.name}.gif'.format(user)
 		else:
-			avaimg = 'avaimg.webp'
+			avaimg = '{0.name}.png'.format(user)
 
 		async with aiohttp.ClientSession() as session:
 			async with session.get(url) as img:
