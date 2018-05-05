@@ -10,9 +10,9 @@ import Roxbot
 from Roxbot import guild_settings
 
 
-
 def is_gss():
 	return commands.check(lambda ctx: ctx.guild.id == 393764974444675073)
+
 
 def is_not_nsfw_disabled():
 	def predicate(ctx):
@@ -20,19 +20,21 @@ def is_not_nsfw_disabled():
 		return role not in ctx.author.roles
 	return commands.check(lambda ctx: predicate(ctx))
 
+
+def tatsumaki_api_call(member, guild):
+	base = "https://api.tatsumaki.xyz/"
+	url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
+	r = requests.get(url, headers={"Authorization": Roxbot.tat_token})
+	try:
+		return r.json()
+	except json.JSONDecodeError:
+		return {}
+
 class GaySoundsShitposts():
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.acceptable_roles = (394939389823811584, 394941004043649036)
 
-	def tatsumaki_api_call(self, member, guild):
-		base = "https://api.tatsumaki.xyz/"
-		url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
-		r = requests.get(url, headers={"Authorization": Roxbot.tat_token})
-		try:
-			return r.json()
-		except json.JSONDecodeError:
-			return {}
 
 	@bot.command(hidden=True)
 	async def perms(self, ctx, role):
@@ -44,7 +46,7 @@ class GaySoundsShitposts():
 		member = ctx.author
 		required_score = settings.gss["required_score"]
 		days = int(settings.gss["required_days"])
-		data = self.tatsumaki_api_call(member, ctx.guild)
+		data = tatsumaki_api_call(member, ctx.guild)
 		if not data:
 			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
 
