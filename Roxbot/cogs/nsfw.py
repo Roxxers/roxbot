@@ -1,72 +1,86 @@
+import json
 import random
-import requests
+import aiohttp
 from discord.ext.commands import bot
 
 from Roxbot import checks
 from Roxbot import guild_settings as gs
 
+
+def tag_blacklist(guild):
+	blacklist = ""
+	for tag in gs.get(guild).nsfw["blacklist"]:
+		blacklist += "-{} ".format(tag)
+	return blacklist
+
+
 class NFSW():
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.cache = {}
+		for guild in self.bot.guilds:
+			self.cache[guild.id] = []
 
-	def tag_blacklist(self, ctx):
-		blacklist = ""
-		for tag in gs.get(ctx.guild).nsfw["blacklist"]:
-			blacklist += "-{} ".format(tag)
-		return blacklist
-
-	def gelbooru_clone(self, ctx, base_url, tags):
-		limit = 200
-		tags = tags + self.tag_blacklist(ctx)
-		url = base_url + '/index.php?page=dapi&s=post&q=index&json=1&tags=' + tags + '&limit=' + str(limit)
-		req = requests.get(url, headers={'User-agent': 'RoxBot Discord Bot'})
-		if str(req.content) == "b''":  # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
-			post = None
-			return post
-		post = random.choice(req.json())
-		return post
-
-	@bot.command()
 	@checks.is_nfsw_enabled()
-	async def e621(self, ctx, *, tags = ""):
+	@bot.command(hidden=True)
+	async def gelbooru_clone(self, ctx, base_url, post_url, tags):
+		limit = 150
+		tags = tags + tag_blacklist(ctx.guild)
+		url = base_url + tags + '&limit=' + str(limit)
+
+		async with aiohttp.ClientSession() as session:
+			async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as resp:
+				req = await resp.read()
+		if str(req) == "b''":
+			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
+
+		post = None
+		counter = 0
+		while counter < 20:
+			post = random.choice(json.loads(req))
+			md5 = post.get("md5")
+			if not md5:
+				md5 = post.get("hash")
+			if md5 not in self.cache[ctx.guild.id]:
+				self.cache[ctx.guild.id].append(md5)
+				if len(self.cache[ctx.guild.id]) > 10:
+					self.cache[ctx.guild.id].pop(0)
+				break
+			counter += 1
+
+		url = post.get("file_url")
+		if not url:
+			url = post_url + "{0[directory]}/{0[image]}".format(post)
+		return await ctx.send(url)
+
+	@checks.is_nfsw_enabled()
+	@bot.command()
+	async def e621(self, ctx, *, tags=""):
 		"""
 		Returns an image from e621.com and can use tags you provide.
 		"""
-		tags = tags + self.tag_blacklist(ctx)
-		base_url = "https://e621.net/"
-		limit = 150
-		url = base_url + 'post/index.json?tags=' + tags + '&limit=' + str(limit)
-		req = requests.get(url, headers = {'User-agent': 'RoxBot Discord Bot'})
-		if str(req.content) == "b'[]'":  # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
-			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
-		post = random.choice(req.json())
-		return await ctx.send(post["file_url"])
+		base_url = "https://e621.net/post/index.json?tags="
+		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url="", tags=tags)
 
-	@bot.command()
 	@checks.is_nfsw_enabled()
-	async def rule34(self, ctx, *, tags = ""):
+	@bot.command()
+	async def rule34(self, ctx, *, tags=""):
 		"""
 		Returns an image from rule34.xxx and can use tags you provide.
 		"""
-		base_url = "https://rule34.xxx"
-		post = self.gelbooru_clone(ctx, base_url, tags)
-		if not post:
-			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
-		url = "https://img.rule34.xxx/images/" + post["directory"] + "/" + post["image"]
-		return await ctx.send(url)
+		base_url = "https://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="
+		post_url = "https://img.rule34.xxx/images/"
+		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
-	@bot.command()
 	@checks.is_nfsw_enabled()
-	async def gelbooru(self, ctx, *, tags = ""):
+	@bot.command()
+	async def gelbooru(self, ctx, *, tags=""):
 		"""
 		Returns an image from gelbooru.com and can use tags you provide.
 		"""
-		base_url = "https://gelbooru.com"
-		post = self.gelbooru_clone(ctx, base_url, tags)
-		if not post:
-			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
-		url = "https://simg3.gelbooru.com/images/" + ''.join(post["directory"].split("\\")) + "/" + post["image"]
-		return await ctx.send(url)
+		base_url = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="
+		post_url = "https://simg3.gelbooru.com/images/"
+		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
 
 def setup(bot_client):
