@@ -5,18 +5,16 @@ from discord.ext import commands
 from discord.ext.commands import bot
 
 import Roxbot as roxbot
-gs = roxbot.guild_settings
+from Roxbot import guild_settings as gs
 
 
-def _is_admin_or_mod(message):  # TODO: Remove this function and find a better solution thank.
+def _is_admin_or_mod(message):
 	if message.author.id == roxbot.owner:
 		return True
-	else:
-		admin_roles = gs.get(message.channel.guild).perm_roles["admin"]
-		mod_roles = gs.get(message.channel.guild).perm_roles["mod"]
-		for role in message.author.roles:
-			if role.id in mod_roles or role.id in admin_roles:
-				return True
+	perm_roles = gs.get(message.channel.guild).perm_roles
+	for role in message.author.roles:
+		if role.id in perm_roles.get("admin") or role.id in perm_roles.get("mod"):
+			return True
 	return False
 
 

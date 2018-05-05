@@ -1,10 +1,11 @@
 from discord.ext import commands
-from Roxbot import load_config
+from Roxbot.load_config import owner
 from Roxbot.settings import guild_settings as gs
+
 
 def is_owner_or_admin():
 	def predicate(ctx):
-		if ctx.author.id == load_config.owner:
+		if ctx.author.id == owner:
 			return True
 		else:
 			for role in ctx.author.roles:
@@ -13,8 +14,9 @@ def is_owner_or_admin():
 		return False
 	return commands.check(predicate)
 
+
 def _is_admin_or_mod(ctx):
-	if ctx.message.author.id == load_config.owner:
+	if ctx.message.author.id == owner:
 		return True
 	else:
 		admin_roles = gs.get(ctx.guild).perm_roles["admin"]
@@ -24,8 +26,10 @@ def _is_admin_or_mod(ctx):
 				return True
 	return False
 
+
 def is_admin_or_mod():
 	return commands.check(_is_admin_or_mod)
+
 
 def nsfw_predicate(ctx):
 	nsfw = gs.get(ctx.guild).nsfw
@@ -36,8 +40,10 @@ def nsfw_predicate(ctx):
 	else:
 		return False
 
+
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: nsfw_predicate(ctx))
+
 
 def isnt_anal():
 	return commands.check(lambda ctx: gs.get(ctx.guild).is_anal["y/n"] and nsfw_predicate(ctx) or not gs.get(ctx.guild).is_anal["y/n"])
