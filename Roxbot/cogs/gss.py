@@ -1,11 +1,14 @@
+import json
 import datetime
 import requests
-from Roxbot import load_config
+
 import discord
 from discord.ext import commands
 from discord.ext.commands import bot
-from Roxbot.settings import guild_settings
-from json import JSONDecodeError
+
+import Roxbot
+from Roxbot import guild_settings
+
 
 
 def is_gss():
@@ -25,18 +28,17 @@ class GaySoundsShitposts():
 	def tatsumaki_api_call(self, member, guild):
 		base = "https://api.tatsumaki.xyz/"
 		url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
-		r = requests.get(url, headers={"Authorization": load_config.tat_token})
+		r = requests.get(url, headers={"Authorization": Roxbot.tat_token})
 		try:
 			return r.json()
-		except JSONDecodeError:
-			return False
+		except json.JSONDecodeError:
+			return {}
 
 	@bot.command(hidden=True)
 	async def perms(self, ctx, role):
 		"""Shell command to do the perm assigning. Only should be invoked by another command."""
 		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
 		if role.id not in self.acceptable_roles:
-			print("lol no")
 			return False
 		settings = guild_settings.get(ctx.guild)
 		member = ctx.author
@@ -71,7 +73,7 @@ class GaySoundsShitposts():
 				arg = role
 		if not arg:
 			return ctx.send("Error, message roxie thanks.")
-		return await ctx.invoke(self.perms, arg)
+		return await ctx.invoke(self.perms, role=arg)
 
 	@is_not_nsfw_disabled()
 	@is_gss()
@@ -84,7 +86,8 @@ class GaySoundsShitposts():
 				arg = role
 		if not arg:
 			return ctx.send("Error, message roxie thanks.")
-		return await ctx.invoke(self.perms, arg)
+		return await ctx.invoke(self.perms, role=arg)
+
 
 def setup(bot_client):
 	bot_client.add_cog(GaySoundsShitposts(bot_client))
