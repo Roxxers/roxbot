@@ -15,6 +15,16 @@ _Coming Soon_
 
 ## Changelog
 
+#### v1.7.0
+###### New Features
+- NSFW commands now have the same system of preventing dupe outputs
+###### Minor Changes
+- Moved NSFW commands to use aiohttp instead of requests which hopefully will wield quicker response times.
+- Minor refactoring in places, which involves some directory movement.
+###### Bug Fixes
+- Doubled the amount of times subreddit commands will cycle through possible requests to fix JSON decode error.
+- Fixed error in reddit cog due to changing JSON outputs thanks to new reddit redesign.
+
 #### v1.6.1
 ###### Small changes
 - `nowplaying` is now more handy and should display more info.
@@ -114,7 +124,6 @@ _Coming Soon_
 ###### Bug Fixes
 - Removing all warnings of a user now removes them from the dictionary. Making them not display in the list even though they don't have any warnings.
 
-
 #### v1.3.3
 ###### Hottest of Bug Fixes
 - Warn list now actually works for all warnings.
@@ -168,7 +177,7 @@ _Coming Soon_
 
 #### v1.0.0
 ###### Rewrite
-The whole bot has been completly rewritten. Its jam packed with new commands, cogs, and functionality. Because of this, I wont be including a full change log. I will fill out the changelog for further versions. But this version should be more stable, have more features, and just be better than before.
+The whole bot has been completely rewritten. Its jam packed with new commands, cogs, and functionality. Because of this, I wont be including a full change log. I will fill out the changelog for further versions. But this version should be more stable, have more features, and just be better than before.
 
 #### v0.4.0
 ###### New Features
@@ -176,7 +185,7 @@ The whole bot has been completly rewritten. Its jam packed with new commands, co
 - New Utils cog, new commands like avatar, and info
 
 ###### Bugs and Fixes
-- Admin cog renamed to Settins cog.
+- Admin cog renamed to Settings cog.
 - ChangeAvatar updated again to be inline with who avatar deals with avatar images.
 - Fixed twitch cog bug that made roxbot crash a lot
 

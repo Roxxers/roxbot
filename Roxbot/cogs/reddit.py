@@ -105,14 +105,14 @@ class Reddit():
 		title = ""
 		choice = {}
 
-		if not links or not links.get("after"):  # The second part is if we are given a search page that has links in it.
+		if not links or not links.get("after") or links["children"][0]["kind"] == "t5":  # The second part is if we are given a search page that has links in it.
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 
 		url = ""
 		x = 0
 		# While loop here to make sure that we check if there is any image posts in the links we have. If so, just take the first one.
 		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
-		while not url or x > 10:
+		while not url or not x > 20:
 			choice = random.choice(links["children"])["data"]
 			url = parse_url(choice["url"])
 			if url:
