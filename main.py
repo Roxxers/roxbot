@@ -6,9 +6,9 @@ import os.path
 import datetime
 import discord
 from discord.ext import commands
-from Roxbot import load_config
-from Roxbot.settings import guild_settings as gs
 
+import Roxbot
+from Roxbot import guild_settings as gs
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
@@ -18,19 +18,13 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 bot = commands.Bot(
-	command_prefix=load_config.command_prefix,
-	description=load_config.__description__,
-	owner_id=load_config.owner,
-	activity=discord.Game(name="v{}".format(load_config.__version__), type=0),
+	command_prefix=Roxbot.command_prefix,
+	description=Roxbot.__description__,
+	owner_id=Roxbot.owner,
+	activity=discord.Game(name="v{}".format(Roxbot.__version__), type=0),
 	case_insensitive=True
 )
 
-def blacklisted(user):
-	with open("Roxbot/blacklist.txt", "r") as fp:
-		for line in fp.readlines():
-			if str(user.id)+"\n" == line:
-				return True
-	return False
 
 @bot.event
 async def on_ready():
@@ -45,7 +39,7 @@ async def on_ready():
 
 	# Load Extension Cogs
 	print("Cogs Loaded:")
-	for cog in load_config.cogs:
+	for cog in Roxbot.cogs:
 		bot.load_extension(cog)
 		print(cog.split(".")[2])
 	print("")
@@ -58,13 +52,16 @@ async def on_ready():
 # In the next two functions, I was gunna user bot.settings for something but I don't think it's possible.
 # So while I don't use it, the function still will do their jobs of adding and removing the settings.
 
+
 @bot.event
 async def on_guild_join(guild):
 	gs.add_guild(guild)
 
+
 @bot.event
 async def on_guild_remove(guild):
 	gs.remove_guild(guild)
+
 
 @bot.event
 async def on_message(message):
@@ -73,23 +70,24 @@ async def on_message(message):
 	:param message:
 	:return:
 	"""
-	if blacklisted(message.author):
+	if Roxbot.blacklisted(message.author):
 		return
 	return await bot.process_commands(message)
+
 
 @bot.command()
 async def about(ctx):
 	"""
 	Outputs info about RoxBot, showing uptime, how to report issues, what settings where set in prefs.ini and credits.
 	"""
-	owner = bot.get_user(load_config.owner)
-	em = discord.Embed(title="About Roxbot", colour=load_config.embedcolour, description=load_config.__description__)
+	owner = bot.get_user(Roxbot.owner)
+	em = discord.Embed(title="About Roxbot", colour=Roxbot.embedcolour, description=Roxbot.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
-	em.add_field(name="Command Prefix", value=load_config.command_prefix)
+	em.add_field(name="Command Prefix", value=Roxbot.command_prefix)
 	em.add_field(name="Owner", value=str(owner))
-	em.add_field(name="Owner ID", value=load_config.owner)
-	em.add_field(name="Bot Version", value=load_config.__version__)
-	em.add_field(name="Author", value=load_config.__author__)
+	em.add_field(name="Owner ID", value=Roxbot.owner)
+	em.add_field(name="Bot Version", value=Roxbot.__version__)
+	em.add_field(name="Author", value=Roxbot.__author__)
 	em.add_field(name="Discord.py version", value=discord.__version__)
 	em.set_footer(text="RoxBot is licensed under the MIT License")
 
@@ -102,7 +100,7 @@ async def about(ctx):
 
 if __name__ == "__main__":
 	# Pre-Boot checks
-	if not os.path.isfile("Roxbot/preferences.ini"):
+	if not os.path.isfile("Roxbot/settings/preferences.ini"):
 		print(
 			"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
 		exit(0)
@@ -112,4 +110,4 @@ if __name__ == "__main__":
 			fp.write("{}")
 
 	start_time = time.time()
-	bot.run(load_config.token)
+	bot.run(Roxbot.token)

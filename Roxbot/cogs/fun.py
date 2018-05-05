@@ -4,17 +4,15 @@ import discord
 import requests
 from discord.ext.commands import bot
 
-from Roxbot import checks
-from Roxbot.settings import guild_settings
-from Roxbot.logging import log
+import Roxbot
 
 
 class Fun:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 
-	@bot.command() # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
-	async def roll(self, ctx, expression = ""):
+	@bot.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
+	async def roll(self, ctx, expression=""):
 		"""
 		Rolls a die using dice expression format.
 		Usage:
@@ -145,7 +143,7 @@ class Fun:
 			if i < (times-1): response += '\n'
 		return await ctx.send(response)
 
-	@checks.isnt_anal()
+	@Roxbot.checks.isnt_anal()
 	@bot.command()
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
@@ -158,7 +156,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to spank")
 		return await ctx.send(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
-	@checks.isnt_anal()
+	@Roxbot.checks.isnt_anal()
 	@bot.command(aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
@@ -246,9 +244,9 @@ class Fun:
 		converted = str(convert).translate(WIDE_MAP)
 		await ctx.send(converted)
 
-		logging = guild_settings.get(ctx.guild).logging
+		logging = Roxbot.guild_settings.get(ctx.guild).logging
 		log_channel = self.bot.get_channel(logging["channel"])
-		await log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
+		await Roxbot.log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
 
 	@bot.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):

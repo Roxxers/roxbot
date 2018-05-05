@@ -6,9 +6,8 @@ import youtube_dl
 from math import ceil
 from discord.ext import commands
 
-from Roxbot import checks
-from Roxbot.load_config import owner
-from Roxbot.settings import guild_settings
+import Roxbot
+from Roxbot import guild_settings
 
 
 def _clear_cache():
@@ -22,7 +21,7 @@ def volume_perms():
 	def predicate(ctx):
 		gs = guild_settings.get(ctx.guild)
 		if gs.voice["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
-			if ctx.message.author.id == owner:
+			if ctx.message.author.id == Roxbot.owner:
 				return True
 			else:
 				admin_roles = gs.perm_roles["admin"]
@@ -179,7 +178,7 @@ class Voice:
 		self.now_playing[guild.id] = None
 		self.queue_logic[guild.id] = None
 
-	@checks.is_admin_or_mod()
+	@Roxbot.checks.is_admin_or_mod()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
 		"""Joins the voice channel your in."""
@@ -214,7 +213,7 @@ class Voice:
 		guild = ctx.guild
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner.
-		if not checks._is_admin_or_mod(ctx) or from_queue:
+		if not Roxbot.checks._is_admin_or_mod(ctx) or from_queue:
 			if not ctx.author.voice:
 				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
@@ -238,7 +237,7 @@ class Voice:
 			video = video["entries"][0]
 
 		# Duration limiter handling
-		if video.get("duration", 1) > voice["max_length"] and not checks._is_admin_or_mod(ctx):
+		if video.get("duration", 1) > voice["max_length"] and not Roxbot.checks._is_admin_or_mod(ctx):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
@@ -350,7 +349,7 @@ class Voice:
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
-			if voice["skip_voting"] and not (option == "--force" and checks._is_admin_or_mod(ctx)):  # Admin force skipping
+			if voice["skip_voting"] and not (option == "--force" and Roxbot.checks._is_admin_or_mod(ctx)):  # Admin force skipping
 				if ctx.author in self.skip_votes[ctx.guild.id]:
 					return await ctx.send("You have already voted to skip the current track.")
 				else:
@@ -401,7 +400,7 @@ class Voice:
 		embed = discord.Embed(title="Queue", description=output, colour=0xDEADBF)
 		return await ctx.send(embed=embed)
 
-	@checks.is_admin_or_mod()
+	@Roxbot.checks.is_admin_or_mod()
 	@commands.command()
 	async def remove(self, ctx, index):
 		"""Removes a item from the queue with the given index. Can also input all to delete all queued items."""
@@ -427,7 +426,7 @@ class Voice:
 			except IndexError:
 				raise commands.CommandError("Valid Index not given.")
 
-	@checks.is_admin_or_mod()
+	@Roxbot.checks.is_admin_or_mod()
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):
 		"""Stops and disconnects the bot from voice."""

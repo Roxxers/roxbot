@@ -1,14 +1,14 @@
 import discord
 from discord.ext import commands
 
-from Roxbot import load_config
-from Roxbot.settings import guild_settings as gs
+import Roxbot
+from Roxbot import guild_settings as gs
 
 
 class SelfAssign():
 	def __init__(self, Bot):
 		self.bot = Bot
-		self.embed_colour = load_config.embedcolour
+		self.embed_colour = Roxbot.embedcolour
 
 	@commands.command(pass_context=True)
 	async def listroles(self, ctx):
@@ -19,8 +19,7 @@ class SelfAssign():
 		"""
 		settings = gs.get(ctx.guild)
 		if not settings.self_assign["enabled"]:
-			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
-								  description="SelfAssignable roles are not enabled on this server")
+			embed = discord.Embed(colour=discord.Colour(self.embed_colour), description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 		roles = []
 		for role in settings.self_assign["roles"]:
@@ -28,8 +27,7 @@ class SelfAssign():
 				if role == serverrole.id:
 					roles.append("**"+serverrole.name+"**")
 		roles = '\n'.join(roles)
-		embed = discord.Embed(colour=self.embed_colour,
-							  description="The self-assignable roles for this server are: \n"+roles)
+		embed = discord.Embed(colour=self.embed_colour, description="The self-assignable roles for this server are: \n"+roles)
 		return await ctx.send(embed=embed)
 
 	@commands.command(pass_context=True)
@@ -49,8 +47,7 @@ class SelfAssign():
 			raise commands.MissingRequiredArgument(Parameter("Role", False))
 
 		if not settings.self_assign["enabled"]:
-			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
-								  description="SelfAssignable roles are not enabled on this server")
+			embed = discord.Embed(colour=discord.Colour(self.embed_colour), description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
 		member = ctx.author
@@ -80,8 +77,7 @@ class SelfAssign():
 			raise commands.MissingRequiredArgument(Parameter("role", False))
 
 		if not settings.self_assign["enabled"]:
-			embed = discord.Embed(colour=discord.Colour(self.embed_colour),
-								  description="SelfAssignable roles are not enabled on this server")
+			embed = discord.Embed(colour=discord.Colour(self.embed_colour), description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
 		member = ctx.author

@@ -1,8 +1,9 @@
 import random
-from Roxbot import checks
 import requests
 from discord.ext.commands import bot
-from Roxbot.settings import guild_settings as gs
+
+from Roxbot import checks
+from Roxbot import guild_settings as gs
 
 class NFSW():
 	def __init__(self, bot_client):
@@ -15,12 +16,11 @@ class NFSW():
 		return blacklist
 
 	def gelbooru_clone(self, ctx, base_url, tags):
-		# Maybe a page randomiser
 		limit = 200
 		tags = tags + self.tag_blacklist(ctx)
 		url = base_url + '/index.php?page=dapi&s=post&q=index&json=1&tags=' + tags + '&limit=' + str(limit)
 		req = requests.get(url, headers={'User-agent': 'RoxBot Discord Bot'})
-		if str(req.content) == "b''": # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
+		if str(req.content) == "b''":  # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
 			post = None
 			return post
 		post = random.choice(req.json())
@@ -37,7 +37,7 @@ class NFSW():
 		limit = 150
 		url = base_url + 'post/index.json?tags=' + tags + '&limit=' + str(limit)
 		req = requests.get(url, headers = {'User-agent': 'RoxBot Discord Bot'})
-		if str(req.content) == "b'[]'": # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
+		if str(req.content) == "b'[]'":  # This is to catch any errors if the tags don't return anything because I can't do my own error handling in commands.
 			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 		post = random.choice(req.json())
 		return await ctx.send(post["file_url"])

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from Roxbot import checks
 import discord
 import asyncio
 import requests
@@ -9,6 +8,8 @@ from html import unescape
 from random import shuffle
 from collections import OrderedDict
 from discord.ext import commands
+
+from Roxbot import checks
 
 
 class Trivia:

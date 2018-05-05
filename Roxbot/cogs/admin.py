@@ -4,12 +4,12 @@ import datetime
 from discord.ext import commands
 from discord.ext.commands import bot
 
-from Roxbot import checks, load_config
-from Roxbot.settings import guild_settings as gs
+import Roxbot as roxbot
+gs = roxbot.guild_settings
 
 
-def _is_admin_or_mod(message):
-	if message.author.id == load_config.owner:
+def _is_admin_or_mod(message):  # TODO: Remove this function and find a better solution thank.
+	if message.author.id == roxbot.owner:
 		return True
 	else:
 		admin_roles = gs.get(message.channel.guild).perm_roles["admin"]
@@ -50,31 +50,31 @@ class Admin():
 			else:
 				pass
 
+	@roxbot.checks.is_admin_or_mod()
 	@commands.guild_only()
-	@checks.is_admin_or_mod()
 	@commands.bot_has_permissions(manage_messages=True)
 	@bot.command()
-	async def slowmode(self, ctx, time):
+	async def slowmode(self, ctx, seconds):
 		"""Puts the current channel in slowmode.
 		Usage:
 			;slowmode [time/"off"]
-			time = time of the cooldown between messages a user has.
+			seconds =  number of seconds for the cooldown between messages a user has.
 			off = turns off slowmode for this channel"""
-		if time == "off" and self.slow_mode: # Turn Slow Mode off
+		if seconds == "off" and self.slow_mode:  # Turn Slow Mode off
 			self.slow_mode = False
 			self.slow_mode_channels.pop(ctx.channel.id)
 			self.users.pop(ctx.channel.id)
 			return await ctx.send("Slowmode off")
 
-		elif time.isdigit() and not self.slow_mode: # Turn Slow Mode On
+		elif seconds.isdigit() and not self.slow_mode:  # Turn Slow Mode On
 			self.users[ctx.channel.id] = {}
-			self.slow_mode_channels[ctx.channel.id] = int(time)
+			self.slow_mode_channels[ctx.channel.id] = int(seconds)
 			self.slow_mode = True
-			return await ctx.send("Slowmode on :snail: ({} seconds)".format(time))
+			return await ctx.send("Slowmode on :snail: ({} seconds)".format(seconds))
 
-		elif time.isdigit and self.slow_mode: # Change value of Slow Mode timer
-			self.slow_mode_channels[ctx.channel.id] = int(time)
-			return await ctx.send("Slowmode set to :snail: ({} seconds)".format(time))
+		elif seconds.isdigit and self.slow_mode:  # Change value of Slow Mode timer
+			self.slow_mode_channels[ctx.channel.id] = int(seconds)
+			return await ctx.send("Slowmode set to :snail: ({} seconds)".format(seconds))
 
 		else:
 			pass
@@ -95,7 +95,7 @@ class Admin():
 		messages = await ctx.channel.purge(limit=limit, check=predicate)
 		return await ctx.send("{} message(s) purged from chat.".format(len(messages)))
 
-	@checks.is_admin_or_mod()
+	@roxbot.checks.is_admin_or_mod()
 	@commands.group(case_insensitive=True)
 	async def warn(self, ctx):
 		"""Group of commands handling warnings"""
@@ -103,7 +103,7 @@ class Admin():
 			return await ctx.send('Missing Argument')
 
 	@warn.command()
-	async def add(self, ctx, user: discord.User = None, *, warning = ""):
+	async def add(self, ctx, user: discord.User=None, *, warning=""):
 		"""Adds a warning to a user."""
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		settings = gs.get(ctx.guild)
@@ -115,7 +115,7 @@ class Admin():
 		}
 		user_id = str(user.id)
 
-		if not user_id in settings.warnings:
+		if user_id not in settings.warnings:
 			settings.warnings[user_id] = []
 
 		settings.warnings[user_id].append(warning_dict)
@@ -133,7 +133,7 @@ class Admin():
 		"""Lists all or just the warnings for one user."""
 		settings = gs.get(ctx.guild)
 
-		if user == None:
+		if user is None:
 			output = ""
 			for member in settings.warnings:
 				# Remove users with no warning here instead of remove cause im lazy
@@ -154,7 +154,7 @@ class Admin():
 		if not settings.warnings[user_id]:
 			settings.warnings.pop(user_id)
 			settings.update(settings.warnings, "warnings")
-		if not user_id in settings.warnings:
+		if user_id not in settings.warnings:
 			return await ctx.send("This user doesn't have any warning on record.")
 
 		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
@@ -168,12 +168,12 @@ class Admin():
 				warned_by = warning["warned-by"]
 			date = datetime.datetime.fromtimestamp(warning["date"]).strftime('%c')
 			warn_reason = warning["warning"]
-			em.add_field(name="Warning %s"%x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
+			em.add_field(name="Warning %s" % x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
 			x += 1
 		return await ctx.send(embed=em)
 
 	@warn.command()
-	async def remove(self, ctx, user: discord.User = None, index = None):
+	async def remove(self, ctx, user: discord.User=None, index=None):
 		"""Removes one or all of the warnings for a user."""
 		user_id = str(user.id)
 		settings = gs.get(ctx.guild)
@@ -209,7 +209,7 @@ class Admin():
 	@commands.has_permissions(kick_members=True)
 	@commands.bot_has_permissions(kick_members=True)
 	@bot.command()
-	async def kick(self, ctx, member:discord.Member, *, reason = ""):
+	async def kick(self, ctx, member: discord.Member, *, reason=""):
 		"""Kicks mentioned user. Allows you to give a reason."""
 		try:
 			await member.kick(reason=reason)
@@ -220,7 +220,7 @@ class Admin():
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@bot.command()
-	async def ban(self, ctx, member:discord.Member, *, reason = ""):
+	async def ban(self, ctx, member: discord.Member, *, reason=""):
 		"""Bans mentioned user. Allows you to give a reason."""
 		try:
 			await member.ban(reason=reason, delete_message_days=0)
@@ -231,7 +231,7 @@ class Admin():
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@bot.command()
-	async def unban(self, ctx, member_id:int, *, reason = ""):
+	async def unban(self, ctx, member_id: int, *, reason=""):
 		"""Unbans user with given ID. Allows you to give a reason."""
 		mem = None
 		for ban in await ctx.guild.bans():
@@ -244,6 +244,7 @@ class Admin():
 			return await ctx.send("Unbanned {} with reason: '{}'".format(mem, reason))
 		except discord.Forbidden:
 			return await ctx.send("I can't kick the owner or users higher or equal to me.")
+
 
 def setup(bot_client):
 	bot_client.add_cog(Admin(bot_client))

@@ -1,15 +1,8 @@
 from discord import ActivityType
 from discord.ext import commands
 
-from Roxbot import checks
-from Roxbot.settings import guild_settings
+import Roxbot
 
-def blacklisted(user):
-	with open("Roxbot/blacklist.txt", "r") as fp:
-		for line in fp.readlines():
-			if str(user.id)+"\n" == line:
-				return True
-	return False
 
 class Twitch():
 	"""
@@ -20,8 +13,8 @@ class Twitch():
 
 	async def on_member_update(self, member_b, member_a):
 		"""Twitch Shilling Part"""
-		twitch = guild_settings.get(member_b.guild).twitch
-		if blacklisted(member_b) or not twitch["enabled"]:
+		twitch = Roxbot.guild_settings.get(member_b.guild).twitch
+		if Roxbot.blacklisted(member_b) or not twitch["enabled"]:
 			return
 
 		if member_a.activitiy:
@@ -29,10 +22,10 @@ class Twitch():
 				if not twitch["whitelist"]["enabled"] or member_a.id in twitch["whitelist"]["list"]:
 					channel = self.bot.get_channel(twitch["channel"])
 					return await channel.send(":video_game:** {} is live!** :video_game:\n{}\n{}".format(
-														   member_a.name, member_a.game.name, member_a.game.url))
+						member_a.name, member_a.game.name, member_a.game.url))
 
 	@commands.group()
-	@checks.is_admin_or_mod()
+	@Roxbot.checks.is_admin_or_mod()
 	async def whitelist(self, ctx):
 		"""Command group that handles the twitch cog's whitelist."""
 		if ctx.invoked_subcommand is None:
@@ -43,7 +36,7 @@ class Twitch():
 		"""Enables the twitch shilling whitelist. Repeat the command to disable.
 		Usage:
 			;whitelist enable"""
-		settings = guild_settings.get(ctx.guild)
+		settings = Roxbot.guild_settings.get(ctx.guild)
 		if not settings.twitch["whitelist"]["enabled"]:
 			settings.twitch["whitelist"]["enabled"] = 1
 			settings.update(settings.twitch, "twitch")
@@ -54,10 +47,13 @@ class Twitch():
 			return await ctx.send("Whitelist for Twitch shilling has been disabled.")
 
 	@whitelist.command()
-	async def edit(self, ctx, option, mentions = None):
+	async def edit(self, ctx, option, mentions=None):
 		"""Adds or removes users to the whitelist. Exactly the same as the blacklist command in usage."""
+
+		# TODO: This is all horribly outdated useage and needs to be rewritten.
+
 		whitelist_count = 0
-		settings = guild_settings.get(ctx.guild)
+		settings = Roxbot.guild_settings.get(ctx.guild)
 
 		if not ctx.message.mentions and option != 'list':
 			return await ctx.send("You haven't mentioned anyone to whitelist.")

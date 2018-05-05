@@ -1,5 +1,5 @@
 import discord
-from Roxbot.settings import guild_settings
+from Roxbot import guild_settings
 
 
 class JoinLeave():

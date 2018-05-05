@@ -6,15 +6,8 @@ from lxml import html
 from bs4 import BeautifulSoup
 from discord.ext.commands import bot
 
-from Roxbot import checks
-from Roxbot.logging import log
-from Roxbot.settings import guild_settings
-
-# Warning, this cog sucks so much but hopefully it works and doesn't break the bot too much.
-# Just lazily edited old code and bodged it into this one.
-# There is redundant code here that if removed would make it easier.
-
-# Edit, cleaned up a lot more. But it still is a bit dodgy, when discord allows for the video object to be used in embeds, then we need to convert the cog to output embeds.
+import Roxbot as roxbot
+from Roxbot import guild_settings
 
 
 def _imgur_removed(url):
@@ -92,12 +85,13 @@ def parse_url(url):
 	else:
 		return False
 
+
 class Reddit():
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.post_cache = {}
 		for guild in self.bot.guilds:
-			self.post_cache[guild.id] = [("","")]
+			self.post_cache[guild.id] = [("", "")]
 
 	@bot.command()
 	async def subreddit(self, ctx, subreddit):
@@ -135,10 +129,8 @@ class Reddit():
 				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]),subreddit)
 				break
 
-
-
 		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
-		if choice["over_18"] and not checks.nsfw_predicate(ctx):
+		if choice["over_18"] and not roxbot.checks.nsfw_predicate(ctx):
 			return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		if not url:  # If no image posts could be found with the for loop.
 			return await ctx.send("I couldn't find any images from that subreddit.")
@@ -159,7 +151,7 @@ class Reddit():
 			# Only log the command when it is this command being used. Not the inbuilt commands.
 			logging = guild_settings.get(ctx.guild).logging
 			log_channel = self.bot.get_channel(logging["channel"])
-			await log(ctx.guild, log_channel, "subreddit", User=ctx.author, Subreddit=subreddit, Returned="<{}>".format(url), Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
+			await roxbot.log(ctx.guild, log_channel, "subreddit", User=ctx.author, Subreddit=subreddit, Returned="<{}>".format(url), Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
 
 		# Not using a embed here because we can't use video in rich embeds but they work in embeds now :/
 		return await ctx.send(title + text + url)
