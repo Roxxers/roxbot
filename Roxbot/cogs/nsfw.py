@@ -14,6 +14,15 @@ def tag_blacklist(guild):
 	return blacklist
 
 
+async def http_request(url):
+	async with aiohttp.ClientSession() as session:
+		async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as resp:
+			try:
+				return json.loads(await resp.read())
+			except json.JSONDecodeError:
+				return None
+
+
 class NFSW():
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -28,19 +37,16 @@ class NFSW():
 		tags = tags + tag_blacklist(ctx.guild)
 		url = base_url + tags + '&limit=' + str(limit)
 
-		async with aiohttp.ClientSession() as session:
-			async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as resp:
-				req = await resp.read()
-		if str(req) == "b''":
+		posts = await http_request(url)
+
+		if posts is None:
 			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 
 		post = None
 		counter = 0
 		while counter < 20:
-			post = random.choice(json.loads(req))
-			md5 = post.get("md5")
-			if not md5:
-				md5 = post.get("hash")
+			post = random.choice(posts)
+			md5 = post.get("md5") or post.get("hash")
 			if md5 not in self.cache[ctx.guild.id]:
 				self.cache[ctx.guild.id].append(md5)
 				if len(self.cache[ctx.guild.id]) > 10:
