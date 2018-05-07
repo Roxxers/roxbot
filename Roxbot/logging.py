@@ -1,11 +1,11 @@
 import discord
-import Roxbot
+from Roxbot import guild_settings, embedcolour
 
 
 async def log(guild, channel, command_name, **kwargs):
-	logging = Roxbot.guild_settings.get(guild).logging
+	logging = guild_settings.get(guild).logging
 	if logging["enabled"]:
-		embed = discord.Embed(title="{} command logging".format(command_name), colour=Roxbot.embedcolour)
+		embed = discord.Embed(title="{} command logging".format(command_name), colour=embedcolour)
 		for key, value in kwargs.items():
 			embed.add_field(name=key, value=value)
 		return await channel.send(embed=embed)
@@ -16,10 +16,10 @@ class Logging:
 		self.bot = bot_client
 
 	async def on_member_join(self, member):
-		logging = Roxbot.guild_settings.get(member.guild).logging
+		logging = guild_settings.get(member.guild).logging
 		if logging["enabled"]:
 			channel = self.bot.get_channel(logging["channel"])
-			embed = discord.Embed(title="{} joined the server".format(member), colour=Roxbot.embedcolour)
+			embed = discord.Embed(title="{} joined the server".format(member), colour=embedcolour)
 			embed.add_field(name="ID", value=member.id)
 			embed.add_field(name="Mention", value=member.mention)
 			embed.add_field(name="Date Account Created", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(member.created_at))
@@ -29,10 +29,10 @@ class Logging:
 
 	async def on_member_remove(self, member):
 		# TODO: Add some way of detecting whether a user left/was kicked or was banned.
-		logging = Roxbot.guild_settings.get(member.guild).logging
+		logging = guild_settings.get(member.guild).logging
 		if logging["enabled"]:
 			channel = self.bot.get_channel(logging["channel"])
-			embed = discord.Embed(description="{} left the server".format(member), colour=Roxbot.embedcolour)
+			embed = discord.Embed(description="{} left the server".format(member), colour=embedcolour)
 			return await channel.send(embed=embed)
 
 

@@ -1,9 +1,7 @@
-import json
 import random
-import aiohttp
 from discord.ext.commands import bot
 
-from Roxbot import checks
+import Roxbot as roxbot
 from Roxbot import guild_settings as gs
 
 
@@ -14,15 +12,6 @@ def tag_blacklist(guild):
 	return blacklist
 
 
-async def http_request(url):
-	async with aiohttp.ClientSession() as session:
-		async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as resp:
-			try:
-				return json.loads(await resp.read())
-			except json.JSONDecodeError:
-				return None
-
-
 class NFSW():
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -30,14 +19,14 @@ class NFSW():
 		for guild in self.bot.guilds:
 			self.cache[guild.id] = []
 
-	@checks.is_nfsw_enabled()
+	@roxbot.checks.is_nfsw_enabled()
 	@bot.command(hidden=True)
 	async def gelbooru_clone(self, ctx, base_url, post_url, tags):
 		limit = 150
 		tags = tags + tag_blacklist(ctx.guild)
 		url = base_url + tags + '&limit=' + str(limit)
 
-		posts = await http_request(url)
+		posts = await roxbot.http.api_request(url)
 
 		if posts is None:
 			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
@@ -59,7 +48,7 @@ class NFSW():
 			url = post_url + "{0[directory]}/{0[image]}".format(post)
 		return await ctx.send(url)
 
-	@checks.is_nfsw_enabled()
+	@roxbot.checks.is_nfsw_enabled()
 	@bot.command()
 	async def e621(self, ctx, *, tags=""):
 		"""
@@ -68,7 +57,7 @@ class NFSW():
 		base_url = "https://e621.net/post/index.json?tags="
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url="", tags=tags)
 
-	@checks.is_nfsw_enabled()
+	@roxbot.checks.is_nfsw_enabled()
 	@bot.command()
 	async def rule34(self, ctx, *, tags=""):
 		"""
@@ -78,7 +67,7 @@ class NFSW():
 		post_url = "https://img.rule34.xxx/images/"
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
-	@checks.is_nfsw_enabled()
+	@roxbot.checks.is_nfsw_enabled()
 	@bot.command()
 	async def gelbooru(self, ctx, *, tags=""):
 		"""

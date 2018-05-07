@@ -1,8 +1,5 @@
 import random
-import requests
-
 from html import unescape
-from lxml import html
 from bs4 import BeautifulSoup
 from discord.ext.commands import bot
 
@@ -10,8 +7,8 @@ import Roxbot as roxbot
 from Roxbot import guild_settings
 
 
-def _imgur_removed(url):
-	page = requests.get(url)
+async def _imgur_removed(url):
+	page = await roxbot.http.get_page(url)
 	soup = BeautifulSoup(page.content, 'html.parser')
 	if "removed.png" in soup.img["src"]:
 		return True
@@ -19,14 +16,14 @@ def _imgur_removed(url):
 		return False
 
 
-def imgur_get(url):
+async def imgur_get(url):
 	if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv"):
 		return url
 	else:
-		if _imgur_removed(url):
+		if await _imgur_removed(url):
 			return False
-		page = requests.get(url)
-		soup = BeautifulSoup(page.content, 'html.parser')
+		page = await roxbot.http.get_page(url)
+		soup = BeautifulSoup(page, 'html.parser')
 		links = []
 		for img in soup.find_all("img"):
 			if "imgur" in img["src"]:
@@ -44,42 +41,29 @@ def imgur_get(url):
 				links[0] = "https:" + links[0]
 			return links[0]
 
+# TODO: Reimplement eroshare, eroshae, and erome support.
 
-def ero_get(url):
-	if "eroshare" in url:
-		url = "https://eroshae.com/" + url.split("/")[3]
-	page = requests.get(url)
-	tree = html.fromstring(page.content)
-	links = tree.xpath('//source[@src]/@src')
-	if links:
-		return False
-	links = tree.xpath('//*[@src]/@src')
-	if len(links) > 2:
-		return False
-	for link in links:
-		if "i." in link and "thumb" not in link:
-			return "https:" + link
-
-
-def subreddit_request(subreddit):
+async def subreddit_request(subreddit):
 	options = [".json?count=1000", "/top/.json?sort=top&t=all&count=1000"]
 	choice = random.choice(options)
 	subreddit += choice
-	r = requests.get("https://reddit.com/r/"+subreddit, headers={'User-agent': 'RoxBot Discord Bot'})
+	url = "https://reddit.com/r/"+subreddit
+	r = await roxbot.http.api_request(url)
 	try:
-		reddit = r.json()["data"]
-	except KeyError:
+		posts = r["data"]
+		return posts
+	except KeyError or TypeError:
 		return {}
-	return reddit
 
 
-def parse_url(url):
+async def parse_url(url):
 	if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv", "webm", "mp4", "webp"):
 		return url
 	if "imgur" in url:
-		return imgur_get(url)
+		return await imgur_get(url)
 	elif "eroshare" in url or "eroshae" in url or "erome" in url:
-		return ero_get(url)
+		return False
+		#return ero_get(url)
 	elif "gfycat" in url or "redd.it" in url or "i.reddituploads" in url or "media.tumblr" in url or "streamable" in url:
 		return url
 	else:
@@ -101,7 +85,7 @@ class Reddit():
 		{command_prefix}subreddit pics
 		"""
 		subreddit = subreddit.lower()
-		links = subreddit_request(subreddit)
+		links = await subreddit_request(subreddit)
 		title = ""
 		choice = {}
 
@@ -114,7 +98,7 @@ class Reddit():
 		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
 		while not url or not x > 20:
 			choice = random.choice(links["children"])["data"]
-			url = parse_url(choice["url"])
+			url = await parse_url(choice["url"])
 			if url:
 				x_old = int(x)
 				# If the url or id are in the cache,  continue the loop. If not, proceed with the post.
@@ -193,6 +177,10 @@ class Reddit():
 		"""
 		subreddit = "gaysoundsshitposts"
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
+
+	@bot.command(hidden=True, name="subreddit_dryrun")
+	async def _subreddit_test(self, ctx, url):
+		return await ctx.send(await parse_url(url))
 
 
 def setup(bot_client):

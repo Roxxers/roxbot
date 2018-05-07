@@ -2,13 +2,13 @@
 
 import discord
 import asyncio
-import requests
 import datetime
 from html import unescape
 from random import shuffle
 from collections import OrderedDict
 from discord.ext import commands
 
+from Roxbot import http
 from Roxbot import checks
 
 
@@ -34,9 +34,8 @@ class Trivia:
 
 	# Game Functions
 
-	def get_questions(self, amount=10):
-		r = requests.get("https://opentdb.com/api.php?amount={}".format(amount))
-		return r.json()
+	async def get_questions(self, amount=10):
+		return await http.api_request("https://opentdb.com/api.php?amount={}".format(amount))
 
 	def parse_question(self, question, counter):
 		embed = discord.Embed(
@@ -274,7 +273,7 @@ class Trivia:
 		await asyncio.sleep(20)
 
 		# Get questions
-		questions = self.get_questions(length[amount])
+		questions = await self.get_questions(length[amount])
 
 		# Checks if there is any players to play the game still
 		if not self.games[channel.id]["players"]:

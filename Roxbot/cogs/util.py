@@ -1,11 +1,12 @@
 import os
-import json
 import random
-import aiohttp
 import discord
 import requests
 from discord.ext import commands
 from discord.ext.commands import bot
+
+import Roxbot
+
 
 class Util():
 	"""
@@ -15,7 +16,7 @@ class Util():
 		self.bot = bot_client
 
 	@bot.command()
-	async def avatar(self, ctx, *,user: discord.User = None):
+	async def avatar(self, ctx, *, user: discord.User = None):
 		"""
 		Returns a mentioned users avatar
 		Example:
@@ -31,10 +32,7 @@ class Util():
 		else:
 			avaimg = '{0.name}.png'.format(user)
 
-		async with aiohttp.ClientSession() as session:
-			async with session.get(url) as img:
-				with open(avaimg, 'wb') as f:
-					f.write(await img.read())
+		await Roxbot.http.download_file(url, avaimg)
 		await ctx.send(file=discord.File(avaimg))
 		os.remove(avaimg)
 
@@ -138,41 +136,37 @@ class Util():
 		embed.add_field(name="Managed", value=str(role.managed), inline=False)
 		return await ctx.send(embed=embed)
 
-	@bot.command()
+	@bot.command(enabled=True)
 	async def upload(self, ctx):
 		"""
 		Uploads selected file to the host, thanks to the fact that
 		every pomf.se based site has pretty much the same architecture.
 		"""
+		# Fucking broke because uploading is impossible whyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy
 		sites = [
 			"https://comfy.moe/",
-			"https://safe.moe/api/",
-			"http://up.che.moe/",
 			"https://mixtape.moe/",
-			"https://pomf.cat/",
-			"https://sugoi.vidyagam.es/",
 			"https://doko.moe/",
-			"https://pomfe.co/",
-			"https://pomf.space/",
+			#"https://pomfe.co/",
+			#"https://pomf.space/",
 			"https://vidga.me/",
 			"https://pomf.pyonpyon.moe/"
-		] # List of pomf clone sites and upload limits
+		]  # List of pomf clone sites and upload limits
 		if ctx.message.attachments:
 			# Site choice, shouldn't need an upload size check since max upload for discord atm is 50MB
 			site = random.choice(sites)
 			urls = []
+
+			print(site)
 			for attachment in ctx.message.attachments:
-				name = attachment['url'].split("/")[-1]
+				name = attachment.url.split("/")[-1]
 				# Download File
-				with aiohttp.ClientSession() as session:
-					async with session.get(attachment['url']) as img:
-						with open(name, 'wb') as f:
-							f.write(await img.read())
+				await Roxbot.http.download_file(attachment.url, name)
 				# Upload file
 				with open(name, 'rb') as f:
-					answer = requests.post(url=site+"upload.php",files={'files[]': f.read()})
-					response = json.loads(answer.text)
-					file_name_1 = response["files"][0]["url"].replace("\\", "")
+					answer = requests.post(url=site + "upload.php", files={'files[]': (name, f.read())})
+				response = answer.json()
+				file_name_1 = response["files"][0]["url"].replace("\\", "")
 				urls.append(file_name_1)
 				os.remove(name)
 			msg = "".join(urls)
@@ -182,7 +176,7 @@ class Util():
 
 	@upload.error
 	async def upload_err(self, ctx, error):
-		return await ctx.send("File couldn't be uploaded. {}".format(error))
+		return await ctx.send("File couldn't be uploaded.")
 
 	@bot.command(aliases=["emoji"])
 	async def emote(self, ctx, emote):
@@ -200,10 +194,7 @@ class Util():
 			emoji_id = emote[2]
 		url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
 
-		async with aiohttp.ClientSession() as session:
-			async with session.get(url) as img:
-				with open(imgname, 'wb') as f:
-					f.write(await img.read())
+		await Roxbot.http.download_file(url, imgname)
 		await ctx.send(file=discord.File(imgname))
 		os.remove(imgname)
 

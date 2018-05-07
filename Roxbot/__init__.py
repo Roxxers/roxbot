@@ -1,7 +1,6 @@
-from Roxbot import checks
+from Roxbot import checks, http, guild_settings
 from Roxbot.load_config import *
 from Roxbot.logging import log
-from Roxbot.settings import guild_settings
 
 
 def blacklisted(user):

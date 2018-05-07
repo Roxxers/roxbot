@@ -1,13 +1,10 @@
-import json
 import datetime
-import requests
 
 import discord
 from discord.ext import commands
 from discord.ext.commands import bot
 
 import Roxbot
-from Roxbot import guild_settings
 
 
 def is_gss():
@@ -21,14 +18,11 @@ def is_not_nsfw_disabled():
 	return commands.check(lambda ctx: predicate(ctx))
 
 
-def tatsumaki_api_call(member, guild):
+async def tatsumaki_api_call(member, guild):
 	base = "https://api.tatsumaki.xyz/"
 	url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
-	r = requests.get(url, headers={"Authorization": Roxbot.tat_token})
-	try:
-		return r.json()
-	except json.JSONDecodeError:
-		return {}
+	return await Roxbot.http.api_request(url, headers={"Authorization": Roxbot.tat_token})
+
 
 class GaySoundsShitposts():
 	def __init__(self, bot_client):
@@ -42,12 +36,12 @@ class GaySoundsShitposts():
 		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
 		if role.id not in self.acceptable_roles:
 			return False
-		settings = guild_settings.get(ctx.guild)
+		settings = Roxbot.guild_settings.get(ctx.guild)
 		member = ctx.author
 		required_score = settings.gss["required_score"]
 		days = int(settings.gss["required_days"])
-		data = tatsumaki_api_call(member, ctx.guild)
-		if not data:
+		data = await tatsumaki_api_call(member, ctx.guild)
+		if data is None:
 			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
 
 		if role in member.roles:

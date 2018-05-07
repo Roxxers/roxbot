@@ -1,7 +1,6 @@
-import random
 import re
+import random
 import discord
-import requests
 from discord.ext.commands import bot
 
 import Roxbot
@@ -252,8 +251,8 @@ class Fun:
 	async def frogtips(self, ctx):
 		"""RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG"""
 		endpoint = "https://frog.tips/api/1/tips/"
-		croak = requests.get(endpoint)
-		tip = random.choice(croak.json()["tips"])
+		croak = await Roxbot.http.api_request(endpoint)
+		tip = random.choice(croak["tips"])
 		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=discord.Colour(0x4C943D))
 		embed.set_author(name="HOW TO OPERATE YOUR FROG")
 		embed.set_footer(text="https://frog.tips")
