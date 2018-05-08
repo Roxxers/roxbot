@@ -9,7 +9,7 @@ from roxbot import guild_settings
 
 async def _imgur_removed(url):
 	page = await roxbot.http.get_page(url)
-	soup = BeautifulSoup(page.content, 'html.parser')
+	soup = BeautifulSoup(page, 'html.parser')
 	if "removed.png" in soup.img["src"]:
 		return True
 	else:
