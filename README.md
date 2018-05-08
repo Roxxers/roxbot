@@ -32,6 +32,7 @@ _Coming Soon_
 - requests and lxml have been removed as dependencies of Roxbot.
 - `upload` has been disabled for the time being until a way for it to work with aiohttp is found.
 - Minor refactoring in places, which involves some directory movement.
+- added frogtips cache for quicker frogtips
 
 ###### Bug Fixes
 - Doubled the amount of times subreddit commands will cycle through possible requests to fix JSON decode error.
