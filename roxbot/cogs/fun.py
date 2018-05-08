@@ -9,6 +9,7 @@ import roxbot
 class Fun:
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.croak = {}
 
 	@bot.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
 	async def roll(self, ctx, expression=""):
@@ -251,8 +252,10 @@ class Fun:
 	async def frogtips(self, ctx):
 		"""RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG"""
 		endpoint = "https://frog.tips/api/1/tips/"
-		croak = await roxbot.http.api_request(endpoint)
-		tip = random.choice(croak["tips"])
+		if not self.croak.get("tips"):
+			self.croak = await roxbot.http.api_request(endpoint)
+		index = random.randint(0, len(self.croak["tips"]))
+		tip = self.croak["tips"].pop(index)
 		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=roxbot.EmbedColours.frog_green)
 		embed.set_author(name="HOW TO OPERATE YOUR FROG")
 		embed.set_footer(text="https://frog.tips")
