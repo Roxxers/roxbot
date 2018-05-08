@@ -18,10 +18,15 @@ _Coming Soon_
 #### v1.7.0
 ###### New Features
 - NSFW commands now have the same system of preventing dupe outputs
-###### Minor Changes
+
+###### Misc. Changes
 - `avatar` now outputs a png if the image is static.
-- Moved NSFW commands to use aiohttp instead of requests which hopefully will wield quicker response times.
+- EmbedColours are now standardised within RoxBot.
+- All of RoxBot's requests are now handled by the http file. All http requests have been moved to aiohttp. 
+- requests and lxml have been removed as dependencies of Roxbot.
+- `upload` has been disabled for the time being until a way for it to work with aiohttp is found.
 - Minor refactoring in places, which involves some directory movement.
+
 ###### Bug Fixes
 - Doubled the amount of times subreddit commands will cycle through possible requests to fix JSON decode error.
 - Fixed error in reddit cog due to changing JSON outputs thanks to new reddit redesign.

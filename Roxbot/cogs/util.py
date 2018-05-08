@@ -1,7 +1,5 @@
 import os
-import random
 import discord
-import requests
 from discord.ext import commands
 from discord.ext.commands import bot
 
@@ -136,7 +134,7 @@ class Util():
 		embed.add_field(name="Managed", value=str(role.managed), inline=False)
 		return await ctx.send(embed=embed)
 
-	@bot.command(enabled=True)
+	@bot.command(enabled=False)
 	async def upload(self, ctx):
 		"""
 		Uploads selected file to the host, thanks to the fact that
@@ -152,7 +150,7 @@ class Util():
 			"https://vidga.me/",
 			"https://pomf.pyonpyon.moe/"
 		]  # List of pomf clone sites and upload limits
-		if ctx.message.attachments:
+		"""if ctx.message.attachments:
 			# Site choice, shouldn't need an upload size check since max upload for discord atm is 50MB
 			site = random.choice(sites)
 			urls = []
@@ -163,16 +161,16 @@ class Util():
 				# Download File
 				await Roxbot.http.download_file(attachment.url, name)
 				# Upload file
-				with open(name, 'rb') as f:
-					answer = requests.post(url=site + "upload.php", files={'files[]': (name, f.read())})
-				response = answer.json()
+				#with open(name, 'rb') as f:
+				#	answer = requests.post(url=site + "upload.php", files={'files[]': (name, f.read())})
+				#response = answer.json()
 				file_name_1 = response["files"][0]["url"].replace("\\", "")
 				urls.append(file_name_1)
 				os.remove(name)
 			msg = "".join(urls)
 			return await ctx.send(msg)
 		else:
-			return await ctx.send("Send me stuff to upload.")
+			return await ctx.send("Send me stuff to upload.")"""
 
 	@upload.error
 	async def upload_err(self, ctx, error):
