@@ -18,6 +18,8 @@ class EmbedColours(Enum):
 	frog_green = 0x4C943D  # Used for FROGTIPS
 	red = 0xe74c3c         # Used for on_error
 	dark_red = 0x992d22    # Used for on_command_error
+	triv_green = 0x1fb600  # Used for the correct answer in trivia
+	gold = 0xd4af3a        # Used for displaying the winner in trivia
 
 
 # REMEMBER TO UNCOMMENT THE GSS LINE, ROXIE

@@ -162,7 +162,7 @@ class Trivia:
 			# Display Correct answer and calculate and display scores.
 			index = self.games[channel.id]["correct_answer"]
 			embed = discord.Embed(
-				colour=discord.Colour(0x1fb600),
+				colour=EmbedColours.triv_green,
 				description="Correct answer is {} **{}**".format(
 					self.emojis[index],
 					unescape(question["correct_answer"])
@@ -289,7 +289,7 @@ class Trivia:
 			final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
 			winner = self.bot.get_user(list(final_scores.keys())[0])
 			winning_score = list(final_scores.values())[0]
-			embed = discord.Embed(description="{} won with a score of {}".format(winner.mention, winning_score), colour=0xd4af3a)
+			embed = discord.Embed(description="{} won with a score of {}".format(winner.mention, winning_score), colour=EmbedColours.gold)
 			await ctx.send(embed=embed)
 		self.games.pop(channel.id)
 
