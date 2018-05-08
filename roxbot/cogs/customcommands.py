@@ -1,7 +1,7 @@
 import discord
 from discord.ext.commands import group
 
-import Roxbot
+import roxbot
 
 
 class CustomCommands():
@@ -11,11 +11,11 @@ class CustomCommands():
 	async def on_message(self, message):
 		if isinstance(message.channel, discord.DMChannel):
 			return
-		settings = Roxbot.guild_settings.get(message.guild)
+		settings = roxbot.guild_settings.get(message.guild)
 		msg = message.content.lower()
 		channel = message.channel
 
-		if Roxbot.blacklisted(message.author) or type(message.channel) != discord.TextChannel:
+		if roxbot.blacklisted(message.author) or type(message.channel) != discord.TextChannel:
 			return
 		if message.author == self.bot.user:
 			return
@@ -29,7 +29,7 @@ class CustomCommands():
 					return await channel.send(settings.custom_commands["0"][command])
 
 	@group(pass_context=True, aliases=["cc"])
-	@Roxbot.checks.is_owner_or_admin()
+	@roxbot.checks.is_owner_or_admin()
 	async def custom(self, ctx):
 		""""A group of commands to manage custom commands for your server."""
 		if ctx.invoked_subcommand is None:
@@ -38,7 +38,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def add(self, ctx, command, output, prefix_required="0"):
 		"""Adds a custom command to the list of custom commands."""
-		settings = Roxbot.guild_settings.get(ctx.guild)
+		settings = roxbot.guild_settings.get(ctx.guild)
 		command = command.lower()
 		output = output
 		zero = settings.custom_commands["0"]
@@ -64,7 +64,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def edit(self, ctx, command, edit):
 		""""Edits an existing custom command."""
-		settings = Roxbot.guild_settings.get(ctx.guild)
+		settings = roxbot.guild_settings.get(ctx.guild)
 		zero = settings.custom_commands["0"]
 		one = settings.custom_commands["1"]
 
@@ -85,7 +85,7 @@ class CustomCommands():
 	@custom.command(pass_context=True)
 	async def remove(self, ctx, command):
 		""""Removes a custom command."""
-		settings = Roxbot.guild_settings.get(ctx.guild)
+		settings = roxbot.guild_settings.get(ctx.guild)
 		command = command.lower()
 		if command in settings.custom_commands["1"]:
 			settings.custom_commands["1"].pop(command)
@@ -103,7 +103,7 @@ class CustomCommands():
 		""""Lists all custom commands for this server."""
 		if debug != "0" and debug != "1":
 			debug = "0"
-		settings = Roxbot.guild_settings.get(ctx.guild)
+		settings = roxbot.guild_settings.get(ctx.guild)
 		cc = settings.custom_commands
 		listzero = ""
 		listone = ""
@@ -123,7 +123,7 @@ class CustomCommands():
 
 		# TODO: Sort out a way to shorten this if it goes over 2000 characters.
 		
-		em = discord.Embed(title="Here is the list of Custom Commands", color=Roxbot.EmbedColours.pink)
+		em = discord.Embed(title="Here is the list of Custom Commands", color=roxbot.EmbedColours.pink)
 		em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
 		em.add_field(name="Commands that don't:", value=listzero, inline=False)
 		return await ctx.send(embed=em)

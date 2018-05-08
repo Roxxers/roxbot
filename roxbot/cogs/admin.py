@@ -4,8 +4,8 @@ import datetime
 from discord.ext import commands
 from discord.ext.commands import bot
 
-import Roxbot as roxbot
-from Roxbot import guild_settings as gs
+import roxbot
+from roxbot import guild_settings as gs
 
 
 def _is_admin_or_mod(message):
@@ -84,7 +84,7 @@ class Admin():
 	async def purge(self, ctx, limit=0, *, author: discord.User = None):
 		"""Purges messages from the text channel.
 		Limit = Limit of messages to be deleted
-		Author (optional) =  If given, Roxbot will selectively only delete this user's messages."""
+		Author (optional) =  If given, roxbot will selectively only delete this user's messages."""
 		# Sadly I cant find an elegant way for the bot to be able to purge members that have left.
 		if author:
 			predicate = lambda message: message.author.id == author.id and message.id != ctx.message.id

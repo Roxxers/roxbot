@@ -64,7 +64,7 @@ def _open_config():
 	Opens the guild settings file
 	:return settings file: :type dict:
 	"""
-	with open('Roxbot/settings/servers.json', 'r') as config_file:
+	with open('roxbot/settings/servers.json', 'r') as config_file:
 		return json.load(config_file)
 
 def _write_changes(config):
@@ -73,11 +73,11 @@ def _write_changes(config):
 	:param config: :type dict:
 	:return:
 	"""
-	with open('Roxbot/settings/servers.json', 'w') as conf_file:
+	with open('roxbot/settings/servers.json', 'w') as conf_file:
 		json.dump(config, conf_file)
 
 def backup(config, name):
-	with open('Roxbot/settings/backups/{}.json'.format(name), "w") as f:
+	with open('roxbot/settings/backups/{}.json'.format(name), "w") as f:
 		json.dump(config, f)
 
 def remove_guild(guild):

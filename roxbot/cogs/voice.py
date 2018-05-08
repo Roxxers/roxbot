@@ -6,22 +6,22 @@ import youtube_dl
 from math import ceil
 from discord.ext import commands
 
-import Roxbot
-from Roxbot import guild_settings
+import roxbot
+from roxbot import guild_settings
 
 
 def _clear_cache():
 	"""Clears the cache folder for the music bot. Ignores the ".gitignore" file to avoid deleting versioned files."""
-	for file in os.listdir("Roxbot/cache"):
+	for file in os.listdir("roxbot/cache"):
 		if file != ".gitignore":
-			os.remove("Roxbot/cache/{}".format(file))
+			os.remove("roxbot/cache/{}".format(file))
 
 
 def volume_perms():
 	def predicate(ctx):
 		gs = guild_settings.get(ctx.guild)
 		if gs.voice["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
-			if ctx.message.author.id == Roxbot.owner:
+			if ctx.message.author.id == roxbot.owner:
 				return True
 			else:
 				admin_roles = gs.perm_roles["admin"]
@@ -41,7 +41,7 @@ youtube_dl.utils.bug_reports_message = lambda: ''
 
 ytdl_format_options = {
 	'format': 'bestaudio/best',
-	'outtmpl': './Roxbot/cache/%(extractor)s-%(id)s-%(title)s.%(ext)s',
+	'outtmpl': './roxbot/cache/%(extractor)s-%(id)s-%(title)s.%(ext)s',
 	'restrictfilenames': True,
 	'noplaylist': True,
 	'nocheckcertificate': True,
@@ -166,7 +166,7 @@ class Voice:
 		duration = self._format_duration(np.duration)
 		time_played = self._format_duration(np.source.timer/1000)
 
-		embed = discord.Embed(title=title, colour=Roxbot.EmbedColours.pink, url=np.webpage_url)
+		embed = discord.Embed(title=title, colour=roxbot.EmbedColours.pink, url=np.webpage_url)
 		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
 		embed.set_image(url=np.thumbnail_url)
 		embed.set_footer(text="Timer: {}/{}".format(time_played, duration))
@@ -180,7 +180,7 @@ class Voice:
 		self.now_playing[guild.id] = None
 		self.queue_logic[guild.id] = None
 
-	@Roxbot.checks.is_admin_or_mod()
+	@roxbot.checks.is_admin_or_mod()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
 		"""Joins the voice channel your in."""
@@ -189,7 +189,7 @@ class Voice:
 			try:
 				channel = ctx.author.voice.channel
 			except AttributeError:
-				raise commands.CommandError("Failed to join voice channel. Please specify a channel or join one for Roxbot to join.")
+				raise commands.CommandError("Failed to join voice channel. Please specify a channel or join one for roxbot to join.")
 
 		# Join VoiceChannel
 		if ctx.voice_client is not None:
@@ -215,11 +215,11 @@ class Voice:
 		guild = ctx.guild
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner.
-		if not Roxbot.checks._is_admin_or_mod(ctx) or from_queue:
+		if not roxbot.checks._is_admin_or_mod(ctx) or from_queue:
 			if not ctx.author.voice:
-				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
+				raise commands.CommandError("You're not in the same voice channel as roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
-				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
+				raise commands.CommandError("You're not in the same voice channel as roxbot.")
 
 		# For internal speed. This should make the playlist management quicker when play is being invoked internally.
 		if isinstance(url, dict):
@@ -239,7 +239,7 @@ class Voice:
 			video = video["entries"][0]
 
 		# Duration limiter handling
-		if video.get("duration", 1) > voice["max_length"] and not Roxbot.checks._is_admin_or_mod(ctx):
+		if video.get("duration", 1) > voice["max_length"] and not roxbot.checks._is_admin_or_mod(ctx):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
@@ -268,7 +268,7 @@ class Voice:
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:
 				await asyncio.sleep(0.5)
-			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=Roxbot.EmbedColours.pink)
+			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=roxbot.EmbedColours.pink)
 			await ctx.send(embed=embed)
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
@@ -287,14 +287,14 @@ class Voice:
 			if ctx.author.voice:
 				await ctx.author.voice.channel.connect()
 			else:
-				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
+				raise commands.CommandError("roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
 
 	@volume_perms()
 	@commands.command()
 	async def volume(self, ctx, volume):
 		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
 		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+			raise commands.CommandError("roxbot is not in a voice channel.")
 
 		try:
 			volume = int(volume)
@@ -317,7 +317,7 @@ class Voice:
 	async def pause(self, ctx):
 		"""Pauses the current video, if playing."""
 		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+			raise commands.CommandError("roxbot is not in a voice channel.")
 		else:
 			if not ctx.voice_client.is_playing():
 				return await ctx.send("Nothing is playing.")
@@ -332,7 +332,7 @@ class Voice:
 		"""Resumes the bot if paused. Also will play the next thing in the queue if the bot is stuck."""
 		if ctx.voice_client is None:
 			if len(self.playlist[ctx.guild.id]) < 1:
-				raise commands.CommandError("Roxbot is not in a voice channel.")
+				raise commands.CommandError("roxbot is not in a voice channel.")
 			else:
 				video = self.playlist[ctx.guild.id].pop(0)
 				await ctx.invoke(self.play, url=video)
@@ -352,7 +352,7 @@ class Voice:
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
-			if voice["skip_voting"] and not (option == "--force" and Roxbot.checks._is_admin_or_mod(ctx)):  # Admin force skipping
+			if voice["skip_voting"] and not (option == "--force" and roxbot.checks._is_admin_or_mod(ctx)):  # Admin force skipping
 				if ctx.author in self.skip_votes[ctx.guild.id]:
 					return await ctx.send("You have already voted to skip the current track.")
 				else:
@@ -400,10 +400,10 @@ class Voice:
 			index += 1
 		if output == "":
 			output = "Nothing is up next. Maybe you should add something!"
-		embed = discord.Embed(title="Queue", description=output, colour=Roxbot.EmbedColours.pink)
+		embed = discord.Embed(title="Queue", description=output, colour=roxbot.EmbedColours.pink)
 		return await ctx.send(embed=embed)
 
-	@Roxbot.checks.is_admin_or_mod()
+	@roxbot.checks.is_admin_or_mod()
 	@commands.command()
 	async def remove(self, ctx, index):
 		"""Removes a item from the queue with the given index. Can also input all to delete all queued items."""
@@ -429,12 +429,12 @@ class Voice:
 			except IndexError:
 				raise commands.CommandError("Valid Index not given.")
 
-	@Roxbot.checks.is_admin_or_mod()
+	@roxbot.checks.is_admin_or_mod()
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):
 		"""Stops and disconnects the bot from voice."""
 		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+			raise commands.CommandError("roxbot is not in a voice channel.")
 		else:
 			# Clear up variables before stopping.
 			self.playlist[ctx.guild.id] = []

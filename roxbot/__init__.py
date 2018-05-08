@@ -1,10 +1,10 @@
-from Roxbot import checks, http, guild_settings
-from Roxbot.load_config import *
-from Roxbot.logging import log
+from roxbot import checks, http, guild_settings
+from roxbot.load_config import *
+from roxbot.logging import log
 
 
 def blacklisted(user):
-	with open("Roxbot/settings/blacklist.txt", "r") as fp:
+	with open("roxbot/settings/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
 			if str(user.id)+"\n" == line:
 				return True

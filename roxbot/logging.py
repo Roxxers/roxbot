@@ -1,5 +1,5 @@
 import discord
-from Roxbot import guild_settings, EmbedColours
+from roxbot import guild_settings, EmbedColours
 
 
 async def log(guild, channel, command_name, **kwargs):

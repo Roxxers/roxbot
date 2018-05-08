@@ -4,7 +4,7 @@ import aiohttp
 import asyncio
 import datetime
 
-from Roxbot import checks, load_config, guild_settings, EmbedColours
+from roxbot import checks, load_config, guild_settings, EmbedColours
 
 import discord
 from discord.ext.commands import bot, group, is_owner, bot_has_permissions
@@ -67,13 +67,13 @@ class Settings:
 				mentions.remove(user)
 
 		if option in ['+', 'add']:
-			with open("Roxbot/blacklist.txt", "r") as fp:
+			with open("roxbot/blacklist.txt", "r") as fp:
 				for user in mentions:
 					for line in fp.readlines():
 						if user.id + "\n" in line:
 							mentions.remove(user)
 
-			with open("Roxbot/blacklist.txt", "a+") as fp:
+			with open("roxbot/blacklist.txt", "a+") as fp:
 				lines = fp.readlines()
 				for user in mentions:
 					if user.id not in lines:
@@ -82,9 +82,9 @@ class Settings:
 			return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
 
 		elif option in ['-', 'remove']:
-			with open("Roxbot/blacklist.txt", "r") as fp:
+			with open("roxbot/blacklist.txt", "r") as fp:
 				lines = fp.readlines()
-			with open("Roxbot/blacklist.txt", "w") as fp:
+			with open("roxbot/blacklist.txt", "w") as fp:
 				for user in mentions:
 					for line in lines:
 						if user.id + "\n" != line:

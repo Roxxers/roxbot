@@ -1,6 +1,6 @@
 from discord.ext import commands
-from Roxbot.load_config import owner
-from Roxbot import guild_settings as gs
+from roxbot.load_config import owner
+from roxbot import guild_settings as gs
 
 
 def is_owner_or_admin():

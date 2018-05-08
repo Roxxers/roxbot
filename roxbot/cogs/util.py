@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from discord.ext.commands import bot
 
-import Roxbot
+import roxbot
 
 
 class Util():
@@ -30,7 +30,7 @@ class Util():
 		else:
 			avaimg = '{0.name}.png'.format(user)
 
-		await Roxbot.http.download_file(url, avaimg)
+		await roxbot.http.download_file(url, avaimg)
 		await ctx.send(file=discord.File(avaimg))
 		os.remove(avaimg)
 
@@ -159,7 +159,7 @@ class Util():
 			for attachment in ctx.message.attachments:
 				name = attachment.url.split("/")[-1]
 				# Download File
-				await Roxbot.http.download_file(attachment.url, name)
+				await roxbot.http.download_file(attachment.url, name)
 				# Upload file
 				#with open(name, 'rb') as f:
 				#	answer = requests.post(url=site + "upload.php", files={'files[]': (name, f.read())})
@@ -192,7 +192,7 @@ class Util():
 			emoji_id = emote[2]
 		url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
 
-		await Roxbot.http.download_file(url, imgname)
+		await roxbot.http.download_file(url, imgname)
 		await ctx.send(file=discord.File(imgname))
 		os.remove(imgname)
 

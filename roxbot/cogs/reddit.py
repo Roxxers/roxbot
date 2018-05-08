@@ -3,8 +3,8 @@ from html import unescape
 from bs4 import BeautifulSoup
 from discord.ext.commands import bot
 
-import Roxbot as roxbot
-from Roxbot import guild_settings
+import roxbot
+from roxbot import guild_settings
 
 
 async def _imgur_removed(url):

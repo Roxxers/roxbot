@@ -1,7 +1,7 @@
 from discord import ActivityType
 from discord.ext import commands
 
-import Roxbot
+import roxbot
 
 
 class Twitch():
@@ -13,8 +13,8 @@ class Twitch():
 
 	async def on_member_update(self, member_b, member_a):
 		"""Twitch Shilling Part"""
-		twitch = Roxbot.guild_settings.get(member_b.guild).twitch
-		if Roxbot.blacklisted(member_b) or not twitch["enabled"]:
+		twitch = roxbot.guild_settings.get(member_b.guild).twitch
+		if roxbot.blacklisted(member_b) or not twitch["enabled"]:
 			return
 
 		if member_a.activitiy:
@@ -25,7 +25,7 @@ class Twitch():
 						member_a.name, member_a.game.name, member_a.game.url))
 
 	@commands.group()
-	@Roxbot.checks.is_admin_or_mod()
+	@roxbot.checks.is_admin_or_mod()
 	async def whitelist(self, ctx):
 		"""Command group that handles the twitch cog's whitelist."""
 		if ctx.invoked_subcommand is None:
@@ -36,7 +36,7 @@ class Twitch():
 		"""Enables the twitch shilling whitelist. Repeat the command to disable.
 		Usage:
 			;whitelist enable"""
-		settings = Roxbot.guild_settings.get(ctx.guild)
+		settings = roxbot.guild_settings.get(ctx.guild)
 		if not settings.twitch["whitelist"]["enabled"]:
 			settings.twitch["whitelist"]["enabled"] = 1
 			settings.update(settings.twitch, "twitch")
@@ -53,7 +53,7 @@ class Twitch():
 		# TODO: This is all horribly outdated useage and needs to be rewritten.
 
 		whitelist_count = 0
-		settings = Roxbot.guild_settings.get(ctx.guild)
+		settings = roxbot.guild_settings.get(ctx.guild)
 
 		if not ctx.message.mentions and option != 'list':
 			return await ctx.send("You haven't mentioned anyone to whitelist.")

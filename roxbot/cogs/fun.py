@@ -3,7 +3,7 @@ import random
 import discord
 from discord.ext.commands import bot
 
-import Roxbot
+import roxbot
 
 
 class Fun:
@@ -142,27 +142,27 @@ class Fun:
 			if i < (times-1): response += '\n'
 		return await ctx.send(response)
 
-	@Roxbot.checks.isnt_anal()
+	@roxbot.checks.isnt_anal()
 	@bot.command()
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
 		Spanks the mentioned user ;)
 		Usage:
-			{command_prefix}spank @Roxbot#4170
-			{command_prefix}spank Roxbot
+			{command_prefix}spank @roxbot#4170
+			{command_prefix}spank roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to spank")
 		return await ctx.send(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
-	@Roxbot.checks.isnt_anal()
+	@roxbot.checks.isnt_anal()
 	@bot.command(aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
 		Sucks the mentioned user ;)
 		Usage:
-			{command_prefix}suck @Roxbot#4170
-			{command_prefix}suck Roxbot
+			{command_prefix}suck @roxbot#4170
+			{command_prefix}suck roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to suck")
@@ -173,7 +173,7 @@ class Fun:
 		"""
 		Hugs the mentioned user :3
 		Usage:
-			{command_prefix}hug @Roxbot#4170
+			{command_prefix}hug @roxbot#4170
 			{command_prefix}hug Roxbott
 		"""
 		if not user:
@@ -185,8 +185,8 @@ class Fun:
 		"""
 		Gives headpats to the mentioned user :3
 		Usage:
-			{command_prefix}pet @Roxbot#4170
-			{command_prefix}pet Roxbot
+			{command_prefix}pet @roxbot#4170
+			{command_prefix}pet roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to headpat")
@@ -243,17 +243,17 @@ class Fun:
 		converted = str(convert).translate(WIDE_MAP)
 		await ctx.send(converted)
 
-		logging = Roxbot.guild_settings.get(ctx.guild).logging
+		logging = roxbot.guild_settings.get(ctx.guild).logging
 		log_channel = self.bot.get_channel(logging["channel"])
-		await Roxbot.log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
+		await roxbot.log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
 
 	@bot.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
 		"""RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG"""
 		endpoint = "https://frog.tips/api/1/tips/"
-		croak = await Roxbot.http.api_request(endpoint)
+		croak = await roxbot.http.api_request(endpoint)
 		tip = random.choice(croak["tips"])
-		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=Roxbot.EmbedColours.frog_green)
+		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=roxbot.EmbedColours.frog_green)
 		embed.set_author(name="HOW TO OPERATE YOUR FROG")
 		embed.set_footer(text="https://frog.tips")
 		return await ctx.send(embed=embed)

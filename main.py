@@ -7,8 +7,8 @@ import datetime
 import discord
 from discord.ext import commands
 
-import Roxbot
-from Roxbot import guild_settings as gs
+import roxbot
+from roxbot import guild_settings as gs
 
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
@@ -18,10 +18,10 @@ handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(me
 logger.addHandler(handler)
 
 bot = commands.Bot(
-	command_prefix=Roxbot.command_prefix,
-	description=Roxbot.__description__,
-	owner_id=Roxbot.owner,
-	activity=discord.Game(name="v{}".format(Roxbot.__version__), type=0),
+	command_prefix=roxbot.command_prefix,
+	description=roxbot.__description__,
+	owner_id=roxbot.owner,
+	activity=discord.Game(name="v{}".format(roxbot.__version__), type=0),
 	case_insensitive=True
 )
 
@@ -29,9 +29,9 @@ bot = commands.Bot(
 @bot.event
 async def on_ready():
 	# Load Roxbots inbuilt cogs and settings
-	bot.load_extension("Roxbot.settings.settings")
-	bot.load_extension("Roxbot.err_handle")
-	bot.load_extension("Roxbot.logging")
+	bot.load_extension("roxbot.settings.settings")
+	bot.load_extension("roxbot.err_handle")
+	bot.load_extension("roxbot.logging")
 	bot.settings = gs.get_all(bot.guilds)
 
 	print("Discord.py version: " + discord.__version__)
@@ -39,7 +39,7 @@ async def on_ready():
 
 	# Load Extension Cogs
 	print("Cogs Loaded:")
-	for cog in Roxbot.cogs:
+	for cog in roxbot.cogs:
 		bot.load_extension(cog)
 		print(cog.split(".")[2])
 	print("")
@@ -70,7 +70,7 @@ async def on_message(message):
 	:param message:
 	:return:
 	"""
-	if Roxbot.blacklisted(message.author):
+	if roxbot.blacklisted(message.author):
 		return
 	return await bot.process_commands(message)
 
@@ -80,14 +80,14 @@ async def about(ctx):
 	"""
 	Outputs info about RoxBot, showing uptime, how to report issues, what settings where set in prefs.ini and credits.
 	"""
-	owner = bot.get_user(Roxbot.owner)
-	em = discord.Embed(title="About Roxbot", colour=Roxbot.EmbedColours.pink, description=Roxbot.__description__)
+	owner = bot.get_user(roxbot.owner)
+	em = discord.Embed(title="About roxbot", colour=roxbot.EmbedColours.pink, description=roxbot.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
-	em.add_field(name="Command Prefix", value=Roxbot.command_prefix)
+	em.add_field(name="Command Prefix", value=roxbot.command_prefix)
 	em.add_field(name="Owner", value=str(owner))
-	em.add_field(name="Owner ID", value=Roxbot.owner)
-	em.add_field(name="Bot Version", value=Roxbot.__version__)
-	em.add_field(name="Author", value=Roxbot.__author__)
+	em.add_field(name="Owner ID", value=roxbot.owner)
+	em.add_field(name="Bot Version", value=roxbot.__version__)
+	em.add_field(name="Author", value=roxbot.__author__)
 	em.add_field(name="Discord.py version", value=discord.__version__)
 	em.set_footer(text="RoxBot is licensed under the MIT License")
 
@@ -100,14 +100,14 @@ async def about(ctx):
 
 if __name__ == "__main__":
 	# Pre-Boot checks
-	if not os.path.isfile("Roxbot/settings/preferences.ini"):
+	if not os.path.isfile("roxbot/settings/preferences.ini"):
 		print(
 			"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
 		exit(0)
 
-	if not os.path.isfile("Roxbot/settings/servers.json"):
-		with open("Roxbot/settings/servers.json", "w") as fp:
+	if not os.path.isfile("roxbot/settings/servers.json"):
+		with open("roxbot/settings/servers.json", "w") as fp:
 			fp.write("{}")
 
 	start_time = time.time()
-	bot.run(Roxbot.token)
+	bot.run(roxbot.token)

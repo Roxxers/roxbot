@@ -8,14 +8,14 @@ from random import shuffle
 from collections import OrderedDict
 from discord.ext import commands
 
-from Roxbot import http, checks, EmbedColours
+from roxbot import http, checks, EmbedColours
 
 
 class Trivia:
 	"""
 	Trivia is based off the lovely https://opentdb.com made by PixelTail Games.
 
-	This cog requires the bot account to be in the Roxbot Emoji Server to work.
+	This cog requires the bot account to be in the roxbot Emoji Server to work.
 	"""
 	def __init__(self, bot_client):
 		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
@@ -213,10 +213,10 @@ class Trivia:
 
 	@commands.group(aliases=["tr"], case_insensitive=True)
 	async def trivia(self, ctx):
-		"""Command group for the Roxbot Trivia game."""
+		"""Command group for the roxbot Trivia game."""
 		if ctx.invoked_subcommand == self.start and ctx.channel.id not in self.games:
 			embed = discord.Embed(colour=EmbedColours.pink)
-			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+			embed.set_footer(text="roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 			await ctx.send(embed=embed)
 		elif ctx.invoked_subcommand == None:
@@ -226,13 +226,13 @@ class Trivia:
 	async def about(self, ctx):
 		"""He;p using the trivia game."""
 		embed = discord.Embed(
-			title="About Roxbot Trivia",
-			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
+			title="About roxbot Trivia",
+			description="roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
 			colour=EmbedColours.pink)
-		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
+		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
 		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by adding either short (5 questions) or long (15 questions) at the end of the start command. `{}trivia start short`. The default is 10 and this is the medium option.".format(self.bot.command_prefix))
 		embed.add_field(name="Can I play with friends?", value="Yes! Trivia is best with friends. How else would friendships come to their untimely demise? You can only join a game during the 20 second waiting period after a game is started. Just type `{0}trivia join` and you're in! You can leave a game at anytime (even if its just you) by doing `{0}trivia leave`. If no players are in a game, the game will end and no one will win ;-;".format(self.bot.command_prefix))
-		embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+		embed.set_footer(text="roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 		embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 		return await ctx.send(embed=embed)
 
@@ -268,7 +268,7 @@ class Trivia:
 		self.games[channel.id] = game
 
 		# Waiting for players
-		await ctx.send(embed=discord.Embed(description="Starting Roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour))
+		await ctx.send(embed=discord.Embed(description="Starting roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour))
 		await asyncio.sleep(20)
 
 		# Get questions

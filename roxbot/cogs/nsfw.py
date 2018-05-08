@@ -1,8 +1,8 @@
 import random
 from discord.ext.commands import bot
 
-import Roxbot as roxbot
-from Roxbot import guild_settings as gs
+import roxbot
+from roxbot import guild_settings as gs
 
 
 def tag_blacklist(guild):
