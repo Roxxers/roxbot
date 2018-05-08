@@ -5,10 +5,10 @@ import configparser
 settings = configparser.ConfigParser()
 settings.read("roxbot/settings/preferences.ini")
 
-command_prefix = settings["roxbot"]["Command_Prefix"]
-token = settings["roxbot"]["Token"]
-owner = int(settings["roxbot"]["OwnerID"])
-tat_token = settings["roxbot"]["Tatsumaki_Token"]
+command_prefix = settings["Roxbot"]["Command_Prefix"]
+token = settings["Roxbot"]["Token"]
+owner = int(settings["Roxbot"]["OwnerID"])
+tat_token = settings["Roxbot"]["Tatsumaki_Token"]
 
 
 class EmbedColours(Enum):
