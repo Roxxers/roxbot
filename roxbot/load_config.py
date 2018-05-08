@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import IntEnum
 import configparser
 
 
@@ -11,7 +11,7 @@ owner = int(settings["Roxbot"]["OwnerID"])
 tat_token = settings["Roxbot"]["Tatsumaki_Token"]
 
 
-class EmbedColours(Enum):
+class EmbedColours(IntEnum):
 	pink = 0xDEADBF
 	yellow = 0xFDDF86
 	blue = 0x6F90F5
