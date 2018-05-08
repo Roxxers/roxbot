@@ -87,7 +87,7 @@ class Settings:
 			with open("roxbot/blacklist.txt", "w") as fp:
 				for user in mentions:
 					for line in lines:
-						if user.id + "\n" != line:
+						if str(user.id) + "\n" != line:
 							fp.write(line)
 						else:
 							fp.write("")
