@@ -15,17 +15,17 @@ class Trivia:
 	"""
 	Trivia is based off the lovely https://opentdb.com made by PixelTail Games.
 
-	This cog requires the bot account to be in the roxbot Emoji Server to work.
+	This cog works better if the bot account is in the RoxBot Emoji Server. If it cannot find the emotes it needs, it will default to unicode emoji.
 	"""
 	def __init__(self, bot_client):
 		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
 		self.bot = bot_client
-		a_emoji = self.bot.get_emoji(419572828854026252)
-		b_emoji = self.bot.get_emoji(419572828925329429)
-		c_emoji = self.bot.get_emoji(419572829231775755)
-		d_emoji = self.bot.get_emoji(419572828954820620)
-		self.correct_emoji = self.bot.get_emoji(421526796392202240)
-		self.incorrect_emoji = self.bot.get_emoji(421526796379488256)
+		a_emoji = self.bot.get_emoji(419572828854026252) or "🇦"
+		b_emoji = self.bot.get_emoji(419572828925329429)  or "🇧"
+		c_emoji = self.bot.get_emoji(419572829231775755) or "🇨"
+		d_emoji = self.bot.get_emoji(419572828954820620) or "🇩"
+		self.correct_emoji = self.bot.get_emoji(421526796392202240) or "✅"
+		self.incorrect_emoji = self.bot.get_emoji(421526796379488256) or "❌"
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
 		self.games = {}
 		self.error_colour = EmbedColours.dark_red
@@ -33,17 +33,53 @@ class Trivia:
 
 	# Game Functions
 
+	def setup_variables(self, player, channel, args):
+		amount = "medium"
+		mobile_comp = False
+		solo = False
+		for arg in args:
+			if "length=" in arg:
+				amount = arg.split("=")[-1]
+			elif "mobile" ==arg:
+				mobile_comp = True
+			elif "solo" == arg:
+				solo = True
+
+		# Length of game
+		length = {"short": 5, "medium": 10, "long": 15}
+		if amount not in length:
+			amount = "medium"
+
+		# Game Dictionaries
+		game = {
+			"players":  {player.id: 0},
+			"active": 0,
+			"length": length[amount],
+			"current_question": None,
+			"players_answered": [],
+			"correct_users": {},
+			"correct_answer": ""
+		}
+		self.games[channel.id] = game
+
+		kwargs = {"mobile_comp": mobile_comp, "solo": solo}
+
+		return kwargs
+
 	async def get_questions(self, amount=10):
 		return await http.api_request("https://opentdb.com/api.php?amount={}".format(amount))
 
-	def parse_question(self, question, counter):
-		embed = discord.Embed(
-			title=unescape(question["question"]),
-			colour=discord.Colour(self.trivia_colour),
-			description="")
+	def parse_question(self, question, counter, mobile_comp):
+		if mobile_comp:
+			embed = "Question {}) **{}**\n\nDifficulty: {} | Category: {} | Time Left: ".format(counter, unescape(question["question"]), question["category"], question["difficulty"].title())
+		else:
+			embed = discord.Embed(
+				title=unescape(question["question"]),
+				colour=discord.Colour(self.trivia_colour),
+				description="")
 
-		embed.set_author(name="Question {}".format(counter))
-		embed.set_footer(text="Difficulty: {} | Category: {} | Time Left: ".format(question["category"], question["difficulty"].title()))
+			embed.set_author(name="Question {}".format(counter))
+			embed.set_footer(text="Difficulty: {} | Category: {} | Time Left: ".format(question["category"], question["difficulty"].title()))
 
 		if question["type"] == "boolean":
 			# List of possible answers
@@ -53,14 +89,14 @@ class Trivia:
 		else:
 			# Get possible answers and shuffle them in a list
 			incorrect = question["incorrect_answers"]
-			correct = unescape(question["correct_answer"])
-			choices = [incorrect[0], incorrect[1], incorrect[2], correct]
-			for answer in choices:
-				choices[choices.index(answer)] = unescape(answer)
+			correct = question["correct_answer"]
+			choices = [correct, *incorrect]
+			for x in range(len(choices)):
+				choices[x] = unescape(choices[x])
 			shuffle(choices)
 
 		# Then get the index of the correct answer
-		correct = choices.index(correct)
+		correct = choices.index(unescape(correct))
 		# Create output
 		answers = ""
 		for x in range(len(choices)):
@@ -113,21 +149,33 @@ class Trivia:
 		for x in range(amount):
 			await message.add_reaction(self.emojis[x])
 
-	async def game(self, ctx, channel, questions):
+	async def game(self, ctx, channel, questions, *, mobile_comp=False, solo=False):
 		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
 		question_count = 1
 		for question in questions:
 			# Parse question dictionary into something usable
-			output, answers, correct = self.parse_question(question, question_count)
+			output, answers, correct = self.parse_question(question, question_count, mobile_comp)
 			self.games[channel.id]["correct_answer"] = correct
 
 			# Send a message, add the emoji reactions, then edit in the question to avoid issues with answering before reactions are done.
-			message = await ctx.send(embed=output)
+			if mobile_comp:
+				orig = {"content": output}
+				sections = output.split("\n")
+				sections[1] = answers
+				footer = sections[-1]
+				sections[-1] = sections[-1] + "20"
+				output = "\n".join(sections)
+				edit = {"content": output}
+			else:
+				orig = {"embed": output}
+				output.description = answers
+				footer = str(output.footer.text)
+				output.set_footer(text=output.footer.text+str(20))
+				edit = {"embed": output}
+
+			message = await ctx.send(**orig)
 			await self.add_question_reactions(message, question)
-			output.description = answers
-			footer = str(output.footer.text)
-			output.set_footer(text=output.footer.text+str(20))
-			await message.edit(embed=output)
+			await message.edit(**edit)
 			time_asked = datetime.datetime.now()
 
 			# Set up variables for checking the question and if it's being answered
@@ -147,13 +195,26 @@ class Trivia:
 				if not players_yet_to_answer:
 					break
 				else:
-					output.set_footer(text=footer+str(20 - (x + 1)))
-					await message.edit(embed=output)
+					if mobile_comp:
+						sections = output.split("\n")
+						sections[-1] = footer + str(20 - (x + 1))
+						output = "\n".join(sections)
+						edit = {"content": output}
+					else:
+						output.set_footer(text=footer+str(20 - (x + 1)))
+						edit = {"embed": output}
+					await message.edit(**edit)
 					await asyncio.sleep(1)
 
-			footer = output.footer.text.split("|")
-			output.set_footer(text="{}|{}| Time Left: Answered".format(footer[0], footer[1]))
-			await message.edit(embed=output)
+			if mobile_comp:
+				sections = output.split("\n")
+				sections[-1] = footer + "Answered"
+				output = "\n".join(sections)
+				edit = {"content": output}
+			else:
+				output.set_footer(text="{} Time Left: Answered".format(footer))
+				edit = {"embed": output}
+			await message.edit(**edit)
 
 			# Clean up when answers have been submitted
 			self.games[channel.id]["current_question"] = None
@@ -213,10 +274,10 @@ class Trivia:
 
 	@commands.group(aliases=["tr"], case_insensitive=True)
 	async def trivia(self, ctx):
-		"""Command group for the roxbot Trivia game."""
+		"""Command group for the Roxbot Trivia game."""
 		if ctx.invoked_subcommand == self.start and ctx.channel.id not in self.games:
 			embed = discord.Embed(colour=EmbedColours.pink)
-			embed.set_footer(text="roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 			await ctx.send(embed=embed)
 		elif ctx.invoked_subcommand == None:
@@ -226,19 +287,22 @@ class Trivia:
 	async def about(self, ctx):
 		"""He;p using the trivia game."""
 		embed = discord.Embed(
-			title="About roxbot Trivia",
-			description="roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
+			title="About Roxbot Trivia",
+			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
 			colour=EmbedColours.pink)
-		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
-		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by adding either short (5 questions) or long (15 questions) at the end of the start command. `{}trivia start short`. The default is 10 and this is the medium option.".format(self.bot.command_prefix))
+		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
+		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by adding either short (5 questions) or long (15 questions) at the end of the start command. `{}trivia start length=short`. The default is 10 and this is the medium option.".format(self.bot.command_prefix))
 		embed.add_field(name="Can I play with friends?", value="Yes! Trivia is best with friends. How else would friendships come to their untimely demise? You can only join a game during the 20 second waiting period after a game is started. Just type `{0}trivia join` and you're in! You can leave a game at anytime (even if its just you) by doing `{0}trivia leave`. If no players are in a game, the game will end and no one will win ;-;".format(self.bot.command_prefix))
-		embed.set_footer(text="roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+		embed.add_field(name="What if I don't want anyone to join my solo game? Waiting is boring!", value="No problem! Just put `solo` anywhere after `{}trivia start`".format(self.bot.command_prefix))
+		embed.add_field(name="I can't read the questions on mobile!", value="Sadly this is an issue with Discord on mobile. To get around this, Roxbot Trivia has a mobile compatible version. Just put `mobile` anywhere after `{}trivia start`".format(self.bot.command_prefix))
+		embed.add_field(name="Can I have a mobile compatible short solo game?", value="Yes, you can use any of the three arguments at once. Just make sure to include a space between them. Example: `{0}tr start mobile solo` or `{0}tr start length=long mobile`".format(self.bot.command_prefix))
+		embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 		embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 		return await ctx.send(embed=embed)
 
 	@trivia.command()
 	@commands.bot_has_permissions(manage_messages=True)
-	async def start(self, ctx, amount = "medium"):
+	async def start(self, ctx, *args):
 		"""Starts a trivia game and waits 20 seconds for other people to join."""
 		channel = ctx.channel
 		player = ctx.author
@@ -250,29 +314,21 @@ class Trivia:
 			return await ctx.message.delete()
 
 		# Setup variables and wait for all players to join.
-		# Length of game
-		length = {"short": 5, "medium": 10, "long": 15}
-		if amount not in length:
-			amount = "medium"
-
-		# Game Dictionaries
-		game = {
-			"players":  {player.id: 0},
-			"active": 0,
-			"length": length[amount],
-			"current_question": None,
-			"players_answered": [],
-			"correct_users": {},
-			"correct_answer": ""
-		}
-		self.games[channel.id] = game
-
-		# Waiting for players
-		await ctx.send(embed=discord.Embed(description="Starting roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour))
-		await asyncio.sleep(20)
+		kwargs = self.setup_variables(player, channel, args)
 
 		# Get questions
-		questions = await self.get_questions(length[amount])
+		questions = await self.get_questions(self.games[channel.id]["length"])
+
+		# Waiting for players
+
+		output = "Starting Roxbot Trivia!"
+		sleep = 0
+
+		if not kwargs["solo"]:
+			output += " Starting in 20 seconds..."
+			sleep = 20
+		await ctx.send(embed=discord.Embed(description=output, colour=self.trivia_colour))
+		await asyncio.sleep(sleep)
 
 		# Checks if there is any players to play the game still
 		if not self.games[channel.id]["players"]:
@@ -281,7 +337,7 @@ class Trivia:
 
 		# Starts game
 		self.games[channel.id]["active"] = 1
-		await self.game(ctx, channel, questions["results"])
+		await self.game(ctx, channel, questions["results"], **kwargs)
 
 		# Game Ends
 		# Some stuff here displaying score
@@ -295,6 +351,7 @@ class Trivia:
 
 	@trivia.error
 	async def trivia_err(self, ctx, error):
+		# TODO: Better before and after invoke systems to deal with variable cleanup
 		# This is here to make sure that if an error occurs, the game will be removed from the dict and will safely exit the game, then raise the error like normal.
 		self.games.pop(ctx.channel.id)
 		await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...", colour=self.error_colour))
