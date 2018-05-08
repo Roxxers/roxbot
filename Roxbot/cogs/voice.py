@@ -121,6 +121,7 @@ class Voice:
 			self.queue_logic[guild.id] = None
 
 	async def _queue_logic(self, ctx):
+		# TODO: This is broke it seems.
 		"""Background task designed to help the bot move on to the next video in the queue"""
 		if ctx.voice_client.source == self.now_playing[ctx.guild.id]:
 			sleep_for = 0.5
@@ -148,6 +149,7 @@ class Voice:
 		return video
 
 	def _format_duration(self, duration):
+		# TODO: Fix when duration returns nothing and the bot breaks here.
 		hours = duration // 3600
 		minutes = (duration % 3600) // 60
 		seconds = duration % 60
@@ -164,7 +166,7 @@ class Voice:
 		duration = self._format_duration(np.duration)
 		time_played = self._format_duration(np.source.timer/1000)
 
-		embed = discord.Embed(title=title, colour=0xDEADBF, url=np.webpage_url)
+		embed = discord.Embed(title=title, colour=Roxbot.EmbedColours.pink, url=np.webpage_url)
 		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
 		embed.set_image(url=np.thumbnail_url)
 		embed.set_footer(text="Timer: {}/{}".format(time_played, duration))
@@ -266,7 +268,7 @@ class Voice:
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:
 				await asyncio.sleep(0.5)
-			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=0xDEADBF)
+			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=Roxbot.EmbedColours.pink)
 			await ctx.send(embed=embed)
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
@@ -346,6 +348,7 @@ class Voice:
 
 	@commands.command()
 	async def skip(self, ctx, option=""):
+		# TODO: Skipping isn't cleaned properly when successful
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
@@ -397,7 +400,7 @@ class Voice:
 			index += 1
 		if output == "":
 			output = "Nothing is up next. Maybe you should add something!"
-		embed = discord.Embed(title="Queue", description=output, colour=0xDEADBF)
+		embed = discord.Embed(title="Queue", description=output, colour=Roxbot.EmbedColours.pink)
 		return await ctx.send(embed=embed)
 
 	@Roxbot.checks.is_admin_or_mod()

@@ -8,8 +8,7 @@ from random import shuffle
 from collections import OrderedDict
 from discord.ext import commands
 
-from Roxbot import http
-from Roxbot import checks
+from Roxbot import http, checks, EmbedColours
 
 
 class Trivia:
@@ -29,8 +28,8 @@ class Trivia:
 		self.incorrect_emoji = self.bot.get_emoji(421526796379488256)
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
 		self.games = {}
-		self.error_colour = 0x992d22
-		self.trivia_colour = 0x6f90f5
+		self.error_colour = EmbedColours.dark_red
+		self.trivia_colour = EmbedColours.blue
 
 	# Game Functions
 
@@ -216,7 +215,7 @@ class Trivia:
 	async def trivia(self, ctx):
 		"""Command group for the Roxbot Trivia game."""
 		if ctx.invoked_subcommand == self.start and ctx.channel.id not in self.games:
-			embed = discord.Embed(colour=0xDEADBF)
+			embed = discord.Embed(colour=EmbedColours.pink)
 			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 			await ctx.send(embed=embed)
@@ -229,7 +228,7 @@ class Trivia:
 		embed = discord.Embed(
 			title="About Roxbot Trivia",
 			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
-			colour=0xDEADBF)
+			colour=EmbedColours.pink)
 		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
 		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by adding either short (5 questions) or long (15 questions) at the end of the start command. `{}trivia start short`. The default is 10 and this is the medium option.".format(self.bot.command_prefix))
 		embed.add_field(name="Can I play with friends?", value="Yes! Trivia is best with friends. How else would friendships come to their untimely demise? You can only join a game during the 20 second waiting period after a game is started. Just type `{0}trivia join` and you're in! You can leave a game at anytime (even if its just you) by doing `{0}trivia leave`. If no players are in a game, the game will end and no one will win ;-;".format(self.bot.command_prefix))

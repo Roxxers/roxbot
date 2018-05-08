@@ -1,11 +1,11 @@
 import discord
-from Roxbot import guild_settings, embedcolour
+from Roxbot import guild_settings, EmbedColours
 
 
 async def log(guild, channel, command_name, **kwargs):
 	logging = guild_settings.get(guild).logging
 	if logging["enabled"]:
-		embed = discord.Embed(title="{} command logging".format(command_name), colour=embedcolour)
+		embed = discord.Embed(title="{} command logging".format(command_name), colour=EmbedColours.pink)
 		for key, value in kwargs.items():
 			embed.add_field(name=key, value=value)
 		return await channel.send(embed=embed)
@@ -19,7 +19,7 @@ class Logging:
 		logging = guild_settings.get(member.guild).logging
 		if logging["enabled"]:
 			channel = self.bot.get_channel(logging["channel"])
-			embed = discord.Embed(title="{} joined the server".format(member), colour=embedcolour)
+			embed = discord.Embed(title="{} joined the server".format(member), colour=EmbedColours.pink)
 			embed.add_field(name="ID", value=member.id)
 			embed.add_field(name="Mention", value=member.mention)
 			embed.add_field(name="Date Account Created", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(member.created_at))
@@ -32,7 +32,7 @@ class Logging:
 		logging = guild_settings.get(member.guild).logging
 		if logging["enabled"]:
 			channel = self.bot.get_channel(logging["channel"])
-			embed = discord.Embed(description="{} left the server".format(member), colour=embedcolour)
+			embed = discord.Embed(description="{} left the server".format(member), colour=EmbedColours.pink)
 			return await channel.send(embed=embed)
 
 

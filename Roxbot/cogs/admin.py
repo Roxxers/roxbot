@@ -155,7 +155,7 @@ class Admin():
 		if user_id not in settings.warnings:
 			return await ctx.send("This user doesn't have any warning on record.")
 
-		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=0XDEADBF)
+		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=roxbot.EmbedColours.pink)
 		em.set_thumbnail(url=user.avatar_url)
 		x = 1
 		userlist = settings.warnings[user_id]

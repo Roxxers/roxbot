@@ -4,7 +4,7 @@ import aiohttp
 import asyncio
 import datetime
 
-from Roxbot import checks, load_config, guild_settings
+from Roxbot import checks, load_config, guild_settings, EmbedColours
 
 import discord
 from discord.ext.commands import bot, group, is_owner, bot_has_permissions
@@ -179,7 +179,7 @@ class Settings:
 	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers settings file."
 		config = guild_settings.get(ctx.guild)
-		em = discord.Embed(colour=0xDEADBF)
+		em = discord.Embed(colour=EmbedColours.pink)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
 		if option in config.settings:
 			settingcontent = ""

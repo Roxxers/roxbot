@@ -3,6 +3,7 @@ import discord
 import datetime
 import traceback
 from discord.ext import commands
+import Roxbot
 from Roxbot import guild_settings
 
 
@@ -15,7 +16,7 @@ class ErrHandle:
 		if self.dev:
 			traceback.print_exc()
 		else:
-			embed = discord.Embed(title="Roxbot Error", colour=0xe74c3c) # Red
+			embed = discord.Embed(title="Roxbot Error", colour=Roxbot.EmbedColours.red) # Red
 			embed.add_field(name='Event', value=event)
 			embed.description = '```py\n{}\n```'.format(traceback.format_exc())
 			embed.timestamp = datetime.datetime.utcnow()
@@ -23,11 +24,10 @@ class ErrHandle:
 
 	async def on_command_error(self, ctx, error):
 		self.owner = self.bot.get_user(self.bot.owner_id)
-		err_colour = 0x992d22
 		if self.dev:
 			raise error
 		elif isinstance(error, commands.CommandInvokeError):
-			embed = discord.Embed(title='Command Error', colour=err_colour)
+			embed = discord.Embed(title='Command Error', colour=Roxbot.EmbedColours.dark_red)
 			embed.description = str(error)
 			embed.add_field(name='Server', value=ctx.guild)
 			embed.add_field(name='Channel', value=ctx.channel.mention)
@@ -71,7 +71,7 @@ class ErrHandle:
 				embed = discord.Embed(
 					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
 			if embed:
-				embed.colour = err_colour
+				embed.colour = Roxbot.EmbedColours.dark_red
 				await ctx.send(embed=embed, delete_after=8)
 
 

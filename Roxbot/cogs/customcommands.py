@@ -123,7 +123,7 @@ class CustomCommands():
 
 		# TODO: Sort out a way to shorten this if it goes over 2000 characters.
 		
-		em = discord.Embed(title="Here is the list of Custom Commands", color=Roxbot.embedcolour)
+		em = discord.Embed(title="Here is the list of Custom Commands", color=Roxbot.EmbedColours.pink)
 		em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
 		em.add_field(name="Commands that don't:", value=listzero, inline=False)
 		return await ctx.send(embed=em)

@@ -1,4 +1,5 @@
 import discord
+import Roxbot
 from Roxbot import guild_settings
 
 
@@ -21,7 +22,7 @@ class JoinLeave():
 		em = discord.Embed(
 			title="Welcome to {}!".format(member.guild),
 			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.guild, message),
-			colour=0xDEADBF)
+			colour=Roxbot.EmbedColours.pink)
 		em.set_thumbnail(url=member.avatar_url)
 
 		channel = self.bot.get_channel(settings.greets["welcome-channel"])
@@ -38,7 +39,7 @@ class JoinLeave():
 		else:
 			channel = self.bot.get_channel(channel)
 			return await channel.send(embed=discord.Embed(
-				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=0xDEADBF))
+				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=Roxbot.EmbedColours.pink))
 
 
 def setup(Bot):

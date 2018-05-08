@@ -81,7 +81,7 @@ async def about(ctx):
 	Outputs info about RoxBot, showing uptime, how to report issues, what settings where set in prefs.ini and credits.
 	"""
 	owner = bot.get_user(Roxbot.owner)
-	em = discord.Embed(title="About Roxbot", colour=Roxbot.embedcolour, description=Roxbot.__description__)
+	em = discord.Embed(title="About Roxbot", colour=Roxbot.EmbedColours.pink, description=Roxbot.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
 	em.add_field(name="Command Prefix", value=Roxbot.command_prefix)
 	em.add_field(name="Owner", value=str(owner))
