@@ -24,6 +24,7 @@ _Coming Soon_
 
 **Other**
 - NSFW commands now have the same system of preventing dupe outputs
+- `warn` and `purge` can now act on users that have left the guild, if their ID is used as the argument.
 
 ###### Misc. Changes
 - `avatar` now outputs a png if the image is static.

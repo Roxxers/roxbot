@@ -1,4 +1,4 @@
-from roxbot import checks, http, guild_settings
+from roxbot import checks, http, guild_settings, converters
 from roxbot.load_config import *
 from roxbot.logging import log
 

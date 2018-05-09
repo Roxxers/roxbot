@@ -81,11 +81,11 @@ class Admin():
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)
 	@bot.command()
-	async def purge(self, ctx, limit=0, *, author: discord.User = None):
+	async def purge(self, ctx, limit=0, *, author: roxbot.converters.UserConverter):
 		"""Purges messages from the text channel.
 		Limit = Limit of messages to be deleted
 		Author (optional) =  If given, roxbot will selectively only delete this user's messages."""
-		# Sadly I cant find an elegant way for the bot to be able to purge members that have left.
+		# TODO: To sort out the limit == how many to delete for the author, and not just a limit.
 		if author:
 			predicate = lambda message: message.author.id == author.id and message.id != ctx.message.id
 		else:
@@ -127,7 +127,7 @@ class Admin():
 		return await ctx.send("Reported {}.".format(str(user)))
 
 	@warn.command()
-	async def list(self, ctx, *, user: discord.User = None):
+	async def list(self, ctx, *, user: roxbot.converters.UserConverter=None):
 		"""Lists all or just the warnings for one user."""
 		settings = gs.get(ctx.guild)
 
@@ -171,7 +171,7 @@ class Admin():
 		return await ctx.send(embed=em)
 
 	@warn.command()
-	async def remove(self, ctx, user: discord.User=None, index=None):
+	async def remove(self, ctx, user: roxbot.converters.UserConverter=None, index=None):
 		"""Removes one or all of the warnings for a user."""
 		user_id = str(user.id)
 		settings = gs.get(ctx.guild)
