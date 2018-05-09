@@ -16,7 +16,7 @@ class ErrHandle:
 		if self.dev:
 			traceback.print_exc()
 		else:
-			embed = discord.Embed(title="roxbot Error", colour=roxbot.EmbedColours.red) # Red
+			embed = discord.Embed(title="Roxbot Error", colour=roxbot.EmbedColours.red) # Red
 			embed.add_field(name='Event', value=event)
 			embed.description = '```py\n{}\n```'.format(traceback.format_exc())
 			embed.timestamp = datetime.datetime.utcnow()
