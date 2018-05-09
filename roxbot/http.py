@@ -43,9 +43,9 @@ async def upload_file(url, file):
 	:return:
 	"""
 	async with aiohttp.ClientSession() as session:
-		with open(file, "rb") as f:
-			files = {file: f.read()}
-			return await session.post(url, data=files)
+			payload = {"files": open(file, "rb")}
+			resp = await session.post(url, headers={'User-agent': 'RoxBot Discord Bot', "content_type": "multipart/form-data"}, data=payload)
+			return await resp.json()
 
 
 async def get_page(url):
