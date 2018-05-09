@@ -1,5 +1,7 @@
 import re
 import random
+import datetime
+
 import discord
 from discord.ext.commands import bot
 
@@ -259,6 +261,47 @@ class Fun:
 		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=roxbot.EmbedColours.frog_green)
 		embed.set_author(name="HOW TO OPERATE YOUR FROG")
 		embed.set_footer(text="https://frog.tips")
+		return await ctx.send(embed=embed)
+
+	@bot.command(aliases=["otd"])
+	async def onthisday(self, ctx):
+		"""Returns a fact that happened on this day."""
+		base_url = "http://numbersapi.com/"
+		day = datetime.datetime.today().day
+		month = datetime.datetime.today().month
+		endpoint = "{}/{}/{}/?json".format(base_url, month, day)
+
+		fact = await roxbot.http.api_request(endpoint)
+		embed = discord.Embed(
+			title="On This Day...",
+			author="Day {}".format(fact["number"]),
+			description=fact.get("text"),
+			colour=roxbot.EmbedColours.yellow
+		)
+		embed.set_footer(text=base_url)
+		return await ctx.send(embed=embed)
+
+	@bot.command(aliases=["nf"])
+	async def numberfact(self, ctx, number=-54):
+		"""Returns a fact for a positive integer given. A random number is chosen if none is given."""
+		base_url = "http://numbersapi.com/"
+		if number < 0:
+			endpoint = "/random/?json"
+		else:
+			endpoint = "{}/?json".format(number)
+		url = base_url + endpoint
+		fact = await roxbot.http.api_request(url)
+
+		if fact["found"]:
+			output = fact["text"]
+		else:
+			output = "There isn't any facts for {}... yet.".format(fact["number"])
+		embed = discord.Embed(
+			title="Fact about #{}".format(fact["number"]),
+			description=output,
+			colour=roxbot.EmbedColours.yellow
+		)
+		embed.set_footer(text=base_url)
 		return await ctx.send(embed=embed)
 
 
