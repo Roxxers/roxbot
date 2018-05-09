@@ -229,11 +229,11 @@ class Admin():
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@bot.command()
-	async def unban(self, ctx, member_id: int, *, reason=""):
+	async def unban(self, ctx, member: roxbot.converters.UserConverter, *, reason=""):
 		"""Unbans user with given ID. Allows you to give a reason."""
 		mem = None
 		for ban in await ctx.guild.bans():
-			if ban.user.id == member_id:
+			if ban.user.id == member.id:
 				mem = ban.user
 		if mem is None:
 			raise bot.CommandError("User not found in bans.")
