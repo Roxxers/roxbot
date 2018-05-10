@@ -283,7 +283,7 @@ class Fun:
 
 	@bot.command(aliases=["nf"])
 	async def numberfact(self, ctx, number=-54):
-		"""Returns a fact for a positive integer given. A random number is chosen if none is given."""
+		"""Returns a fact for the positive integer given. A random number is chosen if none is given."""
 		base_url = "http://numbersapi.com/"
 		if number < 0:
 			endpoint = "/random/?json"

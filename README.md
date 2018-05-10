@@ -24,6 +24,7 @@ _Coming Soon_
 
 **Other**
 - NSFW commands now have the same system of preventing dupe outputs
+- `onthisday` and `numberfact` commands have been added. Interacting with the numbersapi.com's api.
 - `warn` and `purge` can now act on users that have left the guild, if their ID is used as the argument.
 
 ###### Misc. Changes
