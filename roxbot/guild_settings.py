@@ -163,9 +163,7 @@ class GuildSettings(object):
 		return self.name
 
 	def __iter__(self):
-		list_settings = []
-		for setting in self.settings:
-			list_settings.append(setting)
+		list_settings = list(self.settings)
 		list_settings.sort()
 		for setting in list_settings:
 			yield setting

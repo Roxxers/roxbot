@@ -7,7 +7,7 @@ import datetime
 from roxbot import checks, load_config, guild_settings, EmbedColours
 
 import discord
-from discord.ext.commands import bot, group, is_owner, bot_has_permissions
+from discord.ext import commands
 
 
 class Settings:
@@ -34,15 +34,15 @@ class Settings:
 				guild_settings.backup(raw_settings, "{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
 			await asyncio.sleep(300)
 
-	@bot.command()
-	@is_owner()
+	@commands.command()
+	@commands.is_owner()
 	async def backup(self, ctx):
 		time = datetime.datetime.now()
 		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
 		guild_settings.backup(guild_settings._open_config(), filename)
 		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
 
-	@bot.command()
+	@commands.command()
 	@checks.is_owner_or_admin()
 	async def blacklist(self, ctx, option):
 		"""
@@ -94,8 +94,8 @@ class Settings:
 							blacklist_amount += 1
 				return await ctx.send('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
-	@bot.command(aliases=["setavatar"])
-	@is_owner()
+	@commands.command(aliases=["setavatar"])
+	@commands.is_owner()
 	async def changeavatar(self, ctx, url=None):
 		"""
 		Changes the bot's avatar. Can't be a gif.
@@ -119,9 +119,9 @@ class Settings:
 		asyncio.sleep(2)
 		return await ctx.send(":ok_hand:")
 
-	@bot.command(aliases=["nick", "nickname"])
-	@is_owner()
-	@bot_has_permissions(change_nickname=True)
+	@commands.command(aliases=["nick", "nickname"])
+	@commands.is_owner()
+	@commands.bot_has_permissions(change_nickname=True)
 	async def changenickname(self, ctx, *, nick = None):
 		"""Changes the bot's nickname in the guild.
 		Usage:
@@ -129,8 +129,8 @@ class Settings:
 		await ctx.guild.me.edit(nick=nick, reason=";nick command invoked.")
 		return await ctx.send(":thumbsup:")
 
-	@bot.command(aliases=["activity"])
-	@is_owner()
+	@commands.command(aliases=["activity"])
+	@commands.is_owner()
 	async def changeactivity(self, ctx, *, game: str):
 		"""Changes the "playing" status of the bot.
 		Usage:
@@ -142,8 +142,8 @@ class Settings:
 		await self.bot.change_presence(activity=game)
 		return await ctx.send(":ok_hand: Activity set to {}".format(str(game)))
 
-	@bot.command(aliases=["status"])
-	@is_owner()
+	@commands.command(aliases=["status"])
+	@commands.is_owner()
 	async def changestatus(self, ctx, status: str):
 		"""Changes the status of the bot.
 		Usage:
@@ -160,21 +160,21 @@ class Settings:
 		await self.bot.change_presence(status=discordStatus)
 		await ctx.send("**:ok:** Status set to {}".format(discordStatus))
 
-	@bot.command()
-	@is_owner()
+	@commands.command()
+	@commands.is_owner()
 	async def restart(self, ctx):
 		"""Restarts the bot."""
 		await self.bot.logout()
 		return os.execl(sys.executable, sys.executable, *sys.argv)
 
-	@bot.command()
-	@is_owner()
+	@commands.command()
+	@commands.is_owner()
 	async def shutdown(self, ctx):
 		"""Shuts down the bot."""
 		await self.bot.logout()
 		return exit(0)
 
-	@bot.command()
+	@commands.command()
 	@checks.is_owner_or_admin()
 	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers settings file."
@@ -198,12 +198,27 @@ class Settings:
 					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
 			return await ctx.send(embed=em)
 
-	@group(case_insensitive=True)
+	@commands.group(case_insensitive=True)
 	@checks.is_admin_or_mod()
 	async def settings(self, ctx):
-		if ctx.invoked_subcommand is None:
-			return await ctx.send('Missing Argument')
 		self.guild_settings = guild_settings.get(ctx.guild)
+		if ctx.invoked_subcommand is None:
+			await ctx.send("Test, Send 1")
+			def author_reply(m):
+				return m.author.id == ctx.author.id and ctx.channel.id == m.channel.id
+			reply = await self.bot.wait_for("message", check=author_reply)
+			x = 0
+			output = ""
+			for setting in self.guild_settings:
+				output += "{}) Edit '{}' settings\n".format(x, setting)
+				x += 1
+			output = "```python\n" + output + "```"
+			if reply.content == "1":
+				return await ctx.send(output)
+			else:
+				return await ctx.send("Invaild response, Exiting...")
+
+
 
 	@settings.command(aliases=["log"])
 	async def logging(self, ctx, selection, *, changes = None):
@@ -516,7 +531,7 @@ class Settings:
 		return self.guild_settings.update(voice, "voice")
 
 	@checks.is_admin_or_mod()
-	@bot.command()
+	@commands.command()
 	async def serverisanal(self, ctx):
 		"""Tells the bot where the server is anal or not.
 		This only changes if roxbot can do the suck and spank commands outside of the specified nsfw channels."""
