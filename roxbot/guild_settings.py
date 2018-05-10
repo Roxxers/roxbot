@@ -162,6 +162,14 @@ class GuildSettings(object):
 	def __str__(self):
 		return self.name
 
+	def __iter__(self):
+		list_settings = []
+		for setting in self.settings:
+			list_settings.append(setting)
+		list_settings.sort()
+		for setting in list_settings:
+			yield setting
+
 	def refresh(self):
 		return _open_config()[str(self.id)]
 
