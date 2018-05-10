@@ -149,12 +149,13 @@ class Admin():
 
 		user_id = str(user.id)
 
+		if not settings.warnings.get(user_id):
+			return await ctx.send("This user doesn't have any warning on record.")
+
 		if not settings.warnings[user_id]:
 			settings.warnings.pop(user_id)
 			settings.update(settings.warnings, "warnings")
-		if user_id not in settings.warnings:
-			return await ctx.send("This user doesn't have any warning on record.")
-
+		
 		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=roxbot.EmbedColours.pink)
 		em.set_thumbnail(url=user.avatar_url)
 		x = 1

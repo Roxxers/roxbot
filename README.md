@@ -39,6 +39,7 @@ _Coming Soon_
 ###### Bug Fixes
 - Doubled the amount of times subreddit commands will cycle through possible requests to fix JSON decode error.
 - Fixed error in reddit cog due to changing JSON outputs thanks to new reddit redesign.
+- Fixed error when trying to use `warn list` on a user that isn't in the list returning an unhelpful error.
 
 #### v1.6.1
 ###### Small changes
