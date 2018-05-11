@@ -6,6 +6,9 @@ from roxbot import checks, guild_settings, EmbedColours
 import discord
 from discord.ext import commands
 
+# TODO: yes the menu system fucking sucks and will be fixed in the next version I just cba right now.
+# TODO: Module the menu system
+# TODO: Display the settings your changing in the menu as yu change them.
 
 class Settings:
 	"""
@@ -125,7 +128,7 @@ class Settings:
 
 	def _make_settings_menu(self, ctx):
 		x = 0
-		output = "'Roxbot Settings:'\n—————————————————————————————\n"
+		output = "'Roxbot Settings:' #Note: Some of this options aren't finish and don't work.\n—————————————————————————————\n"
 		settings = []
 		for setting in self.guild_settings:
 			# is_anal has its own command for now but should be put into this menu when 2.0 hits.
@@ -137,7 +140,7 @@ class Settings:
 				output += "[{}] Edit '{}' settings\n".format(x, setting)
 				x += 1
 				settings.append(setting)
-		output += "[{}] Exit\n".format(x)
+		output += "[{}] Exit\n".format(0)
 		x += 1
 		settings.append("exit")
 		return "```python\n" + output + "```", x, settings
@@ -186,7 +189,6 @@ class Settings:
 			except asyncio.TimeoutError:
 				await msg.delete()
 				raise commands.CommandError("Menu timed out. Exiting...")
-
 
 	@settings.command(aliases=["log"])
 	async def logging(self, ctx, selection=None, *, changes=None, msg=None):
@@ -260,7 +262,6 @@ What channel should the Logging Channel be set to?
 			return await ctx.send("No valid option given.")
 		return self.guild_settings.update(settings.logging, "logging")
 
-
 	@settings.command(aliases=["sa"])
 	async def selfassign(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits settings for self assign cog.
@@ -274,11 +275,11 @@ What channel should the Logging Channel be set to?
 ```python
 'Roxbot Settings: Self Assign'
 —————————————————————————————
-[0] Enable Self Assign
-[1] Disable Self Assign
-[2] Add a role to the Self Assign list
-[3] Remove a role to the Self Assign list
-[4] List all roles that can be self-assigned
+[1] Enable Self Assign
+[2] Disable Self Assign
+[3] Add a role to the Self Assign list
+[4] Remove a role to the Self Assign list
+[5] List all roles that can be self-assigned
 ```
 					"""
 			if msg is None:
@@ -291,11 +292,11 @@ What channel should the Logging Channel be set to?
 
 			try:
 				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-				if response.content == "0":
+				if response.content == "1":
 					selection = "enable"
-				elif response.content == "1":
-					selection = "disable"
 				elif response.content == "2":
+					selection = "disable"
+				elif response.content == "3":
 					selection = "addrole"
 					output = """
 ```python
@@ -303,7 +304,7 @@ What channel should the Logging Channel be set to?
 —————————————————————————————
 What role do you want to make self-assignable?
 ```"""
-				elif response.content == "3":
+				elif response.content == "4":
 					selection = "removerole"
 					output = """
 ```python
@@ -311,7 +312,7 @@ What role do you want to make self-assignable?
 —————————————————————————————
 What role do you want remove from the self-assignable list?
 ```"""
-				elif response.content == "4":
+				elif response.content == "5":
 					return await ctx.invoke(self.printsettings, option="self_assign")
 				else:
 					await msg.delete()
@@ -366,7 +367,102 @@ What role do you want remove from the self-assignable list?
 			greetschannel/goodbyeschannel: Sets the channels for either option. Must be a ID or mention.
 			custommessage: specifies a custom message for the greet messages.
 		"""
-		# TODO: Menu and probably restructure
+		if selection is None:
+			def menu_check(m):
+				return ctx.author == m.author and ctx.channel == m.channel
+
+			if changes is None:
+				try:
+					output = """
+```python
+'Roxbot Settings: JoinLeave'
+—————————————————————————————
+[1] Edit Greets
+[2] Edit Goodbyes
+```					
+"""
+					if msg is None:
+						msg = await ctx.send(output)
+					else:
+						await msg.edit(content=output)
+					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+					if response.content == "1":
+						changes = "greets"
+					elif response.content == "2":
+						changes = "goodbyes"
+					else:
+						await msg.delete()
+						raise commands.BadArgument("Invalid index given for menu. Exiting...")
+				except asyncio.TimeoutError:
+					await msg.delete()
+					raise commands.CommandError("Menu timed out. Exiting...")
+
+			if changes == "greets":
+				output = """
+```python
+'Roxbot Settings: JoinLeave - Greets'
+—————————————————————————————
+[1] Enable Greets
+[2] Disable Greets
+[3] Set Greets channel
+[4] Add custom Greets message
+```
+						"""
+			else:  # The only other option is goodbyes due to how this command is structured.
+				output = """
+```python
+'Roxbot Settings: JoinLeave - Goodbyes'
+—————————————————————————————
+[1] Enable Goodbyes
+[2] Disable Goodbyes
+[3] Set Goodbyes channel
+```
+										"""
+			await msg.edit(output)
+			try:
+				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+				if response.content == "1":
+					selection = "enable"
+				elif response.content == "2":
+					selection = "disable"
+				elif response.content == "3" and changes == "greets":
+					selection = "greetschannel"
+				elif response.content == "3" and changes == "goodbyes":
+					selection = "goodbyeschannel"
+				elif response.content == "4" and changes == "greets":
+					selection = "custommessage"
+				else:
+					await msg.delete()
+					raise commands.BadArgument("Invalid index given for menu. Exiting...")
+				if response.content == "3":
+					output  = """
+```python
+'Roxbot Settings: JoinLeave - {0}'
+—————————————————————————————
+What channel do you want to set as the {0} channel?
+```
+""".format(changes.title())
+					await msg.edit(content=output)
+					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+					channel = self.get_channel(ctx, response.content)
+				elif response.content == "4":
+					output = """
+```python
+'Roxbot Settings: JoinLeave - Greets'
+—————————————————————————————
+What channel do you want to set as the custom greets message?
+```
+					"""
+					await msg.edit(content=output)
+					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+					changes = response.content
+				else:
+					await msg.delete()
+					raise commands.BadArgument("Invalid index given for menu. Exiting...")
+			except asyncio.TimeoutError:
+				await msg.delete()
+				raise commands.CommandError("Menu timed out. Exiting...")
+
 		selection = selection.lower()
 		channel = self.get_channel(ctx, changes)
 		greets = self.guild_settings.greets
@@ -447,7 +543,56 @@ What role do you want remove from the self-assignable list?
 		Example:
 			;settings permrole addadmin Admin
 		"""
-		# TODO: Menu
+		if selection is None:
+			output = """
+```python
+'Roxbot Settings: Perm Roles'
+—————————————————————————————
+[1] Add Admin Role
+[2] Remove Admin Role
+[3] Add Mod Role
+[4] Remove Mod Role
+```
+"""
+			if msg is None:
+				msg = await ctx.send(output)
+			else:
+				await msg.edit(content=output)
+
+			def menu_check(m):
+				return ctx.author == m.author and ctx.channel == m.channel
+
+			try:
+				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+				if response.content == "1":
+					selection = "addadmin"
+				elif response.content == "2":
+					selection = "removeadmin"
+				elif response.content == "3":
+					selection = "addmod"
+				elif response.content == "4":
+					selection = "removemod"
+				else:
+					await msg.delete()
+					raise commands.BadArgument("Invalid index given for menu. Exiting...")
+				if response.content in ["1", "3"]:
+					output = """
+```python
+'Roxbot Settings: Perm Roles'
+—————————————————————————————
+What role do you want to add?
+```
+				"""
+					await msg.edit(content=output)
+					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+					role = discord.utils.get(ctx.guild.roles, name=response.content)
+					if role is None:
+						raise commands.BadArgument("Role {} not found. Exiting...".format(response.content))
+					await msg.delete()
+			except asyncio.TimeoutError:
+				await msg.delete()
+				raise commands.CommandError("Menu timed out. Exiting...")
+
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
 		perm_roles = self.guild_settings.perm_roles
