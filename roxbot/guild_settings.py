@@ -1,9 +1,12 @@
 import json
+# TODO: Make the convert stuff seperate but cant do that now cause it would require how you interact with the guild settings api.
+# Cause a settings dict would be split into two more instead of just the settings.
 
 guild_template = {
 			"example": {
 				"greets": {
 					"enabled": 0,
+					"convert": {"enabled": "bool", "welcome-channel": "channel"},
 					"welcome-channel": "",
 					"member-role": "",
 					"custom-message": "",
@@ -11,26 +14,30 @@ guild_template = {
 				},
 				"goodbyes": {
 					"enabled": 0,
+					"convert": {"enabled": "bool", "goodbye-channel": "channel"},
 					"goodbye-channel": "",
 				},
 				"self_assign": {
 					"enabled": 0,
+					"convert": {"enabled": "bool", "roles": "role"},
 					"roles": []
 				},
 				"twitch": {
 					"enabled": 0,
+					"convert": {"enabled": "bool", "channel": "channel", "whitelist_enabled": "bool", "whitelist": "user"},
 					"channel": "",
-					"whitelist": {
-						"enabled": 0,
-						"list": []
+					"whitelist_enabled": 0,
+					"whitelist": []
 					}
 				},
 				"nsfw": {
 					"enabled": 0,
 					"channels": [],
+					"convert": {"enabled": "bool", "channels": "channel"},
 					"blacklist": []
 				},
 				"perm_roles": {
+					"convert": {"admin": "role", "mod": "role"},
 					"admin": [],
 					"mod": []
 				},
@@ -47,16 +54,18 @@ guild_template = {
 				"is_anal": {"y/n": 0},
 				"logging": {
 					"enabled": 0,
+					"convert": {"enabled": "bool", "channel": "channel"},
 					"channel": 0
 				},
 				"voice": {
 					"need_perms": 0,
 					"skip_voting": 0,
 					"skip_ratio": 0.6,
+					"convert": {"need_perms": "bool", "skip_voting": "bool"},
 					"max_length": 600
 				}
-			}
-		}
+}
+
 
 
 def _open_config():
