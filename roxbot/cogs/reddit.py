@@ -103,9 +103,10 @@ class Reddit():
 		# TODO: Test possible crashing here.
 		# While loop here to make sure that we check if there is any image posts in the links we have. If so, just take the first one.
 		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
-		while not url or not x > 20:
+		while not url and x <= 20:
 			choice = random.choice(links["children"])["data"]
 			url = await parse_url(choice["url"])
+			print(x)
 			if url:
 				x_old = int(x)
 				# If the url or id are in the cache,  continue the loop. If not, proceed with the post.
@@ -115,10 +116,14 @@ class Reddit():
 						break
 				if x_old != x:  # Has x been incremented
 					url = ""  # Restart search for new post
+					if x > 20:
+						break
 					continue
 
 				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]), subreddit)
 				break
+			else:
+				x += 1
 
 		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
 		if choice["over_18"] and not roxbot.checks.nsfw_predicate(ctx):
