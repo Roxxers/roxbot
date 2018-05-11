@@ -41,6 +41,7 @@ _Coming Soon_
 - added frogtips cache for quicker frogtips
 
 ###### Bug Fixes
+- All Voice Bugs have been fixed... for now. Queuing works and some more info has been added to the np output.
 - Doubled the amount of times subreddit commands will cycle through possible requests to fix JSONDecode error.
 - Fixed error in reddit cog due to changing JSON outputs thanks to new reddit redesign.
 - Fixed error when trying to use `warn list` on a user that isn't in the list returning an unhelpful error.
