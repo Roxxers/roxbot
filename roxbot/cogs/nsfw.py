@@ -46,7 +46,8 @@ class NFSW():
 		url = post.get("file_url")
 		if not url:
 			url = post_url + "{0[directory]}/{0[image]}".format(post)
-		return await ctx.send(url)
+		output = await ctx.send(url)
+		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
 	@roxbot.checks.is_nfsw_enabled()
 	@bot.command()

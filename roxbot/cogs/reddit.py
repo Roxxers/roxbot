@@ -1,7 +1,10 @@
 import random
+from asyncio import TimeoutError, sleep
 from html import unescape
 from bs4 import BeautifulSoup
-from discord.ext.commands import bot
+
+import discord
+from discord.ext import commands
 
 import roxbot
 from roxbot import guild_settings
@@ -43,6 +46,7 @@ async def imgur_get(url):
 
 # TODO: Reimplement eroshare, eroshae, and erome support.
 
+
 async def subreddit_request(subreddit):
 	options = [".json?count=1000", "/top/.json?sort=top&t=all&count=1000"]
 	choice = random.choice(options)
@@ -77,7 +81,9 @@ class Reddit():
 		for guild in self.bot.guilds:
 			self.post_cache[guild.id] = [("", "")]
 
-	@bot.command()
+	@commands.command()
+	@commands.has_permissions(add_reactions=True)
+	@commands.bot_has_permissions(add_reactions=True)
 	async def subreddit(self, ctx, subreddit):
 		"""
 		Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.
@@ -89,7 +95,7 @@ class Reddit():
 		title = ""
 		choice = {}
 
-		if not links or not links.get("after") or links["children"][0]["kind"] == "t5":  # The second part is if we are given a search page that has links in it.
+		if not links or not links.get("after") or links["children"][0]["kind"] == "t5":  # Determine if response is valid
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 
 		url = ""
@@ -110,7 +116,7 @@ class Reddit():
 					url = ""  # Restart search for new post
 					continue
 
-				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]),subreddit)
+				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]), subreddit)
 				break
 
 		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
@@ -135,12 +141,22 @@ class Reddit():
 			# Only log the command when it is this command being used. Not the inbuilt commands.
 			logging = guild_settings.get(ctx.guild).logging
 			log_channel = self.bot.get_channel(logging["channel"])
-			await roxbot.log(ctx.guild, log_channel, "subreddit", User=ctx.author, Subreddit=subreddit, Returned="<{}>".format(url), Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
+			await roxbot.log(
+				ctx.guild,
+				log_channel,
+				"subreddit",
+				User=ctx.author,
+				Subreddit=subreddit,
+				Returned="<{}>".format(url),
+				Channel=ctx.channel,
+				Channel_Mention=ctx.channel.mention
+			)
 
 		# Not using a embed here because we can't use video in rich embeds but they work in embeds now :/
-		return await ctx.send(title + text + url)
+		output = await ctx.send(title + text + url)
+		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
-	@bot.command()
+	@commands.command()
 	async def aww(self, ctx):
 		"""
 		Gives you cute pics from reddit
@@ -148,7 +164,7 @@ class Reddit():
 		subreddit = "aww"
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
-	@bot.command()
+	@commands.command()
 	async def feedme(self, ctx):
 		"""
 		Feeds you with food porn. Uses multiple subreddits.
@@ -159,7 +175,7 @@ class Reddit():
 		subreddit_choice = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
 
-	@bot.command()
+	@commands.command()
 	async def feedmevegan(self, ctx):
 		"""
 		Feeds you with vegan food porn. Uses multiple subreddits.
@@ -170,7 +186,7 @@ class Reddit():
 		subreddit_choice = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
 
-	@bot.command(aliases=["gssp"])
+	@commands.command(aliases=["gssp"])
 	async def gss(self, ctx):
 		"""
 		Gives you the best trans memes ever
@@ -178,7 +194,7 @@ class Reddit():
 		subreddit = "gaysoundsshitposts"
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
-	@bot.command(hidden=True, name="subreddit_dryrun")
+	@commands.command(hidden=True, name="subreddit_dryrun")
 	async def _subreddit_test(self, ctx, url):
 		return await ctx.send(await parse_url(url))
 
