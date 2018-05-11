@@ -182,12 +182,21 @@ class Util():
 			;emote [emote]
 		"""
 		try:
-			em = discord.Embed(title=emote.name, colour=roxbot.EmbedColours.blue)
-			em.add_field(name="ID", value=str(emote.id), inline=False)
-			em.add_field(name="Guild", value=str(emote.guild), inline=False)
-			em.add_field(name="Created At", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(emote.created_at), inline=False)
-			em.set_image(url=emote.url)
-			return await ctx.send(embed=em)
+			if isinstance(emote, str):
+				emote = emote.strip("<>").split(":")
+				if emote[0] == "a":
+					emoji_id = emote[2]
+				else:
+					emoji_id = emote[2]
+				url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
+				return await ctx.send(url)
+			else:
+				em = discord.Embed(title=emote.name, colour=roxbot.EmbedColours.blue)
+				em.add_field(name="ID", value=str(emote.id), inline=False)
+				em.add_field(name="Guild", value=str(emote.guild), inline=False)
+				em.add_field(name="Created At", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(emote.created_at), inline=False)
+				em.set_image(url=emote.url)
+				return await ctx.send(embed=em)
 		except IndexError:
 			return await ctx.send("This command only supports custom emojis at the moment. Sorry.")
 
