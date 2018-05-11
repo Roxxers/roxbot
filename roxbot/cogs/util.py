@@ -176,24 +176,21 @@ class Util():
 		return await ctx.send("File couldn't be uploaded.")
 
 	@bot.command(aliases=["emoji"])
-	async def emote(self, ctx, emote):
+	async def emote(self, ctx, emote: roxbot.converters.EmojiConverter):
 		"""
 		Uploads the emote given. Useful for downloading emotes.
 		Usage:
 			;emote [emote]
 		"""
-		emote = emote.strip("<>").split(":")
-		if emote[0] == "a":
-			imgname = "emote.gif"
-			emoji_id = emote[2]
-		else:
-			imgname = "emote.png"
-			emoji_id = emote[2]
-		url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
-
-		await roxbot.http.download_file(url, imgname)
-		await ctx.send(file=discord.File(imgname))
-		os.remove(imgname)
+		try:
+			em = discord.Embed(title=emote.name, colour=roxbot.EmbedColours.blue)
+			em.add_field(name="ID", value=str(emote.id), inline=False)
+			em.add_field(name="Guild", value=str(emote.guild), inline=False)
+			em.add_field(name="Created At", value="{:%a %Y/%m/%d %H:%M:%S} UTC".format(emote.created_at), inline=False)
+			em.set_image(url=emote.url)
+			return await ctx.send(embed=em)
+		except IndexError:
+			return await ctx.send("This command only supports custom emojis at the moment. Sorry.")
 
 	@bot.command(hidden=True)
 	async def inviteme(self, ctx):

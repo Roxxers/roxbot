@@ -26,3 +26,11 @@ class UserConverter(commands.UserConverter):
 				raise e
 
 		return result
+
+class EmojiConverter(commands.EmojiConverter):
+	"""Just like the normla EmojiConverter class but with a custom error message and planned extra feature."""
+	async def convert(self, ctx, argument):
+		try:
+			return await super().convert(ctx, argument)
+		except:
+			raise commands.BadArgument("""Emoji "{}" not found/is unicode emoji. Unicode emoji isn't currently supported.""".format(argument))

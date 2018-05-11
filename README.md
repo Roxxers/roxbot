@@ -22,10 +22,14 @@ _Coming Soon_
 - Argument passing has changed to accomdate this. To set the length of a game, you need to put `length=short` or other length options after the command. Example `;tr start mobile length=short` would start a short mobile compatible game.
 - Trivia can now default on unicode emojis in case the bot isn't in the emoji server.
 
-**Other**
+**NSFW and Reddiyt**
+- NSFW and Reddit commands now have a way to delete the output. This is shown by a delete me reaction that will be added to the output. The person who invoked the command then needs to click that reaction within the 20 second timeout to delete the output.
 - NSFW commands now have the same system of preventing dupe outputs
+
+**Misc**
 - `onthisday` and `numberfact` commands have been added. Interacting with the numbersapi.com's api.
 - `warn` and `purge` can now act on users that have left the guild, if their ID is used as the argument.
+- Added more info to the `emoji` command.
 
 ###### Misc. Changes
 - `avatar` now outputs a png if the image is static.
@@ -37,9 +41,10 @@ _Coming Soon_
 - added frogtips cache for quicker frogtips
 
 ###### Bug Fixes
-- Doubled the amount of times subreddit commands will cycle through possible requests to fix JSON decode error.
+- Doubled the amount of times subreddit commands will cycle through possible requests to fix JSONDecode error.
 - Fixed error in reddit cog due to changing JSON outputs thanks to new reddit redesign.
 - Fixed error when trying to use `warn list` on a user that isn't in the list returning an unhelpful error.
+- Fixed `emote` error when using a unicode emote by displaying a helpful error message instead of its non-support.
 
 #### v1.6.1
 ###### Small changes
