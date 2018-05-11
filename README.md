@@ -18,7 +18,7 @@ _Coming Soon_
 #### v1.7.0
 ###### New Features
 **Trivia**
-- Trivia now has mobile and solo options. Mobile changes the formating of the questions because rich embeds with Android sucks atm. Solo starts the game instantly and doesn't wait for other users to join.
+- Trivia now has mobile and solo options. Mobile changes the formatting of the questions because rich embeds with Android sucks atm. Solo starts the game instantly and doesn't wait for other users to join.
 - Argument passing has changed to accomdate this. To set the length of a game, you need to put `length=short` or other length options after the command. Example `;tr start mobile length=short` would start a short mobile compatible game.
 - Trivia can now default on unicode emojis in case the bot isn't in the emoji server.
 
