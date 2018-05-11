@@ -16,3 +16,11 @@ async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
 		return await ctx.send("{} requested output be deleted.".format(ctx.author))
 	except TimeoutError:
 		await message.remove_reaction(delete_emoji, bot.user)
+
+
+def blacklisted(user):
+	with open("roxbot/settings/blacklist.txt", "r") as fp:
+		for line in fp.readlines():
+			if str(user.id)+"\n" == line:
+				return True
+	return False

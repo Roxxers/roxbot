@@ -1,14 +1,7 @@
 from roxbot import checks, http, guild_settings, converters, utils
 from roxbot.load_config import *
 from roxbot.logging import log
-
-
-def blacklisted(user):
-	with open("roxbot/settings/blacklist.txt", "r") as fp:
-		for line in fp.readlines():
-			if str(user.id)+"\n" == line:
-				return True
-	return False
+from roxbot.utils import blacklisted
 
 
 __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
