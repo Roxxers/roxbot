@@ -22,7 +22,7 @@ _Coming Soon_
 - Argument passing has changed to accomdate this. To set the length of a game, you need to put `length=short` or other length options after the command. Example `;tr start mobile length=short` would start a short mobile compatible game.
 - Trivia can now default on unicode emojis in case the bot isn't in the emoji server.
 
-**NSFW and Reddiyt**
+**NSFW and Reddit**
 - NSFW and Reddit commands now have a way to delete the output. This is shown by a delete me reaction that will be added to the output. The person who invoked the command then needs to click that reaction within the 20 second timeout to delete the output.
 - NSFW commands now have the same system of preventing dupe outputs
 
