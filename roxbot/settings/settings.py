@@ -92,7 +92,6 @@ class Settings:
 								new_users.append(str(user))
 						setting[x] = new_users
 					else:
-						print(setting[x])
 						user = self.bot.get_user(setting[x])
 						if user is None:
 							setting[x] = str(setting[x])

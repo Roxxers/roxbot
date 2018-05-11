@@ -50,7 +50,7 @@ class ErrHandle:
 				cc = guild_settings.get(ctx.guild).custom_commands
 				if ctx.invoked_with in cc["1"]:
 					embed = None
-				elif ctx.message.content <= 2:
+				elif len(ctx.message.content) <= 2:
 					embed = None
 				elif any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]):
 					# Should avoid punctuation emoticons. Checks all of the command for punctuation in the string.
