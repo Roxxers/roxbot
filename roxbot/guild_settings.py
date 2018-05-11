@@ -28,7 +28,6 @@ guild_template = {
 					"channel": "",
 					"whitelist_enabled": 0,
 					"whitelist": []
-					}
 				},
 				"nsfw": {
 					"enabled": 0,
@@ -64,6 +63,7 @@ guild_template = {
 					"convert": {"need_perms": "bool", "skip_voting": "bool"},
 					"max_length": 600
 				}
+			}
 }
 
 

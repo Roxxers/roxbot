@@ -51,6 +51,7 @@ class Settings:
 			;blacklist [add|+ OR remove|-] @user#0000
 		OWNER OR ADMIN ONLY
 		"""
+		# TODO: Make this better instead of relying on mentions
 		blacklist_amount = 0
 		mentions = ctx.message.mentions
 
@@ -174,60 +175,210 @@ class Settings:
 		await self.bot.logout()
 		return exit(0)
 
+	def parse_setting(self, ctx, setting):
+		settingcontent = ""
+		convert = setting.get("convert", None)
+		if convert is not None:
+			for x in convert.keys():
+				if convert[x] == "bool":
+					if setting[x] == 0:
+						setting[x] = "False"
+					else:
+						setting[x] = "True"
+				elif convert[x] == "channel":
+					if isinstance(setting[x], list):
+						new_channels = []
+						for channel in setting[x]:
+							try:
+								new_channels.append(self.bot.get_channel(channel).mention)
+							except AttributeError:
+								new_channels.append(channel)
+						setting[x] = new_channels
+					else:
+						try:
+							setting[x] = self.bot.get_channel(setting[x]).mention
+						except AttributeError:
+							pass
+				elif convert[x] == "role":
+					if isinstance(setting[x], list):
+						new_roles = []
+						for role_id in setting[x]:
+							try:
+								new_roles.append(discord.utils.get(ctx.guild.roles, id=role_id).name)
+							except AttributeError:
+								new_roles.append(role_id)
+						setting[x] = new_roles
+					else:
+						try:
+							setting[x] = discord.utils.get(ctx.guild.roles, id=setting[x]).name
+						except AttributeError:
+							pass
+				elif convert[x] == "user":
+					if isinstance(setting[x], list):
+						new_users = []
+						for user_id in setting[x]:
+
+							user = self.bot.get_user(user_id)
+							if user is None:
+								new_users.append(str(user_id))
+							else:
+								new_users.append(str(user))
+						setting[x] = new_users
+					else:
+						print(setting[x])
+						user = self.bot.get_user(setting[x])
+						if user is None:
+							setting[x] = str(setting[x])
+						else:
+							setting[x] = str(user)
+
+		for x in setting.items():
+			if x[0] != "convert":
+				settingcontent += str(x).strip("()") + "\n"
+		return settingcontent
+
 	@commands.command()
-	@checks.is_owner_or_admin()
+	@checks.is_admin_or_mod()
 	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers settings file."
+		# TODO: Use paginator to make the output here not break all the time.
 		config = guild_settings.get(ctx.guild)
+		settings = dict(config.settings)  # Make a copy of settings so we don't change the actual settings.
 		em = discord.Embed(colour=EmbedColours.pink)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
-		if option in config.settings:
-			settingcontent = ""
-			for x in config.settings[option].items():
-				settingcontent += str(x).strip("()") + "\n"
+		if option in settings:
+			settingcontent = self.parse_setting(ctx, settings[option])
 			em.add_field(name=option, value=settingcontent, inline=False)
 			return await ctx.send(embed=em)
 		else:
-			for settings in config.settings:
-				if settings != "custom_commands" and settings != "warnings":
-					settingcontent = ""
-					for x in config.settings[settings].items():
-						settingcontent += str(x).strip("()") + "\n"
-					em.add_field(name=settings, value=settingcontent, inline=False)
-				elif settings == "custom_commands":
+			for setting in settings:
+				if setting != "custom_commands" and setting != "warnings":
+					settingcontent = self.parse_setting(ctx, settings[setting])
+					em.add_field(name=setting, value=settingcontent, inline=False)
+				elif setting == "custom_commands":
 					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
 			return await ctx.send(embed=em)
+
+	def _make_settings_menu(self, ctx):
+		x = 0
+		output = "'Roxbot Settings:'\n—————————————————————————————\n"
+		settings = []
+		for setting in self.guild_settings:
+			# is_anal has its own command for now but should be put into this menu when 2.0 hits.
+			if setting in ["warnings", "custom_commands", "is_anal"]:
+				pass
+			elif setting == "gss" and ctx.guild.id != 393764974444675073:
+				pass
+			else:
+				output += "[{}] Edit '{}' settings\n".format(x, setting)
+				x += 1
+				settings.append(setting)
+		output += "[{}] Exit\n".format(x)
+		x += 1
+		settings.append("exit")
+		return "```python\n" + output + "```", x, settings
 
 	@commands.group(case_insensitive=True)
 	@checks.is_admin_or_mod()
 	async def settings(self, ctx):
 		self.guild_settings = guild_settings.get(ctx.guild)
 		if ctx.invoked_subcommand is None:
-			await ctx.send("Test, Send 1")
+			output, count, settings = self._make_settings_menu(ctx)
+			msg = await ctx.send(output)
 			def author_reply(m):
 				return m.author.id == ctx.author.id and ctx.channel.id == m.channel.id
-			reply = await self.bot.wait_for("message", check=author_reply)
-			x = 0
-			output = ""
-			for setting in self.guild_settings:
-				output += "{}) Edit '{}' settings\n".format(x, setting)
-				x += 1
-			output = "```python\n" + output + "```"
-			if reply.content == "1":
-				return await ctx.send(output)
-			else:
-				return await ctx.send("Invaild response, Exiting...")
-
+			try:
+				reply = await self.bot.wait_for("message", check=author_reply, timeout=40)
+				if 0 > int(reply.content) > count:
+					return await ctx.send("Option out of range. Exiting...")
+				else:
+					option = int(reply.content)
+					if settings[option] == "logging":
+						return await ctx.invoke(self.logging, msg=msg)
+					elif settings[option] == "gss":
+						return await ctx.invoke(self.gss, msg=msg)
+					elif settings[option] == "self_assign":
+						return await ctx.invoke(self.selfassign, msg=msg)
+					elif settings[option] == "is_anal":
+						return await ctx.invoke(self.serverisanal, msg=msg)
+					elif settings[option] == "twitch":
+						return await ctx.invoke(self.twitch, msg=msg)
+					elif settings[option] == "nsfw":
+						return await ctx.invoke(self.nsfw, msg=msg)
+					elif settings[option] == "perm_roles":
+						return await ctx.invoke(self.permrole, msg=msg)
+					elif settings[option] == "voice":
+						return await ctx.invoke(self.voice, msg=msg)
+					elif settings[option] == "greets":
+						return await ctx.invoke(self.joinleave, changes="greets", msg=msg)
+					elif settings[option] == "goodbyes":
+						return await ctx.invoke(self.joinleave, changes="goodbyes", msg=msg)
+					else:
+						await msg.delete()
+						return await ctx.send("Exiting...")
+			except ValueError:
+				await msg.delete()
+				raise commands.BadArgument("Invalid index given for menu. Exiting...")
+			except asyncio.TimeoutError:
+				await msg.delete()
+				raise commands.CommandError("Menu timed out. Exiting...")
 
 
 	@settings.command(aliases=["log"])
-	async def logging(self, ctx, selection, *, changes = None):
+	async def logging(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits the logging settings.
 
 		Options:
 			enable/disable: Enable/disables logging.
 			channel: sets the channel.
 		"""
+		# TODO: Optimise the menu system to be dynamic at some point
+		if selection is None:
+			output = """
+```python
+'Roxbot Settings: Logging'
+—————————————————————————————
+[0] Enable Logging
+[1] Disable Logging
+[2] Set Logging Channel
+```
+			"""
+			if msg is None:
+				msg = await ctx.send(output)
+			else:
+				msg = await msg.edit(content=output)
+
+			def menu_check(m):
+				return ctx.author == m.author and ctx.channel == m.channel
+
+			try:
+				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+				if response.content == "0":
+					selection = "enable"
+				elif response.content == "1":
+					selection = "disable"
+				elif response.content == "2":
+					selection = "channel"
+					output = """
+```python
+'Roxbot Settings: Logging Channel'
+—————————————————————————————
+What channel should the Logging Channel be set to?
+```
+					"""
+					msg = await msg.edit(content=output)
+					res = await self.bot.wait_for("message", timeout=40, check=menu_check)
+					channel = self.get_channel(ctx, res.content)
+					if channel is False:
+						raise commands.BadArgument("Channel {} not found. Exiting...".format(res.content))
+					await msg.delete()
+				else:
+					await msg.delete()
+					raise commands.BadArgument("Invalid index given for menu. Exiting...")
+			except asyncio.TimeoutError:
+				await msg.delete()
+				raise commands.CommandError("Menu timed out. Exiting...")
+
 		selection = selection.lower()
 		settings = guild_settings.get(ctx.guild)
 
@@ -247,15 +398,76 @@ class Settings:
 
 
 	@settings.command(aliases=["sa"])
-	async def selfassign(self, ctx, selection, *, changes = None):
+	async def selfassign(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits settings for self assign cog.
 
 		Options:
 			enable/disable: Enable/disables the cog.
 			addrole/removerole: adds or removes a role that can be self assigned in the server.
 		"""
-		selection = selection.lower()
-		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
+		if selection is None:
+			output = """
+```python
+'Roxbot Settings: Self Assign'
+—————————————————————————————
+[0] Enable Self Assign
+[1] Disable Self Assign
+[2] Add a role to the Self Assign list
+[3] Remove a role to the Self Assign list
+[4] List all roles that can be self-assigned
+```
+					"""
+			if msg is None:
+				msg = await ctx.send(output)
+			else:
+				msg = await msg.edit(content=output)
+
+			def menu_check(m):
+				return ctx.author == m.author and ctx.channel == m.channel
+
+			try:
+				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
+				if response.content == "0":
+					selection = "enable"
+				elif response.content == "1":
+					selection = "disable"
+				elif response.content == "2":
+					selection = "addrole"
+					output = """
+```python
+'Roxbot Settings: Self Assign - Add Role'
+—————————————————————————————
+What role do you want to make self-assignable?
+```"""
+				elif response.content == "3":
+					selection = "removerole"
+					output = """
+```python
+'Roxbot Settings: Self Assign - Remove Role'
+—————————————————————————————
+What role do you want remove from the self-assignable list?
+```"""
+				elif response.content == "4":
+					return await ctx.invoke(self.printsettings, option="self_assign")
+				else:
+					await msg.delete()
+					raise commands.BadArgument("Invalid index given for menu. Exiting...")
+
+				if selection in ["removerole", "addrole"]:
+					await msg.edit(content=output)
+					res = await self.bot.wait_for("message", timeout=40, check=menu_check)
+					role = discord.utils.get(ctx.guild.roles, name=res.content)
+					if role is None:
+						raise commands.BadArgument("Role {} not found. Exiting...".format(res.content))
+					await msg.delete()
+			except asyncio.TimeoutError:
+				await msg.delete()
+				raise commands.CommandError("Menu timed out. Exiting...")
+
+		else:
+			selection = selection.lower()
+			role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
+
 		self_assign = self.guild_settings.self_assign
 
 		if selection == "enable":
@@ -280,7 +492,7 @@ class Settings:
 		return self.guild_settings.update(self_assign, "self_assign")
 
 	@settings.command(aliases=["jl"])
-	async def joinleave(self, ctx, selection, *, changes = None):
+	async def joinleave(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits settings for joinleave cog.
 
 		Options:
@@ -290,6 +502,7 @@ class Settings:
 			greetschannel/goodbyeschannel: Sets the channels for either option. Must be a ID or mention.
 			custommessage: specifies a custom message for the greet messages.
 		"""
+		# TODO: Menu and probably restructure
 		selection = selection.lower()
 		channel = self.get_channel(ctx, changes)
 		greets = self.guild_settings.greets
@@ -333,13 +546,14 @@ class Settings:
 			return self.guild_settings.update(goodbyes, "goodbyes")
 
 	@settings.command()
-	async def twitch(self, ctx, selection, *, changes = None):
+	async def twitch(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits settings for self assign cog.
 
 		Options:
 			enable/disable: Enable/disables the cog.
 			channel: Sets the channel to shill in.
 		"""
+		# TODO: Menu also needs editing since I edited the twitch backend
 		selection = selection.lower()
 		twitch = self.guild_settings.twitch
 
@@ -360,7 +574,7 @@ class Settings:
 		return self.guild_settings.update(twitch, "twitch")
 
 	@settings.command(aliases=["perms"])
-	async def permrole(self, ctx, selection, *, changes = None):
+	async def permrole(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits settings for permission roles.
 
 		Options:
@@ -369,6 +583,7 @@ class Settings:
 		Example:
 			;settings permrole addadmin Admin
 		"""
+		# TODO: Menu
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
 		perm_roles = self.guild_settings.perm_roles
@@ -403,8 +618,9 @@ class Settings:
 		return self.guild_settings.update(perm_roles, "perm_roles")
 
 	@settings.command()
-	async def gss(self, ctx, selection, *, changes = None):
+	async def gss(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Custom Cog for the GaySoundsShitposts Discord Server."""
+		# TODO: Menu
 		selection = selection.lower()
 		gss = self.guild_settings.gss
 
@@ -424,7 +640,7 @@ class Settings:
 
 
 	@settings.command()
-	async def nsfw(self, ctx, selection, *, changes = None):
+	async def nsfw(self, ctx, selection=None, *, changes=None, msg=None):
 		"""Edits settings for the nsfw cog and other nsfw commands.
 		If nsfw is enabled and nsfw channels are added, the bot will only allow nsfw commands in the specified channels.
 
@@ -435,6 +651,7 @@ class Settings:
 			Example:
 				;settings nsfw addchannel #nsfw_stuff
 		"""
+		# TODO: Menu
 		selection = selection.lower()
 		nsfw = self.guild_settings.nsfw
 
@@ -475,7 +692,7 @@ class Settings:
 		return self.guild_settings.update(nsfw, "nsfw")
 
 	@settings.command()
-	async def voice(self, ctx, setting, change):
+	async def voice(self, ctx, setting=None, change=None, msg=None):
 		"""Edits settings for the voice cog.
 		Options:
 			enable/disable: Enable/disables specified change.
@@ -487,6 +704,7 @@ class Settings:
 		Example:
 			;settings voice enable skipvoting
 		"""
+		# TODO: Menu
 		setting = setting.lower()
 		change = change.lower()
 		voice = self.guild_settings.voice

@@ -100,6 +100,7 @@ class Reddit():
 
 		url = ""
 		x = 0
+		# TODO: Test possible crashing here.
 		# While loop here to make sure that we check if there is any image posts in the links we have. If so, just take the first one.
 		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
 		while not url or not x > 20:

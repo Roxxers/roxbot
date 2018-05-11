@@ -34,3 +34,5 @@ class EmojiConverter(commands.EmojiConverter):
 			return await super().convert(ctx, argument)
 		except:
 			raise commands.BadArgument("""Emoji "{}" not found/is unicode emoji. Unicode emoji isn't currently supported.""".format(argument))
+
+# TODO: Make functions that work like converters but aren't so they actually work in other areas too.
