@@ -7,7 +7,7 @@ guild_template = {
 				"greets": {
 					"enabled": 0,
 					"convert": {"enabled": "bool", "welcome-channel": "channel"},
-					"welcome-channel": "",
+					"welcome-channel": 0,
 					"member-role": "",
 					"custom-message": "",
 					"default-message": "Be sure to read the rules."
@@ -15,7 +15,7 @@ guild_template = {
 				"goodbyes": {
 					"enabled": 0,
 					"convert": {"enabled": "bool", "goodbye-channel": "channel"},
-					"goodbye-channel": "",
+					"goodbye-channel": 0,
 				},
 				"self_assign": {
 					"enabled": 0,
@@ -25,7 +25,7 @@ guild_template = {
 				"twitch": {
 					"enabled": 0,
 					"convert": {"enabled": "bool", "channel": "channel", "whitelist_enabled": "bool", "whitelist": "user"},
-					"channel": "",
+					"channel": 0,
 					"whitelist_enabled": 0,
 					"whitelist": []
 				},
@@ -166,6 +166,7 @@ class GuildSettings(object):
 		self.id = guild.id
 		self.name = str(guild)
 		self.settings = self.refresh()
+
 		self.get_settings()
 
 	def __str__(self):
@@ -178,7 +179,35 @@ class GuildSettings(object):
 			yield setting
 
 	def refresh(self):
-		return _open_config()[str(self.id)]
+		settings =  _open_config()[str(self.id)]
+
+		# TODO: Make this not deterministic in future.
+		settings["logging"]["channel"] = int(settings["logging"]["channel"])
+		settings["greets"]["welcome-channel"] = int(settings["greets"]["welcome-channel"])
+		settings["goodbyes"]["goodbye-channel"] = int(settings["goodbyes"]["goodbye-channel"])
+		for role in settings["self_assign"]["roles"]:
+			index = settings["self_assign"]["roles"].index(role)
+			settings["self_assign"]["roles"][index] = int(role)
+		settings["twitch"]["channel"] = int(settings["twitch"]["channel"])
+		for user in settings["twitch"]["whitelist"]:
+			index = settings["twitch"]["whitelist"].index(user)
+			settings["twitch"]["whitelist"][index] = int(user)
+		for channel in settings["nsfw"]["channels"]:
+			index = settings["nsfw"]["channels"].index(channel)
+			settings["nsfw"]["channels"][index] = int(channel)
+		for admin in settings["perm_roles"]["admin"]:
+			index = settings["perm_roles"]["admin"].index(admin)
+			settings["perm_roles"]["admin"][index] = int(admin)
+		for mod in settings["perm_roles"]["mod"]:
+			index = settings["perm_roles"]["mod"].index(mod)
+			settings["perm_roles"]["mod"][index] = int(mod)
+		for user in settings["warnings"]:
+			for warning in settings["warnings"][user]:
+				index = settings["warnings"]["user"].index(warning)
+				warning["warned_by"] = int(warning["warned_by"])
+				settings["warnings"][user][index] = warning
+		return settings
+
 
 	def get_settings(self):
 		self.logging = self.settings["logging"]
@@ -202,7 +231,32 @@ class GuildSettings(object):
 			self.settings[setting] = changed_dict
 		else:
 			self.settings = changed_dict
+		settings = self.settings.copy()
+		settings["logging"]["channel"] = str(settings["logging"]["channel"])
+		settings["greets"]["welcome-channel"] = str(settings["greets"]["welcome-channel"])
+		settings["goodbyes"]["goodbye-channel"] = str(settings["goodbyes"]["goodbye-channel"])
+		for role in settings["self_assign"]["roles"]:
+			index = settings["self_assign"]["roles"].index(role)
+			settings["self_assign"]["roles"][index] = str(role)
+		settings["twitch"]["channel"] = str(settings["twitch"]["channel"])
+		for user in settings["twitch"]["whitelist"]:
+			index = settings["twitch"]["whitelist"].index(user)
+			settings["twitch"]["whitelist"][index] = str(user)
+		for channel in settings["nsfw"]["channels"]:
+			index = settings["nsfw"]["channels"].index(channel)
+			settings["nsfw"]["channels"][index] = str(channel)
+		for admin in settings["perm_roles"]["admin"]:
+			index = settings["perm_roles"]["admin"].index(admin)
+			settings["perm_roles"]["admin"][index] = str(admin)
+		for mod in settings["perm_roles"]["mod"]:
+			index = settings["perm_roles"]["mod"].index(mod)
+			settings["perm_roles"]["mod"][index] = str(mod)
+		for user in settings["warnings"]:
+			for warning in settings["warnings"][user]:
+				index = settings["warnings"]["user"].index(warning)
+				warning["warned_by"] = str(warning["warned_by"])
+				settings["warnings"][user][index] = warning
 		json = _open_config()
-		json[str(self.id)] = self.settings
+		json[str(self.id)] = settings
 		_write_changes(json)
 		self.get_settings()
