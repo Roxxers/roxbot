@@ -203,8 +203,8 @@ class GuildSettings(object):
 			settings["perm_roles"]["mod"][index] = int(mod)
 		for user in settings["warnings"]:
 			for warning in settings["warnings"][user]:
-				index = settings["warnings"]["user"].index(warning)
-				warning["warned_by"] = int(warning["warned_by"])
+				index = settings["warnings"][user].index(warning)
+				warning["warned-by"] = int(warning["warned-by"])
 				settings["warnings"][user][index] = warning
 		return settings
 
@@ -253,8 +253,8 @@ class GuildSettings(object):
 			settings["perm_roles"]["mod"][index] = str(mod)
 		for user in settings["warnings"]:
 			for warning in settings["warnings"][user]:
-				index = settings["warnings"]["user"].index(warning)
-				warning["warned_by"] = str(warning["warned_by"])
+				index = settings["warnings"][user].index(warning)
+				warning["warned-by"] = str(warning["warned-by"])
 				settings["warnings"][user][index] = warning
 		json = _open_config()
 		json[str(self.id)] = settings
