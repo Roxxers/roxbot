@@ -42,10 +42,11 @@ class Settings:
 		guild_settings.backup(guild_settings._open_config(), filename)
 		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
 
-	def parse_setting(self, ctx, setting):
+	def parse_setting(self, ctx, settings_to_copy, raw=False):
 		settingcontent = ""
+		setting = settings_to_copy.copy()
 		convert = setting.get("convert", None)
-		if convert is not None:
+		if convert is not None and not raw:
 			for x in convert.keys():
 				if convert[x] == "bool":
 					if setting[x] == 0:
@@ -97,29 +98,36 @@ class Settings:
 							setting[x] = str(setting[x])
 						else:
 							setting[x] = str(user)
-
 		for x in setting.items():
 			if x[0] != "convert":
 				settingcontent += str(x).strip("()") + "\n"
 		return settingcontent
 
-	@commands.command()
+	@commands.command(aliases=["printsettingsraw"])
 	@checks.is_admin_or_mod()
 	async def printsettings(self, ctx, option=None):
 		"OWNER OR ADMIN ONLY: Prints the servers settings file."
 		# TODO: Use paginator to make the output here not break all the time.
 		config = guild_settings.get(ctx.guild)
-		settings = dict(config.settings)  # Make a copy of settings so we don't change the actual settings.
+		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
 		em = discord.Embed(colour=EmbedColours.pink)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
 		if option in settings:
-			settingcontent = self.parse_setting(ctx, settings[option])
+			if ctx.invoked_with == "printsettingsraw":
+				raw = True
+			else:
+				raw = False
+			settingcontent = self.parse_setting(ctx, settings[option], raw=raw)
 			em.add_field(name=option, value=settingcontent, inline=False)
 			return await ctx.send(embed=em)
 		else:
 			for setting in settings:
 				if setting != "custom_commands" and setting != "warnings":
-					settingcontent = self.parse_setting(ctx, settings[setting])
+					if ctx.invoked_with == "printsettingsraw":
+						raw = True
+					else:
+						raw = False
+					settingcontent = self.parse_setting(ctx, settings[setting], raw=raw)
 					em.add_field(name=setting, value=settingcontent, inline=False)
 				elif setting == "custom_commands":
 					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)

@@ -106,7 +106,6 @@ class Reddit():
 		while not url and x <= 20:
 			choice = random.choice(links["children"])["data"]
 			url = await parse_url(choice["url"])
-			print(x)
 			if url:
 				x_old = int(x)
 				# If the url or id are in the cache,  continue the loop. If not, proceed with the post.
