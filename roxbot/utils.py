@@ -7,7 +7,7 @@ async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
 	await message.add_reaction(delete_emoji)
 
 	def check(r, u):
-		return str(r) == str(delete_emoji) and u == ctx.author and r.message == message
+		return str(r) == str(delete_emoji) and u == ctx.author and r.message.id == message.id
 
 	try:
 		await bot.wait_for("reaction_add", timeout=timeout, check=check)
