@@ -154,7 +154,8 @@ class Reddit():
 				Subreddit=subreddit,
 				Returned="<{}>".format(url),
 				Channel=ctx.channel,
-				Channel_Mention=ctx.channel.mention
+				Channel_Mention=ctx.channel.mention,
+				Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
 			)
 
 		# Not using a embed here because we can't use video in rich embeds but they work in embeds now :/

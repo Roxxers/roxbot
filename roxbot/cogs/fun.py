@@ -248,7 +248,7 @@ class Fun:
 
 		logging = roxbot.guild_settings.get(ctx.guild).logging
 		log_channel = self.bot.get_channel(logging["channel"])
-		await roxbot.log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention)
+		await roxbot.log(ctx.guild, log_channel, "aesthetics", User=ctx.author, Argument_Given=convert, Channel=ctx.channel, Channel_Mention=ctx.channel.mention, Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at))
 
 	@bot.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
