@@ -145,6 +145,8 @@ class Admin():
 					else:
 						output += "{}: {} Warning(s)\n".format(member, len(
 							settings.warnings[member]))
+			if not output:
+				return await ctx.send("No warnings on record.")
 			return await ctx.send(output)
 
 		user_id = str(user.id)
@@ -210,13 +212,15 @@ class Admin():
 	async def purge(self, ctx, dry_run=0):
 		"""Purges banned users from the warn list. Add a 1 at the end to do a dry run."""
 		settings = gs.get(ctx.guild)
+		warnings = settings.warnings.copy()
 		count = 0
 		for ban in await ctx.guild.bans():
-			for user in settings.warnings:
-				if user == ban.user.id:
-					if not dry_run:
+			for user in warnings:
+				if int(user) == ban.user.id:
+					if dry_run == 0:
 						settings.warnings.pop(user)
 					count += 1
+		settings.update(settings.warnings, "warnings")
 		return await ctx.send("Purged {} banned users from the warn list.".format(count))
 
 	@commands.has_permissions(kick_members=True)

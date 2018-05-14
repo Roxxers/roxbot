@@ -18,6 +18,8 @@ _Coming Soon_
 #### v1.7.1
 ###### New Features
 - `warn purge` added to clear warn list of banned users.
+###### Bug Fixes
+- `warn list` no longer returns error when the list is empty.
 
 #### v1.7.0
 ###### New Features
