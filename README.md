@@ -15,6 +15,10 @@ _Coming Soon_
 
 ## Changelog
 
+#### v1.7.1
+###### New Features
+- `warn purge` added to clear warn list of banned users.
+
 #### v1.7.0
 ###### New Features
 **Trivia**
