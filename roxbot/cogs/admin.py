@@ -81,7 +81,7 @@ class Admin():
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)
 	@bot.command()
-	async def purge(self, ctx, limit=0, *, author: roxbot.converters.UserConverter):
+	async def purge(self, ctx, limit=0, *, author: roxbot.converters.UserConverter=None):
 		"""Purges messages from the text channel.
 		Limit = Limit of messages to be deleted
 		Author (optional) =  If given, roxbot will selectively only delete this user's messages."""
