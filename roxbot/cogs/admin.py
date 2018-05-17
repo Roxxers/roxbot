@@ -209,7 +209,7 @@ class Admin():
 
 	@commands.bot_has_permissions(ban_members=True)
 	@warn.command()
-	async def purge(self, ctx, dry_run=0):
+	async def prune(self, ctx, dry_run=0):
 		"""Purges banned users from the warn list. Add a 1 at the end to do a dry run."""
 		settings = gs.get(ctx.guild)
 		warnings = settings.warnings.copy()
