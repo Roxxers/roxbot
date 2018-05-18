@@ -74,7 +74,7 @@ class Fun:
 					temp[1] = int(item[2])
 					if temp[1] > rollMaxDice:#if there are an unreasonable number of dice, error out. almost no-one needs to roll 9999d20
 						return await ctx.send("I'm sorry {}, I'm afraid I cant do that. (To many dice to roll, max {})".format(self.bot.user.name,rollMaxDice))
-					if temp[1] > rollMaxVerbose and rollVerbose == True:#if there is a sub expression that involves lots of rolls then turn off verbose mode
+					if temp[1] > rollMaxVerbose and rollVerbose:#if there is a sub expression that involves lots of rolls then turn off verbose mode
 						rollVerbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
 					temp[2] = int(item[3])
@@ -97,52 +97,53 @@ class Fun:
 				response += 'Roll {}: '.format(i+1)
 			else:
 				response += 'Rolled: '
-			for j in range(len(dice)):#for each dice set in the expression
+			for j, die in enumerate(dice):#for each dice set in the expression
 				if j != 0 and rollVerbose:#dont need the + before the first element
 					response += ' + '
-				if dice[j][0] == -1 and rollVerbose:#all the dice sets will return positive numbers so the sign is set entirely by the sign value (element 0)
+				if die[0] == -1 and rollVerbose:#all the dice sets will return positive numbers so the sign is set entirely by the sign value (element 0)
 					response += '-'
-				if dice[j][2] == 1:#its just a number
+				if die[2] == 1:#its just a number
 					if rollVerbose:
-						response += '{}'.format(dice[j][1])
-					total += dice[j][0] * dice[j][1]
+						response += '{}'.format(die[1])
+					total += die[0] * die[1]
 				else:#its a dice or set of dice
 					if rollVerbose:
 						response += '('
 					temp = []
-					for k in range(dice[j][1]):#for each dice in number of dice
+					for k in range(die[1]):#for each dice in number of dice
 						t = [0,'']
-						t[0] = random.randint(1,dice[j][2])#roll the dice
+						t[0] = random.randint(1,die[2])#roll the dice
 						t[1] = '{}'.format(t[0])
-						if t[0] <= dice[j][3]:#if its below or equal to the re-roll value, then re-roll it
-							t[0] = random.randint(1,dice[j][2])
+						if t[0] <= die[3]:#if its below or equal to the re-roll value, then re-roll it
+							t[0] = random.randint(1,die[2])
 							t[1] += '__{}__'.format(t[0])#underline the re-roll so its clear thats the one to pay attention to
 						temp.append(t)
 					def takeFirst(ele):
 						return ele[0]
-					if dice[j][4] > 0:#if its selecting highest
+					if die[4] > 0:#if its selecting highest
 						temp.sort(key=takeFirst, reverse=True)#sort the rolled dice. highest first
-						for k in range(len(temp)):
-							if k >= dice[j][4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
-								temp[k][1] = '~~' + temp[k][1] + '~~'
-								temp[k][0] = 0
-					if dice[j][4] < 0:#if its selecting lowest
+						for k, val in enumerate(temp):
+							if k >= die[4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
+								val[1] = '~~' + val[1] + '~~'
+								val[0] = 0
+					if die[4] < 0:#if its selecting lowest
 						temp.sort(key=takeFirst)
-						for k in range(len(temp)):#sort the rolled dice. lowest first
-							if k >= -dice[j][4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
-								temp[k][1] = '~~' + temp[k][1] + '~~'
-								temp[k][0] = 0
-					for k in range(len(temp)):##loop through all dice rolled and add them to the total. also print them if in verbose mode
+						for k, val in enumerate(temp):#sort the rolled dice. lowest first
+							if k >= -die[4]:#if the position in the sorted list is greater than the number of dice wanted, cross it out, and make it not count towards the total
+								val[1] = '~~' + val[1] + '~~'
+								val[0] = 0
+					for k, val in enumerate(temp):##loop through all dice rolled and add them to the total. also print them if in verbose mode
 						if rollVerbose:
-							response += '{},'.format(temp[k][1])
-						total+= dice[j][0] * temp[k][0]
+							response += '{},'.format(val[1])
+						total+= die[0] * val[0]
 					if rollVerbose:
 						response = response[:-1] + ')'#clip the trailing ',' and replace it with a ')'
 			if rollVerbose:
 				response += ' Totaling: {}'.format(total)
 			else:
 				response += ' Total: {}'.format(total)
-			if i < (times-1): response += '\n'
+			if i < (times-1):
+				response += '\n'
 		return await ctx.send(response)
 
 	@roxbot.checks.isnt_anal()
