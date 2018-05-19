@@ -22,7 +22,7 @@ class Fun:
 			spaces in expression are ignored
 		Example:
 			.roll 2d20h1 + 7 # Rolls two D20s takes the highest 1, then adds 7
-			.roll #will give brief overview of dice expression format
+			.help roll #will give brief overview of dice expression format
 
 		Dice expression format:
 			An expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.
@@ -33,8 +33,7 @@ class Fun:
 					add r<number> #reroll any rolls below <number>
 					add h<number> #only sum the <number> highest rolls rather than all of them
 					add l<number> #only sum the <number> lowest rolls rather than all of them
-				+<number> # Add this number to the sum.
-				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
+				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)
 		Credit: TBTerra#5677
 		"""
 		rollMaxRolls = 10
