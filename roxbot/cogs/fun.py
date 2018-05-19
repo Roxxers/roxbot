@@ -66,9 +66,13 @@ class Fun:
 			temp = [0]*5
 			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
 			if 'd' in item[1]:#if its a dice/set of dice rather than a number
+				if item[3] == '':#safety check for things like 2d + 1 (number of sides left blank)
+					return await ctx.send("cant roll a NULL sided dice")
+				temp[2] = int(item[3])
+				if temp[3] == 0:#safety check for things like 2d0 + 1 (0 sided dice)
+					return await ctx.send("cant roll a zero sided dice")
 				if item[2] == '':#if its just a dY rather than an XdY
 					temp[1] = 1
-					temp[2] = int(item[3])
 				else:#its a XdY type unknown if it has r,h,l modifyers, but they dont matter when sorting out the number and sides of dice
 					temp[1] = int(item[2])
 					if temp[1] > rollMaxDice:#if there are an unreasonable number of dice, error out. almost no-one needs to roll 9999d20
@@ -76,7 +80,6 @@ class Fun:
 					if temp[1] > rollMaxVerbose and rollVerbose:#if there is a sub expression that involves lots of rolls then turn off verbose mode
 						rollVerbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
-					temp[2] = int(item[3])
 			else:#numbers are stored as N, 1 sided dice
 				temp[1] = int(item[1])
 				temp[2] = 1
