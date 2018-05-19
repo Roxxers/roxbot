@@ -57,7 +57,7 @@ class Fun:
 			except ValueError:#probably an input syntax error. safest to just roll once.
 				times = 1
 				response += "*Warning:* was unable to resolve how many times this command was meant to run. defaulted to once.\n"
-		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])#voodoo magic regex (matches A,dB,AdB,AdBrC and AdBh/lD all at once, and splits them up to be processed)
+		m=re.findall('(-?)((?:(\d*)d(\d+))|\d+)(r\d+)?([h,l]{1}\d+)?',parts[0])#voodoo magic regex (matches A,dB,AdB,AdBrC and AdBh/lD all at once, and splits them up to be processed)
 		if m == []:#either there were no arguments, or the expression contained nothing that could be seen as a number or roll
 			return await ctx.send("Expression missing. If you are unsure of what the format should be, please use `{}help roll`".format(ctx.prefix))
 		dice = []#this is the list of all dice sets to be rolled
@@ -66,8 +66,6 @@ class Fun:
 			temp = [0]*5
 			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
 			if 'd' in item[1]:#if its a dice/set of dice rather than a number
-				if item[3] == '':#safety check for things like 2d + 1 (number of sides left blank)
-					return await ctx.send("cant roll a NULL sided dice")
 				temp[2] = int(item[3])
 				if temp[3] == 0:#safety check for things like 2d0 + 1 (0 sided dice)
 					return await ctx.send("cant roll a zero sided dice")
