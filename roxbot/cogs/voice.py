@@ -72,6 +72,7 @@ class ModifiedFFmpegPMCAudio(discord.FFmpegPCMAudio):
 		self.timer += 20
 		return super().read()
 
+
 class YTDLSource(discord.PCMVolumeTransformer):
 	def __init__(self, source, *, data, volume):
 		self.source = source
@@ -120,8 +121,22 @@ class Voice:
 			self.now_playing[guild.id] = None
 			self.queue_logic[guild.id] = None
 
+	@staticmethod
+	def _format_duration(duration):
+		"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
+		if not duration:
+			return duration
+		hours = duration // 3600
+		minutes = (duration % 3600) // 60
+		seconds = duration % 60
+		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
+		formatted = datetime.time(**format_me)
+		output = "{:%M:%S}".format(formatted)
+		if formatted.hour >= 1:
+			output = "{:%H}".format(formatted) + output
+		return output
+
 	async def _queue_logic(self, ctx):
-		# TODO: This is broke it seems.
 		"""Background task designed to help the bot move on to the next video in the queue"""
 		sleep_for = 0.5
 		try:
@@ -141,18 +156,6 @@ class Voice:
 		video["queued_by"] = ctx.author
 		self.playlist[ctx.guild.id].append(video)
 		return video
-
-	def _format_duration(self, duration):
-		# TODO: Fix when duration returns nothing and the bot breaks here.
-		hours = duration // 3600
-		minutes = (duration % 3600) // 60
-		seconds = duration % 60
-		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
-		formatted = datetime.time(**format_me)
-		output = "{:%M:%S}".format(formatted)
-		if formatted.hour >= 1:
-			output = "{:%H}".format(formatted) + output
-		return output
 
 	def _generate_np_embed(self, guild, playing_status):
 		np = self.now_playing[guild.id]
@@ -195,7 +198,6 @@ class Voice:
 	@commands.command(hidden=True, enabled=False)
 	async def play_local(self, ctx, *, query):
 		"""Plays a file from the local filesystem."""
-		# TODO: Playlist stuff maybe
 		source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
 		ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
 
@@ -342,7 +344,6 @@ class Voice:
 
 	@commands.command()
 	async def skip(self, ctx, option=""):
-		# TODO: Skipping isn't cleaned properly when successful
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
 		voice = guild_settings.get(ctx.guild).voice
 		if ctx.voice_client.is_playing():
@@ -376,7 +377,6 @@ class Voice:
 		if self.now_playing[ctx.guild.id] is None:
 			return await ctx.send("Nothing is playing.")
 		else:
-			np = ctx.voice_client.source
 			if ctx.voice_client.is_paused():
 				x = "Paused"
 			else:
