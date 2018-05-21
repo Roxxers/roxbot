@@ -67,7 +67,6 @@ guild_template = {
 }
 
 
-
 def _open_config():
 	"""
 	Opens the guild settings file
@@ -75,6 +74,7 @@ def _open_config():
 	"""
 	with open('roxbot/settings/servers.json', 'r') as config_file:
 		return json.load(config_file)
+
 
 def _write_changes(config):
 	"""
@@ -85,19 +85,23 @@ def _write_changes(config):
 	with open('roxbot/settings/servers.json', 'w') as conf_file:
 		json.dump(config, conf_file)
 
+
 def backup(config, name):
 	with open('roxbot/settings/backups/{}.json'.format(name), "w") as f:
 		json.dump(config, f)
+
 
 def remove_guild(guild):
 	settings = _open_config()
 	settings.pop(str(guild.id))
 	_write_changes(settings)
 
+
 def add_guild(guild):
 	settings = _open_config()
 	settings[str(guild.id)] = guild_template["example"]
 	_write_changes(settings)
+
 
 def error_check(servers):
 	settings = _open_config()
@@ -128,6 +132,7 @@ def error_check(servers):
 							"WARNING: The settings file for {} was missing the {} setting in the {} cog. This has been fixed with the template version. It is disabled by default.".format(
 								server.name.upper(), setting.upper(), cog_setting.upper()))
 
+
 def get_all(guilds):
 	"""
 	Returns a list of GuildSettings for all guilds the bot can see.
@@ -141,6 +146,7 @@ def get_all(guilds):
 		guild_list.append(guild)
 	return guild_list
 
+
 def get(guild):
 	"""
 	Gets a single GuildSettings Object representing the settings of that guild
@@ -149,11 +155,13 @@ def get(guild):
 	"""
 	return GuildSettings(guild)
 
+
 def get_guild(guilds, wanted_guild):
 	for guild in guilds:
 		if guild.id == wanted_guild.id:
 			return guild
 	return None
+
 
 class GuildSettings(object):
 	"""
@@ -178,36 +186,30 @@ class GuildSettings(object):
 		for setting in list_settings:
 			yield setting
 
-	def refresh(self):
-		settings =  _open_config()[str(self.id)]
-
-		# TODO: Make this not deterministic in future.
-		settings["logging"]["channel"] = int(settings["logging"]["channel"])
-		settings["greets"]["welcome-channel"] = int(settings["greets"]["welcome-channel"])
-		settings["goodbyes"]["goodbye-channel"] = int(settings["goodbyes"]["goodbye-channel"])
-		for role in settings["self_assign"]["roles"]:
-			index = settings["self_assign"]["roles"].index(role)
-			settings["self_assign"]["roles"][index] = int(role)
-		settings["twitch"]["channel"] = int(settings["twitch"]["channel"])
-		for user in settings["twitch"]["whitelist"]:
-			index = settings["twitch"]["whitelist"].index(user)
-			settings["twitch"]["whitelist"][index] = int(user)
-		for channel in settings["nsfw"]["channels"]:
-			index = settings["nsfw"]["channels"].index(channel)
-			settings["nsfw"]["channels"][index] = int(channel)
-		for admin in settings["perm_roles"]["admin"]:
-			index = settings["perm_roles"]["admin"].index(admin)
-			settings["perm_roles"]["admin"][index] = int(admin)
-		for mod in settings["perm_roles"]["mod"]:
-			index = settings["perm_roles"]["mod"].index(mod)
-			settings["perm_roles"]["mod"][index] = int(mod)
-		for user in settings["warnings"]:
-			for warning in settings["warnings"][user]:
-				index = settings["warnings"][user].index(warning)
-				warning["warned-by"] = int(warning["warned-by"])
-				settings["warnings"][user][index] = warning
+	@staticmethod
+	def _convert(settings, option="int"):
+		for key, setting in settings.items():
+			if setting.get("convert"):
+				for x in setting["convert"].keys():
+					if setting["convert"][x] != "bool":
+						if isinstance(setting[x], list):
+							for y, value in enumerate(setting[x]):
+								if option == "str":
+									setting[x][y] = str(value)
+								else:
+									setting[x][y] = int(value)
+						else:
+							if option == "str":
+								setting[x] = str(setting[x])
+							else:
+								setting[x] = int(setting[x])
+			settings[key] = setting
 		return settings
 
+	def refresh(self):
+		settings = _open_config()[str(self.id)]
+		self._convert(settings)
+		return settings
 
 	def get_settings(self):
 		self.logging = self.settings["logging"]
@@ -232,30 +234,7 @@ class GuildSettings(object):
 		else:
 			self.settings = changed_dict
 		settings = self.settings.copy()
-		settings["logging"]["channel"] = str(settings["logging"]["channel"])
-		settings["greets"]["welcome-channel"] = str(settings["greets"]["welcome-channel"])
-		settings["goodbyes"]["goodbye-channel"] = str(settings["goodbyes"]["goodbye-channel"])
-		for role in settings["self_assign"]["roles"]:
-			index = settings["self_assign"]["roles"].index(role)
-			settings["self_assign"]["roles"][index] = str(role)
-		settings["twitch"]["channel"] = str(settings["twitch"]["channel"])
-		for user in settings["twitch"]["whitelist"]:
-			index = settings["twitch"]["whitelist"].index(user)
-			settings["twitch"]["whitelist"][index] = str(user)
-		for channel in settings["nsfw"]["channels"]:
-			index = settings["nsfw"]["channels"].index(channel)
-			settings["nsfw"]["channels"][index] = str(channel)
-		for admin in settings["perm_roles"]["admin"]:
-			index = settings["perm_roles"]["admin"].index(admin)
-			settings["perm_roles"]["admin"][index] = str(admin)
-		for mod in settings["perm_roles"]["mod"]:
-			index = settings["perm_roles"]["mod"].index(mod)
-			settings["perm_roles"]["mod"][index] = str(mod)
-		for user in settings["warnings"]:
-			for warning in settings["warnings"][user]:
-				index = settings["warnings"][user].index(warning)
-				warning["warned-by"] = str(warning["warned-by"])
-				settings["warnings"][user][index] = warning
+		self._convert(settings, "str")
 		json = _open_config()
 		json[str(self.id)] = settings
 		_write_changes(json)
