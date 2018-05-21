@@ -12,7 +12,7 @@ class ErrHandle:
 		self.bot = bot_client
 		self.dev = False  # For debugging
 
-	async def on_error(self, event, *args, **kwargs):
+	async def on_error(self, event):
 		if self.dev:
 			traceback.print_exc()
 		else:
