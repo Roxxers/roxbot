@@ -1,22 +1,15 @@
 import random
-from asyncio import TimeoutError, sleep
+import roxbot
 from html import unescape
 from bs4 import BeautifulSoup
-
-import discord
-from discord.ext import commands
-
-import roxbot
 from roxbot import guild_settings
+from discord.ext import commands
 
 
 async def _imgur_removed(url):
 	page = await roxbot.http.get_page(url)
 	soup = BeautifulSoup(page, 'html.parser')
-	if "removed.png" in soup.img["src"]:
-		return True
-	else:
-		return False
+	return bool("removed.png" in soup.img["src"])
 
 
 async def imgur_get(url):
@@ -56,7 +49,7 @@ async def subreddit_request(subreddit):
 	try:
 		posts = r["data"]
 		return posts
-	except KeyError or TypeError:
+	except (KeyError, TypeError):
 		return {}
 
 
@@ -74,7 +67,7 @@ async def parse_url(url):
 		return False
 
 
-class Reddit():
+class Reddit:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.post_cache = {}
@@ -100,7 +93,6 @@ class Reddit():
 
 		url = ""
 		x = 0
-		# TODO: Test possible crashing here.
 		# While loop here to make sure that we check if there is any image posts in the links we have. If so, just take the first one.
 		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
 		while not url and x <= 20:
