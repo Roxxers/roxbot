@@ -22,7 +22,7 @@ class Fun:
 			spaces in expression are ignored
 		Example:
 			.roll 2d20h1 + 7 # Rolls two D20s takes the highest 1, then adds 7
-			.roll #will give brief overview of dice expression format
+			.help roll #will give brief overview of dice expression format
 
 		Dice expression format:
 			An expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.
@@ -33,8 +33,7 @@ class Fun:
 					add r<number> #reroll any rolls below <number>
 					add h<number> #only sum the <number> highest rolls rather than all of them
 					add l<number> #only sum the <number> lowest rolls rather than all of them
-				+<number> # Add this number to the sum.
-				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)")
+				x<number> #only use at the end. roll the rest of the expression <number> times(max 10)
 		Credit: TBTerra#5677
 		"""
 		rollMaxRolls = 10
@@ -58,7 +57,7 @@ class Fun:
 			except ValueError:#probably an input syntax error. safest to just roll once.
 				times = 1
 				response += "*Warning:* was unable to resolve how many times this command was meant to run. defaulted to once.\n"
-		m=re.findall('(-?)((?:(\d*)d(\d*))|\d+)(r\d*)?([h,l]{1}\d*)?',parts[0])#voodoo magic regex (matches A,dB,AdB,AdBrC and AdBh/lD all at once, and splits them up to be processed)
+		m=re.findall('(-?)((?:(\d*)d(\d+))|\d+)(r\d+)?([h,l]{1}\d+)?',parts[0])#voodoo magic regex (matches A,dB,AdB,AdBrC and AdBh/lD all at once, and splits them up to be processed)
 		if m == []:#either there were no arguments, or the expression contained nothing that could be seen as a number or roll
 			return await ctx.send("Expression missing. If you are unsure of what the format should be, please use `{}help roll`".format(ctx.prefix))
 		dice = []#this is the list of all dice sets to be rolled
@@ -67,9 +66,11 @@ class Fun:
 			temp = [0]*5
 			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
 			if 'd' in item[1]:#if its a dice/set of dice rather than a number
+				temp[2] = int(item[3])
+				if temp[3] == 0:#safety check for things like 2d0 + 1 (0 sided dice)
+					return await ctx.send("cant roll a zero sided dice")
 				if item[2] == '':#if its just a dY rather than an XdY
 					temp[1] = 1
-					temp[2] = int(item[3])
 				else:#its a XdY type unknown if it has r,h,l modifyers, but they dont matter when sorting out the number and sides of dice
 					temp[1] = int(item[2])
 					if temp[1] > rollMaxDice:#if there are an unreasonable number of dice, error out. almost no-one needs to roll 9999d20
@@ -77,7 +78,6 @@ class Fun:
 					if temp[1] > rollMaxVerbose and rollVerbose:#if there is a sub expression that involves lots of rolls then turn off verbose mode
 						rollVerbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
-					temp[2] = int(item[3])
 			else:#numbers are stored as N, 1 sided dice
 				temp[1] = int(item[1])
 				temp[2] = 1
