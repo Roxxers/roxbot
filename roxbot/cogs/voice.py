@@ -50,12 +50,11 @@ ytdl_format_options = {
 	'quiet': True,
 	'no_warnings': True,
 	'default_search': 'auto',
-	'source_address': '0.0.0.0'  # bind to ipv4 since ipv6 addresses cause issues sometimes
 }
 
 ffmpeg_options = {
 	'before_options': '-nostdin',
-	'options': '-vn -loglevel panic'
+	'options': '-vn -loglevel panic --force-ipv4'
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
