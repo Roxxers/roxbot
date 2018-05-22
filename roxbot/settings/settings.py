@@ -6,9 +6,110 @@ from roxbot import checks, guild_settings, EmbedColours
 import discord
 from discord.ext import commands
 
-# TODO: yes the menu system fucking sucks and will be fixed in the next version I just cba right now.
-# TODO: Module the menu system
+
 # TODO: Display the settings your changing in the menu as yu change them.
+
+class Menu():
+	def __init__(self, name, *params, **options):
+		self.name = name
+		self.params = params
+		if options is None:
+			options = {"type": "values"}
+
+		self.title = "'Roxbot Settings: {}'\n".format(self.name)
+
+		self.content = self._format_content(self.title, self.params, "```python", "```")
+
+	@staticmethod
+	def _format_content(title, params, prefix="", suffix=""):
+		separator = "—————————————————————————————"
+		choices = "\n"
+		for x, setting in enumerate(params):
+			if setting != "convert":
+				if "Enable" in setting or "Disable" in setting:
+					choices += "[{}] {}\n".format(x + 1, setting)
+				else:
+					choices +=  "[{}] Edit '{}'\n".format(x+1, setting)
+		choices += "[0] Exit\n"
+		return prefix + title + separator + choices + suffix
+
+	@staticmethod
+	def _parse_params(settings, name):
+		params = [*settings.keys()]
+		params_copy = settings.copy().keys()
+		# Enable/Disable Parse
+		for param in params_copy:
+			if settings["convert"].get(param) == "bool":
+				if param == "enabled":
+					enable_options = ["Enable '{}'".format(name), "Disable '{}'".format(name)]
+				else:
+					enable_options = ["Enable '{}'".format(param), "Disable '{}'".format(param)]
+				params.remove(param)
+				params = [*enable_options, *params]
+
+		return params
+
+	@classmethod
+	def nsfw(cls, guild):
+		name = "NSFW"
+		params = guild_settings.get(guild).nsfw.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def self_assign(cls, guild):
+		name = "Self Assign"
+		params = guild_settings.get(guild).self_assign.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def twitch(cls, guild):
+		name = "Twitch"
+		params = guild_settings.get(guild).twitch.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def perm_roles(cls, guild):
+		name = "Perm Roles"
+		params = guild_settings.get(guild).perm_roles.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def logging(cls, guild):
+		name = "Logging"
+		params = guild_settings.get(guild).logging.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def voice(cls, guild):
+		name = "Voice"
+		params = guild_settings.get(guild).voice.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def greets(cls, guild):
+		name = "Greets"
+		params = guild_settings.get(guild).greets.keys()
+		return cls(name, *params)
+
+	@classmethod
+	def goodbyes(cls, guild):
+		params = guild_settings.get(guild).goodbyes.keys()
+		return cls("Goodbyes", *params)
+
+	@classmethod
+	def join_leave(cls):
+		name = "JoinLeave"
+		params = ["goodbyes", "greets"]
+		options = {"type": "menu"}
+		return cls(name, *params, **options)
+
+	@classmethod
+	def base(cls, params):
+		name = "Base Menu"
+		params = params
+		options = {"type": "menu"}
+		return cls(name, *params, **options)
+
 
 class Settings:
 	"""
@@ -475,19 +576,19 @@ What channel do you want to set as the custom greets message?
 		greets = self.guild_settings.greets
 		goodbyes = self.guild_settings.goodbyes
 
-		if changes == "greets":
-			if selection == "enable":
+		if selection == "greets":
+			if changes == "enable":
 				greets["enabled"] = 1
 				await ctx.send("'greets' was enabled!")
-			elif selection == "disable":
+			elif changes == "disable":
 				greets["enabled"] = 0
 				await ctx.send("'greets' was disabled :cry:")
 
-		elif changes == "goodbyes":
-			if selection == "enable":
+		elif selection == "goodbyes":
+			if changes == "enable":
 				goodbyes["enabled"] = 1
 				await ctx.send("'goodbyes' was enabled!")
-			elif selection == "disable":
+			elif changes == "disable":
 				goodbyes["enabled"] = 0
 				await ctx.send("'goodbyes' was disabled :cry:")
 
@@ -667,9 +768,11 @@ What role do you want to add?
 			Example:
 				;settings nsfw addchannel #nsfw_stuff
 		"""
-		# TODO: Menu
+		menu = Menu.nsfw(ctx.guild)
+		print(menu.content)
 		selection = selection.lower()
 		nsfw = self.guild_settings.nsfw
+
 
 		if selection == "enable":
 			nsfw["enabled"] = 1
@@ -720,7 +823,6 @@ What role do you want to add?
 		Example:
 			;settings voice enable skipvoting
 		"""
-		# TODO: Menu
 		setting = setting.lower()
 		change = change.lower()
 		voice = self.guild_settings.voice
