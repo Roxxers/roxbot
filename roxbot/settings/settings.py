@@ -227,20 +227,14 @@ class Settings:
 		em = discord.Embed(colour=EmbedColours.pink)
 		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
 		if option in settings:
-			if ctx.invoked_with == "printsettingsraw":
-				raw = True
-			else:
-				raw = False
+			raw = bool(ctx.invoked_with == "printsettingsraw")
 			settingcontent = self.parse_setting(ctx, settings[option], raw=raw)
 			em.add_field(name=option, value=settingcontent, inline=False)
 			return await ctx.send(embed=em)
 		else:
 			for setting in settings:
 				if setting != "custom_commands" and setting != "warnings":
-					if ctx.invoked_with == "printsettingsraw":
-						raw = True
-					else:
-						raw = False
+					raw = bool(ctx.invoked_with == "printsettingsraw")
 					settingcontent = self.parse_setting(ctx, settings[setting], raw=raw)
 					em.add_field(name=setting, value=settingcontent, inline=False)
 				elif setting == "custom_commands":
