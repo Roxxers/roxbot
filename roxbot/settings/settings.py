@@ -9,15 +9,12 @@ from discord.ext import commands
 
 # TODO: Display the settings your changing in the menu as yu change them.
 
-class Menu():
-	def __init__(self, name, *params, **options):
+class Menu:
+	def __init__(self, name, settings, *params):
 		self.name = name
 		self.params = params
-		if options is None:
-			options = {"type": "values"}
-
+		self.formatted_params = self._parse_params(settings, self.name)
 		self.title = "'Roxbot Settings: {}'\n".format(self.name)
-
 		self.content = self._format_content(self.title, self.params, "```python", "```")
 
 	@staticmethod
@@ -26,7 +23,7 @@ class Menu():
 		choices = "\n"
 		for x, setting in enumerate(params):
 			if setting != "convert":
-				if "Enable" in setting or "Disable" in setting:
+				if setting != [*params][x]:  # Just in case params is dict_keys, we make a new list
 					choices += "[{}] {}\n".format(x + 1, setting)
 				else:
 					choices +=  "[{}] Edit '{}'\n".format(x+1, setting)
@@ -37,78 +34,94 @@ class Menu():
 	def _parse_params(settings, name):
 		params = [*settings.keys()]
 		params_copy = settings.copy().keys()
-		# Enable/Disable Parse
 		for param in params_copy:
 			if settings["convert"].get(param) == "bool":
+				# Enable/Disable Parse
 				if param == "enabled":
-					enable_options = ["Enable '{}'".format(name), "Disable '{}'".format(name)]
+					options = ["Enable '{}'".format(name), "Disable '{}'".format(name)]
 				else:
-					enable_options = ["Enable '{}'".format(param), "Disable '{}'".format(param)]
+					options = ["Enable '{}'".format(param), "Disable '{}'".format(param)]
 				params.remove(param)
-				params = [*enable_options, *params]
-
+				params = [*options, *params]
+			elif isinstance(settings.get(param), list):
+				# Add and Remove Parse
+				options = ["Add {}".format(param), "Remove {}".format(param)]
+				params.remove(param)
+				params = [*params, *options]
+			elif isinstance(settings.get(param), int) or isinstance(settings.get(param), str):
+				# Set parse
+				options = "Set {}".format(param)
+				params.remove(param)
+				params = [*params, options]
 		return params
 
 	@classmethod
 	def nsfw(cls, guild):
 		name = "NSFW"
-		params = guild_settings.get(guild).nsfw.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).nsfw
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def self_assign(cls, guild):
 		name = "Self Assign"
-		params = guild_settings.get(guild).self_assign.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).self_assign
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def twitch(cls, guild):
 		name = "Twitch"
-		params = guild_settings.get(guild).twitch.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).twitch
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def perm_roles(cls, guild):
 		name = "Perm Roles"
-		params = guild_settings.get(guild).perm_roles.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).perm_roles
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def logging(cls, guild):
 		name = "Logging"
-		params = guild_settings.get(guild).logging.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).logging
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def voice(cls, guild):
 		name = "Voice"
-		params = guild_settings.get(guild).voice.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).voice
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def greets(cls, guild):
 		name = "Greets"
-		params = guild_settings.get(guild).greets.keys()
-		return cls(name, *params)
+		settings = guild_settings.get(guild).greets
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def goodbyes(cls, guild):
-		params = guild_settings.get(guild).goodbyes.keys()
-		return cls("Goodbyes", *params)
+		name = "Goodbyes"
+		settings = guild_settings.get(guild).goodbyes
+		params = settings.keys()
+		return cls(name, settings, *params)
 
 	@classmethod
 	def join_leave(cls):
 		name = "JoinLeave"
 		params = ["goodbyes", "greets"]
-		options = {"type": "menu"}
-		return cls(name, *params, **options)
+		return cls(name, *params)
 
 	@classmethod
 	def base(cls, params):
 		name = "Base Menu"
 		params = params
-		options = {"type": "menu"}
-		return cls(name, *params, **options)
+		return cls(name, *params)
 
 
 class Settings:
@@ -207,7 +220,7 @@ class Settings:
 	@commands.command(aliases=["printsettingsraw"])
 	@checks.is_admin_or_mod()
 	async def printsettings(self, ctx, option=None):
-		"OWNER OR ADMIN ONLY: Prints the servers settings file."
+		"""OWNER OR ADMIN ONLY: Prints the servers settings file."""
 		# TODO: Use paginator to make the output here not break all the time.
 		config = guild_settings.get(ctx.guild)
 		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
@@ -234,125 +247,19 @@ class Settings:
 					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
 			return await ctx.send(embed=em)
 
-	def _make_settings_menu(self, ctx):
-		x = 0
-		output = "'Roxbot Settings:' #Note: Some of this options aren't finish and don't work.\n—————————————————————————————\n"
-		settings = []
-		for setting in self.guild_settings:
-			# is_anal has its own command for now but should be put into this menu when 2.0 hits.
-			if setting in ["warnings", "custom_commands", "is_anal"]:
-				pass
-			elif setting == "gss" and ctx.guild.id != 393764974444675073:
-				pass
-			else:
-				output += "[{}] Edit '{}' settings\n".format(x, setting)
-				x += 1
-				settings.append(setting)
-		output += "[{}] Exit\n".format(0)
-		x += 1
-		settings.append("exit")
-		return "```python\n" + output + "```", x, settings
-
 	@commands.group(case_insensitive=True)
 	@checks.is_admin_or_mod()
 	async def settings(self, ctx):
 		self.guild_settings = guild_settings.get(ctx.guild)
-		if ctx.invoked_subcommand is None:
-			output, count, settings = self._make_settings_menu(ctx)
-			msg = await ctx.send(output)
-			def author_reply(m):
-				return m.author.id == ctx.author.id and ctx.channel.id == m.channel.id
-			try:
-				reply = await self.bot.wait_for("message", check=author_reply, timeout=40)
-				if 0 > int(reply.content) > count:
-					return await ctx.send("Option out of range. Exiting...")
-				else:
-					option = int(reply.content)
-					if settings[option] == "logging":
-						return await ctx.invoke(self.logging, msg=msg)
-					elif settings[option] == "gss":
-						return await ctx.invoke(self.gss, msg=msg)
-					elif settings[option] == "self_assign":
-						return await ctx.invoke(self.selfassign, msg=msg)
-					elif settings[option] == "is_anal":
-						return await ctx.invoke(self.serverisanal, msg=msg)
-					elif settings[option] == "twitch":
-						return await ctx.invoke(self.twitch, msg=msg)
-					elif settings[option] == "nsfw":
-						return await ctx.invoke(self.nsfw, msg=msg)
-					elif settings[option] == "perm_roles":
-						return await ctx.invoke(self.permrole, msg=msg)
-					elif settings[option] == "voice":
-						return await ctx.invoke(self.voice, msg=msg)
-					elif settings[option] == "greets":
-						return await ctx.invoke(self.joinleave, changes="greets", msg=msg)
-					elif settings[option] == "goodbyes":
-						return await ctx.invoke(self.joinleave, changes="goodbyes", msg=msg)
-					else:
-						await msg.delete()
-						return await ctx.send("Exiting...")
-			except ValueError:
-				await msg.delete()
-				raise commands.BadArgument("Invalid index given for menu. Exiting...")
-			except asyncio.TimeoutError:
-				await msg.delete()
-				raise commands.CommandError("Menu timed out. Exiting...")
 
 	@settings.command(aliases=["log"])
-	async def logging(self, ctx, selection=None, *, changes=None, msg=None):
+	async def logging(self, ctx, selection=None, *, changes=None):
 		"""Edits the logging settings.
 
 		Options:
 			enable/disable: Enable/disables logging.
 			channel: sets the channel.
 		"""
-		# TODO: Optimise the menu system to be dynamic at some point
-		if selection is None:
-			output = """
-```python
-'Roxbot Settings: Logging'
-—————————————————————————————
-[0] Enable Logging
-[1] Disable Logging
-[2] Set Logging Channel
-```
-			"""
-			if msg is None:
-				msg = await ctx.send(output)
-			else:
-				msg = await msg.edit(content=output)
-
-			def menu_check(m):
-				return ctx.author == m.author and ctx.channel == m.channel
-
-			try:
-				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-				if response.content == "0":
-					selection = "enable"
-				elif response.content == "1":
-					selection = "disable"
-				elif response.content == "2":
-					selection = "channel"
-					output = """
-```python
-'Roxbot Settings: Logging Channel'
-—————————————————————————————
-What channel should the Logging Channel be set to?
-```
-					"""
-					msg = await msg.edit(content=output)
-					res = await self.bot.wait_for("message", timeout=40, check=menu_check)
-					channel = self.get_channel(ctx, res.content)
-					if channel is False:
-						raise commands.BadArgument("Channel {} not found. Exiting...".format(res.content))
-					await msg.delete()
-				else:
-					await msg.delete()
-					raise commands.BadArgument("Invalid index given for menu. Exiting...")
-			except asyncio.TimeoutError:
-				await msg.delete()
-				raise commands.CommandError("Menu timed out. Exiting...")
-
 		selection = selection.lower()
 		settings = guild_settings.get(ctx.guild)
 
@@ -371,75 +278,16 @@ What channel should the Logging Channel be set to?
 		return self.guild_settings.update(settings.logging, "logging")
 
 	@settings.command(aliases=["sa"])
-	async def selfassign(self, ctx, selection=None, *, changes=None, msg=None):
+	async def selfassign(self, ctx, selection=None, *, changes=None):
 		"""Edits settings for self assign cog.
 
 		Options:
 			enable/disable: Enable/disables the cog.
 			addrole/removerole: adds or removes a role that can be self assigned in the server.
 		"""
-		if selection is None:
-			output = """
-```python
-'Roxbot Settings: Self Assign'
-—————————————————————————————
-[1] Enable Self Assign
-[2] Disable Self Assign
-[3] Add a role to the Self Assign list
-[4] Remove a role to the Self Assign list
-[5] List all roles that can be self-assigned
-```
-					"""
-			if msg is None:
-				msg = await ctx.send(output)
-			else:
-				msg = await msg.edit(content=output)
 
-			def menu_check(m):
-				return ctx.author == m.author and ctx.channel == m.channel
-
-			try:
-				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-				if response.content == "1":
-					selection = "enable"
-				elif response.content == "2":
-					selection = "disable"
-				elif response.content == "3":
-					selection = "addrole"
-					output = """
-```python
-'Roxbot Settings: Self Assign - Add Role'
-—————————————————————————————
-What role do you want to make self-assignable?
-```"""
-				elif response.content == "4":
-					selection = "removerole"
-					output = """
-```python
-'Roxbot Settings: Self Assign - Remove Role'
-—————————————————————————————
-What role do you want remove from the self-assignable list?
-```"""
-				elif response.content == "5":
-					return await ctx.invoke(self.printsettings, option="self_assign")
-				else:
-					await msg.delete()
-					raise commands.BadArgument("Invalid index given for menu. Exiting...")
-
-				if selection in ["removerole", "addrole"]:
-					await msg.edit(content=output)
-					res = await self.bot.wait_for("message", timeout=40, check=menu_check)
-					role = discord.utils.get(ctx.guild.roles, name=res.content)
-					if role is None:
-						raise commands.BadArgument("Role {} not found. Exiting...".format(res.content))
-					await msg.delete()
-			except asyncio.TimeoutError:
-				await msg.delete()
-				raise commands.CommandError("Menu timed out. Exiting...")
-
-		else:
-			selection = selection.lower()
-			role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
+		selection = selection.lower()
+		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
 
 		self_assign = self.guild_settings.self_assign
 
@@ -465,7 +313,7 @@ What role do you want remove from the self-assignable list?
 		return self.guild_settings.update(self_assign, "self_assign")
 
 	@settings.command(aliases=["jl"])
-	async def joinleave(self, ctx, selection=None, *, changes=None, msg=None):
+	async def joinleave(self, ctx, selection=None, *, changes=None):
 		"""Edits settings for joinleave cog.
 
 		Options:
@@ -475,101 +323,6 @@ What role do you want remove from the self-assignable list?
 			greetschannel/goodbyeschannel: Sets the channels for either option. Must be a ID or mention.
 			custommessage: specifies a custom message for the greet messages.
 		"""
-		if selection is None:
-			def menu_check(m):
-				return ctx.author == m.author and ctx.channel == m.channel
-
-			if changes is None:
-				try:
-					output = """
-```python
-'Roxbot Settings: JoinLeave'
-—————————————————————————————
-[1] Edit Greets
-[2] Edit Goodbyes
-```					
-"""
-					if msg is None:
-						msg = await ctx.send(output)
-					else:
-						await msg.edit(content=output)
-					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-					if response.content == "1":
-						changes = "greets"
-					elif response.content == "2":
-						changes = "goodbyes"
-					else:
-						await msg.delete()
-						raise commands.BadArgument("Invalid index given for menu. Exiting...")
-				except asyncio.TimeoutError:
-					await msg.delete()
-					raise commands.CommandError("Menu timed out. Exiting...")
-
-			if changes == "greets":
-				output = """
-```python
-'Roxbot Settings: JoinLeave - Greets'
-—————————————————————————————
-[1] Enable Greets
-[2] Disable Greets
-[3] Set Greets channel
-[4] Add custom Greets message
-```
-						"""
-			else:  # The only other option is goodbyes due to how this command is structured.
-				output = """
-```python
-'Roxbot Settings: JoinLeave - Goodbyes'
-—————————————————————————————
-[1] Enable Goodbyes
-[2] Disable Goodbyes
-[3] Set Goodbyes channel
-```
-										"""
-			await msg.edit(output)
-			try:
-				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-				if response.content == "1":
-					selection = "enable"
-				elif response.content == "2":
-					selection = "disable"
-				elif response.content == "3" and changes == "greets":
-					selection = "greetschannel"
-				elif response.content == "3" and changes == "goodbyes":
-					selection = "goodbyeschannel"
-				elif response.content == "4" and changes == "greets":
-					selection = "custommessage"
-				else:
-					await msg.delete()
-					raise commands.BadArgument("Invalid index given for menu. Exiting...")
-				if response.content == "3":
-					output  = """
-```python
-'Roxbot Settings: JoinLeave - {0}'
-—————————————————————————————
-What channel do you want to set as the {0} channel?
-```
-""".format(changes.title())
-					await msg.edit(content=output)
-					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-					channel = self.get_channel(ctx, response.content)
-				elif response.content == "4":
-					output = """
-```python
-'Roxbot Settings: JoinLeave - Greets'
-—————————————————————————————
-What channel do you want to set as the custom greets message?
-```
-					"""
-					await msg.edit(content=output)
-					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-					changes = response.content
-				else:
-					await msg.delete()
-					raise commands.BadArgument("Invalid index given for menu. Exiting...")
-			except asyncio.TimeoutError:
-				await msg.delete()
-				raise commands.CommandError("Menu timed out. Exiting...")
 
 		selection = selection.lower()
 		channel = self.get_channel(ctx, changes)
@@ -614,7 +367,7 @@ What channel do you want to set as the custom greets message?
 			return self.guild_settings.update(goodbyes, "goodbyes")
 
 	@settings.command()
-	async def twitch(self, ctx, selection=None, *, changes=None, msg=None):
+	async def twitch(self, ctx, selection=None, *, changes=None):
 		"""Edits settings for self assign cog.
 
 		Options:
@@ -642,7 +395,7 @@ What channel do you want to set as the custom greets message?
 		return self.guild_settings.update(twitch, "twitch")
 
 	@settings.command(aliases=["perms"])
-	async def permrole(self, ctx, selection=None, *, changes=None, msg=None):
+	async def permrole(self, ctx, selection=None, *, changes=None):
 		"""Edits settings for permission roles.
 
 		Options:
@@ -651,55 +404,6 @@ What channel do you want to set as the custom greets message?
 		Example:
 			;settings permrole addadmin Admin
 		"""
-		if selection is None:
-			output = """
-```python
-'Roxbot Settings: Perm Roles'
-—————————————————————————————
-[1] Add Admin Role
-[2] Remove Admin Role
-[3] Add Mod Role
-[4] Remove Mod Role
-```
-"""
-			if msg is None:
-				msg = await ctx.send(output)
-			else:
-				await msg.edit(content=output)
-
-			def menu_check(m):
-				return ctx.author == m.author and ctx.channel == m.channel
-
-			try:
-				response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-				if response.content == "1":
-					selection = "addadmin"
-				elif response.content == "2":
-					selection = "removeadmin"
-				elif response.content == "3":
-					selection = "addmod"
-				elif response.content == "4":
-					selection = "removemod"
-				else:
-					await msg.delete()
-					raise commands.BadArgument("Invalid index given for menu. Exiting...")
-				if response.content in ["1", "3"]:
-					output = """
-```python
-'Roxbot Settings: Perm Roles'
-—————————————————————————————
-What role do you want to add?
-```
-				"""
-					await msg.edit(content=output)
-					response = await self.bot.wait_for("message", timeout=40, check=menu_check)
-					role = discord.utils.get(ctx.guild.roles, name=response.content)
-					if role is None:
-						raise commands.BadArgument("Role {} not found. Exiting...".format(response.content))
-					await msg.delete()
-			except asyncio.TimeoutError:
-				await msg.delete()
-				raise commands.CommandError("Menu timed out. Exiting...")
 
 		selection = selection.lower()
 		role = discord.utils.find(lambda u: u.name == changes, ctx.message.guild.roles)
@@ -735,7 +439,7 @@ What role do you want to add?
 		return self.guild_settings.update(perm_roles, "perm_roles")
 
 	@settings.command()
-	async def gss(self, ctx, selection=None, *, changes=None, msg=None):
+	async def gss(self, ctx, selection=None, *, changes=None):
 		"""Custom Cog for the GaySoundsShitposts Discord Server."""
 		# TODO: Menu
 		selection = selection.lower()
@@ -755,9 +459,8 @@ What role do you want to add?
 			return await ctx.send("No valid option given.")
 		return self.guild_settings.update(gss, "gss")
 
-
 	@settings.command()
-	async def nsfw(self, ctx, selection=None, *, changes=None, msg=None):
+	async def nsfw(self, ctx, selection=None, *, changes=None):
 		"""Edits settings for the nsfw cog and other nsfw commands.
 		If nsfw is enabled and nsfw channels are added, the bot will only allow nsfw commands in the specified channels.
 
@@ -772,7 +475,6 @@ What role do you want to add?
 		print(menu.content)
 		selection = selection.lower()
 		nsfw = self.guild_settings.nsfw
-
 
 		if selection == "enable":
 			nsfw["enabled"] = 1
@@ -811,7 +513,7 @@ What role do you want to add?
 		return self.guild_settings.update(nsfw, "nsfw")
 
 	@settings.command()
-	async def voice(self, ctx, setting=None, change=None, msg=None):
+	async def voice(self, ctx, setting=None, change=None):
 		"""Edits settings for the voice cog.
 		Options:
 			enable/disable: Enable/disables specified change.
@@ -847,9 +549,9 @@ What role do you want to add?
 				return await ctx.send("Not a valid change.")
 		elif setting == "skipratio":
 			change = float(change)
-			if change < 1 and change > 0:
+			if 1 > change > 0:
 				voice["skip_ratio"] = change
-			elif change > 0 and change <= 100:
+			elif 0 < change <= 100:
 				change = change/10
 				voice["skip_ratio"] = change
 			else:
