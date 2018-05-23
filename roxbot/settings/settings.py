@@ -48,7 +48,7 @@ class Menu:
 				options = ["Add {}".format(param), "Remove {}".format(param)]
 				params.remove(param)
 				params = [*params, *options]
-			elif isinstance(settings.get(param), int) or isinstance(settings.get(param), str):
+			elif isinstance(settings.get(param), (int, str)):
 				# Set parse
 				options = "Set {}".format(param)
 				params.remove(param)
