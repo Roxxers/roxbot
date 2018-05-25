@@ -132,7 +132,7 @@ class Voice:
 		formatted = datetime.time(**format_me)
 		output = "{:%M:%S}".format(formatted)
 		if formatted.hour >= 1:
-			output = "{:%H}".format(formatted) + output
+			output = "{:%H:}".format(formatted) + output
 		return output
 
 	async def _queue_logic(self, ctx):
