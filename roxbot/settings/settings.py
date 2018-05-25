@@ -1,33 +1,40 @@
 import asyncio
 import datetime
 
-from roxbot import checks, guild_settings, EmbedColours
-
 import discord
 from discord.ext import commands
 
+from roxbot import checks, guild_settings, EmbedColours
 
 # TODO: Display the settings your changing in the menu as yu change them.
 
+
 class Menu:
-	def __init__(self, name, settings, *params):
+
+	__slots__ = ["name", "params", "formatted_params", "title", "content"]
+
+	def __init__(self, name, settings=None, *params):
 		self.name = name
-		self.params = params
-		self.formatted_params = self._parse_params(settings, self.name)
+		self.params = list(params).append("Exit")
+		if settings:
+			self.formatted_params = self._parse_params(settings, self.name)
+		else:
+			self.formatted_params = self.params
 		self.title = "'Roxbot Settings: {}'\n".format(self.name)
-		self.content = self._format_content(self.title, self.params, "```python", "```")
+		self.content = self._format_content(self.title, self.formatted_params, "```python", "```")
 
 	@staticmethod
 	def _format_content(title, params, prefix="", suffix=""):
 		separator = "—————————————————————————————"
 		choices = "\n"
 		for x, setting in enumerate(params):
-			if setting != "convert":
-				if setting != [*params][x]:  # Just in case params is dict_keys, we make a new list
+			if setting == "Exit":
+				choices += "[0] Exit\n"
+			elif setting != "convert":
+				if setting != [*params][x]:  # Just in case params is dict_keys, we make a new list.
 					choices += "[{}] {}\n".format(x + 1, setting)
 				else:
-					choices +=  "[{}] Edit '{}'\n".format(x+1, setting)
-		choices += "[0] Exit\n"
+					choices += "[{}] Edit '{}'\n".format(x+1, setting)
 		return prefix + title + separator + choices + suffix
 
 	@staticmethod
@@ -55,6 +62,80 @@ class Menu:
 				params = [*params, options]
 		return params
 
+	def parse_choice(self, choice: int):
+		choice -= 1
+		# TODO: This and then the way of getting the selection
+		if self.params[choice].lower() == "exit":
+			return False, None, None
+
+		if "Enable" in self.formatted_params[choice]:
+			selection = "enable"
+		elif "Disable" in self.formatted_params[choice]:
+			selection = "disable"
+
+		if self.name == "Base Menu":
+			return self.params[choice], None, None
+		elif self.name == "Goodbyes":
+			pass
+		elif self.name == "Greets":
+			pass
+		elif self.name == "JoinLeave":
+			pass
+		elif self.name == "Logging":
+			pass
+		elif self.name == "Perm Roles":
+			pass
+		elif self.name == "NSFW":
+			pass
+		elif self.name == "Self Assign":
+			pass
+		elif self.name == "Twitch":
+			pass
+		elif self.name == "Voice":
+			pass
+		elif self.name == "GaySoundsShitposts":
+			pass
+
+	@classmethod
+	def base(cls, params):
+		name = "Base Menu"
+		params = params
+		return cls(name, *params)
+
+	@classmethod
+	def goodbyes(cls, guild):
+		name = "Goodbyes"
+		settings = guild_settings.get(guild).goodbyes
+		params = settings.keys()
+		return cls(name, settings, *params)
+
+	@classmethod
+	def greets(cls, guild):
+		name = "Greets"
+		settings = guild_settings.get(guild).greets
+		params = settings.keys()
+		return cls(name, settings, *params)
+
+	@classmethod
+	def join_leave(cls):
+		name = "JoinLeave"
+		params = ["goodbyes", "greets"]
+		return cls(name, *params)
+
+	@classmethod
+	def logging(cls, guild):
+		name = "Logging"
+		settings = guild_settings.get(guild).logging
+		params = settings.keys()
+		return cls(name, settings, *params)
+
+	@classmethod
+	def perm_roles(cls, guild):
+		name = "Perm Roles"
+		settings = guild_settings.get(guild).perm_roles
+		params = settings.keys()
+		return cls(name, settings, *params)
+
 	@classmethod
 	def nsfw(cls, guild):
 		name = "NSFW"
@@ -77,20 +158,6 @@ class Menu:
 		return cls(name, settings, *params)
 
 	@classmethod
-	def perm_roles(cls, guild):
-		name = "Perm Roles"
-		settings = guild_settings.get(guild).perm_roles
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def logging(cls, guild):
-		name = "Logging"
-		settings = guild_settings.get(guild).logging
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
 	def voice(cls, guild):
 		name = "Voice"
 		settings = guild_settings.get(guild).voice
@@ -98,30 +165,11 @@ class Menu:
 		return cls(name, settings, *params)
 
 	@classmethod
-	def greets(cls, guild):
-		name = "Greets"
-		settings = guild_settings.get(guild).greets
+	def gss(cls, guild):
+		name = "GaySoundsShitposts"
+		settings = guild_settings.get(guild).gss
 		params = settings.keys()
 		return cls(name, settings, *params)
-
-	@classmethod
-	def goodbyes(cls, guild):
-		name = "Goodbyes"
-		settings = guild_settings.get(guild).goodbyes
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def join_leave(cls):
-		name = "JoinLeave"
-		params = ["goodbyes", "greets"]
-		return cls(name, *params)
-
-	@classmethod
-	def base(cls, params):
-		name = "Base Menu"
-		params = params
-		return cls(name, *params)
 
 
 class Settings:
