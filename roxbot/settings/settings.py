@@ -13,7 +13,7 @@ class Menu:
 
 	__slots__ = ["name", "params", "formatted_params", "title", "content"]
 
-	def __init__(self, name, settings=None, *params):
+	def __init__(self, name,  *params, settings=None):
 		self.name = name
 		self.params = list(params).append("Exit")
 		if settings:
