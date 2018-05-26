@@ -6,9 +6,11 @@ from discord.ext.commands import bot
 
 import roxbot
 
+gssp_id = 393764974444675073
+
 
 def is_gss():
-	return commands.check(lambda ctx: ctx.guild.id == 393764974444675073)
+	return commands.check(lambda ctx: ctx.guild.id == gssp_id)
 
 
 def is_not_nsfw_disabled():
@@ -24,11 +26,15 @@ async def tatsumaki_api_call(member, guild):
 	return await roxbot.http.api_request(url, headers={"Authorization": roxbot.tat_token})
 
 
-class GaySoundsShitposts():
+class GaySoundsShitposts:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.acceptable_roles = (394939389823811584, 394941004043649036)
 
+	async def on_member_join(self, member):
+		if member.guild.id == gssp_id:
+			role = discord.utils.get(member.guild.roles, id=450042170112475136)
+			await member.add_roles(role, reason="Auto-add role on join")
 
 	@bot.command(hidden=True)
 	async def perms(self, ctx, role):
