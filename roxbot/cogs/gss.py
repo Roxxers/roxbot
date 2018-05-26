@@ -36,6 +36,11 @@ class GaySoundsShitposts:
 			role = discord.utils.get(member.guild.roles, id=450042170112475136)
 			await member.add_roles(role, reason="Auto-add role on join")
 
+	@bot.command()
+	async def agree(self, ctx):
+		role = discord.utils.get(ctx.author.guild.roles, id=450042170112475136)
+		return await ctx.author.remove_roles(role, reason="User has agreed the rules and has been given access to the server.")
+
 	@bot.command(hidden=True)
 	async def perms(self, ctx, role):
 		"""Shell command to do the perm assigning. Only should be invoked by another command."""
