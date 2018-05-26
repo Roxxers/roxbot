@@ -35,6 +35,8 @@ class GaySoundsShitposts:
 		if member.guild.id == gssp_id:
 			role = discord.utils.get(member.guild.roles, id=450042170112475136)
 			await member.add_roles(role, reason="Auto-add role on join")
+			channel = self.bot.get_channel(450040463794241536)
+			await channel.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
 
 	@bot.command()
 	async def agree(self, ctx):
