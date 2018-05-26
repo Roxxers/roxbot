@@ -28,6 +28,7 @@ cogs = [
 	"roxbot.cogs.admin",
 	"roxbot.cogs.customcommands",
 	"roxbot.cogs.fun",
+	"roxbot.cogs.image",
 	"roxbot.cogs.joinleave",
 	"roxbot.cogs.nsfw",
 	"roxbot.cogs.reddit",
