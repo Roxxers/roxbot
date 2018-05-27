@@ -41,7 +41,10 @@ class GaySoundsShitposts:
 	@bot.command()
 	async def agree(self, ctx):
 		role = discord.utils.get(ctx.author.guild.roles, id=450042170112475136)
-		return await ctx.author.remove_roles(role, reason="User has agreed the rules and has been given access to the server.")
+		try:
+			return await ctx.author.remove_roles(role, reason="User has agreed the rules and has been given access to the server.")
+		except discord.HTTPException:
+			pass
 
 	@bot.command(hidden=True)
 	async def perms(self, ctx, role):
