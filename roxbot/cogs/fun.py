@@ -67,7 +67,7 @@ class Fun:
 			temp[0] = 1 if item[0] == '' else -1#if theres a - at the beginning of the sub expression there needs to be a -1 multiplier applied to the sub expression total
 			if 'd' in item[1]:#if its a dice/set of dice rather than a number
 				temp[2] = int(item[3])
-				if temp[3] == 0:#safety check for things like 2d0 + 1 (0 sided dice)
+				if temp[2] == 0:#safety check for things like 2d0 + 1 (0 sided dice)
 					return await ctx.send("cant roll a zero sided dice")
 				if item[2] == '':#if its just a dY rather than an XdY
 					temp[1] = 1
