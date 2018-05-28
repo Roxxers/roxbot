@@ -1,0 +1,12 @@
+
+bot-env/
+
+*.log
+
+\.idea/
+
+Dump/
+
+*.pyc
+
+roxbot/settings/servers\.json
