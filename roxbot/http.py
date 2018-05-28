@@ -33,6 +33,7 @@ async def download_file(url, filename=None):
 		async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as data:
 			with open(filename, 'wb') as f:
 				f.write(await data.read())
+	return filename
 
 
 async def upload_file(url, file):
