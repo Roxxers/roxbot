@@ -22,17 +22,41 @@ class UserConverter(commands.UserConverter):
 		except commands.BadArgument as e:
 			try:
 				result = await ctx.bot.get_user_info(argument)
-			except:  # Bare except or otherwise it will raise its own BadArgument and have a pretty shitty error message that isnt useful.
+			except:  # Bare except or otherwise it will raise its own BadArgument and have a pretty shitty error message that isn't useful.
 				raise e
 
 		return result
+
 
 class EmojiConverter(commands.EmojiConverter):
 	"""Just like the normla EmojiConverter class but with a custom error message and planned extra feature."""
 	async def convert(self, ctx, argument):
 		try:
 			return await super().convert(ctx, argument)
-		except:
+		except:  # Same as above
 			return argument
+
+
+class AvatarURL(commands.UserConverter):
+	"""
+	Overriding the discord version to make it a converter appropriate for the image cog.
+	
+	Converts the input into a avatar url or url to an image provided. Either through URL or Attachments.
+
+	1. Look up if argument is a URL
+	3. Look up if argument is user
+	
+	Will do a user lookup, if that fails, then tries to parse the argument for a link
+	"""
+	async def convert(self, ctx, argument):
+		if any(x in argument.split(".")[-1] for x in ("png", "jpg", "jpeg")):
+			return argument
+		else:
+			try:
+				user = await super().convert(ctx, argument)
+				return user.avatar_url_as(format="png")
+			except:  # Same as above
+				raise commands.BadArgument("No valid image/user given.")
+
 
 # TODO: Make functions that work like converters but aren't so they actually work in other areas too.
