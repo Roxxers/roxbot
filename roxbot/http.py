@@ -28,7 +28,7 @@ async def download_file(url, filename=None):
 	:param url:
 	"""
 	if filename is None:
-		filename = url.split("/")[-1]
+		filename = url.split("/")[-1].split("?")[0]
 	async with aiohttp.ClientSession() as session:
 		async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as data:
 			with open(filename, 'wb') as f:
