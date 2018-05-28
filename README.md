@@ -15,6 +15,18 @@ _Coming Soon_
 
 ## Changelog
 
+#### v2.0.0
+###### Stuff Here about big changes and release
+- UX Changes, settings menu
+- More better open source stuff - pls pr me
+- easy setup and get that wiki going
+
+###### New Features
+- Image cog **description here**
+
+###### Bug Fixes
+- Roll command fixed by Terra
+
 #### v1.7.1
 ###### New Features
 - `warn purge` added to clear warn list of banned users.
