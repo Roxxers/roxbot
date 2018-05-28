@@ -20,7 +20,7 @@ class ErrHandle:
 			embed.add_field(name='Event', value=event)
 			embed.description = '```py\n{}\n```'.format(traceback.format_exc())
 			embed.timestamp = datetime.datetime.utcnow()
-			await self.owner.send(embed=embed)
+			await self.bot.get_user(self.bot.owner_id).send(embed=embed)
 
 	async def on_command_error(self, ctx, error):
 		self.owner = self.bot.get_user(self.bot.owner_id)
