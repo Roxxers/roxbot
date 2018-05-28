@@ -2,7 +2,7 @@ import os
 import math
 import roxbot
 import discord
-from PIL import Image
+from PIL import Image, ImageEnhance
 from discord.ext import commands
 
 
@@ -88,13 +88,18 @@ class CustomCommands:
 		self.bot = bot_client
 
 	@staticmethod
-	async def flag_filter(name, flag, user):
+	def image_lookup(message):
+		try:
+			if message.attachments[0].height:  # Check if attachment is image
+				return message.attachments[0].url
+		except IndexError:
+			return message.author.avatar_url_as(format="png")
+
+	@staticmethod
+	async def flag_filter(name, flag, url):
 		"""At the moment, can only make horizontal stripe flags"""
-		url = user.avatar_url_as(static_format="png")
-		if url.split(".")[-1] == "gif":
-			f = '{0.name}.gif'.format(user)
-		else:
-			f = '{0.name}.png'.format(user)
+
+		f = 'filter_{}.png'.format(name)
 
 		await roxbot.http.download_file(url, f)
 
@@ -121,10 +126,9 @@ class CustomCommands:
 
 			top += height
 
-		filename = name + f
-		ava.save(filename)
 		os.remove(f)
-		file = discord.File(filename)
+		ava.save(f)
+		file = discord.File(f)
 		return file
 
 	@commands.group(case_insensitive=True)
@@ -133,81 +137,123 @@ class CustomCommands:
 		pass
 
 	@pride.command()
-	async def lgbt(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def lgbt(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.lgbt()
 		async with ctx.typing():
-			file = await self.flag_filter("lgbt", flag, user)
+			file = await self.flag_filter("lgbt", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@pride.command(aliases=["transgender"])
-	async def trans(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def trans(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.trans()
 		async with ctx.typing():
-			file = await self.flag_filter("trans", flag, user)
+			file = await self.flag_filter("trans", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@pride.command(aliases=["nonbinary", "nb"])
-	async def enby(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def enby(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.non_binary()
 		async with ctx.typing():
-			file = await self.flag_filter("nb", flag, user)
+			file = await self.flag_filter("nb", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@pride.command(aliases=["bisexual"])
-	async def bi(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def bi(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.bi()
 		async with ctx.typing():
-			file = await self.flag_filter("bi", flag, user)
+			file = await self.flag_filter("bi", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@pride.command(aliases=["genderqueer"])
-	async def gq(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def gq(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.gq()
 		async with ctx.typing():
-			file = await self.flag_filter("gq", flag, user)
+			file = await self.flag_filter("gq", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@pride.command(aliases=["pansexual"])
-	async def pan(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def pan(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.pan()
 		async with ctx.typing():
-			file = await self.flag_filter("pan", flag, user)
+			file = await self.flag_filter("pan", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@pride.command(aliases=["asexual"])
-	async def ace(self, ctx, user: discord.Member=None):
-		if not user:
-			user = ctx.author
+	async def ace(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.ace()
 		async with ctx.typing():
-			file = await self.flag_filter("pan", flag, user)
+			file = await self.flag_filter("pan", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
+
+	@commands.command()
+	async def deepfry(self, ctx, image: roxbot.converters.AvatarURL=None):
+		if not image:
+			image = self.image_lookup(ctx.message)
+		filename = await roxbot.http.download_file(image)
+
+		# Convert to jpg
+		jpg_name = filename.split(".")[0] + ".jpg"
+		img = Image.open(filename)
+		img = img.convert(mode="RGB")
+		img.save(jpg_name)
+		os.remove(filename)
+
+		# Brightness Enhance
+		img = Image.open(jpg_name)
+		ehn = ImageEnhance.Brightness(img)
+		ehn.enhance(1.5).save(jpg_name)
+
+		# Contrast Enhance
+		img = Image.open(jpg_name)
+		ehn = ImageEnhance.Contrast(img)
+		ehn.enhance(2).save(jpg_name)
+
+		# Sharpness Enhance
+		img = Image.open(jpg_name)
+		ehn = ImageEnhance.Sharpness(img)
+		ehn.enhance(20).save(jpg_name)
+
+		# Saturation Enhance
+		img = Image.open(jpg_name)
+		ehn = ImageEnhance.Color(img)
+		ehn.enhance(2).save(jpg_name)
+
+		# JPG-fy image
+		for x in range(10):
+			img = Image.open(jpg_name)
+			img = img.convert(mode="RGB")
+			img.save(jpg_name)
+
+		await ctx.send(file=discord.File(jpg_name))
+		os.remove(jpg_name)
 
 
 def setup(bot_client):
