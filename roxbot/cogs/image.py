@@ -158,8 +158,8 @@ class CustomCommands:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["nonbinary", "nb"])
-	async def enby(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["nonbinary", "enby"])
+	async def nb(self, ctx, image: roxbot.converters.AvatarURL=None):
 		if not image:
 			image = self.image_lookup(ctx.message)
 

@@ -1,10 +1,11 @@
 from discord.ext import commands
-from roxbot import guild_settings as gs, owner
+import roxbot
+from roxbot import guild_settings as gs
 
 
 def is_owner_or_admin():
 	def predicate(ctx):
-		if ctx.author.id == owner:
+		if ctx.author.id == roxbot.owner:
 			return True
 		else:
 			for role in ctx.author.roles:
@@ -15,7 +16,7 @@ def is_owner_or_admin():
 
 
 def _is_admin_or_mod(ctx):
-	if ctx.message.author.id == owner:
+	if ctx.message.author.id == roxbot.owner:
 		return True
 	else:
 		admin_roles = gs.get(ctx.guild).perm_roles["admin"]
