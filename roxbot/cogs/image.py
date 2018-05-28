@@ -219,40 +219,44 @@ class CustomCommands:
 			image = self.image_lookup(ctx.message)
 		filename = await roxbot.http.download_file(image)
 
-		# Convert to jpg
-		jpg_name = filename.split(".")[0] + ".jpg"
-		img = Image.open(filename)
-		img = img.convert(mode="RGB")
-		img.save(jpg_name)
-		os.remove(filename)
+		async with ctx.typing():
+			# Convert to jpg
+			if filename.split(".")[-1] != "jpg":
+				jpg_name = filename.split(".")[0] + ".jpg"
+				img = Image.open(filename)
+				img = img.convert(mode="RGB")
+				img.save(jpg_name)
+				os.remove(filename)
+			else:
+				jpg_name = filename
 
-		# Brightness Enhance
-		img = Image.open(jpg_name)
-		ehn = ImageEnhance.Brightness(img)
-		ehn.enhance(1.5).save(jpg_name)
-
-		# Contrast Enhance
-		img = Image.open(jpg_name)
-		ehn = ImageEnhance.Contrast(img)
-		ehn.enhance(2).save(jpg_name)
-
-		# Sharpness Enhance
-		img = Image.open(jpg_name)
-		ehn = ImageEnhance.Sharpness(img)
-		ehn.enhance(20).save(jpg_name)
-
-		# Saturation Enhance
-		img = Image.open(jpg_name)
-		ehn = ImageEnhance.Color(img)
-		ehn.enhance(2).save(jpg_name)
-
-		# JPG-fy image
-		for x in range(10):
+			# Brightness Enhance
 			img = Image.open(jpg_name)
-			img = img.convert(mode="RGB")
-			img.save(jpg_name)
+			ehn = ImageEnhance.Brightness(img)
+			ehn.enhance(1.25).save(jpg_name)
 
-		await ctx.send(file=discord.File(jpg_name))
+			# Contrast Enhance
+			img = Image.open(jpg_name)
+			ehn = ImageEnhance.Contrast(img)
+			ehn.enhance(1.5).save(jpg_name)
+
+			# Sharpness Enhance
+			img = Image.open(jpg_name)
+			ehn = ImageEnhance.Sharpness(img)
+			ehn.enhance(20).save(jpg_name)
+
+			# Saturation Enhance
+			img = Image.open(jpg_name)
+			ehn = ImageEnhance.Color(img)
+			ehn.enhance(2).save(jpg_name)
+
+			# JPG-fy image
+			for x in range(10):
+				img = Image.open(jpg_name)
+				img = img.convert(mode="RGB")
+				img.save(jpg_name)
+
+			await ctx.send(file=discord.File(jpg_name))
 		os.remove(jpg_name)
 
 
