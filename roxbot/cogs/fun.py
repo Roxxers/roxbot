@@ -347,15 +347,18 @@ class Fun:
 		{command_prefix}xkcd Silent Hammer
 		{command_prefix}xkcd latest
 		"""
+		msg = ""
 		async with ctx.typing():
 			# Check if passed a valid number
 			if query in (None, "random"):
 				# Get a random comic
+				msg = "Showing a random xkcd"
 				comic = await random_xkcd()
 			elif query.isdigit():
 				# If so, use that to look up
 				comic = await xkcd_lookup_num(query)
 			elif query == "latest":
+				msg = "Showing the latest xkcd"
 				# Get the latest comic
 				comic = await xkcd_lookup_latest()
 			else:
@@ -375,7 +378,7 @@ class Fun:
 			embed.set_image(url=comic["img"])
 			embed.set_footer(text=comic["alt"])
 			embed.url = XKCD_SITE.format(comic["num"])
-			output = await ctx.send(embed=embed)
+			output = await ctx.send(msg, embed=embed)
 			
 			await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
