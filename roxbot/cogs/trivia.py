@@ -174,7 +174,7 @@ class Trivia:
 		for x in range(amount):
 			await message.add_reaction(self.emojis[x])
 
-	async def game(self, ctx, channel, questions, *, mobile_comp=False):
+	async def game(self, ctx, channel, questions, *, mobile_comp=False, solo=False):
 		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
 		question_count = 1
 		for question in questions:
