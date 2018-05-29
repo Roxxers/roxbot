@@ -305,7 +305,7 @@ class Trivia:
 			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
 			embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 			await ctx.send(embed=embed)
-		elif ctx.invoked_subcommand == None:
+		elif ctx.invoked_subcommand is None:
 			await ctx.invoke(self.about)
 
 	@trivia.command()
