@@ -257,25 +257,26 @@ class CustomCommands:
 			else:
 				jpg_name = filename
 
-			# Brightness Enhance
 			img = Image.open(jpg_name)
+
+			# Brightness Enhance
+
 			ehn = ImageEnhance.Brightness(img)
-			ehn.enhance(1.25).save(jpg_name)
+			img = ehn.enhance(1.25)
 
 			# Contrast Enhance
-			img = Image.open(jpg_name)
 			ehn = ImageEnhance.Contrast(img)
-			ehn.enhance(1.5).save(jpg_name)
+			img = ehn.enhance(1.5)
 
 			# Sharpness Enhance
-			img = Image.open(jpg_name)
 			ehn = ImageEnhance.Sharpness(img)
-			ehn.enhance(20).save(jpg_name)
+			img = ehn.enhance(20)
 
 			# Saturation Enhance
-			img = Image.open(jpg_name)
 			ehn = ImageEnhance.Color(img)
-			ehn.enhance(2).save(jpg_name)
+			img = ehn.enhance(2)
+
+			img.save(jpg_name)
 
 			# JPG-fy image
 			for x in range(10):
