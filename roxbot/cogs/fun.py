@@ -329,7 +329,7 @@ class Fun:
 	@bot.command()
 	@commands.has_permissions(add_reactions=True)
 	@commands.bot_has_permissions(add_reactions=True)
-	async def xkcd(self, ctx, arg):
+	async def xkcd(self, ctx, *, query):
 		"""
 		Grabs the image & metadata of the given xkcd comic
 		Example:
@@ -339,18 +339,19 @@ class Fun:
 		"""
 		async with ctx.typing():
 			# Check if passed a valid number
-			if arg.isdigit():
+			if query.isdigit():
 				# If so, use that to look up
-				comic = await lookup_num(arg)
-			elif arg == "latest":
+				comic = await lookup_num(query)
+			elif query == "latest":
 				# Get the latest comic
 				comic = await lookup_latest()
 			else:
 				# Otherwise, assume it's meant to be a name & look up from that.
-				# Get the full input; not just the first word and also fix the caps.
-				arg = " ".join(ctx.message.content.split(" ")[1:]).title()
+				# Case insensitive, or at least as close as we can get it.
+				# Titles tend to be in title case so this shouldn't be a problem
+				query = query.title()
 				
-				comic = await lookup_title(arg)
+				comic = await lookup_title(query)
 
 		# If we couldn't find anything, return an error.
 		if not comic:
