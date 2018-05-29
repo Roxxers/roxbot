@@ -37,5 +37,6 @@ cogs = [
 	"roxbot.cogs.twitch",
 	"roxbot.cogs.util",
 	"roxbot.cogs.voice",
+    "roxbot.cogs.xkcd"
 	#"roxbot.cogs.gss"
 ]
