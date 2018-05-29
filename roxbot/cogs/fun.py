@@ -15,28 +15,29 @@ TITLE_QUERY_URL="http://www.explainxkcd.com/wiki/api.php?format=json&action=quer
 XKCD_SITE="https://xkcd.com/{}"
 RANDOM_URL="https://c.xkcd.com/random/comic"
 
-async def random_comic():
-	async with aiohttp.ClientSession() as session:
-		async with session.get(RANDOM_URL, allow_redirects=False) as resp:
-			comic_url = resp.headers["Location"]
-			num = comic_url.split("/")[-2] # there's always a trailing / so it's the 2nd last segment
-			return await lookup_num(num)
-
-async def lookup_num(num):
+async def xkcd_lookup_num(num):
 	return await roxbot.http.api_request(XKCD_SITE.format(str(num) + "/info.0.json"))
 
-async def lookup_latest():
+async def xkcd_lookup_latest():
 	return await roxbot.http.api_request(XKCD_SITE.format("/info.0.json"))
 
-async def lookup_title(title):
+async def xkcd_lookup_title(title):
 	api = await roxbot.http.api_request(TITLE_QUERY_URL.format(title.replace(" ", "_")))
 	# if valid, query.redirects.to is the full & proper page title, including the actual number.
 	try:
 		full_page_title = api["query"]["redirects"][0]["to"]
 		num = full_page_title.split(":")[0]
-		return await lookup_num(num)
+		return await xkcd_lookup_num(num)
 	except KeyError: # this means query,redirects... didn't exist, done like this to save a massive if statement.
 		return None
+
+async def random_xkcd():
+	async with aiohttp.ClientSession() as session:
+		async with session.get(RANDOM_URL, allow_redirects=False) as resp:
+			comic_url = resp.headers["Location"]
+			num = comic_url.split("/")[-2] # there's always a trailing / so it's the 2nd last segment
+			return await xkcd_lookup_num(num)
+
 
 class Fun:
 	def __init__(self, bot_client):
@@ -350,20 +351,20 @@ class Fun:
 			# Check if passed a valid number
 			if query in (None, "random"):
 				# Get a random comic
-				comic = await random_comic()
+				comic = await random_xkcd()
 			elif query.isdigit():
 				# If so, use that to look up
-				comic = await lookup_num(query)
+				comic = await xkcd_lookup_num(query)
 			elif query == "latest":
 				# Get the latest comic
-				comic = await lookup_latest()
+				comic = await xkcd_lookup_latest()
 			else:
 				# Otherwise, assume it's meant to be a name & look up from that.
 				# Case insensitive, or at least as close as we can get it.
 				# Titles tend to be in title case so this shouldn't be a problem
 				query = query.title()
 				
-				comic = await lookup_title(query)
+				comic = await xkcd_lookup_title(query)
 
 		# If we couldn't find anything, return an error.
 		if not comic:
