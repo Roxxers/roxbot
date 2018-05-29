@@ -374,7 +374,7 @@ class Fun:
 		title_query_url = "http://www.explainxkcd.com/wiki/api.php?format=json&action=query&redirects&titles={}"
 		xkcd_site = "https://xkcd.com/{}"
 		random_url = "https://c.xkcd.com/random/comic"
-
+		
 		async def xkcd_lookup_num(num):
 			return await roxbot.http.api_request(xkcd_site.format(str(num) + "/info.0.json"))
 
@@ -462,6 +462,20 @@ class Fun:
 			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
 		)
 
+	@bot.command()
+	async def roxbotfact(self, ctx):
+		fact_index = random.randrange(0, len(roxbot.roxbotfacts.facts))
+		fact = roxbot.roxbotfacts.facts[fact_index]
+		if fact[1] in roxbot.roxbotfacts.contributors:
+			author = self.bot.get_user(roxbot.roxbotfacts.contributors[fact[1]])
+		else:
+			author = fact[1]
+		if author is None:  # Just in case Roxbot doesnt share a server with the author of the fact.
+			author = fact[1]
+		embed = discord.Embed(title="Roxbot Fact #{}!".format(fact_index+1), description=fact[0], colour=roxbot.EmbedColours.pink)
+		embed.set_footer(text="Credit: {}".format(author))
+
+		return await ctx.send(embed=embed)
 
 def setup(bot_client):
 	bot_client.add_cog(Fun(bot_client))
