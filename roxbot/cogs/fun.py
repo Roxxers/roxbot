@@ -7,11 +7,20 @@ from discord import Embed
 from discord.ext import commands
 from discord.ext.commands import bot
 
-import roxbot
+import aiohttp
 
+import roxbot
 
 TITLE_QUERY_URL="http://www.explainxkcd.com/wiki/api.php?format=json&action=query&redirects&titles={}"
 XKCD_SITE="https://xkcd.com/{}"
+RANDOM_URL="https://c.xkcd.com/random/comic"
+
+async def random_comic():
+	async with aiohttp.ClientSession() as session:
+		async with session.get(RANDOM_URL, allow_redirects=False) as resp:
+			comic_url = resp.headers["Location"]
+			num = comic_url.split("/")[-2] # there's always a trailing / so it's the 2nd last segment
+			return await lookup_num(num)
 
 async def lookup_num(num):
 	return await roxbot.http.api_request(XKCD_SITE.format(str(num) + "/info.0.json"))
@@ -329,7 +338,7 @@ class Fun:
 	@bot.command()
 	@commands.has_permissions(add_reactions=True)
 	@commands.bot_has_permissions(add_reactions=True)
-	async def xkcd(self, ctx, *, query):
+	async def xkcd(self, ctx, *, query=None):
 		"""
 		Grabs the image & metadata of the given xkcd comic
 		Example:
@@ -339,7 +348,10 @@ class Fun:
 		"""
 		async with ctx.typing():
 			# Check if passed a valid number
-			if query.isdigit():
+			if query in (None, "random"):
+				# Get a random comic
+				comic = await random_comic()
+			elif query.isdigit():
 				# If so, use that to look up
 				comic = await lookup_num(query)
 			elif query == "latest":
