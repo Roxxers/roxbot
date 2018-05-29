@@ -116,16 +116,16 @@ class Trivia:
 			incorrect = question["incorrect_answers"]
 			correct = question["correct_answer"]
 			choices = [correct, *incorrect]
-			for x in range(len(choices)):
-				choices[x] = unescape(choices[x])
+			for x, choice in enumerate(choices):
+				choices[x] = unescape(choice)
 			shuffle(choices)
 
 		# Then get the index of the correct answer
 		correct = choices.index(unescape(correct))
 		# Create output
 		answers = ""
-		for x in range(len(choices)):
-			answers += "{} {}\n".format(str(self.emojis[x]), choices[x])
+		for x, choice in enumerate(choices):
+			answers += "{} {}\n".format(str(self.emojis[x]), choice)
 		return embed, answers, correct
 
 	def calculate_scores(self, channel, time_asked):
@@ -174,7 +174,7 @@ class Trivia:
 		for x in range(amount):
 			await message.add_reaction(self.emojis[x])
 
-	async def game(self, ctx, channel, questions, *, mobile_comp=False, solo=False):
+	async def game(self, ctx, channel, questions, *, mobile_comp=False):
 		# For loop all the questions for the game, Maybe I should move the game dictionary here instead.
 		question_count = 1
 		for question in questions:
