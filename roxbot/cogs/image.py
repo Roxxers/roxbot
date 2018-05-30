@@ -126,7 +126,7 @@ class ImageEditor:
 			return message.author.avatar_url_as(format="png")
 
 	@staticmethod
-	def add_grain(img, prob=0.25):
+	def add_grain(img, prob=0.2, opacity=30):
 		img_matrix = np.zeros(img.size, dtype=np.uint8)
 		for x in range(img.height):
 			for y in range(img.width):
@@ -135,7 +135,7 @@ class ImageEditor:
 
 		noisy = Image.fromarray(img_matrix, "L")
 		noisy = noisy.convert("RGB")
-		mask = Image.new('RGBA', img.size, (0, 0, 0, 51))
+		mask = Image.new('RGBA', img.size, (0, 0, 0, opacity))
 		return Image.composite(noisy, img, mask)
 
 	@staticmethod
@@ -256,7 +256,7 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@commands.command()
+	@commands.command(aliases=["df"])
 	async def deepfry(self, ctx, image: roxbot.converters.AvatarURL=None):
 		if not image:
 			image = self.image_lookup(ctx.message)
