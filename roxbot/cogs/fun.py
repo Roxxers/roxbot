@@ -439,7 +439,20 @@ class Fun:
 			for _ in range(zalgo_num):
 				zalgoised.append(random.choice(zalgo_chars))
 		response = random.choice(zalgo_chars).join(zalgoised)
-		return await ctx.send(response)
+		await ctx.send(response)
+
+		logging = roxbot.guild_settings.get(ctx.guild).logging
+		log_channel = self.bot.get_channel(logging["channel"])
+		await roxbot.log(
+			ctx.guild,
+			log_channel,
+			"zalgo",
+			User=ctx.author,
+			Argument_Given=text,
+			Channel=ctx.channel,
+			Channel_Mention=ctx.channel.mention,
+			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+		)
 
 
 def setup(bot_client):
