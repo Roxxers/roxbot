@@ -37,9 +37,11 @@ settings = configparser.ConfigParser()
 settings.read("roxbot/settings/preferences.ini")
 
 command_prefix = settings["Roxbot"]["Command_Prefix"]
-token = settings["Roxbot"]["Token"]
 owner = int(settings["Roxbot"]["OwnerID"])
-tat_token = settings["Roxbot"]["Tatsumaki_Token"]
+
+token = settings["Tokens"]["Discord"]
+tat_token = settings["Tokens"]["Tatsumaki"]
+imgur_token = settings["Tokens"]["Imgur"]
 
 
 __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
