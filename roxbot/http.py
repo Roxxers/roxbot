@@ -2,7 +2,19 @@ import json
 import aiohttp
 
 
-async def api_request(url, *, headers=None):
+async def request(url, *, headers=None, **kwargs):
+	"""
+	Base GET request.
+	:param url:
+	:param headers:
+	:param kwargs:
+	:return:
+	"""
+	async with aiohttp.ClientSession() as session:
+		return await session.get(url, headers=headers, **kwargs)
+
+
+async def api_request(url, *, headers=None, **kwargs):
 	"""
 	Returns a JSON dict object for most api calls in RoxBot.
 	:param url: URL Should be a api endpoint that will return
@@ -13,12 +25,11 @@ async def api_request(url, *, headers=None):
 		headers = {'User-agent': 'RoxBot Discord Bot'}
 	else:
 		headers = {'User-agent': 'RoxBot Discord Bot', **headers}
-	async with aiohttp.ClientSession() as session:
-		async with session.get(url, headers=headers) as resp:
-			try:
-				return json.loads(await resp.read())
-			except json.JSONDecodeError:
-				return None
+	resp = await request(url, headers=headers, **kwargs)
+	try:
+		return json.loads(await resp.read())
+	except json.JSONDecodeError:
+		return None
 
 
 async def download_file(url, filename=None):
