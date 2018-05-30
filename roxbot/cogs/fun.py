@@ -7,36 +7,7 @@ from discord import Embed
 from discord.ext import commands
 from discord.ext.commands import bot
 
-import aiohttp
-
 import roxbot
-
-TITLE_QUERY_URL="http://www.explainxkcd.com/wiki/api.php?format=json&action=query&redirects&titles={}"
-XKCD_SITE="https://xkcd.com/{}"
-RANDOM_URL="https://c.xkcd.com/random/comic"
-
-async def xkcd_lookup_num(num):
-	return await roxbot.http.api_request(XKCD_SITE.format(str(num) + "/info.0.json"))
-
-async def xkcd_lookup_latest():
-	return await roxbot.http.api_request(XKCD_SITE.format("/info.0.json"))
-
-async def xkcd_lookup_title(title):
-	api = await roxbot.http.api_request(TITLE_QUERY_URL.format(title.replace(" ", "_")))
-	# if valid, query.redirects.to is the full & proper page title, including the actual number.
-	try:
-		full_page_title = api["query"]["redirects"][0]["to"]
-		num = full_page_title.split(":")[0]
-		return await xkcd_lookup_num(num)
-	except KeyError: # this means query,redirects... didn't exist, done like this to save a massive if statement.
-		return None
-
-async def random_xkcd():
-	async with aiohttp.ClientSession() as session:
-		async with session.get(RANDOM_URL, allow_redirects=False) as resp:
-			comic_url = resp.headers["Location"]
-			num = comic_url.split("/")[-2] # there's always a trailing / so it's the 2nd last segment
-			return await xkcd_lookup_num(num)
 
 
 class Fun:
@@ -348,6 +319,32 @@ class Fun:
 		{command_prefix}xkcd latest
 		"""
 		msg = ""
+		title_query_url = "http://www.explainxkcd.com/wiki/api.php?format=json&action=query&redirects&titles={}"
+		xkcd_site = "https://xkcd.com/{}"
+		random_url = "https://c.xkcd.com/random/comic"
+
+		async def xkcd_lookup_num(num):
+			return await roxbot.http.api_request(xkcd_site.format(str(num) + "/info.0.json"))
+
+		async def xkcd_lookup_latest():
+			return await roxbot.http.api_request(xkcd_site.format("/info.0.json"))
+
+		async def xkcd_lookup_title(title):
+			api = await roxbot.http.api_request(title_query_url.format(title.replace(" ", "_")))
+			# if valid, query.redirects.to is the full & proper page title, including the actual number.
+			try:
+				full_page_title = api["query"]["redirects"][0]["to"]
+				num = full_page_title.split(":")[0]
+				return await xkcd_lookup_num(num)
+			except KeyError:  # this means query,redirects... didn't exist, done like this to save a massive if statement.
+				return None
+
+		async def random_xkcd():
+			resp = await roxbot.http.request(random_url, **{"allow_redirects": False})
+			comic_url = resp.headers["Location"]
+			num = comic_url.split("/")[-2]  # there's always a trailing / so it's the 2nd last segment
+			return await xkcd_lookup_num(num)
+
 		async with ctx.typing():
 			# Check if passed a valid number
 			if query in (None, "random"):
@@ -371,16 +368,17 @@ class Fun:
 
 		# If we couldn't find anything, return an error.
 		if not comic:
-			return await ctx.send("{} - Couldn't find that comic.".format(ctx.message.author.mention))
+			return await ctx.send("Couldn't find that comic.".format(ctx.message.author.mention))
 		else:
 			# Otherwise, show the comic
 			embed = Embed(title=comic["safe_title"], description="xkcd #{} by Randall Munroe".format(comic["num"]))
 			embed.set_image(url=comic["img"])
 			embed.set_footer(text=comic["alt"])
-			embed.url = XKCD_SITE.format(comic["num"])
+			embed.url = xkcd_site.format(comic["num"])
 			output = await ctx.send(msg, embed=embed)
 			
 			await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
+
 
 def setup(bot_client):
 	bot_client.add_cog(Fun(bot_client))
