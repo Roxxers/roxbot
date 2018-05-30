@@ -162,7 +162,7 @@ class Util():
 		embed.add_field(name="Managed", value=str(role.managed), inline=False)
 		return await ctx.send(embed=embed)
 
-	@bot.command(enabled=False)
+	@bot.command(enabled=False, hidden=True)
 	async def upload(self, ctx):
 		"""
 		Uploads selected file to the host, thanks to the fact that
@@ -198,7 +198,7 @@ class Util():
 			return await ctx.send("Send me stuff to upload.")
 
 	@upload.error
-	async def upload_err(self, ctx, error):
+	async def upload_err(self, ctx):
 		return await ctx.send("File couldn't be uploaded.")
 
 	@bot.command(aliases=["emoji"])
