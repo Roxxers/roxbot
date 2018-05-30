@@ -1,4 +1,4 @@
-from asyncio import TimeoutError
+import asyncio
 
 
 async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
@@ -14,7 +14,7 @@ async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
 		await message.remove_reaction(delete_emoji, bot.user)
 		await message.remove_reaction(delete_emoji, ctx.author)
 		return await message.edit(content="{} requested output be deleted.".format(ctx.author), embed=None)
-	except TimeoutError:
+	except asyncio.TimeoutError:
 		await message.remove_reaction(delete_emoji, bot.user)
 
 
