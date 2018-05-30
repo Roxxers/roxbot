@@ -52,11 +52,12 @@ async def api_request(url, *, headers=None, **kwargs):
 		headers = {'User-agent': 'RoxBot Discord Bot'}
 	else:
 		headers = {'User-agent': 'RoxBot Discord Bot', **headers}
-	resp = await request(url, headers=headers, **kwargs)
-	try:
-		return json.loads(await resp.read())
-	except json.JSONDecodeError:
-		return None
+	async with aiohttp.ClientSession() as session:
+		async with session.get(url, headers=headers, **kwargs) as resp:
+			try:
+				return await resp.json()
+			except json.JSONDecodeError:
+				return None
 
 
 async def download_file(url, filename=None):
