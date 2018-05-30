@@ -2,3 +2,4 @@ aiohttp==3.0.1
 beautifulsoup4==4.6.0
 discord==0.0.2
 pillow
+numpy

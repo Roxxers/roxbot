@@ -27,9 +27,12 @@ SOFTWARE.
 
 import os
 import math
+import random
+import numpy as np
+from PIL import Image, ImageEnhance
+
 import roxbot
 import discord
-from PIL import Image, ImageEnhance
 from discord.ext import commands
 
 
@@ -110,7 +113,7 @@ class PrideFlags:
 		return cls(rows=rows, colours=colours)
 
 
-class CustomCommands:
+class ImageEditor:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 
@@ -121,6 +124,19 @@ class CustomCommands:
 				return message.attachments[0].url
 		except IndexError:
 			return message.author.avatar_url_as(format="png")
+
+	@staticmethod
+	def add_grain(img, prob=0.25):
+		img_matrix = np.zeros(img.size, dtype=np.uint8)
+		for x in range(img.height):
+			for y in range(img.width):
+				if prob < random.random():
+					img_matrix[x][y] = 255
+
+		noisy = Image.fromarray(img_matrix, "L")
+		noisy = noisy.convert("RGB")
+		mask = Image.new('RGBA', img.size, (0, 0, 0, 51))
+		return Image.composite(noisy, img, mask)
 
 	@staticmethod
 	async def flag_filter(name, flag, url):
@@ -276,10 +292,14 @@ class CustomCommands:
 			ehn = ImageEnhance.Color(img)
 			img = ehn.enhance(2)
 
+			# Add Salt and Pepper Noise
+
+			img = self.add_grain(img)
+
 			img.save(jpg_name)
 
 			# JPG-fy image
-			for x in range(10):
+			for x in range(20):
 				img = Image.open(jpg_name)
 				img = img.convert(mode="RGB")
 				img.save(jpg_name)
@@ -289,4 +309,4 @@ class CustomCommands:
 
 
 def setup(bot_client):
-	bot_client.add_cog(CustomCommands(bot_client))
+	bot_client.add_cog(ImageEditor(bot_client))
