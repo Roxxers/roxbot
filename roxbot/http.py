@@ -88,12 +88,12 @@ async def upload_file(url, file):
 			return await resp.json()
 
 
-async def get_page(url):
+async def get_page(url, *, headers=None, **kwargs):
 	"""
 	Returns the page at the given url
 	:param url: the url of the page you want to get
 	:return: the html page
 	"""
 	async with aiohttp.ClientSession() as session:
-		async with session.get(url, headers={'User-agent': 'RoxBot Discord Bot'}) as page:
+		async with session.get(url, headers=headers, **kwargs) as page:
 			return await page.text()
