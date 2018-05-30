@@ -417,7 +417,7 @@ class Fun:
 
 		# If we couldn't find anything, return an error.
 		if not comic:
-			return await ctx.send("Couldn't find that comic.".format(ctx.message.author.mention))
+			return await ctx.send("Couldn't find that comic.")
 		else:
 			# Otherwise, show the comic
 			embed = Embed(title=comic["safe_title"], description="xkcd #{} by Randall Munroe".format(comic["num"]))
