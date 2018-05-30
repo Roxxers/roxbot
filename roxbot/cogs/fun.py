@@ -293,7 +293,7 @@ class Fun:
 		log_channel = self.bot.get_channel(logging["channel"])
 		await roxbot.log(
 			ctx.guild,
-			log_channel, 
+			log_channel,
 			"aesthetics",
 			User=ctx.author,
 			Argument_Given=convert,
@@ -427,6 +427,19 @@ class Fun:
 			output = await ctx.send(msg, embed=embed)
 			
 			await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
+
+	@commands.command()
+	async def zalgo(self, ctx, *, text):
+		intensity = 10
+		zalgo_chars = [*[chr(i) for i in range(0x0300, 0x036F + 1)], *[u'\u0488', u'\u0489']]
+		zalgoised = []
+		for letter in text:
+			zalgoised.append(letter)
+			zalgo_num = random.randint(0, intensity) + 1
+			for _ in range(zalgo_num):
+				zalgoised.append(random.choice(zalgo_chars))
+		response = random.choice(zalgo_chars).join(zalgoised)
+		return await ctx.send(response)
 
 
 def setup(bot_client):
