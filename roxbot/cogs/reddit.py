@@ -45,26 +45,21 @@ async def imgur_get(url):
 	else:
 		if await _imgur_removed(url):
 			return False
-		page = await roxbot.http.get_page(url)
-		soup = BeautifulSoup(page, 'html.parser')
-		links = []
-		for img in soup.find_all("img"):
-			if "imgur" in img["src"]:
-				if not img["src"] in links:
-					links.append(img["src"])
 
-		for video in soup.find_all("source"):
-			if "imgur" in video["src"]:
-				if not video["src"] in links:
-					links.append(video["src"])
-		if len(links) > 1:
-			return url
+		base_endpoint = "https://api.imgur.com/3/"
+		endpoint_album = base_endpoint + "album/{}/images.json".format(url.split("/")[-1])
+		endpoint_image = base_endpoint + "image/{}.json".format(url.split("/")[-1])
+
+		resp = await roxbot.http.api_request(endpoint_image, headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
+		if bool(resp["success"]) is True:
+			return resp["data"]["link"]
 		else:
-			if "http" not in links[0]:
-				links[0] = "https:" + links[0]
-			return links[0]
+			resp = await roxbot.http.api_request(endpoint_album,
+												 headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
+			return resp["data"][0]["link"]
 
-# TODO: Reimplement eroshare, eroshae, and erome support.
+
+# TODO: Reimplement eroshare, eroshae, and erome support. Also implement better api interaction with imgur now we require api key
 
 
 async def subreddit_request(subreddit):
