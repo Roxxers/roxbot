@@ -408,10 +408,8 @@ class Fun:
 				# Get the latest comic
 				comic = await xkcd_lookup_latest()
 			else:
-				# Otherwise, assume it's meant to be a name & look up from that.
-				# Case insensitive, or at least as close as we can get it.
-				# Titles tend to be in title case so this shouldn't be a problem
-				query = query.title()
+				# Removed case-insensitivity here
+				# because it actually made some titles not show up due to multiple capital letters next to each other.
 				
 				comic = await xkcd_lookup_title(query)
 
