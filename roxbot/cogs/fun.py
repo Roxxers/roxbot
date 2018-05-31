@@ -287,7 +287,7 @@ class Fun:
 		WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
 		WIDE_MAP[0x20] = 0x3000
 		converted = str(convert).translate(WIDE_MAP)
-		await ctx.send(converted)
+		output = await ctx.send(converted)
 
 		logging = roxbot.guild_settings.get(ctx.guild).logging
 		log_channel = self.bot.get_channel(logging["channel"])
@@ -296,7 +296,7 @@ class Fun:
 			log_channel,
 			"aesthetics",
 			User=ctx.author,
-			Argument_Given=convert,
+			Output_Message_ID=output.id,
 			Channel=ctx.channel,
 			Channel_Mention=ctx.channel.mention,
 			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
@@ -439,7 +439,7 @@ class Fun:
 			for _ in range(zalgo_num):
 				zalgoised.append(random.choice(zalgo_chars))
 		response = random.choice(zalgo_chars).join(zalgoised)
-		await ctx.send(response)
+		output = await ctx.send(response)
 
 		logging = roxbot.guild_settings.get(ctx.guild).logging
 		log_channel = self.bot.get_channel(logging["channel"])
@@ -448,7 +448,7 @@ class Fun:
 			log_channel,
 			"zalgo",
 			User=ctx.author,
-			Argument_Given=text,
+			Output_Message_ID=output.id,
 			Channel=ctx.channel,
 			Channel_Mention=ctx.channel.mention,
 			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
