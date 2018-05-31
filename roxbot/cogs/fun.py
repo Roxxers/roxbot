@@ -284,9 +284,9 @@ class Fun:
 	@bot.command()
 	async def aesthetics(self, ctx, *, convert):
 		"""Converts text to be more  a e s t h e t i c s"""
-		WIDE_MAP = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))
-		WIDE_MAP[0x20] = 0x3000
-		converted = str(convert).translate(WIDE_MAP)
+		wide_map = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))  # Create dict with fixed width equivalents for chars
+		wide_map[0x20] = 0x3000  # replace space with 'IDEOGRAPHIC SPACE'
+		converted = str(convert).translate(wide_map)
 		output = await ctx.send(converted)
 
 		logging = roxbot.guild_settings.get(ctx.guild).logging
