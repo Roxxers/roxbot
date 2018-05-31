@@ -272,7 +272,7 @@ class Fun:
 			emoji = ":heart_eyes:"
 
 		if len(mentions) > 1:
-			return await ctx.send("Oh poly {} rating? :smirk: Your combined waifu rating is {}/10. {}".format(waifu, rating, emoji))
+			return await ctx.send("Oh poly {0} rating? :smirk: Your combined {0} rating is {1}/10. {2}".format(waifu, rating, emoji))
 		else:
 			return await ctx.send("Oh that's your {}? I rate them a {}/10. {}".format(waifu, rating, emoji))
 
