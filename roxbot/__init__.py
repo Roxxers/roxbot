@@ -51,4 +51,4 @@ __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built wi
 [Found a bug or need to report an issue? Report it here](https://github.com/Roxxers/roxbot/issues/new)
 [Say Thanks](https://saythanks.io/to/Roxxers)"""
 __author__ = "Roxanne Gibson"
-__version__ = "1.8.0"
+__version__ = "1.8.0a"
