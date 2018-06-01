@@ -30,23 +30,33 @@ import aiohttp
 
 
 async def request(url, *, headers=None, **kwargs):
-	"""
-	Base GET request.
-	:param url:
-	:param headers:
-	:param kwargs:
-	:return:
+	"""Base GET request in case you need more control over GET requests.
+
+	Params
+	=======
+	headers: dict (Optional)
+	kwarg: kwargs (Optional)
+
+	Returns
+	=======
+	Response: aiohttp Response object
 	"""
 	async with aiohttp.ClientSession() as session:
 		return await session.get(url, headers=headers, **kwargs)
 
 
 async def api_request(url, *, headers=None, **kwargs):
-	"""
-	Returns a JSON dict object for most api calls in RoxBot.
-	:param url: URL Should be a api endpoint that will return
-	:param headers: There is no need to pass the user agent, this is done for you.
-	:return: dict of JSON or None if a JSON was not returned from the call.
+	"""Returns JSON from an API request. Should be used for all Roxbot API requests.
+
+	Params
+	=======
+	url: str
+	headers: dict (Optional)
+	kwargs: kwargs (Optional)
+
+	Returns
+	=======
+	JSON response: dict
 	"""
 	if headers is None:
 		headers = {'User-agent': 'RoxBot Discord Bot'}
@@ -61,10 +71,18 @@ async def api_request(url, *, headers=None, **kwargs):
 
 
 async def download_file(url, filename=None):
-	"""
-	Downloads the file at the given url and then saves it under the filename given to disk.
-	:param filename:
-	:param url:
+	"""Downloads the file at the given url and then saves it under the filename given to disk.
+
+	Params
+	=======
+	url: str
+	filename: str (Optional)
+		if not given, the function will try and determine filename from url.
+
+	Returns
+	=======
+	filename: str
+		Handy if no filename given
 	"""
 	if filename is None:
 		filename = url.split("/")[-1].split("?")[0]
@@ -76,7 +94,7 @@ async def download_file(url, filename=None):
 
 
 async def upload_file(url, file):
-	"""
+	"""Uploads a file using a POST request. Broke for pomf clones so idk. Might have to revert it to requests.
 
 	:param url: url to POST to.
 	:param file: Byes-like object to upload.
@@ -89,10 +107,15 @@ async def upload_file(url, file):
 
 
 async def get_page(url, *, headers=None, **kwargs):
-	"""
-	Returns the page at the given url
-	:param url: the url of the page you want to get
-	:return: the html page
+	"""Returns the html of the given url. Will need to run it through BS4 to parse it.
+
+	Params
+	=======
+	url: str
+
+	Returns
+	=======
+	HTML Page: str
 	"""
 	async with aiohttp.ClientSession() as session:
 		async with session.get(url, headers=headers, **kwargs) as page:

@@ -79,7 +79,6 @@ async def on_ready():
 	bot.load_extension("roxbot.err_handle")
 	bot.load_extension("roxbot.logging")
 	bot.load_extension("roxbot.system")
-	bot.settings = gs.get_all(bot.guilds)
 
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")

@@ -56,7 +56,8 @@ class UserConverter(commands.UserConverter):
 
 
 class EmojiConverter(commands.EmojiConverter):
-	"""Just like the normla EmojiConverter class but with a custom error message and planned extra feature."""
+	"""The Emoji conveter from discord.py but instead it returns the argument if an error is raised
+	It's messier than using the EmojiConverter proper but the issue is you can try converters."""
 	async def convert(self, ctx, argument):
 		try:
 			return await super().convert(ctx, argument)

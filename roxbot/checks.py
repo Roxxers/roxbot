@@ -29,6 +29,7 @@ from discord.ext import commands
 import roxbot
 from roxbot import guild_settings as gs
 
+# TODO: Clean up this file.
 
 def is_owner_or_admin():
 	def predicate(ctx):

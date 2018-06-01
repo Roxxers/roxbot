@@ -95,17 +95,18 @@ guild_template = {
 
 
 def _open_config():
-	"""
-	Opens the guild settings file
-	:return settings file: :type dict:
+	"""Opens the guild settings file
+
+	Returns
+	=======
+	servers.json: dict
 	"""
 	with open('roxbot/settings/servers.json', 'r') as config_file:
 		return json.load(config_file)
 
 
 def _write_changes(config):
-	"""
-	Writes given config to disk.
+	"""Writes given config to disk. MUST BE THE ENTIRE SERVER.JSON FILE.
 	:param config: :type dict:
 	:return:
 	"""
@@ -119,12 +120,14 @@ def backup(config, name):
 
 
 def remove_guild(guild):
+	"""Removes given guild from settings file and saves changes."""
 	settings = _open_config()
 	settings.pop(str(guild.id))
 	_write_changes(settings)
 
 
 def add_guild(guild):
+	"""Adds given guild from settings file and saves changes."""
 	settings = _open_config()
 	settings[str(guild.id)] = guild_template["example"]
 	_write_changes(settings)
@@ -133,7 +136,7 @@ def add_guild(guild):
 def error_check(servers):
 	settings = _open_config()
 	for server in servers:
-		# Server ID needs to be made a string for this statement because keys have to be strings in JSON. Which is annoying now we use int for ids.
+		# Server ID needs to be made a string for this statement because keys have to be strings in JSON.
 		server_id = str(server.id)
 		if str(server_id) not in settings:
 			settings[server_id] = guild_template["example"]
@@ -160,34 +163,13 @@ def error_check(servers):
 								server.name.upper(), setting.upper(), cog_setting.upper()))
 
 
-def get_all(guilds):
-	"""
-	Returns a list of GuildSettings for all guilds the bot can see.
-	:param guilds:
-	:return list of GuildSettings: :type list:
-	"""
-	error_check(guilds)
-	guild_list = []
-	for guild in guilds:
-		guild = GuildSettings(guild)
-		guild_list.append(guild)
-	return guild_list
-
-
 def get(guild):
 	"""
 	Gets a single GuildSettings Object representing the settings of that guild
-	:param guild:
+	:param guild: :type discord.Guild:
 	:return Single GuildSettings Object: :type GuildSettings:
 	"""
 	return GuildSettings(guild)
-
-
-def get_guild(guilds, wanted_guild):
-	for guild in guilds:
-		if guild.id == wanted_guild.id:
-			return guild
-	return None
 
 
 class GuildSettings(object):

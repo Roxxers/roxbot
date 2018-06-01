@@ -30,7 +30,22 @@ import asyncio
 
 async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
 	"""Utility function that allows for you to add a delete option to the end of a command.
-	This makes it easier for users to control the output of commands, esp handy for random output ones."""
+	This makes it easier for users to control the output of commands, esp handy for random output ones.
+
+	Params
+	=======
+	bot: discord.ext.commands.Bot
+		The current bot client
+	ctx: discord.ext.commands.Context
+		The context of the command
+	message: discord.Message
+		Output message from Roxbot
+	delete_emoji: discord.Emoji or str if unicode emoji
+		Used as the reaction for the user to click on.
+	timeout: int (Optional)
+		Amount of time in seconds for the bot to wait for the reaction. Deletes itself after the timer runes out.
+		Set to 20 by default
+	"""
 	await message.add_reaction(delete_emoji)
 
 	def check(r, u):
@@ -40,12 +55,20 @@ async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
 		await bot.wait_for("reaction_add", timeout=timeout, check=check)
 		await message.remove_reaction(delete_emoji, bot.user)
 		await message.remove_reaction(delete_emoji, ctx.author)
-		return await message.edit(content="{} requested output be deleted.".format(ctx.author), embed=None)
+		await message.edit(content="{} requested output be deleted.".format(ctx.author), embed=None)
 	except asyncio.TimeoutError:
 		await message.remove_reaction(delete_emoji, bot.user)
 
 
 def blacklisted(user):
+	"""Checks if given user is blacklisted from the bot.
+	Params
+	=======
+	user: discord.User
+
+	Returns
+	=======
+	If the user is blacklisted: bool"""
 	with open("roxbot/settings/blacklist.txt", "r") as fp:
 		for line in fp.readlines():
 			if str(user.id)+"\n" == line:
