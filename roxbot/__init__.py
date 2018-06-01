@@ -52,22 +52,3 @@ __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built wi
 [Say Thanks](https://saythanks.io/to/Roxxers)"""
 __author__ = "Roxanne Gibson"
 __version__ = "1.8.0"
-
-
-# REMEMBER TO UNCOMMENT THE GSS LINE, ROXIE
-
-cogs = [
-	"roxbot.cogs.admin",
-	"roxbot.cogs.customcommands",
-	"roxbot.cogs.fun",
-	"roxbot.cogs.image",
-	"roxbot.cogs.joinleave",
-	"roxbot.cogs.nsfw",
-	"roxbot.cogs.reddit",
-	"roxbot.cogs.selfassign",
-	"roxbot.cogs.trivia",
-	"roxbot.cogs.twitch",
-	"roxbot.cogs.util",
-	"roxbot.cogs.voice",
-	#"roxbot.cogs.gss"
-]

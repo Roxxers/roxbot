@@ -36,6 +36,26 @@ from discord.ext import commands
 import roxbot
 from roxbot import guild_settings as gs
 
+
+# REMEMBER TO UNCOMMENT THE GSS LINE, ROXIE
+
+cogs = [
+	"roxbot.cogs.admin",
+	"roxbot.cogs.customcommands",
+	"roxbot.cogs.fun",
+	"roxbot.cogs.image",
+	"roxbot.cogs.joinleave",
+	"roxbot.cogs.nsfw",
+	"roxbot.cogs.reddit",
+	"roxbot.cogs.selfassign",
+	"roxbot.cogs.trivia",
+	"roxbot.cogs.twitch",
+	"roxbot.cogs.util",
+	"roxbot.cogs.voice",
+	#"roxbot.cogs.gss"
+]
+
+
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
@@ -66,7 +86,7 @@ async def on_ready():
 
 	# Load Extension Cogs
 	print("Cogs Loaded:")
-	for cog in roxbot.cogs:
+	for cog in cogs:
 		bot.load_extension(cog)
 		print(cog.split(".")[2])
 	print("")
