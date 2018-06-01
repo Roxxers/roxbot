@@ -112,6 +112,27 @@ class PrideFlags:
 		colours = (purple, white, green)
 		return cls(rows=rows, colours=colours)
 
+	@classmethod
+	def gf(cls):
+		rows = 5
+		pink = (255, 117, 162)
+		white = (255, 255, 255)
+		purple = (190, 24, 214)
+		black = (0, 0, 0)
+		blue = (51, 62, 189)
+		colours = (pink, white, purple, black, blue)
+		return cls(rows=rows, colours=colours)
+
+	@classmethod
+	def agender(cls):
+		rows = 7
+		black = (0, 0, 0)
+		white = (255, 255, 255)
+		grey = (185, 185, 185)
+		green = (176, 244, 141)
+		colours = (black, grey, white, green, white, grey, black)
+		return cls(rows=rows, colours=colours)
+
 
 class ImageEditor:
 	def __init__(self, bot_client):
@@ -176,11 +197,20 @@ class ImageEditor:
 
 	@commands.group(case_insensitive=True)
 	async def pride(self, ctx):
-		"""A collection of filters that show simple LGBT pride flags over the image provided."""
+		"""A collection of filters that show simple LGBT pride flags over the image provided.
+		The filters work with either your pfp, someone elses', or an image provided either by attachment or URL."""
 		pass
 
 	@pride.command()
 	async def lgbt(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds a LGBT Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
@@ -190,8 +220,16 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["transgender"])
-	async def trans(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["trans"])
+	async def transgender(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds a Trans Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
@@ -201,8 +239,16 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["nonbinary", "enby"])
-	async def nb(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["nb", "enby"])
+	async def nonbinary(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds a Non-Binary Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
@@ -212,8 +258,16 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["bisexual"])
-	async def bi(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["bi"])
+	async def bisexual(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds a Bisexual Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
@@ -223,8 +277,16 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["genderqueer"])
-	async def gq(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["gq"])
+	async def genderqueer(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds a Gender Queer Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
@@ -234,8 +296,16 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["pansexual"])
-	async def pan(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["pan"])
+	async def pansexual(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds a Pansexual Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
@@ -245,19 +315,73 @@ class ImageEditor:
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
-	@pride.command(aliases=["asexual"])
-	async def ace(self, ctx, image: roxbot.converters.AvatarURL=None):
+	@pride.command(aliases=["ace"])
+	async def asexual(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Adds an Asexual Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 
 		flag = PrideFlags.ace()
 		async with ctx.typing():
+			file = await self.flag_filter("ace", flag, image)
+		await ctx.send(file=file)
+		os.remove(file.filename)
+
+	@pride.command(aliases=["gf"])
+	async def genderfluid(self, ctx, image: roxbot.converters.AvatarURL = None):
+		"""Adds an Gender Fluid Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
+		if not image:
+			image = self.image_lookup(ctx.message)
+
+		flag = PrideFlags.gf()
+		async with ctx.typing():
 			file = await self.flag_filter("pan", flag, image)
+		await ctx.send(file=file)
+		os.remove(file.filename)
+
+	@pride.command()
+	async def agender(self, ctx, image: roxbot.converters.AvatarURL = None):
+		"""Adds an Agender Pride Flag filter to the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
+		if not image:
+			image = self.image_lookup(ctx.message)
+
+		flag = PrideFlags.agender()
+		async with ctx.typing():
+			file = await self.flag_filter("gf", flag, image)
 		await ctx.send(file=file)
 		os.remove(file.filename)
 
 	@commands.command(aliases=["df"])
 	async def deepfry(self, ctx, image: roxbot.converters.AvatarURL=None):
+		"""Deepfry's the given image
+		Args:
+			image: Optional
+				If nothing, your avatar
+				Mention a user, their avatar
+				Provide a URL, that image
+				Provide an image via upload, that image.
+		"""
 		if not image:
 			image = self.image_lookup(ctx.message)
 		filename = await roxbot.http.download_file(image)
