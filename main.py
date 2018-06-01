@@ -38,6 +38,7 @@ from roxbot import guild_settings as gs
 
 
 # REMEMBER TO UNCOMMENT THE GSS LINE, ROXIE
+# DO NOT UNCOMMENT GSS IF YOU ARE NOT ROXIE
 
 cogs = [
 	"roxbot.cogs.admin",
@@ -95,9 +96,6 @@ async def on_ready():
 		print(server)
 	print("")
 
-# In the next two functions, I was gunna user bot.settings for something but I don't think it's possible.
-# So while I don't use it, the function still will do their jobs of adding and removing the settings.
-
 
 @bot.event
 async def on_guild_join(guild):
@@ -113,8 +111,6 @@ async def on_guild_remove(guild):
 async def on_message(message):
 	"""
 	Checks if the user is blacklisted, if not, process the message for commands as usual.
-	:param message:
-	:return:
 	"""
 	if roxbot.blacklisted(message.author):
 		return
@@ -124,7 +120,7 @@ async def on_message(message):
 @bot.command()
 async def about(ctx):
 	"""
-	Outputs info about RoxBot, showing uptime, how to report issues, what settings where set in prefs.ini and credits.
+	Outputs info about RoxBot, showing up time, how to report issues, what settings where set in prefs.ini and credits.
 	"""
 	owner = bot.get_user(roxbot.owner)
 	em = discord.Embed(title="About Roxbot", colour=roxbot.EmbedColours.pink, description=roxbot.__description__)
