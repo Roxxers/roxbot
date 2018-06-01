@@ -114,7 +114,7 @@ class Fun:
 				else:  # its a XdY type unknown if it has r,h,l modifyers, but they dont matter when sorting out the number and sides of dice
 					temp[1] = int(item[2])
 					if temp[1] > max_dice:  # if there are an unreasonable number of dice, error out. almost no-one needs to roll 9999d20
-						return await ctx.send("I can't do that. (Too many dice to roll, max {})".format(ctx.author, max_dice))
+						return await ctx.send("I can't do that. (Too many dice to roll, max {})".format(max_dice))
 					if temp[1] > max_verbose and roll_verbose:  # if there is a sub expression that involves lots of rolls then turn off verbose mode
 						roll_verbose = False
 						response += '*Warning:* large number of rolls detected, will not use verbose rolling.\n'
