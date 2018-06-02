@@ -71,5 +71,8 @@ else:
 	config["Tokens"]["Imgur"] = token
 
 print("Finished preferences.ini setup.")
+with open("roxbot/settings/preferences.ini", 'w') as configfile:
+	config.write(configfile)
+
 print("There are more options avaliable in the file (found at ./roxbot/settings/preferences.ini) if you want to make optional tweaks to Roxbot.")
 print("Exiting...")
