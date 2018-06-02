@@ -5,13 +5,13 @@ import configparser
 # Version Checking
 # Basically reject anything not 3.5 or 3.6 as those are the only versions that work.
 
-if not sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6):
-	print("Roxbot does not support Python {}".format(".".join(sys.version_info[:2])))
+if not (sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6)):
+	print("Roxbot does not support Python {}.{}".format(sys.version_info[0],sys.version_info[1]))
 	exit(0)
 
 # Install Requirements
 
-code = os.system("python3 -m pip install -r requirements.txt")
+code = os.system("python3 -m pip install -U -r requirements.txt")
 if code != 0:
 	print("Error occurred while installing requirements. Exiting...")
 	exit(1)
@@ -71,5 +71,8 @@ else:
 	config["Tokens"]["Imgur"] = token
 
 print("Finished preferences.ini setup.")
+with open("roxbot/settings/preferences.ini", 'w') as configfile:
+	config.write(configfile)
+
 print("There are more options avaliable in the file (found at ./roxbot/settings/preferences.ini) if you want to make optional tweaks to Roxbot.")
 print("Exiting...")
