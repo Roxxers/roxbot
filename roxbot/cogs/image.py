@@ -195,12 +195,28 @@ class ImageEditor:
 		file = discord.File(f)
 		return file
 
+	async def image_logging(self, ctx, output):
+		"""Logging function for all image commands to avoid shit loads or repeating code.
+		Required because image has outputs that are user decided and therefore could need logging for."""
+		logging = roxbot.guild_settings.get(ctx.guild).logging
+		log_channel = self.bot.get_channel(logging["channel"])
+		await roxbot.log(
+			ctx.guild,
+			log_channel,
+			"image",
+			User=ctx.author,
+			User_ID=ctx.author.id,
+			Output_Message_ID=output.id,
+			Channel=ctx.channel,
+			Channel_Mention=ctx.channel.mention,
+			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+		)
+
 	@commands.group(case_insensitive=True)
 	async def pride(self, ctx):
 		"""A collection of filters that show simple LGBT pride flags over the image provided.
 		The filters work with either your pfp, someone elses', or an image provided either by attachment or URL."""
-		logging = roxbot.guild_settings.get(ctx.guild).logging
-		self.log_channel = self.bot.get_channel(logging["channel"])
+		pass
 
 	@pride.command()
 	async def lgbt(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -220,17 +236,7 @@ class ImageEditor:
 			file = await self.flag_filter("lgbt", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+
 
 	@pride.command(aliases=["trans"])
 	async def transgender(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -250,17 +256,7 @@ class ImageEditor:
 			file = await self.flag_filter("trans", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command(aliases=["nb", "enby"])
 	async def nonbinary(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -280,17 +276,7 @@ class ImageEditor:
 			file = await self.flag_filter("nb", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command(aliases=["bi"])
 	async def bisexual(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -310,17 +296,7 @@ class ImageEditor:
 			file = await self.flag_filter("bi", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command(aliases=["gq"])
 	async def genderqueer(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -340,17 +316,7 @@ class ImageEditor:
 			file = await self.flag_filter("gq", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command(aliases=["pan"])
 	async def pansexual(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -370,17 +336,7 @@ class ImageEditor:
 			file = await self.flag_filter("pan", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command(aliases=["ace"])
 	async def asexual(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -400,17 +356,7 @@ class ImageEditor:
 			file = await self.flag_filter("ace", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command(aliases=["gf"])
 	async def genderfluid(self, ctx, image: roxbot.converters.AvatarURL = None):
@@ -430,17 +376,7 @@ class ImageEditor:
 			file = await self.flag_filter("pan", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@pride.command()
 	async def agender(self, ctx, image: roxbot.converters.AvatarURL = None):
@@ -460,17 +396,7 @@ class ImageEditor:
 			file = await self.flag_filter("gf", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
-		await roxbot.log(
-			ctx.guild,
-			self.log_channel,
-			"pride",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 	@commands.command(aliases=["df"])
 	async def deepfry(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -532,17 +458,7 @@ class ImageEditor:
 
 			output = await ctx.send(file=discord.File(jpg_name))
 		os.remove(jpg_name)
-		await roxbot.log(
-			ctx.guild,
-			log_channel,
-			"deepfry",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
-		)
+		await self.image_logging(ctx, output)
 
 
 def setup(bot_client):
