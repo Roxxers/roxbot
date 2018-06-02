@@ -11,7 +11,7 @@ if not (sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6)):
 
 # Install Requirements
 
-code = os.system("python3 -m pip install -r requirements.txt")
+code = os.system("python3 -m pip install -U -r requirements.txt")
 if code != 0:
 	print("Error occurred while installing requirements. Exiting...")
 	exit(1)
