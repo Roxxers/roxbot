@@ -200,7 +200,7 @@ class ImageEditor:
 		Required because image has outputs that are user decided and therefore could need logging for."""
 		logging = roxbot.guild_settings.get(ctx.guild).logging
 		log_channel = self.bot.get_channel(logging["channel"])
-		await roxbot.log(
+		return await roxbot.log(
 			ctx.guild,
 			log_channel,
 			"image",
@@ -236,6 +236,7 @@ class ImageEditor:
 			file = await self.flag_filter("lgbt", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
+		await self.image_logging(ctx, output)
 
 
 	@pride.command(aliases=["trans"])
@@ -408,8 +409,6 @@ class ImageEditor:
 				Provide a URL, that image
 				Provide an image via upload, that image.
 		"""
-		logging = roxbot.guild_settings.get(ctx.guild).logging
-		log_channel = self.bot.get_channel(logging["channel"])
 		if not image:
 			image = self.image_lookup(ctx.message)
 		filename = await roxbot.http.download_file(image)
