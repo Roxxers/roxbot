@@ -4,3 +4,4 @@ beautifulsoup4==4.6.0
 pillow==5.1.0
 numpy==1.14.3
 yarl<1.2
+youtube_dl
