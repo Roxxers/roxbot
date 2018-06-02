@@ -92,7 +92,7 @@ class Fun:
 
 		m = re.findall('(-?)((?:(\d*)d(\d+))|\d+)(r\d+)?([h,l]{1}\d+)?', parts[0])
 
-		if m:  # either no arguments, or the expression contained nothing that could be seen as a number or roll
+		if not m:  # either no arguments, or the expression contained nothing that could be seen as a number or roll
 			return await ctx.send("Expression missing. If you are unsure of what the format should be, please use `{}help roll`".format(ctx.prefix))
 
 		dice = []  # this is the list of all dice sets to be rolled
