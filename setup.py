@@ -5,8 +5,8 @@ import configparser
 # Version Checking
 # Basically reject anything not 3.5 or 3.6 as those are the only versions that work.
 
-if not sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6):
-	print("Roxbot does not support Python {}".format(".".join(sys.version_info[:2])))
+if not (sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6)):
+	print("Roxbot does not support Python {}.{}".format(sys.version_info[0],sys.version_info[1]))
 	exit(0)
 
 # Install Requirements
