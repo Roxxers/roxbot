@@ -15,7 +15,7 @@ _Coming Soon_
 ## [Changelog](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/CHANGELOG.md)
 
 ## Support Me
-<a href='https://ko-fi.com/Z8Z4BPQ6' target='_blank'><img height='36'src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+<a href='https://ko-fi.com/roxxers' target='_blank'><img height='36'src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
 
 ## License
 [MIT License](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
