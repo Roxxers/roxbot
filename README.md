@@ -1,16 +1,21 @@
 ![Banner](http://i.imgur.com/SZIVXEg.png)
 
-[![MIT](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://github.com/Roxxers/roxbot/blob/master/LICENSE)
-[![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://github.com/RainbowDinoaur/roxbot/)
+[![MIT](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
+[![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot)
 [![Say Thanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?style=flat-square)](https://saythanks.io/to/roxxers)
-![GitHub tag](https://img.shields.io/github/tag/Roxxers/roxbot.svg?style=flat-square)
 
 Roxbot, A modular Discord bot made by a (former) Mercy Main. Built with love (and discord.py)
 
-Setup - _Coming Soon_
+## Setup
+_Coming Soon_
 
-Command Docs - _Coming Soon_
+## Command Docs
+_Coming Soon_
 
-[Changelog](https://github.com/Roxxers/roxbot/wiki/Changelog)
+## [Changelog](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/CHANGELOG.md)
 
-[Licence](https://github.com/Roxxers/roxbot/blob/master/LICENSE)
+## Support Me
+<a href='https://ko-fi.com/roxxers' target='_blank'><img height='36'src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+
+## License
+[MIT License](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
