@@ -361,7 +361,7 @@ class ImageEditor:
 
 	@pride.command(aliases=["gf"])
 	async def genderfluid(self, ctx, image: roxbot.converters.AvatarURL = None):
-		"""Adds an Gender Fluid Pride Flag filter to the given image
+		"""Adds a Gender Fluid Pride Flag filter to the given image
 		Args:
 			image: Optional
 				If nothing, your avatar
