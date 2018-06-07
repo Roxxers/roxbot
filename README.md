@@ -1,8 +1,10 @@
 ![Banner](http://i.imgur.com/SZIVXEg.png)
 
-[![MIT](https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot)
+[![MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
+[![MRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
 [![Say Thanks](https://img.shields.io/badge/say-thanks-ff69b4.svg?style=flat-square)](https://saythanks.io/to/roxxers)
+[<img src="https://discordapp.com/api/guilds/450805414024577035/widget.png?style=shield">](https://discord.gg/Mpz8nv7)
 
 Roxbot, A modular Discord bot made by a (former) Mercy Main. Built with love (and discord.py)
 
