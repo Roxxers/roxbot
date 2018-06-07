@@ -46,9 +46,9 @@ imgur_token = settings["Tokens"]["Imgur"]
 
 __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
 
-[Github link](https://github.com/Roxxers/roxbot)
-[Changelog](https://github.com/Roxxers/roxbot/wiki/Changelog)
-[Found a bug or need to report an issue? Report it here](https://github.com/Roxxers/roxbot/issues/new)
+[Gitlab link](https://gitlab.roxxers.xyz/roxxers/roxbot)
+[Changelog](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/CHANGELOG.md)
+[Found a bug or need to report an issue? Report it here](https://gitlab.roxxers.xyz/roxxers/roxbot/issues/new?issue)
 [Say Thanks](https://saythanks.io/to/Roxxers)"""
 __author__ = "Roxanne Gibson"
 __version__ = "2.0.0a"
