@@ -46,6 +46,9 @@ async def imgur_get(url):
 		if await _imgur_removed(url):
 			return False
 
+		if not roxbot.imgur_token:
+			return False
+
 		base_endpoint = "https://api.imgur.com/3/"
 		endpoint_album = base_endpoint + "album/{}/images.json".format(url.split("/")[-1])
 		endpoint_image = base_endpoint + "image/{}.json".format(url.split("/")[-1])
