@@ -37,10 +37,10 @@ def requirements():
 		args.append("-q")
 	try:
 		import pip
-		code = pip.main()
+		code = pip.main(args)
 	except AttributeError:  # Has pip 10 installed
 		from pip._internal import main
-		code = main(["install", "-U", "-q", "-r", "requirements.txt", "--user"])
+		code = main(args)
 	except ImportError:
 		print("{} Pip not installed. Please install pip before continuing.".format(ERROR))
 		exit(1)
