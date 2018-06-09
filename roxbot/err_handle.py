@@ -50,7 +50,7 @@ class ErrHandle:
 			await self.bot.get_user(self.bot.owner_id).send(embed=embed)
 
 	async def on_command_error(self, ctx, error):
-		self.owner = self.bot.get_user(self.bot.owner_id)
+		owner = self.bot.get_user(self.bot.owner_id)
 		if self.dev:
 			raise error
 		elif isinstance(error, commands.CommandInvokeError):
@@ -68,7 +68,7 @@ class ErrHandle:
 			elif isinstance(error, commands.DisabledCommand):
 				embed = discord.Embed(description="This command is disabled.")
 			elif isinstance(error, commands.MissingRequiredArgument):
-				embed = discord.Embed(description="Argument missing. {}".format(error.args[0]))
+				embed = discord.Embed(description="Required argument missing. {}".format(error.args[0]))
 			elif isinstance(error, commands.BadArgument):
 				embed = discord.Embed(description="Bad Argument given. {}".format(error.args[0]))
 			elif isinstance(error, commands.TooManyArguments):
@@ -98,7 +98,7 @@ class ErrHandle:
 				embed = discord.Embed(description="Command Error. {}".format(error.args[0]))
 			else:
 				embed = discord.Embed(
-					description="Placeholder embed. If you see this please message {}.".format(str(self.owner)))
+					description="Placeholder embed. If you see this please message {}.".format(str(owner)))
 			if embed:
 				embed.colour = roxbot.EmbedColours.dark_red
 				await ctx.send(embed=embed, delete_after=8)
