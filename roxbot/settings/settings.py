@@ -540,8 +540,8 @@ class Settings:
 			Example:
 				;settings nsfw addchannel #nsfw_stuff
 		"""
-		menu = Menu.nsfw(ctx.guild)
-		print(menu.content)
+		#menu = Menu.nsfw(ctx.guild)
+		#print(menu.content)
 		selection = selection.lower()
 		nsfw = self.guild_settings.nsfw
 
