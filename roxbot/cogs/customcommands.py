@@ -23,9 +23,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-
+import os
 
 import discord
+from discord import File
 from discord.ext.commands import group
 
 import roxbot
@@ -148,12 +149,18 @@ class CustomCommands:
 		if not listzero:
 			listzero = "There are no commands setup.\n"
 
-		# TODO: Sort out a way to shorten this if it goes over 2000 characters.
-		
-		em = discord.Embed(title="Here is the list of Custom Commands", color=roxbot.EmbedColours.pink)
-		em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
-		em.add_field(name="Commands that don't:", value=listzero, inline=False)
-		return await ctx.send(embed=em)
+		if len(listzero) >= 1000 or len(listone) >= 1000:
+			with open("commands.tmp", "w") as output_file:
+				output_file.write("Prefix commands:\n{}\nNon prefix commands:\n{}".format(listone, listzero))
+		try:
+			to_send = File("commands.tmp", filename="commands.txt") # this is the discord file object, not the python built in IO
+			await ctx.send(content="You have too many commands to be displayed in Discord, so your command list is attatched.", file=to_send)
+			return os.remove("commands.tmp")
+		except FileNotFoundError:
+			em = discord.Embed(title="Here is the list of Custom Commands", color=roxbot.EmbedColours.pink)
+			em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
+			em.add_field(name="Commands that don't:", value=listzero, inline=False)
+			return await ctx.send(embed=em)
 
 
 def setup(bot_client):
