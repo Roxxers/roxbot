@@ -94,6 +94,12 @@ async def on_ready():
 	print("Servers I am currently in:")
 	for server in bot.guilds:
 		print(server)
+		# this is so if we're added to a server while we're offline we deal with it
+		try:
+			gs.get(server)
+		except KeyError:
+			print("Server not found in servers.json - adding example config")
+			gs.add_guild(server)
 	print("")
 
 

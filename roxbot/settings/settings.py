@@ -367,16 +367,22 @@ class Settings:
 			self_assign["enabled"] = 0
 			await ctx.send("'self_assign' was disabled :cry:")
 		elif selection == "addrole":
-			if role.id in self_assign["roles"]:
-				return await ctx.send("{} is already a self-assignable role.".format(role.name))
-			self_assign["roles"].append(role.id)
-			await ctx.send('Role "{}" added'.format(str(role)))
+			try:
+				if role.id in self_assign["roles"]:
+					return await ctx.send("{} is already a self-assignable role.".format(role.name))
+				self_assign["roles"].append(role.id)
+				await ctx.send('Role "{}" added'.format(str(role)))
+			except AttributeError:
+				return await ctx.send("Role param incorrect. Check you spelt it correctly")
 		elif selection == "removerole":
-			if role.id in self_assign["roles"]:
-				self_assign["roles"].remove(role.id)
-				await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-			else:
-				return await ctx.send("That role was not in the list.")
+			try:
+				if role.id in self_assign["roles"]:
+					self_assign["roles"].remove(role.id)
+					await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
+				else:
+					return await ctx.send("That role was not in the list.")
+			except AttributeError:
+				return await ctx.send("Role param incorrect. Check you spelt it correctly")
 		else:
 			return await ctx.send("No valid option given.")
 		return self.guild_settings.update(self_assign, "self_assign")
