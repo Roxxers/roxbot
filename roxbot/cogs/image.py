@@ -374,7 +374,7 @@ class ImageEditor:
 
 		flag = PrideFlags.gf()
 		async with ctx.typing():
-			file = await self.flag_filter("pan", flag, image)
+			file = await self.flag_filter("gf", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
 		await self.image_logging(ctx, output)
@@ -394,7 +394,7 @@ class ImageEditor:
 
 		flag = PrideFlags.agender()
 		async with ctx.typing():
-			file = await self.flag_filter("gf", flag, image)
+			file = await self.flag_filter("agender", flag, image)
 		output = await ctx.send(file=file)
 		os.remove(file.filename)
 		await self.image_logging(ctx, output)
