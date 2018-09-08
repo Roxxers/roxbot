@@ -77,7 +77,7 @@ class AvatarURL(commands.UserConverter):
 	Will do a user lookup, if that fails, then tries to parse the argument for a link
 	"""
 	async def convert(self, ctx, argument):
-		if any(x in argument.split(".")[-1] for x in ("png", "jpg", "jpeg")):
+		if any(x in argument.split(".")[-1].lower() for x in ("png", "jpg", "jpeg")):
 			return argument
 		else:
 			try:
