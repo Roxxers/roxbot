@@ -10,7 +10,8 @@
 #### New Features
 *fuck i moved all my new stuff to 1.8*
 #### Bug Fixes
-*fuck i moved all my bug fixes to 1.8*
+- deepfry command now works all the time
+- pride filter filenames fixed
 
 ## v1.8.0
 #### New Features
