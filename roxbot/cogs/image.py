@@ -148,13 +148,12 @@ class ImageEditor:
 
 	@staticmethod
 	def add_grain(img, prob=0.2, opacity=30):
-		img_matrix = np.zeros(img.size, dtype=np.uint8)
-		for x in range(img.height):
-			for y in range(img.width):
+		img_matrix = np.zeros((img.height, img.width), dtype=np.uint8)
+		for y in range(img.height):
+			for x in range(img.width):
 				if prob < random.random():
-					img_matrix[x][y] = 255
-
-		noisy = Image.fromarray(img_matrix, "L").show()
+					img_matrix[y][x] = 255
+		noisy = Image.fromarray(img_matrix, "L")
 		noisy = noisy.convert("RGB")
 		mask = Image.new('RGBA', img.size, (0, 0, 0, opacity))
 		return Image.composite(noisy, img, mask)
