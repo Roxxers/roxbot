@@ -29,7 +29,6 @@ import os
 import random
 import discord
 from discord.ext import commands
-from discord.ext.commands import bot
 
 import roxbot
 
@@ -41,7 +40,7 @@ class Util():
 	def __init__(self, bot_client):
 		self.bot = bot_client
 
-	@bot.command()
+	@commands.command()
 	async def avatar(self, ctx, *, user: discord.User = None):
 		"""
 		Returns a mentioned users avatar
@@ -62,7 +61,7 @@ class Util():
 		await ctx.send(file=discord.File(avaimg))
 		os.remove(avaimg)
 
-	@bot.command()
+	@commands.command()
 	async def info(self, ctx, member: discord.Member = None):
 		"""
 		Gets info for a mentioned user
@@ -114,7 +113,7 @@ class Util():
 		return await ctx.send(embed=embed)
 
 	@commands.guild_only()
-	@bot.command(aliases=["server"])
+	@commands.command(aliases=["server"])
 	async def guild(self, ctx):
 		"""Returns info on the current guild(server)."""
 		guild = ctx.guild
@@ -151,7 +150,7 @@ class Util():
 		return await ctx.send(embed=embed)
 
 	@commands.guild_only()
-	@bot.command()
+	@commands.command()
 	async def role(self, ctx, *, role: discord.Role):
 		"""Displays the info on a role"""
 		embed = discord.Embed(title="Role '{}'".format(role.name), colour=role.colour.value)
@@ -162,7 +161,7 @@ class Util():
 		embed.add_field(name="Managed", value=str(role.managed), inline=False)
 		return await ctx.send(embed=embed)
 
-	@bot.command(enabled=False, hidden=True)
+	@commands.command(enabled=False, hidden=True)
 	async def upload(self, ctx):
 		"""
 		Uploads selected file to the host, thanks to the fact that
@@ -201,7 +200,7 @@ class Util():
 	async def upload_err(self, ctx):
 		return await ctx.send("File couldn't be uploaded.")
 
-	@bot.command(aliases=["emoji"])
+	@commands.command(aliases=["emoji"])
 	async def emote(self, ctx, emote: roxbot.converters.EmojiConverter):
 		"""
 		Uploads the emote given. Useful for downloading emotes.
@@ -227,18 +226,18 @@ class Util():
 		except IndexError:
 			return await ctx.send("This command only supports custom emojis at the moment. Sorry.")
 
-	@bot.command()
+	@commands.command()
 	async def lookup(self, ctx, ID: int):
 		result = self.bot.get_channel(ID)
 		pass
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	async def inviteme(self, ctx):
 		"""Returns an invite link to invite the bot to your server."""
 		link = discord.utils.oauth_url(self.bot.user.id, discord.Permissions.all_channel())
 		return await ctx.send("WARNING: This is only for Roxie to use atm. Here is a link to invite me to your server! <{}>".format(link))
 
-	@bot.command()
+	@commands.command()
 	@commands.is_owner()
 	async def echo(self, ctx, channel: discord.TextChannel, *, message: str):
 		await channel.send(message)

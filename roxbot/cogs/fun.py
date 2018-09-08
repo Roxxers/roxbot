@@ -42,7 +42,7 @@ class Fun:
 		self.bot = bot_client
 		self.croak = {}
 
-	@bot.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
+	@commands.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
 	async def roll(self, ctx, *, expression=""):
 		"""
 		Rolls a die using dice expression format.
@@ -189,7 +189,7 @@ class Fun:
 		return await ctx.send(response)
 
 	@roxbot.checks.isnt_anal()
-	@bot.command()
+	@commands.command()
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
 		Spanks the mentioned user ;)
@@ -202,7 +202,7 @@ class Fun:
 		return await ctx.send(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
 	@roxbot.checks.isnt_anal()
-	@bot.command(aliases=["succ"])
+	@commands.command(aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
 		Sucks the mentioned user ;)
@@ -214,7 +214,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to suck")
 		return await ctx.send(":eggplant: :sweat_drops: :tongue: *{} sucks {}*".format(self.bot.user.name, user.name))
 
-	@bot.command()
+	@commands.command()
 	async def hug(self, ctx, *, user: discord.User = None):
 		"""
 		Hugs the mentioned user :3
@@ -226,7 +226,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to hug")
 		return await ctx.send(":blush: *{} hugs {}*".format(self.bot.user.name, user.name))
 
-	@bot.command(aliases=["headpat", "pat"])
+	@commands.command(aliases=["headpat", "pat"])
 	async def pet(self, ctx, *, user: discord.User = None):
 		"""
 		Gives headpats to the mentioned user :3
@@ -238,7 +238,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to headpat")
 		return await ctx.send("Nyaa! :3 *{} gives headpats to {}*".format(self.bot.user.name, user.name))
 
-	@bot.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
+	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx):
 		"""
 		Rates the mentioned waifu(s). husbando/spousurate also work.
@@ -276,12 +276,12 @@ class Fun:
 		else:
 			return await ctx.send("Oh that's your {}? I rate them a {}/10. {}".format(waifu, rating, emoji))
 
-	@bot.command(aliases=["cf"])
+	@commands.command(aliases=["cf"])
 	async def coinflip(self, ctx):
 		"""Flip a coin"""
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
-	@bot.command()
+	@commands.command()
 	async def aesthetics(self, ctx, *, convert):
 		"""Converts text to be more  a e s t h e t i c s"""
 		wide_map = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))  # Create dict with fixed width equivalents for chars
@@ -303,7 +303,7 @@ class Fun:
 			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
 		)
 
-	@bot.command(aliases=["ft", "frog"])
+	@commands.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
 		"""RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG"""
 		endpoint = "https://frog.tips/api/1/tips/"
@@ -316,7 +316,7 @@ class Fun:
 		embed.set_footer(text="https://frog.tips")
 		return await ctx.send(embed=embed)
 
-	@bot.command(aliases=["otd"])
+	@commands.command(aliases=["otd"])
 	async def onthisday(self, ctx):
 		"""Returns a fact that happened on this day."""
 		base_url = "http://numbersapi.com/"
@@ -334,7 +334,7 @@ class Fun:
 		embed.set_footer(text=base_url)
 		return await ctx.send(embed=embed)
 
-	@bot.command(aliases=["nf"])
+	@commands.command(aliases=["nf"])
 	async def numberfact(self, ctx, number=-54):
 		"""Returns a fact for the positive integer given. A random number is chosen if none is given."""
 		base_url = "http://numbersapi.com/"
@@ -357,7 +357,7 @@ class Fun:
 		embed.set_footer(text=base_url)
 		return await ctx.send(embed=embed)
 
-	@bot.command()
+	@commands.command()
 	@commands.has_permissions(add_reactions=True)
 	@commands.bot_has_permissions(add_reactions=True)
 	async def xkcd(self, ctx, *, query=None):

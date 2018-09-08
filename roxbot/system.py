@@ -107,11 +107,11 @@ class System:
 			await ctx.message.attachments[0].save(avaimg)
 		else:
 			url = url.strip('<>')
-			roxbot.http.download_file(url, avaimg)
+			await roxbot.http.download_file(url, avaimg)
 		with open(avaimg, 'rb') as f:
 			await self.bot.user.edit(avatar=f.read())
 		os.remove(avaimg)
-		asyncio.sleep(2)
+		await asyncio.sleep(2)
 		return await ctx.send(":ok_hand:")
 
 	@commands.command(aliases=["nick", "nickname"])

@@ -78,7 +78,7 @@ class Admin:
 	@roxbot.checks.is_admin_or_mod()
 	@commands.guild_only()
 	@commands.bot_has_permissions(manage_messages=True)
-	@bot.command()
+	@commands.command()
 	async def slowmode(self, ctx, seconds):
 		"""Puts the current channel in slowmode.
 		Usage:
@@ -107,7 +107,7 @@ class Admin:
 	@commands.has_permissions(manage_messages=True)
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)
-	@bot.command()
+	@commands.command()
 	async def purge(self, ctx, limit=0, *, author: roxbot.converters.UserConverter=None):
 		"""Purges messages from the text channel.
 		Limit = Limit of messages to be deleted
@@ -252,7 +252,7 @@ class Admin:
 
 	@commands.has_permissions(kick_members=True)
 	@commands.bot_has_permissions(kick_members=True)
-	@bot.command()
+	@commands.command()
 	async def kick(self, ctx, member: discord.Member, *, reason=""):
 		"""Kicks mentioned user. Allows you to give a reason."""
 		try:
@@ -263,7 +263,7 @@ class Admin:
 
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
-	@bot.command()
+	@commands.command()
 	async def ban(self, ctx, member: discord.Member, *, reason=""):
 		"""Bans mentioned user. Allows you to give a reason."""
 		try:
@@ -274,7 +274,7 @@ class Admin:
 
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
-	@bot.command()
+	@commands.command()
 	async def unban(self, ctx, member: roxbot.converters.UserConverter, *, reason=""):
 		"""Unbans user with given ID. Allows you to give a reason."""
 		ban = await ctx.guild.get_ban(member)

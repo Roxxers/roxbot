@@ -154,7 +154,7 @@ class ImageEditor:
 				if prob < random.random():
 					img_matrix[x][y] = 255
 
-		noisy = Image.fromarray(img_matrix, "L")
+		noisy = Image.fromarray(img_matrix, "L").show()
 		noisy = noisy.convert("RGB")
 		mask = Image.new('RGBA', img.size, (0, 0, 0, opacity))
 		return Image.composite(noisy, img, mask)

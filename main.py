@@ -76,11 +76,21 @@ bot = commands.Bot(
 @bot.event
 async def on_ready():
 	# Load Roxbots inbuilt cogs and settings
-	bot.load_extension("roxbot.settings.settings")
-	bot.load_extension("roxbot.err_handle")
-	bot.load_extension("roxbot.logging")
-	bot.load_extension("roxbot.system")
+	print("Loading Bot internals...")
 
+	bot.load_extension("roxbot.system")
+	print("system.py Loaded")
+
+	bot.load_extension("roxbot.settings.settings")
+	print("settings.py Loaded")
+
+	bot.load_extension("roxbot.err_handle")
+	print("err_handle.py Loaded")
+
+	bot.load_extension("roxbot.logging")
+	print("logging.py Loaded")
+
+	print("")
 	print("Discord.py version: " + discord.__version__)
 	print("Client logged in\n")
 
