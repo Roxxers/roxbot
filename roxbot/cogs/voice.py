@@ -81,7 +81,7 @@ ytdl_format_options = {
 
 ffmpeg_options = {
 	'before_options': '-nostdin',
-	'options': '-vn -loglevel panic --force-ipv4'
+	'options': '-vn -loglevel panic'
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
@@ -191,7 +191,8 @@ class Voice:
 
 		embed = discord.Embed(title=title, colour=roxbot.EmbedColours.pink, url=np.webpage_url)
 		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
-		embed.set_image(url=np.thumbnail_url)
+		if np.thumbnail_url:
+			embed.set_image(url=np.thumbnail_url)
 		embed.set_footer(text="{}/{} | Volume: {}%".format(time_played, duration, int(self.now_playing[guild.id].volume*100)))
 		return embed
 
@@ -252,11 +253,11 @@ class Voice:
 
 		# Playlist and search handling.
 		if 'entries' in video and video.get("extractor_key") != "YoutubeSearch":
-			await ctx.send("Looks like you have given me a playlist. I will que up all {} videos in the playlist.".format(len(video.get("entries"))))
+			await ctx.send("Looks like you have given me a playlist. I will queue up all {} videos in the playlist.".format(len(video.get("entries"))))
 			data = dict(video)
 			video = data["entries"].pop(0)
 			for entry in data["entries"]:
-				self._queue_song(ctx, entry, stream)
+				await self._queue_song(ctx, entry, stream)
 		elif 'entries' in video and video.get("extractor_key") == "YoutubeSearch":
 			video = video["entries"][0]
 
@@ -285,7 +286,7 @@ class Voice:
 			await ctx.send(embed=embed)
 		else:
 			# Queue the song as there is already a song playing or paused.
-			self._queue_song(ctx, video, stream)
+			await self._queue_song(ctx, video, stream)
 
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:

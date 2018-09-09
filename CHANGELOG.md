@@ -8,11 +8,13 @@
 
 ### Regular Updates
 #### New Features
-- roxbot will remove all redundant settings (removed roles from self assign, etc.) 
-- cogs have a message if they fail to load. this is better than the entire program breaking.
+- Roxbot will remove all redundant settings (removed roles from self assign, etc.) 
+- Cogs have a message if they fail to load. This is better than the entire program breaking.
 #### Bug Fixes
-- deepfry command now works all the time
-- pride filter filenames fixed
+- `deepfry` command now works all the time
+- Pride filter filenames fixed
+- As many spelling mistakes as possible
+- If player can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
 
 ## v1.8.0
 #### New Features
