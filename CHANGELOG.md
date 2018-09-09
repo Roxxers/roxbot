@@ -8,7 +8,8 @@
 
 ### Regular Updates
 #### New Features
-*fuck i moved all my new stuff to 1.8*
+- roxbot will remove all redundant settings (removed roles from self assign, etc.) 
+- cogs have a message if they fail to load. this is better than the entire program breaking.
 #### Bug Fixes
 - deepfry command now works all the time
 - pride filter filenames fixed

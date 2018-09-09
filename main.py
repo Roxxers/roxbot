@@ -97,8 +97,11 @@ async def on_ready():
 	# Load Extension Cogs
 	print("Cogs Loaded:")
 	for cog in cogs:
-		bot.load_extension(cog)
-		print(cog.split(".")[2])
+		try:
+			bot.load_extension(cog)
+			print(cog.split(".")[2])
+		except ImportError:
+			print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
 	print("")
 
 	print("Servers I am currently in:")
