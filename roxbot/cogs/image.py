@@ -148,6 +148,13 @@ class ImageEditor:
 
 	@staticmethod
 	def add_grain(img, prob=0.2, opacity=30):
+		"""
+		Adds salt and pepper grain to the given image.
+		:param img: :type PIL.Image: Image to add grain to
+		:param prob: :type float: Probability of a pixel being black between 0-1
+		:param opacity: :type int: opacity of the grain when composite with the given image between 0%-100%
+		:return: :type PIL.Image: Image with added grain
+		"""
 		img_matrix = np.zeros((img.height, img.width), dtype=np.uint8)
 		for y in range(img.height):
 			for x in range(img.width):
