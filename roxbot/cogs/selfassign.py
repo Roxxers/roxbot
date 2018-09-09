@@ -36,6 +36,14 @@ class SelfAssign():
 	def __init__(self, Bot):
 		self.bot = Bot
 
+	async def on_guild_role_delete(self, role):
+		settings = gs.get(role.guild)
+		sa = settings.self_assign
+		for sa_role in sa["roles"]:
+			if int(sa_role) == role.id:
+				sa["roles"].remove(role.id)
+				return settings.update(sa, "self_assign")
+
 	@commands.command(pass_context=True)
 	async def listroles(self, ctx):
 		"""
