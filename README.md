@@ -14,10 +14,10 @@ _Coming Soon_
 ## Command Docs
 _Coming Soon_
 
-## [Changelog](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/CHANGELOG.md)
+## [Changelog](https://github.commaster/roxxers/roxbot/blob/master/CHANGELOG.md)
 
 ## Support Me
-<a href='https://ko-fi.com/roxxers' target='_blank'><img height='36'src='https://az743702.vo.msecnd.net/cdn/kofi2.png?v=0' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
+[![KoFi](https://i.imgur.com/IE2Qg79.png)](https://ko-fi.com/roxxers)
 
 ## License
 [MIT License](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
