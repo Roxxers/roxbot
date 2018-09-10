@@ -65,7 +65,7 @@ class GaySoundsShitposts:
 			#channel = self.bot.get_channel(450040463794241536)
 			#await channel.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
 
-	@bot.command()
+	@commands.command()
 	async def agree(self, ctx):
 		role = discord.utils.get(ctx.author.guild.roles, id=450042170112475136)
 		try:
@@ -73,7 +73,7 @@ class GaySoundsShitposts:
 		except discord.HTTPException:
 			pass
 
-	@bot.command(hidden=True)
+	@commands.command(hidden=True)
 	async def perms(self, ctx, role):
 		"""Shell command to do the perm assigning. Only should be invoked by another command."""
 		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
@@ -102,7 +102,7 @@ class GaySoundsShitposts:
 			)
 
 	@is_gss()
-	@bot.command()
+	@commands.command()
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
 		arg = None
@@ -115,7 +115,7 @@ class GaySoundsShitposts:
 
 	@is_not_nsfw_disabled()
 	@is_gss()
-	@bot.command()
+	@commands.command()
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
 		arg = None
