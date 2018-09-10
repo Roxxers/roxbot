@@ -26,7 +26,7 @@ SOFTWARE.
 
 
 import discord
-from discord.ext.commands import group
+from discord.ext import commands
 
 import roxbot
 
@@ -47,15 +47,18 @@ class CustomCommands:
 		if message.author == self.bot.user:
 			return
 
+		command = msg.split(self.bot.command_prefix)[1]
 		if msg.startswith(self.bot.command_prefix):
-			if msg.split(self.bot.command_prefix)[1] in settings.custom_commands["1"]:
-				return await channel.send(settings.custom_commands["1"][msg.split(self.bot.command_prefix)[1]])
+			if command in settings.custom_commands["1"]:
+				return await channel.send(settings.custom_commands["1"][command])
+			elif command in settings.custom_commands["2"]:
+				return await channel.send(settings.custom_commands["2"][command])
 		else:
 			for command in settings.custom_commands["0"]:
 				if msg == command:
 					return await channel.send(settings.custom_commands["0"][command])
 
-	@group(pass_context=True, aliases=["cc"])
+	@commands.group(aliases=["cc"])
 	@roxbot.checks.is_owner_or_admin()
 	async def custom(self, ctx):
 		""""A group of commands to manage custom commands for your server."""
@@ -63,32 +66,42 @@ class CustomCommands:
 			return await ctx.send('Missing Argument')
 
 	@custom.command(pass_context=True)
-	async def add(self, ctx, command, output, prefix_required="0"):
+	async def add(self, ctx, command_type, command, *output):
 		"""Adds a custom command to the list of custom commands."""
+		if command_type in ("0", "no_prefix", "no prefix"):
+			command_type = "0"
+		elif command_type in ("1", "prefix"):
+			command_type = "1"
+		elif command_type in ("2", "embed"):
+			command_type = "2"
+		else:
+			return await ctx.send("Incorrect type given.")
+
 		settings = roxbot.guild_settings.get(ctx.guild)
+		no_prefix_commands = settings.custom_commands["0"]
+		prefix_commands = settings.custom_commands["1"]
+		embed_commands = settings.custom_commands["2"]
+
 		command = command.lower()
-		output = output
-		zero = settings.custom_commands["0"]
-		one = settings.custom_commands["1"]
+		if len(output) == 1:
+			output = output[0]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
 			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
 		elif len(output) > 1800:
 			return await ctx.send("The output is too long")
-		elif command in self.bot.commands and prefix_required == "1":
+		elif command in self.bot.all_commands.keys() and command_type == "1":
 			return await ctx.send("This is already the name of a built in command.")
-		elif command in zero or command in one:
+		elif command in no_prefix_commands or command in prefix_commands or command in embed_commands:
 			return await ctx.send("Custom Command already exists.")
-		elif prefix_required != "1" and prefix_required != "0":
-			return await ctx.send("No prefix setting set.")
-		elif len(command.split(" ")) > 1 and prefix_required == "1":
+		elif len(command.split(" ")) > 1 and command_type == "1":
 			return await ctx.send("Custom commands with a prefix can only be one word with no spaces.")
 
-		settings.custom_commands[prefix_required][command] = output
+		settings.custom_commands[command_type][command] = output
 		settings.update(settings.custom_commands, "custom_commands")
 		return await ctx.send("{} has been added with the output: '{}'".format(command, output))
 
-	@custom.command(pass_context=True)
+	@custom.command()
 	async def edit(self, ctx, command, edit):
 		""""Edits an existing custom command."""
 		settings = roxbot.guild_settings.get(ctx.guild)

@@ -69,7 +69,8 @@ guild_template = {
 				},
 				"custom_commands": {
 					"0": {},
-					"1": {}
+					"1": {},
+					"2": {}
 				},
 				"gss": {
 					"log_channel": "",
