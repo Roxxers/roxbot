@@ -174,7 +174,7 @@ class Voice:
 		self.skip_votes[ctx.guild.id] = []
 		if self.playlist[ctx.guild.id] and ctx.voice_client:
 			player = self.playlist[ctx.guild.id].pop(0)
-			await ctx.invoke(self.play, url=player, stream=player.get("stream", False), from_queue=True)
+			await ctx.invoke(self.play, url=player, stream=player.get("stream", False), from_queue=True, queue_by=player.get("queued_by", None))
 
 	def _queue_song(self, ctx, video, stream):
 		"""Fuction to queue up a video into the playlist."""
@@ -232,7 +232,7 @@ class Voice:
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
-	async def play(self, ctx, *, url, stream=False, from_queue=False):
+	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
 		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
@@ -273,7 +273,7 @@ class Voice:
 			async with ctx.typing():
 				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
 				player.stream = stream
-				player.queued_by = ctx.author
+				player.queued_by = queued_by or ctx.author
 				self.now_playing[guild.id] = player
 				self.am_queuing[guild.id] = False
 
