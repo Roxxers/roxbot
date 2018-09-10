@@ -2,7 +2,6 @@
 
 ## v2.0.0
 ### Stuff Here about big changes and release
-- UX Changes, settings menu
 - More better open source stuff - pls pr me
 - easy setup and get that wiki going
 
@@ -15,6 +14,7 @@
 - Pride filter filenames fixed
 - As many spelling mistakes as possible
 - If player can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
+- Fixed bug where nowplaying embeds would have the wrong queued_by value. 
 
 ## v1.8.0
 #### New Features
