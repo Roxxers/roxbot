@@ -14,10 +14,10 @@ _Coming Soon_
 ## Command Docs
 _Coming Soon_
 
-## [Changelog](https://github.commaster/roxxers/roxbot/blob/master/CHANGELOG.md)
+## [Changelog](https://github.com/master/roxxers/roxbot/blob/master/CHANGELOG.md)
 
 ## Support Me
 [![KoFi](https://i.imgur.com/IE2Qg79.png)](https://ko-fi.com/roxxers)
 
 ## License
-[MIT License](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
+[MIT License](https://github.com/roxxers/roxbot/blob/master/LICENSE)
