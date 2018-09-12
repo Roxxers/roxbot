@@ -70,7 +70,7 @@ class ErrHandle:
 				embed.description = "Too many arguments given."
 			elif isinstance(error, commands.CommandNotFound):
 				cc = guild_settings.get(ctx.guild).custom_commands
-				if ctx.invoked_with in cc["1"]:
+				if ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"]:
 					embed = None
 				elif len(ctx.message.content) <= 2:
 					embed = None

@@ -24,20 +24,32 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-
+import random
 import discord
 from discord.ext import commands
 
 import roxbot
 
 
+# TODO: The whole system of showing the output needs to be redone cause it fucking sucks for embeds.
+
+
 class CustomCommands:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 
+	@staticmethod
+	def _get_output(command):
+		# Check for a list as the output. If so, randomly select a item from the list.
+		if isinstance(command, list):
+			command = random.choice(command)
+		return command
+
 	async def on_message(self, message):
+		# Limits customcommands to pm's as customcommands are handled at a guild level.
 		if isinstance(message.channel, discord.DMChannel):
 			return
+
 		settings = roxbot.guild_settings.get(message.guild)
 		msg = message.content.lower()
 		channel = message.channel
@@ -47,16 +59,21 @@ class CustomCommands:
 		if message.author == self.bot.user:
 			return
 
-		command = msg.split(self.bot.command_prefix)[1]
 		if msg.startswith(self.bot.command_prefix):
+			command = msg.split(self.bot.command_prefix)[1]
 			if command in settings.custom_commands["1"]:
-				return await channel.send(settings.custom_commands["1"][command])
+				command_output = self._get_output(settings.custom_commands["1"][command])
+				return await channel.send(command_output)
+
 			elif command in settings.custom_commands["2"]:
-				return await channel.send(settings.custom_commands["2"][command])
+				# TODO: Convert shit that needs to be converted like ints so that all kwargs work.
+				embed = discord.Embed(**self._get_output(settings.custom_commands["2"][command]))
+				return await channel.send(embed=embed)
 		else:
 			for command in settings.custom_commands["0"]:
 				if msg == command:
-					return await channel.send(settings.custom_commands["0"][command])
+					command_output = self._get_output(settings.custom_commands["0"][command])
+					return await channel.send(command_output)
 
 	@commands.group(aliases=["cc"])
 	@roxbot.checks.is_owner_or_admin()
@@ -65,7 +82,7 @@ class CustomCommands:
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 
-	@custom.command(pass_context=True)
+	@custom.command()
 	async def add(self, ctx, command_type, command, *output):
 		"""Adds a custom command to the list of custom commands."""
 		if command_type in ("0", "no_prefix", "no prefix"):
@@ -74,6 +91,9 @@ class CustomCommands:
 			command_type = "1"
 		elif command_type in ("2", "embed"):
 			command_type = "2"
+			if len(output) < 2:
+				return await ctx.send("Not enough options given to generate embed.")
+			output = {item : output[index+1] for index, item in enumerate(output) if index % 2 == 0}
 		else:
 			return await ctx.send("Incorrect type given.")
 
@@ -102,45 +122,62 @@ class CustomCommands:
 		return await ctx.send("{} has been added with the output: '{}'".format(command, output))
 
 	@custom.command()
-	async def edit(self, ctx, command, edit):
+	async def edit(self, ctx, command, *edit):
 		""""Edits an existing custom command."""
 		settings = roxbot.guild_settings.get(ctx.guild)
-		zero = settings.custom_commands["0"]
-		one = settings.custom_commands["1"]
+		no_prefix_commands = settings.custom_commands["0"]
+		prefix_commands = settings.custom_commands["1"]
+		embed_commands = settings.custom_commands["2"]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
 			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
 
-		if command in zero:
+		if command in no_prefix_commands:
 			settings.custom_commands["0"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
-		elif command in one:
+		elif command in prefix_commands:
 			settings.custom_commands["1"][command] = edit
+			settings.update(settings.custom_commands, "custom_commands")
+			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+		elif command in embed_commands:
+			# TODO: This needs to change when I add how to add embed cc's
+			if len(edit) < 2:
+				return await ctx.send("Not enough options given to generate embed.")
+			edit = {item : edit[index+1] for index, item in enumerate(edit) if index % 2 == 0}
+			settings.custom_commands["2"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
 		else:
 			return await ctx.send("That Custom Command doesn't exist.")
 
-	@custom.command(pass_context=True)
+	@custom.command()
 	async def remove(self, ctx, command):
 		""""Removes a custom command."""
 		settings = roxbot.guild_settings.get(ctx.guild)
+
 		command = command.lower()
-		if command in settings.custom_commands["1"]:
-			settings.custom_commands["1"].pop(command)
-			settings.update(settings.custom_commands, "custom_commands")
-			return await ctx.send("Removed {} custom command".format(command))
-		elif command in settings.custom_commands["0"]:
-			settings.custom_commands["0"].pop(command)
-			settings.update(settings.custom_commands, "custom_commands")
-			return await ctx.send("Removed {} custom command".format(command))
+		no_prefix_commands = settings.custom_commands["0"]
+		prefix_commands = settings.custom_commands["1"]
+		embed_commands = settings.custom_commands["2"]
+
+		if command in no_prefix_commands:
+			cat = "0"
+		elif command in prefix_commands:
+			cat = "1"
+		elif command in embed_commands:
+			cat = "2"
 		else:
 			return await ctx.send("Custom Command doesn't exist.")
 
-	@custom.command(pass_context=True)
+		settings.custom_commands[cat].pop(command)
+		settings.update(settings.custom_commands, "custom_commands")
+		return await ctx.send("Removed {} custom command".format(command))
+
+	@custom.command()
 	async def list(self, ctx, debug="0"):
 		""""Lists all custom commands for this server."""
+		# TODO: Make this work with embed commands.
 		if debug != "0" and debug != "1":
 			debug = "0"
 		settings = roxbot.guild_settings.get(ctx.guild)
