@@ -31,9 +31,6 @@ from discord.ext import commands
 import roxbot
 
 
-# TODO: The whole system of showing the output needs to be redone cause it fucking sucks for embeds.
-
-
 class CustomCommands:
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -228,7 +225,6 @@ class CustomCommands:
 	@custom.command()
 	async def list(self, ctx, debug="0"):
 		""""Lists all custom commands for this server."""
-		# TODO: Make this work with embed commands.
 		if debug != "0" and debug != "1":
 			debug = "0"
 		settings = roxbot.guild_settings.get(ctx.guild)
