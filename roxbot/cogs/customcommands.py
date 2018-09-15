@@ -37,6 +37,7 @@ import roxbot
 class CustomCommands:
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.embed_fields = ("title", "description", "colour", "color", "footer", "image", "thumbnail", "url")
 
 	@staticmethod
 	def _get_output(command):
@@ -45,19 +46,55 @@ class CustomCommands:
 			command = random.choice(command)
 		return command
 
+	@staticmethod
+	def _embed_values(command_output):
+		# discord.Embed.Empty is used by discord.py to denote when a field is empty. Hence why it is the fallback here
+		title = command_output.get("title", discord.Embed.Empty)
+		desc = command_output.get("description", discord.Embed.Empty)
+		# Check for both possible colour fields. Then strip possible # and convert to hex for embed
+		colour = command_output.get("colour", discord.Embed.Empty) or command_output.get("color", discord.Embed.Empty)
+		if isinstance(colour, str):
+			colour = discord.Colour(int(colour.strip("#"), 16))
+		url = command_output.get("url", discord.Embed.Empty)
+		footer = command_output.get("footer", discord.Embed.Empty)
+		image = command_output.get("image", discord.Embed.Empty)
+		thumbnail = command_output.get("thumbnail", discord.Embed.Empty)
+		embed = discord.Embed(title=title, description=desc, colour=colour, url=url)
+		if footer:
+			embed.set_footer(text=footer)
+		if image:
+			embed.set_image(url=image)
+		if thumbnail:
+			embed.set_thumbnail(url=thumbnail)
+		return embed
+
+	def _embed_parse_options(self, options):
+		# Create an dict from a list, taking each two items as a key value pair
+		output = {item: options[index + 1] for index, item in enumerate(options) if index % 2 == 0}
+		for key in output.copy().keys():
+			if key not in self.embed_fields:
+				output.pop(key)
+		# Check for errors in inputs that would stop embed from being posted.
+		title = output.get("title", "")
+		desc = output.get("description", "")
+		if len(title) > 256 or len(desc) > 256:
+			raise ValueError
+
+		# We only need one so purge the inferior spelling
+		if "colour" in output and "color" in output:
+			output.pop("color")
+		return output
+
 	async def on_message(self, message):
 		# Limits customcommands to pm's as customcommands are handled at a guild level.
-		if isinstance(message.channel, discord.DMChannel):
+		if roxbot.blacklisted(message.author) or not isinstance(message.channel, discord.TextChannel):
+			return
+		if message.author == self.bot.user:
 			return
 
 		settings = roxbot.guild_settings.get(message.guild)
 		msg = message.content.lower()
 		channel = message.channel
-
-		if roxbot.blacklisted(message.author) or type(message.channel) != discord.TextChannel:
-			return
-		if message.author == self.bot.user:
-			return
 
 		if msg.startswith(self.bot.command_prefix):
 			command = msg.split(self.bot.command_prefix)[1]
@@ -66,8 +103,8 @@ class CustomCommands:
 				return await channel.send(command_output)
 
 			elif command in settings.custom_commands["2"]:
-				# TODO: Convert shit that needs to be converted like ints so that all kwargs work.
-				embed = discord.Embed(**self._get_output(settings.custom_commands["2"][command]))
+				command_output = self._get_output(settings.custom_commands["2"][command])
+				embed = self._embed_values(command_output)
 				return await channel.send(embed=embed)
 		else:
 			for command in settings.custom_commands["0"]:
@@ -85,15 +122,23 @@ class CustomCommands:
 	@custom.command()
 	async def add(self, ctx, command_type, command, *output):
 		"""Adds a custom command to the list of custom commands."""
+		# TODO: Better command docstring for better help with embeds
 		if command_type in ("0", "no_prefix", "no prefix"):
 			command_type = "0"
+			if len(output) == 1:
+				output = output[0]
 		elif command_type in ("1", "prefix"):
 			command_type = "1"
+			if len(output) == 1:
+				output = output[0]
 		elif command_type in ("2", "embed"):
 			command_type = "2"
 			if len(output) < 2:
 				return await ctx.send("Not enough options given to generate embed.")
-			output = {item : output[index+1] for index, item in enumerate(output) if index % 2 == 0}
+			try:
+				output = self._embed_parse_options(output)
+			except ValueError:
+				return await ctx.send("Failed to set output. Given output was too long.")
 		else:
 			return await ctx.send("Incorrect type given.")
 
@@ -101,10 +146,7 @@ class CustomCommands:
 		no_prefix_commands = settings.custom_commands["0"]
 		prefix_commands = settings.custom_commands["1"]
 		embed_commands = settings.custom_commands["2"]
-
 		command = command.lower()
-		if len(output) == 1:
-			output = output[0]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
 			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
@@ -133,21 +175,30 @@ class CustomCommands:
 			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
 
 		if command in no_prefix_commands:
+			if len(edit) == 1:
+				edit = edit[0]
 			settings.custom_commands["0"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+
 		elif command in prefix_commands:
+			if len(edit) == 1:
+				edit = edit[0]
 			settings.custom_commands["1"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+
 		elif command in embed_commands:
-			# TODO: This needs to change when I add how to add embed cc's
 			if len(edit) < 2:
 				return await ctx.send("Not enough options given to generate embed.")
-			edit = {item : edit[index+1] for index, item in enumerate(edit) if index % 2 == 0}
+			try:
+				edit = self._embed_parse_options(edit)
+			except ValueError:
+				return await ctx.send("Failed to set output. Given output was too long.")
 			settings.custom_commands["2"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
 			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+
 		else:
 			return await ctx.send("That Custom Command doesn't exist.")
 
@@ -162,15 +213,15 @@ class CustomCommands:
 		embed_commands = settings.custom_commands["2"]
 
 		if command in no_prefix_commands:
-			cat = "0"
+			command_type = "0"
 		elif command in prefix_commands:
-			cat = "1"
+			command_type = "1"
 		elif command in embed_commands:
-			cat = "2"
+			command_type = "2"
 		else:
 			return await ctx.send("Custom Command doesn't exist.")
 
-		settings.custom_commands[cat].pop(command)
+		settings.custom_commands[command_type].pop(command)
 		settings.update(settings.custom_commands, "custom_commands")
 		return await ctx.send("Removed {} custom command".format(command))
 
@@ -182,27 +233,30 @@ class CustomCommands:
 			debug = "0"
 		settings = roxbot.guild_settings.get(ctx.guild)
 		cc = settings.custom_commands
-		listzero = ""
-		listone = ""
+		list_no_prefix = ""
+		list_prefix = ""
 
-		for command in cc["0"]:
+		no_prefix_commands = cc["0"]
+		prefix_commands = {**cc["1"], **cc["2"]}
+
+		for command in no_prefix_commands:
 			if debug == "1":
 				command += " - {}".format(cc["0"][command])
-			listzero = listzero + "- " + command + "\n"
-		for command in cc["1"]:
+				list_no_prefix = list_no_prefix + "- " + command + "\n"
+		for command in prefix_commands:
 			if debug == "1":
 				command += " - {}".format(cc["1"][command])
-			listone = listone + "- " + command + "\n"
-		if not listone:
-			listone = "There are no commands setup.\n"
-		if not listzero:
-			listzero = "There are no commands setup.\n"
+			list_prefix = list_prefix + "- " + command + "\n"
+		if not list_prefix:
+			list_prefix = "There are no commands setup.\n"
+		if not list_no_prefix:
+			list_no_prefix = "There are no commands setup.\n"
 
-		# TODO: Sort out a way to shorten this if it goes over 2000 characters.
+		# TODO: Sort out a way to shorten this if it goes over 2000 characters. Also clean up command to make sense
 		
 		em = discord.Embed(title="Here is the list of Custom Commands", color=roxbot.EmbedColours.pink)
-		em.add_field(name="Commands that require Prefix:", value=listone, inline=False)
-		em.add_field(name="Commands that don't:", value=listzero, inline=False)
+		em.add_field(name="Commands that require Prefix:", value=list_prefix, inline=False)
+		em.add_field(name="Commands that don't:", value=list_no_prefix, inline=False)
 		return await ctx.send(embed=em)
 
 
