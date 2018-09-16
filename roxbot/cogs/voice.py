@@ -44,6 +44,21 @@ def _clear_cache():
 			os.remove("roxbot/cache/{}".format(file))
 
 
+def _format_duration(duration):
+	"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
+	if not duration:
+		return duration
+	hours = duration // 3600
+	minutes = (duration % 3600) // 60
+	seconds = duration % 60
+	format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
+	formatted = datetime.time(**format_me)
+	output = "{:%M:%S}".format(formatted)
+	if formatted.hour >= 1:
+		output = "{:%H:}".format(formatted) + output
+	return output
+
+
 def volume_perms():
 	def predicate(ctx):
 		gs = guild_settings.get(ctx.guild)
@@ -64,7 +79,6 @@ def volume_perms():
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
-
 
 ytdl_format_options = {
 	'format': 'bestaudio/best',
@@ -133,6 +147,7 @@ class Voice:
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
+		self.refresh_rate = 1/60  # 60hz
 		self._volume = {}
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
@@ -147,34 +162,26 @@ class Voice:
 			self.now_playing[guild.id] = None
 			self.queue_logic[guild.id] = None
 
-	@staticmethod
-	def _format_duration(duration):
-		"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
-		if not duration:
-			return duration
-		hours = duration // 3600
-		minutes = (duration % 3600) // 60
-		seconds = duration % 60
-		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
-		formatted = datetime.time(**format_me)
-		output = "{:%M:%S}".format(formatted)
-		if formatted.hour >= 1:
-			output = "{:%H:}".format(formatted) + output
-		return output
+	async def on_guild_join(self, guild):
+		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
+		self.playlist[guild.id] = []
+		self.skip_votes[guild.id] = []
+		self.am_queuing[guild.id] = False
+		self.now_playing[guild.id] = None
+		self.queue_logic[guild.id] = None
 
 	async def _queue_logic(self, ctx):
 		"""Background task designed to help the bot move on to the next video in the queue"""
-		sleep_for = 0.5
 		try:
 			while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-				await asyncio.sleep(sleep_for)
+				await asyncio.sleep(self.refresh_rate)
 		except AttributeError:
 			pass  # This is to stop any errors appearing if the bot suddenly leaves voice chat.
 		self.now_playing[ctx.guild.id] = None
 		self.skip_votes[ctx.guild.id] = []
 		if self.playlist[ctx.guild.id] and ctx.voice_client:
 			player = self.playlist[ctx.guild.id].pop(0)
-			await ctx.invoke(self.play, url=player, stream=player.get("stream", False), from_queue=True, queue_by=player.get("queued_by", None))
+			await ctx.invoke(self.play, url=player, stream=player.get("stream", False), from_queue=True, queued_by=player.get("queued_by", None))
 
 	def _queue_song(self, ctx, video, stream):
 		"""Fuction to queue up a video into the playlist."""
@@ -186,8 +193,8 @@ class Voice:
 	def _generate_np_embed(self, guild, playing_status):
 		np = self.now_playing[guild.id]
 		title = "{0}: '{1.title}' from {1.host}".format(playing_status, np)
-		duration = self._format_duration(np.duration)
-		time_played = self._format_duration(np.source.timer/1000)
+		duration = _format_duration(np.duration)
+		time_played = _format_duration(np.source.timer/1000)
 
 		embed = discord.Embed(title=title, colour=roxbot.EmbedColours.pink, url=np.webpage_url)
 		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
@@ -195,14 +202,6 @@ class Voice:
 			embed.set_image(url=np.thumbnail_url)
 		embed.set_footer(text="{}/{} | Volume: {}%".format(time_played, duration, int(self.now_playing[guild.id].volume*100)))
 		return embed
-
-	async def on_guild_join(self, guild):
-		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
-		self.playlist[guild.id] = []
-		self.skip_votes[guild.id] = []
-		self.am_queuing[guild.id] = False
-		self.now_playing[guild.id] = None
-		self.queue_logic[guild.id] = None
 
 	@roxbot.checks.is_admin_or_mod()
 	@commands.command()
@@ -221,14 +220,6 @@ class Voice:
 		else:
 			await channel.connect()
 		return await ctx.send("Joined {0.name} :ok_hand:".format(channel))
-
-	@commands.command(hidden=True, enabled=False)
-	async def play_local(self, ctx, *, query):
-		"""Plays a file from the local filesystem."""
-		source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
-		ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
-
-		await ctx.send('Now playing: {}'.format(query))
 
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
@@ -257,7 +248,7 @@ class Voice:
 			data = dict(video)
 			video = data["entries"].pop(0)
 			for entry in data["entries"]:
-				await self._queue_song(ctx, entry, stream)
+				self._queue_song(ctx, entry, stream)
 		elif 'entries' in video and video.get("extractor_key") == "YoutubeSearch":
 			video = video["entries"][0]
 
@@ -286,11 +277,11 @@ class Voice:
 			await ctx.send(embed=embed)
 		else:
 			# Queue the song as there is already a song playing or paused.
-			await self._queue_song(ctx, video, stream)
+			self._queue_song(ctx, video, stream)
 
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:
-				await asyncio.sleep(0.5)
+				await asyncio.sleep(self.refresh_rate)
 			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=roxbot.EmbedColours.pink)
 			await ctx.send(embed=embed)
 
@@ -303,7 +294,6 @@ class Voice:
 
 	@play.before_invoke
 	@stream.before_invoke
-	@play_local.before_invoke
 	async def ensure_voice(self, ctx):
 		"""Ensures the bot is in a voice channel before continuing and if it cannot auto join, raise an error."""
 		if ctx.voice_client is None:
