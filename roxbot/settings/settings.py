@@ -24,179 +24,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-
-import asyncio
-import datetime
-
 import discord
 from discord.ext import commands
 
 from roxbot import checks, guild_settings, EmbedColours
 
-# TODO: Display the settings your changing in the menu as yu change them.
-
-
-class Menu:
-
-	__slots__ = ["name", "params", "formatted_params", "title", "content"]
-
-	def __init__(self, name,  *params, settings=None):
-		self.name = name
-		self.params = list(params).append("Exit")
-		if settings:
-			self.formatted_params = self._parse_params(settings, self.name)
-		else:
-			self.formatted_params = self.params
-		self.title = "'Roxbot Settings: {}'\n".format(self.name)
-		self.content = self._format_content(self.title, self.formatted_params, "```python", "```")
-
-	@staticmethod
-	def _format_content(title, params, prefix="", suffix=""):
-		separator = "—————————————————————————————"
-		choices = "\n"
-		for x, setting in enumerate(params):
-			if setting == "Exit":
-				choices += "[0] Exit\n"
-			elif setting != "convert":
-				if setting != [*params][x]:  # Just in case params is dict_keys, we make a new list.
-					choices += "[{}] {}\n".format(x + 1, setting)
-				else:
-					choices += "[{}] Edit '{}'\n".format(x+1, setting)
-		return prefix + title + separator + choices + suffix
-
-	@staticmethod
-	def _parse_params(settings, name):
-		params = [*settings.keys()]
-		params_copy = settings.copy().keys()
-		for param in params_copy:
-			if settings["convert"].get(param) == "bool":
-				# Enable/Disable Parse
-				if param == "enabled":
-					options = ["Enable '{}'".format(name), "Disable '{}'".format(name)]
-				else:
-					options = ["Enable '{}'".format(param), "Disable '{}'".format(param)]
-				params.remove(param)
-				params = [*options, *params]
-			elif isinstance(settings.get(param), list):
-				# Add and Remove Parse
-				options = ["Add {}".format(param), "Remove {}".format(param)]
-				params.remove(param)
-				params = [*params, *options]
-			elif isinstance(settings.get(param), (int, str)):
-				# Set parse
-				options = "Set {}".format(param)
-				params.remove(param)
-				params = [*params, options]
-		return params
-
-	def parse_choice(self, choice: int):
-		choice -= 1
-		# TODO: This and then the way of getting the selection
-		if self.params[choice].lower() == "exit":
-			return False, None, None
-
-		if "Enable" in self.formatted_params[choice]:
-			selection = "enable"
-		elif "Disable" in self.formatted_params[choice]:
-			selection = "disable"
-
-		if self.name == "Base Menu":
-			return self.params[choice], None, None
-		elif self.name == "Goodbyes":
-			pass
-		elif self.name == "Greets":
-			pass
-		elif self.name == "JoinLeave":
-			pass
-		elif self.name == "Logging":
-			pass
-		elif self.name == "Perm Roles":
-			pass
-		elif self.name == "NSFW":
-			pass
-		elif self.name == "Self Assign":
-			pass
-		elif self.name == "Twitch":
-			pass
-		elif self.name == "Voice":
-			pass
-		elif self.name == "GaySoundsShitposts":
-			pass
-
-	@classmethod
-	def base(cls, params):
-		name = "Base Menu"
-		params = params
-		return cls(name, *params)
-
-	@classmethod
-	def goodbyes(cls, guild):
-		name = "Goodbyes"
-		settings = guild_settings.get(guild).goodbyes
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def greets(cls, guild):
-		name = "Greets"
-		settings = guild_settings.get(guild).greets
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def join_leave(cls):
-		name = "JoinLeave"
-		params = ["goodbyes", "greets"]
-		return cls(name, *params)
-
-	@classmethod
-	def logging(cls, guild):
-		name = "Logging"
-		settings = guild_settings.get(guild).logging
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def perm_roles(cls, guild):
-		name = "Perm Roles"
-		settings = guild_settings.get(guild).perm_roles
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def nsfw(cls, guild):
-		name = "NSFW"
-		settings = guild_settings.get(guild).nsfw
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def self_assign(cls, guild):
-		name = "Self Assign"
-		settings = guild_settings.get(guild).self_assign
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def twitch(cls, guild):
-		name = "Twitch"
-		settings = guild_settings.get(guild).twitch
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def voice(cls, guild):
-		name = "Voice"
-		settings = guild_settings.get(guild).voice
-		params = settings.keys()
-		return cls(name, settings, *params)
-
-	@classmethod
-	def gss(cls, guild):
-		name = "GaySoundsShitposts"
-		settings = guild_settings.get(guild).gss
-		params = settings.keys()
-		return cls(name, settings, *params)
 
 
 class Settings:
@@ -205,31 +37,12 @@ class Settings:
 	"""
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.bg_task = self.bot.loop.create_task(self.auto_backups())
 
 	def get_channel(self, ctx, channel):
 		if ctx.message.channel_mentions:
 			return ctx.message.channel_mentions[0]
 		else:
 			return self.bot.get_channel(channel)
-
-	async def auto_backups(self):
-		await self.bot.wait_until_ready()
-		raw_settings = guild_settings._open_config()
-		while not self.bot.is_closed():
-			if raw_settings != guild_settings._open_config():
-				raw_settings = guild_settings._open_config()
-				time = datetime.datetime.now()
-				guild_settings.backup(raw_settings, "{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
-			await asyncio.sleep(300)
-
-	@commands.command()
-	@commands.is_owner()
-	async def backup(self, ctx):
-		time = datetime.datetime.now()
-		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
-		guild_settings.backup(guild_settings._open_config(), filename)
-		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
 
 	def parse_setting(self, ctx, settings_to_copy, raw=False):
 		settingcontent = ""

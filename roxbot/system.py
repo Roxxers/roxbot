@@ -28,6 +28,7 @@ SOFTWARE.
 import os
 import sys
 import asyncio
+import datetime
 
 import roxbot
 
@@ -39,6 +40,25 @@ class System:
 	"""Cog for commands that change the bot account and bot running."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.backup_task = self.bot.loop.create_task(self.auto_backups())
+
+	async def auto_backups(self):
+		await self.bot.wait_until_ready()
+		raw_settings = roxbot.guild_settings._open_config()
+		while not self.bot.is_closed():
+			if raw_settings != roxbot.guild_settings._open_config():
+				raw_settings = roxbot.guild_settings._open_config()
+				time = datetime.datetime.now()
+				roxbot.guild_settings.backup(raw_settings, "{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
+			await asyncio.sleep(300)
+
+	@commands.command()
+	@commands.is_owner()
+	async def backup(self, ctx):
+		time = datetime.datetime.now()
+		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
+		roxbot.guild_settings.backup(roxbot.guild_settings._open_config(), filename)
+		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
 
 	@commands.command()
 	@commands.is_owner()
