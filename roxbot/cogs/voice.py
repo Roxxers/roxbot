@@ -228,8 +228,8 @@ class Voice:
 		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
 
-		# Checks if invoker is in voice with the bot. Skips admins and mods and owner.
-		if not roxbot.checks._is_admin_or_mod(ctx) or from_queue:
+		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
+		if not (roxbot.checks._is_admin_or_mod(ctx) or from_queue):
 			if not ctx.author.voice:
 				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
