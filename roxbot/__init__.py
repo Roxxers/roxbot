@@ -52,3 +52,5 @@ __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built wi
 [Say Thanks](https://saythanks.io/to/Roxxers)"""
 __author__ = "Roxanne Gibson"
 __version__ = "2.0.0a"
+
+datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"

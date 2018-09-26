@@ -194,7 +194,7 @@ class Admin:
 				warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
 			except discord.ext.commands.CommandInvokeError:
 				warned_by = warning["warned-by"]
-			date = datetime.datetime.fromtimestamp(warning["date"]).strftime('%c')
+			date = roxbot.datetime_formatting.format(datetime.datetime.fromtimestamp(warning["date"]))
 			warn_reason = warning["warning"]
 			em.add_field(name="Warning %s" % x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
 			x += 1
