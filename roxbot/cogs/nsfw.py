@@ -51,7 +51,8 @@ class NFSW():
 	async def gelbooru_clone(self, ctx, base_url, post_url, tags):
 		limit = 150
 		tags = tags + tag_blacklist(ctx.guild)
-		url = base_url + tags + '&limit=' + str(limit)
+		page = random.randrange(20)
+		url = base_url + tags + '&limit=' + str(limit) + '%pid=' + str(page)
 
 		posts = await roxbot.http.api_request(url)
 

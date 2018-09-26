@@ -65,7 +65,8 @@ async def api_request(url, *, headers=None, **kwargs):
 	async with aiohttp.ClientSession() as session:
 		async with session.get(url, headers=headers, **kwargs) as resp:
 			try:
-				return await resp.json()
+				output = await resp.text()
+				return json.loads(output)
 			except json.JSONDecodeError:
 				return None
 
