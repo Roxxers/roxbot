@@ -32,6 +32,19 @@ import roxbot
 
 
 class CustomCommands:
+	ERROR_AT_MENTION = "Custom Commands cannot mention people/roles/everyone."
+	ERROR_COMMAND_NULL = "That Custom Command doesn't exist."
+	ERROR_COMMAND_EXISTS = "Custom Command already exists."
+	ERROR_COMMAND_EXISTS_INTERNAL = "This is already the name of a built in command."
+	ERROR_EMBED_VALUE = "Not enough options given to generate embed."
+	ERROR_INCORRECT_TYPE = "Incorrect type given."
+	ERROR_OUTPUT_TOO_LONG = "Failed to set output. Given output was too long."
+	ERROR_PREFIX_SPACE = "Custom commands with a prefix can only be one word with no spaces."
+
+	OUTPUT_ADD = "{} has been added with the output: '{}'"
+	OUTPUT_EDIT = "Edit made. {} now outputs {}"
+	OUTPUT_REMOVE = "Removed {} custom command"
+
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.embed_fields = ("title", "description", "colour", "color", "footer", "image", "thumbnail", "url")
@@ -131,13 +144,13 @@ class CustomCommands:
 		elif command_type in ("2", "embed"):
 			command_type = "2"
 			if len(output) < 2:
-				return await ctx.send("Not enough options given to generate embed.")
+				return await ctx.send(self.ERROR_EMBED_VALUE)
 			try:
 				output = self._embed_parse_options(output)
 			except ValueError:
-				return await ctx.send("Failed to set output. Given output was too long.")
+				return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
 		else:
-			return await ctx.send("Incorrect type given.")
+			return await ctx.send(self.ERROR_INCORRECT_TYPE)
 
 		settings = roxbot.guild_settings.get(ctx.guild)
 		no_prefix_commands = settings.custom_commands["0"]
@@ -146,19 +159,19 @@ class CustomCommands:
 		command = command.lower()
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
-			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
+			return await ctx.send(self.ERROR_AT_MENTION)
 		elif len(output) > 1800:
-			return await ctx.send("The output is too long")
+			return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
 		elif command in self.bot.all_commands.keys() and command_type == "1":
-			return await ctx.send("This is already the name of a built in command.")
+			return await ctx.send(self.ERROR_COMMAND_EXISTS_INTERNAL)
 		elif command in no_prefix_commands or command in prefix_commands or command in embed_commands:
-			return await ctx.send("Custom Command already exists.")
+			return await ctx.send(self.ERROR_COMMAND_EXISTS)
 		elif len(command.split(" ")) > 1 and command_type == "1":
-			return await ctx.send("Custom commands with a prefix can only be one word with no spaces.")
+			return await ctx.send()
 
 		settings.custom_commands[command_type][command] = output
 		settings.update(settings.custom_commands, "custom_commands")
-		return await ctx.send("{} has been added with the output: '{}'".format(command, output))
+		return await ctx.send(self.OUTPUT_ADD.format(command, output))
 
 	@custom.command()
 	async def edit(self, ctx, command, *edit):
@@ -169,35 +182,35 @@ class CustomCommands:
 		embed_commands = settings.custom_commands["2"]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
-			return await ctx.send("Custom Commands cannot mention people/roles/everyone.")
+			return await ctx.send(self.ERROR_AT_MENTION)
 
 		if command in no_prefix_commands:
 			if len(edit) == 1:
 				edit = edit[0]
 			settings.custom_commands["0"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
-			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		elif command in prefix_commands:
 			if len(edit) == 1:
 				edit = edit[0]
 			settings.custom_commands["1"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
-			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		elif command in embed_commands:
 			if len(edit) < 2:
-				return await ctx.send("Not enough options given to generate embed.")
+				return await ctx.send(self.ERROR_EMBED_VALUE)
 			try:
 				edit = self._embed_parse_options(edit)
 			except ValueError:
-				return await ctx.send("Failed to set output. Given output was too long.")
+				return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
 			settings.custom_commands["2"][command] = edit
 			settings.update(settings.custom_commands, "custom_commands")
-			return await ctx.send("Edit made. {} now outputs {}".format(command, edit))
+			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		else:
-			return await ctx.send("That Custom Command doesn't exist.")
+			return await ctx.send(self.ERROR_COMMAND_NULL)
 
 	@custom.command()
 	async def remove(self, ctx, command):
@@ -216,11 +229,11 @@ class CustomCommands:
 		elif command in embed_commands:
 			command_type = "2"
 		else:
-			return await ctx.send("Custom Command doesn't exist.")
+			return await ctx.send(self.ERROR_COMMAND_NULL)
 
 		settings.custom_commands[command_type].pop(command)
 		settings.update(settings.custom_commands, "custom_commands")
-		return await ctx.send("Removed {} custom command".format(command))
+		return await ctx.send(self.OUTPUT_REMOVE.format(command))
 
 	@custom.command()
 	async def list(self, ctx, debug="0"):
