@@ -44,6 +44,7 @@ class SelfAssign():
 				sa["roles"].remove(role.id)
 				return settings.update(sa, "self_assign")
 
+	@commands.guild_only()
 	@commands.command(pass_context=True)
 	async def listroles(self, ctx):
 		"""
@@ -64,6 +65,7 @@ class SelfAssign():
 		embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="The self-assignable roles for this server are: \n"+roles)
 		return await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@commands.command(pass_context=True)
 	async def iam(self, ctx, *, role: discord.Role = None):
 		"""
@@ -95,6 +97,7 @@ class SelfAssign():
 		else:
 			return await ctx.send("That role is not self-assignable.")
 
+	@commands.guild_only()
 	@commands.command(pass_context=True)
 	async def iamn(self, ctx, *, role: discord.Role = None):
 		"""

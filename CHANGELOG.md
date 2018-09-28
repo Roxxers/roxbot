@@ -21,9 +21,12 @@
 - `deepfry` command now works all the time.
 - Pride filter filenames fixed.
 - As many spelling mistakes as possible.
-- If player can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
+- If music bot can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
 - Fixed bug where nowplaying embeds would have the wrong queued_by value. 
 - NSFW commands fixed.
+- Roxbot can now fully function in DMs. Before, she would break. DM's have less commands.
+- `;subreddit`'s "subscriptable" error has been fixed.
+- is_anal value can be changed again and check now works.
 
 ## v1.8.0
 #### New Features

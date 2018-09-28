@@ -26,7 +26,7 @@ SOFTWARE.
 
 
 import asyncio
-
+import discord
 
 class Menu:
 
@@ -108,7 +108,10 @@ async def delete_option(bot, ctx, message, delete_emoji, timeout=20):
 	try:
 		await bot.wait_for("reaction_add", timeout=timeout, check=check)
 		await message.remove_reaction(delete_emoji, bot.user)
-		await message.remove_reaction(delete_emoji, ctx.author)
+		try:
+			await message.remove_reaction(delete_emoji, ctx.author)
+		except discord.Forbidden:
+			pass
 		await message.edit(content="{} requested output be deleted.".format(ctx.author), embed=None)
 	except asyncio.TimeoutError:
 		await message.remove_reaction(delete_emoji, bot.user)

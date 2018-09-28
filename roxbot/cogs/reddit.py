@@ -26,17 +26,23 @@ SOFTWARE.
 
 
 import random
-import roxbot
 from html import unescape
 from bs4 import BeautifulSoup
-from roxbot import guild_settings
+
+import discord
 from discord.ext import commands
+
+import roxbot
+from roxbot import guild_settings
 
 
 async def _imgur_removed(url):
 	page = await roxbot.http.get_page(url)
 	soup = BeautifulSoup(page, 'html.parser')
-	return bool("removed.png" in soup.img["src"])
+	try:
+		return bool("removed.png" in soup.img["src"])
+	except TypeError:  # This should protect roxbot in case bs4 returns nothing.
+		return False
 
 
 async def imgur_get(url):
@@ -96,8 +102,6 @@ class Reddit:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.post_cache = {}
-		for guild in self.bot.guilds:
-			self.post_cache[guild.id] = [("", "")]
 
 	@commands.command()
 	@commands.has_permissions(add_reactions=True)
@@ -112,6 +116,14 @@ class Reddit:
 		links = await subreddit_request(subreddit)
 		title = ""
 		choice = {}
+		if isinstance(ctx.channel, discord.DMChannel):
+			cache_id = ctx.author.id
+		else:
+			cache_id = ctx.guild.id
+		cache_amount = 10
+		# IF ID is not in cache, create cache for ID
+		if not self.post_cache.get(cache_id, False):
+			self.post_cache[cache_id] = [("", "")]
 
 		if not links or not links.get("after") or links["children"][0]["kind"] == "t5":  # Determine if response is valid
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
@@ -126,7 +138,7 @@ class Reddit:
 			if url:
 				x_old = int(x)
 				# If the url or id are in the cache,  continue the loop. If not, proceed with the post.
-				for cache in self.post_cache[ctx.guild.id]:
+				for cache in self.post_cache[cache_id]:
 					if url in cache or choice["id"] in cache:
 						x += 1
 						break
@@ -142,24 +154,25 @@ class Reddit:
 				x += 1
 
 		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
-		if choice["over_18"] and not roxbot.checks.nsfw_predicate(ctx):
+		if (choice["over_18"] and not roxbot.checks.nsfw_predicate(ctx)) and isinstance(ctx.channel, discord.TextChannel):
 			return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		if not url:  # If no image posts could be found with the for loop.
 			return await ctx.send("I couldn't find any images from that subreddit.")
 
-		# Put the post ID and url in the cache. The url is used in case of two posts having the same link. Handy to avoid crossposts getting through the cache.
-		cache_amount = 10
+		# CACHE SECTION
+		# Put the post ID and url in the cache. The url is used in case of two posts having the same link to avoid crossposts getting through the cache.
 		post = (choice["id"], url)
-		self.post_cache[ctx.guild.id].append(post)
-		if len(self.post_cache[ctx.guild.id]) >= cache_amount:
-			self.post_cache[ctx.guild.id].pop(0)
+
+		self.post_cache[cache_id].append(post)
+		if len(self.post_cache[cache_id]) >= cache_amount:
+			self.post_cache[cache_id].pop(0)
 
 		if url.split("/")[-2] == "a":
 			text = "This is an album, click on the link to see more.\n"
 		else:
 			text = ""
 
-		if ctx.invoked_with == "subreddit":
+		if ctx.invoked_with == "subreddit" and isinstance(ctx.channel, discord.TextChannel):
 			# Only log the command when it is this command being used. Not the inbuilt commands.
 			logging = guild_settings.get(ctx.guild).logging
 			log_channel = self.bot.get_channel(logging["channel"])

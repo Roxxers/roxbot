@@ -297,6 +297,7 @@ class Trivia:
 
 	# Commands
 
+	@commands.guild_only()
 	@commands.group(aliases=["tr"], case_insensitive=True)
 	async def trivia(self, ctx):
 		"""Command group for the Roxbot Trivia game."""

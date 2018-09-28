@@ -26,6 +26,7 @@ SOFTWARE.
 
 
 import random
+import discord
 from discord.ext import commands
 
 import roxbot
@@ -43,8 +44,6 @@ class NFSW():
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.cache = {}
-		for guild in self.bot.guilds:
-			self.cache[guild.id] = []
 
 	@roxbot.checks.is_nfsw_enabled()
 	@commands.command(hidden=True)
@@ -53,6 +52,13 @@ class NFSW():
 		tags = tags + tag_blacklist(ctx.guild)
 		page = random.randrange(20)
 		url = base_url + tags + '&limit=' + str(limit) + '%pid=' + str(page)
+		if isinstance(ctx.channel, discord.DMChannel):
+			cache_id = ctx.author.id
+		else:
+			cache_id = ctx.guild.id
+		# IF ID is not in cache, create cache for ID
+		if not self.cache.get(cache_id, False):
+			self.cache[cache_id] = []
 
 		posts = await roxbot.http.api_request(url)
 
@@ -64,10 +70,10 @@ class NFSW():
 		while counter < 20:
 			post = random.choice(posts)
 			md5 = post.get("md5") or post.get("hash")
-			if md5 not in self.cache[ctx.guild.id]:
-				self.cache[ctx.guild.id].append(md5)
-				if len(self.cache[ctx.guild.id]) > 10:
-					self.cache[ctx.guild.id].pop(0)
+			if md5 not in self.cache[cache_id]:
+				self.cache[cache_id].append(md5)
+				if len(self.cache[cache_id]) > 10:
+					self.cache[cache_id].pop(0)
 				break
 			counter += 1
 

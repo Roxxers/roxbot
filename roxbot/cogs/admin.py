@@ -75,8 +75,8 @@ class Admin:
 			else:
 				pass
 
-	@roxbot.checks.is_admin_or_mod()
 	@commands.guild_only()
+	@roxbot.checks.is_admin_or_mod()
 	@commands.bot_has_permissions(manage_messages=True)
 	@commands.command()
 	async def slowmode(self, ctx, seconds):
@@ -120,6 +120,7 @@ class Admin:
 		messages = await ctx.channel.purge(limit=limit, check=predicate)
 		return await ctx.send("{} message(s) purged from chat.".format(len(messages)))
 
+	@commands.guild_only()
 	@roxbot.checks.is_admin_or_mod()
 	@commands.group(case_insensitive=True)
 	async def warn(self, ctx):
@@ -250,6 +251,7 @@ class Admin:
 		settings.update(settings.warnings, "warnings")
 		return await ctx.send("Purged {} banned users from the warn list.".format(count))
 
+	@commands.guild_only()
 	@commands.has_permissions(kick_members=True)
 	@commands.bot_has_permissions(kick_members=True)
 	@commands.command()
@@ -261,6 +263,7 @@ class Admin:
 		except discord.Forbidden:
 			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
+	@commands.guild_only()
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()
@@ -272,6 +275,7 @@ class Admin:
 		except discord.Forbidden:
 			return await ctx.send("I can't kick the owner or users higher or equal to me.")
 
+	@commands.guild_only()
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()

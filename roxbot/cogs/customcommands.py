@@ -122,6 +122,7 @@ class CustomCommands:
 					command_output = self._get_output(settings.custom_commands["0"][command])
 					return await channel.send(command_output)
 
+	@commands.guild_only()
 	@commands.group(aliases=["cc"])
 	@roxbot.checks.is_owner_or_admin()
 	async def custom(self, ctx):

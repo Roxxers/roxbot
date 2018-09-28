@@ -204,6 +204,7 @@ class Voice:
 		return embed
 
 	@roxbot.checks.is_admin_or_mod()
+	@commands.guild_only()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
 		"""Joins the voice channel your in."""
@@ -221,6 +222,7 @@ class Voice:
 			await channel.connect()
 		return await ctx.send("Joined {0.name} :ok_hand:".format(channel))
 
+	@commands.guild_only()
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
 	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
@@ -285,6 +287,7 @@ class Voice:
 			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=roxbot.EmbedColours.pink)
 			await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
@@ -303,6 +306,7 @@ class Voice:
 				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
 
 	@volume_perms()
+	@commands.guild_only()
 	@commands.command()
 	async def volume(self, ctx, volume):
 		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
@@ -326,6 +330,7 @@ class Voice:
 			raise commands.CommandError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
 
+	@commands.guild_only()
 	@commands.command()
 	async def pause(self, ctx):
 		"""Pauses the current video, if playing."""
@@ -340,6 +345,7 @@ class Voice:
 				ctx.voice_client.pause()
 				return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
 
+	@commands.guild_only()
 	@commands.command()
 	async def resume(self, ctx):
 		"""Resumes the bot if paused. Also will play the next thing in the queue if the bot is stuck."""
@@ -359,6 +365,7 @@ class Voice:
 				else:
 					return await ctx.send("Nothing to resume.")
 
+	@commands.guild_only()
 	@commands.command()
 	async def skip(self, ctx, option=""):
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
@@ -388,6 +395,7 @@ class Voice:
 		else:
 			await ctx.send("I'm not playing anything.")
 
+	@commands.guild_only()
 	@commands.command(aliases=["np"])
 	async def nowplaying(self, ctx):
 		"""Displays the video now playing."""
@@ -401,6 +409,7 @@ class Voice:
 			embed = self._generate_np_embed(ctx.guild, x)
 			return await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@commands.command()
 	async def queue(self, ctx):
 		"""Displays what videos are queued up and waiting to be played."""
@@ -414,6 +423,7 @@ class Voice:
 		embed = discord.Embed(title="Queue", description=output, colour=roxbot.EmbedColours.pink)
 		return await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@roxbot.checks.is_admin_or_mod()
 	@commands.command()
 	async def remove(self, ctx, index):
@@ -440,6 +450,7 @@ class Voice:
 			except IndexError:
 				raise commands.CommandError("Valid Index not given.")
 
+	@commands.guild_only()
 	@roxbot.checks.is_admin_or_mod()
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):

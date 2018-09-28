@@ -102,7 +102,10 @@ class ErrHandle:
 					embed = discord.Embed(title='Command Error', colour=roxbot.EmbedColours.dark_red)
 					embed.description = str(error)
 					embed.add_field(name='Server', value=ctx.guild)
-					embed.add_field(name='Channel', value=ctx.channel.mention)
+					try:
+						embed.add_field(name='Channel', value=ctx.channel.mention)
+					except AttributeError:
+						embed.add_field(name='Channel', value=ctx.channel.id)
 					embed.add_field(name='User', value=ctx.author)
 					embed.add_field(name='Message', value=ctx.message.content)
 					embed.timestamp = datetime.datetime.utcnow()

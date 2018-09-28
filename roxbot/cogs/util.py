@@ -228,6 +228,7 @@ class Util():
 
 	@commands.command()
 	async def lookup(self, ctx, ID: int):
+		# TODO: Finish this
 		result = self.bot.get_channel(ID)
 		pass
 

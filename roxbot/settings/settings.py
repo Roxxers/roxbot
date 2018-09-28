@@ -456,21 +456,22 @@ class Settings:
 			return await ctx.send("Valid option not given.")
 		return self.guild_settings.update(voice, "voice")
 
+	@commands.guild_only()
 	@checks.is_admin_or_mod()
 	@commands.command()
 	async def serverisanal(self, ctx):
 		"""Tells the bot where the server is anal or not.
 		This only changes if roxbot can do the suck and spank commands outside of the specified nsfw channels."""
-		is_anal = self.guild_settings.is_anal
+		gs = guild_settings.get(ctx.guild)
+		is_anal = gs.is_anal
 		if is_anal["y/n"] == 0:
 			is_anal["y/n"] = 1
-			self.guild_settings.update(is_anal, "is_anal")
+			gs.update(is_anal, "is_anal")
 			await ctx.send("I now know this server is anal")
 		else:
 			is_anal["y/n"] = 0
-			self.guild_settings.update(is_anal, "is_anal")
+			gs.update(is_anal, "is_anal")
 			await ctx.send("I now know this server is NOT anal")
-		return self.guild_settings.update()
 
 
 def setup(bot_client):

@@ -278,7 +278,9 @@ class Fun:
 
 	@commands.command(aliases=["cf"])
 	async def coinflip(self, ctx):
-		"""Flip a coin"""
+		"""
+		Flip a coin
+		"""
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
 	@commands.command()
@@ -429,6 +431,12 @@ class Fun:
 
 	@commands.command()
 	async def zalgo(self, ctx, *, text):
+		"""
+		Returns Z͇͇͋Á͇͇L͇͔͇G̛͇͇O͇͇͜
+		:param ctx:
+		:param text:
+		:return:
+		"""
 		intensity = 10
 		zalgo_chars = [*[chr(i) for i in range(0x0300, 0x036F + 1)], *[u'\u0488', u'\u0489']]
 		zalgoised = []
