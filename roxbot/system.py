@@ -175,21 +175,12 @@ class System:
 		await self.bot.change_presence(status=discord_status)
 		await ctx.send("**:ok:** Status set to {}".format(discord_status))
 
-	# TODO: Fix these two commands.
-
-	@commands.command()
-	@commands.is_owner()
-	async def restart(self, ctx):
-		"""Restarts the bot."""
-		await self.bot.logout()
-		return os.execl(sys.executable, sys.executable, *sys.argv)
-
 	@commands.command()
 	@commands.is_owner()
 	async def shutdown(self, ctx):
 		"""Shuts down the bot."""
+		await ctx.send(":wave:")
 		await self.bot.logout()
-		return exit(0)
 
 
 def setup(bot_client):
