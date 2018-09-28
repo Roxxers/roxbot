@@ -462,7 +462,7 @@ class Fun:
 			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
 		)
 
-	@bot.command(aliases=["rf", "roxfacts", "roxfact"])
+	@commands.command(aliases=["rf", "roxfacts", "roxfact"])
 	async def roxbotfact(self, ctx):
 		fact_index = random.randrange(0, len(roxbot.roxbotfacts.facts))
 		fact = roxbot.roxbotfacts.facts[fact_index]
