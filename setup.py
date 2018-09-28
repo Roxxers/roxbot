@@ -22,8 +22,8 @@ INPUT = "[{} .... {}]".format(Colours.OKBLUE, Colours.ENDC)
 # Version Checking
 # Basically reject anything not 3.5 or 3.6 as those are the only versions that work.
 
-if not (sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6)):
-	print("{0} Roxbot does not support Python {1}.{2}. Roxbot only works on 3.5 and 3.6".format(ERROR, sys.version_info[0], sys.version_info[1]))
+if not (sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6) or sys.version_info[:2] == (3, 7)):
+	print("{0} Roxbot does not support Python {1}.{2}. Roxbot only works on 3.5 - 2.7".format(ERROR, sys.version_info[0], sys.version_info[1]))
 	exit(0)
 else:
 	import configparser
