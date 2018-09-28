@@ -113,7 +113,7 @@ class ErrHandle:
 					description="Placeholder embed. If you see this please message {}.".format(str(owner)))
 			if embed:
 				embed.colour = roxbot.EmbedColours.dark_red
-				await ctx.send(embed=embed, delete_after=8)
+				await ctx.send(embed=embed)
 
 
 def setup(bot_client):

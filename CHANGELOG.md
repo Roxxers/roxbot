@@ -9,20 +9,21 @@
 
 ### Regular Updates
 #### New Features
-- Roxbot will remove all redundant settings (removed roles from self assign, etc.) 
+- Roxbot will remove all redundant settings (removed roles from self assign, etc.).
 - Cogs have a message if they fail to load. This is better than the entire program breaking.
 
 #### Minor Changes
 - NSFW commands should have even less chance of dupes.
 - All time formatting is now standardised.
+- Error messages dont time out anymore.
 
 #### Bug Fixes
-- `deepfry` command now works all the time
-- Pride filter filenames fixed
-- As many spelling mistakes as possible
+- `deepfry` command now works all the time.
+- Pride filter filenames fixed.
+- As many spelling mistakes as possible.
 - If player can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
 - Fixed bug where nowplaying embeds would have the wrong queued_by value. 
-- NSFW commands fixed
+- NSFW commands fixed.
 
 ## v1.8.0
 #### New Features
