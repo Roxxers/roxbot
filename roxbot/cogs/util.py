@@ -227,12 +227,6 @@ class Util():
 		except IndexError:
 			return await ctx.send("This command only supports custom emojis at the moment. Sorry.")
 
-	@commands.command()
-	async def lookup(self, ctx, ID: int):
-		# TODO: Finish this
-		result = self.bot.get_channel(ID)
-		pass
-
 	@commands.command(hidden=True)
 	async def inviteme(self, ctx):
 		"""Returns an invite link to invite the bot to your server."""
