@@ -44,7 +44,7 @@ def is_not_nsfw_disabled():
 	def predicate(ctx):
 		role = discord.utils.get(ctx.guild.roles, id=397866388145831937)
 		return role not in ctx.author.roles
-	return commands.check(lambda ctx: predicate(ctx))
+	return commands.check(predicate)
 
 
 async def tatsumaki_api_call(member, guild):
