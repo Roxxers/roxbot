@@ -28,7 +28,7 @@ SOFTWARE.
 from discord.ext import commands
 
 
-class UserConverter(commands.UserConverter):
+class User(commands.UserConverter):
 	"""Overriding the discord version to add a slower global look up for when it is a requirement to return a user who has left the guild.
 
 	Converts to a :class:`User`.
@@ -55,14 +55,14 @@ class UserConverter(commands.UserConverter):
 		return result
 
 
-class EmojiConverter(commands.EmojiConverter):
+class Emoji(commands.EmojiConverter):
 	"""The Emoji conveter from discord.py but instead it returns the argument if an error is raised
 	It's messier than using the EmojiConverter proper but the issue is you can try converters."""
 	async def convert(self, ctx, argument):
 		try:
 			return await super().convert(ctx, argument)
-		except:  # Same as above
-			return argument
+		except commands.errors.BadArgument:
+			return await commands.PartialEmojiConverter().convert(ctx, argument)
 
 
 class AvatarURL(commands.UserConverter):

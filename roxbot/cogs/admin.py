@@ -108,7 +108,7 @@ class Admin:
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)
 	@commands.command()
-	async def purge(self, ctx, limit=0, *, author: roxbot.converters.UserConverter=None):
+	async def purge(self, ctx, limit=0, *, author: roxbot.converters.User=None):
 		"""Purges messages from the text channel.
 		Limit = Limit of messages to be deleted
 		Author (optional) =  If given, roxbot will selectively only delete this user's messages."""
@@ -155,7 +155,7 @@ class Admin:
 		return await ctx.send("Reported {}.".format(str(user)))
 
 	@warn.command()
-	async def list(self, ctx, *, user: roxbot.converters.UserConverter=None):
+	async def list(self, ctx, *, user: roxbot.converters.User=None):
 		"""Lists all or just the warnings for one user."""
 		settings = gs.get(ctx.guild)
 
@@ -202,7 +202,7 @@ class Admin:
 		return await ctx.send(embed=em)
 
 	@warn.command()
-	async def remove(self, ctx, user: roxbot.converters.UserConverter=None, index=None):
+	async def remove(self, ctx, user: roxbot.converters.User=None, index=None):
 		"""Removes one or all of the warnings for a user."""
 		user_id = str(user.id)
 		settings = gs.get(ctx.guild)
@@ -279,7 +279,7 @@ class Admin:
 	@commands.has_permissions(ban_members=True)
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()
-	async def unban(self, ctx, member: roxbot.converters.UserConverter, *, reason=""):
+	async def unban(self, ctx, member: roxbot.converters.User, *, reason=""):
 		"""Unbans user with given ID. Allows you to give a reason."""
 		ban = await ctx.guild.get_ban(member)
 		mem = ban.user
