@@ -70,20 +70,15 @@ class SelfAssign():
 
 	@commands.guild_only()
 	@commands.command(pass_context=True)
-	async def iam(self, ctx, *, role: discord.Role = None):
+	async def iam(self, ctx, *, role: discord.Role):
 		"""
-		Self-assign yourself a role. Only one role at a time.
+		Self-assign yourself a role. Only one role at a time. # TODO: Experiment with special converters here.
 		Usage:
 			{command_prefix}iam [role]
 		Example:
 			.iam OverwatchPing
 		"""
 		settings = gs.get(ctx.guild)
-
-		if role is None:
-			# Hacky way to get the error I want
-			from inspect import Parameter
-			raise commands.MissingRequiredArgument(Parameter("Role", False))
 
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
@@ -102,7 +97,7 @@ class SelfAssign():
 
 	@commands.guild_only()
 	@commands.command(pass_context=True)
-	async def iamn(self, ctx, *, role: discord.Role = None):
+	async def iamn(self, ctx, *, role: discord.Role):
 		"""
 		Remove a self-assigned role
 		Usage:
@@ -111,10 +106,6 @@ class SelfAssign():
 			.iamn OverwatchPing
 		"""
 		settings = gs.get(ctx.guild)
-
-		if role is None:
-			from inspect import Parameter
-			raise commands.MissingRequiredArgument(Parameter("role", False))
 
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
