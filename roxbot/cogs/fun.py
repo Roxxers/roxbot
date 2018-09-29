@@ -498,7 +498,6 @@ class Fun:
 			author = fact[1]
 		embed = discord.Embed(title="Roxbot Fact #{}!".format(fact_index+1), description=fact[0], colour=roxbot.EmbedColours.pink)
 		embed.set_footer(text="Credit: {}".format(author))
-		print(self.roxbot_fact_cache)
 		return await ctx.send(embed=embed)
 
 def setup(bot_client):
