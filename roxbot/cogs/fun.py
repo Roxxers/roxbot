@@ -42,7 +42,7 @@ class Fun:
 		self.croak = {}
 		self.roxbot_fact_cache = {}
 
-	@commands.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
+	@commands.command(aliases=["dice", "die"])  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
 	async def roll(self, ctx, *, expression=""):
 		"""
 		Rolls a die using dice expression format.
@@ -241,7 +241,7 @@ class Fun:
 	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx):
 		"""
-		Rates the mentioned waifu(s). husbando/spousurate also work.
+		Rates the mentioned waifu(s). husbando/spousu-rate also work.
 		Usage:
 			{command_prefix}waifurate @user#9999
 		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
@@ -283,7 +283,7 @@ class Fun:
 		"""
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
-	@commands.command()
+	@commands.command(aliases=["ae", "aesthetic"])
 	async def aesthetics(self, ctx, *, convert):
 		"""Converts text to be more  a e s t h e t i c s"""
 		wide_map = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))  # Create dict with fixed width equivalents for chars
@@ -429,7 +429,7 @@ class Fun:
 			
 			await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
-	@commands.command()
+	@commands.command(aliases=["za"])
 	async def zalgo(self, ctx, *, text):
 		"""
 		Returns Z͇͇͋Á͇͇L͇͔͇G̛͇͇O͇͇͜
