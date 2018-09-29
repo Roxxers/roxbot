@@ -416,7 +416,7 @@ class Voice:
 		paginator = commands.Paginator(prefix="", suffix="")
 		index = 1
 
-		if len(self.playlist[ctx.guild.id]) == 0:
+		if not self.playlist[ctx.guild.id]:
 			return await ctx.send("Nothing is up next. Maybe you should add something!")
 		else:
 			for video in self.playlist[ctx.guild.id]:
