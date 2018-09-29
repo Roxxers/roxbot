@@ -243,31 +243,35 @@ class CustomCommands:
 			debug = "0"
 		settings = roxbot.guild_settings.get(ctx.guild)
 		cc = settings.custom_commands
-		list_no_prefix = ""
-		list_prefix = ""
-
 		no_prefix_commands = cc["0"]
 		prefix_commands = {**cc["1"], **cc["2"]}
 
-		for command in no_prefix_commands:
-			if debug == "1":
-				command += " - {}".format(cc["0"][command])
-				list_no_prefix = list_no_prefix + "- " + command + "\n"
-		for command in prefix_commands:
-			if debug == "1":
-				command += " - {}".format(cc["1"][command])
-			list_prefix = list_prefix + "- " + command + "\n"
-		if not list_prefix:
-			list_prefix = "There are no commands setup.\n"
-		if not list_no_prefix:
-			list_no_prefix = "There are no commands setup.\n"
+		paginator = commands.Paginator()
+		paginator.add_line("Here is the list of Custom Commands...")
+		paginator.add_line()
 
-		# TODO: Sort out a way to shorten this if it goes over 2000 characters. Also clean up command to make sense
-		
-		em = discord.Embed(title="Here is the list of Custom Commands", color=roxbot.EmbedColours.pink)
-		em.add_field(name="Commands that require Prefix:", value=list_prefix, inline=False)
-		em.add_field(name="Commands that don't:", value=list_no_prefix, inline=False)
-		return await ctx.send(embed=em)
+		paginator.add_line("Commands that require Prefix:")
+		if not prefix_commands:
+			paginator.add_line("There are no commands setup.")
+		else:
+			for command in prefix_commands:
+				if debug == "1":
+					command += " = '{}'".format(prefix_commands[command])
+				paginator.add_line("- " + command)
+
+		paginator.add_line()
+		paginator.add_line("Commands that don't require prefix:")
+		if not no_prefix_commands:
+			paginator.add_line("There are no commands setup.")
+		else:
+			for command in no_prefix_commands:
+				if debug == "1":
+					command += " = '{}'".format(no_prefix_commands[command])
+				paginator.add_line("- " + command)
+
+		output = paginator.pages
+		for page in output:
+			await ctx.send(page)
 
 
 def setup(bot_client):

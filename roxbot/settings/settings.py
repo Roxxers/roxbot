@@ -57,13 +57,16 @@ class Settings:
 						setting[x] = "True"
 				elif convert[x] == "channel":
 					if isinstance(setting[x], list):
-						new_channels = []
-						for channel in setting[x]:
-							try:
-								new_channels.append(self.bot.get_channel(channel).mention)
-							except AttributeError:
-								new_channels.append(channel)
-						setting[x] = new_channels
+						if len(setting[x]) >= 60:
+							setting[x] = "There is too many channels to display."
+						else:
+							new_channels = []
+							for channel in setting[x]:
+								try:
+									new_channels.append(self.bot.get_channel(channel).mention)
+								except AttributeError:
+									new_channels.append(channel)
+							setting[x] = new_channels
 					else:
 						try:
 							setting[x] = self.bot.get_channel(setting[x]).mention
@@ -71,13 +74,16 @@ class Settings:
 							pass
 				elif convert[x] == "role":
 					if isinstance(setting[x], list):
-						new_roles = []
-						for role_id in setting[x]:
-							try:
-								new_roles.append(discord.utils.get(ctx.guild.roles, id=role_id).name)
-							except AttributeError:
-								new_roles.append(role_id)
-						setting[x] = new_roles
+						if len(setting[x]) >= 60:
+							setting[x] = "There is too many roles to display."
+						else:
+							new_roles = []
+							for role_id in setting[x]:
+								try:
+									new_roles.append(discord.utils.get(ctx.guild.roles, id=role_id).name)
+								except AttributeError:
+									new_roles.append(role_id)
+							setting[x] = new_roles
 					else:
 						try:
 							setting[x] = discord.utils.get(ctx.guild.roles, id=setting[x]).name
@@ -85,21 +91,26 @@ class Settings:
 							pass
 				elif convert[x] == "user":
 					if isinstance(setting[x], list):
-						new_users = []
-						for user_id in setting[x]:
+						if len(setting[x]) >= 60:
+							setting[x] = "There is too many users to display."
+						else:
+							new_users = []
+							for user_id in setting[x]:
 
-							user = self.bot.get_user(user_id)
-							if user is None:
-								new_users.append(str(user_id))
-							else:
-								new_users.append(str(user))
-						setting[x] = new_users
+								user = self.bot.get_user(user_id)
+								if user is None:
+									new_users.append(str(user_id))
+								else:
+									new_users.append(str(user))
+							setting[x] = new_users
 					else:
 						user = self.bot.get_user(setting[x])
 						if user is None:
 							setting[x] = str(setting[x])
 						else:
 							setting[x] = str(user)
+				elif convert[x] == "hide":
+					setting[x] = "This is hidden. Please use other commands to get this data."
 		for x in setting.items():
 			if x[0] != "convert":
 				settingcontent += str(x).strip("()") + "\n"
@@ -112,22 +123,24 @@ class Settings:
 		# TODO: Use paginator to make the output here not break all the time.
 		config = guild_settings.get(ctx.guild)
 		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
-		em = discord.Embed(colour=EmbedColours.pink)
-		em.set_author(name="{} settings for {}.".format(self.bot.user.name, ctx.message.guild.name), icon_url=self.bot.user.avatar_url)
+		paginator = commands.Paginator(prefix="```md")
+		paginator.add_line("{} settings for {}.\n".format(self.bot.user.name, ctx.message.guild.name))
 		if option in settings:
 			raw = bool(ctx.invoked_with == "printsettingsraw")
 			settingcontent = self.parse_setting(ctx, settings[option], raw=raw)
-			em.add_field(name=option, value=settingcontent, inline=False)
-			return await ctx.send(embed=em)
+			paginator.add_line("**{}**".format(option))
+			paginator.add_line(settingcontent)
+			for page in paginator.pages:
+				await ctx.send(page)
 		else:
 			for setting in settings:
 				if setting != "custom_commands" and setting != "warnings":
 					raw = bool(ctx.invoked_with == "printsettingsraw")
 					settingcontent = self.parse_setting(ctx, settings[setting], raw=raw)
-					em.add_field(name=setting, value=settingcontent, inline=False)
-				elif setting == "custom_commands":
-					em.add_field(name="custom_commands", value="For Custom Commands, use the custom list command.", inline=False)
-			return await ctx.send(embed=em)
+					paginator.add_line("**{}**".format(setting))
+					paginator.add_line(settingcontent)
+			for page in paginator.pages:
+				await ctx.send(page)
 
 	@commands.group(case_insensitive=True)
 	@checks.is_admin_or_mod()

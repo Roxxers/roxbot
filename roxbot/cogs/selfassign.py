@@ -53,17 +53,20 @@ class SelfAssign():
 			{command_prefix}listroles
 		"""
 		settings = gs.get(ctx.guild)
+		paginator = commands.Paginator(prefix="`", suffix="`")
+
 		if not settings.self_assign["enabled"]:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
-		roles = []
+
+		paginator.add_line("The self-assignable roles for this server are: \n")
 		for role in settings.self_assign["roles"]:
 			for serverrole in ctx.guild.roles:
 				if role == serverrole.id:
-					roles.append("**"+serverrole.name+"**")
-		roles = '\n'.join(roles)
-		embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="The self-assignable roles for this server are: \n"+roles)
-		return await ctx.send(embed=embed)
+					paginator.add_line("- {}".format(serverrole.name))
+
+		for page in paginator.pages:
+			await ctx.send(page)
 
 	@commands.guild_only()
 	@commands.command(pass_context=True)

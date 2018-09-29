@@ -413,15 +413,25 @@ class Voice:
 	@commands.command()
 	async def queue(self, ctx):
 		"""Displays what videos are queued up and waiting to be played."""
-		output = ""
+		paginator = commands.Paginator(prefix="", suffix="")
 		index = 1
-		for video in self.playlist[ctx.guild.id]:
-			output += "{}) '{}' queued by {}\n".format(index, video["title"], video["queued_by"])
-			index += 1
-		if output == "":
-			output = "Nothing is up next. Maybe you should add something!"
-		embed = discord.Embed(title="Queue", description=output, colour=roxbot.EmbedColours.pink)
-		return await ctx.send(embed=embed)
+
+		if len(self.playlist[ctx.guild.id]) == 0:
+			return await ctx.send("Nothing is up next. Maybe you should add something!")
+		else:
+			for video in self.playlist[ctx.guild.id]:
+				paginator.add_line("{}) '{}' queued by {}\n".format(index, video["title"], video["queued_by"]))
+				index += 1
+		if len(paginator.pages) <= 1:
+			embed = discord.Embed(title="Queue", description=paginator.pages[0], colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
+		else:
+			pages = []
+			pages.append(discord.Embed(title="Queue", description=paginator.pages.pop(0), colour=roxbot.EmbedColours.pink))
+			for page in paginator.pages:
+				pages.append(discord.Embed(description=page, colour=roxbot.EmbedColours.pink))
+			for page in pages:
+				await ctx.send(embed=page)
 
 	@commands.guild_only()
 	@roxbot.checks.is_admin_or_mod()

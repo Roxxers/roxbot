@@ -144,6 +144,10 @@ class Admin:
 		if user_id not in settings.warnings:
 			settings.warnings[user_id] = []
 
+		warn_limit = 10
+		if len(settings.warnings[user_id]) > warn_limit:
+			raise commands.CommandError("You can only warn a user {} times!".format(warn_limit))
+
 		settings.warnings[user_id].append(warning_dict)
 		settings.update(settings.warnings, "warnings")
 
@@ -160,7 +164,7 @@ class Admin:
 		settings = gs.get(ctx.guild)
 
 		if user is None:
-			output = ""
+			paginator = commands.Paginator()
 			for member in settings.warnings:
 				# Remove users with no warning here instead of remove cause im lazy
 				if not settings.warnings[member]:
@@ -168,38 +172,38 @@ class Admin:
 				else:
 					member_obj = discord.utils.get(ctx.guild.members, id=int(member))
 					if member_obj:
-						output += "{}: {} Warning(s)\n".format(str(member_obj), len(
-							settings.warnings[member]))
+						paginator.add_line("{}: {} Warning(s)".format(str(member_obj), len(settings.warnings[member])))
 					else:
-						output += "{}: {} Warning(s)\n".format(member, len(
-							settings.warnings[member]))
-			if not output:
+						paginator.add_line("{}: {} Warning(s)".format(member, len(settings.warnings[member])))
+			if len(paginator.pages) <= 0:
 				return await ctx.send("No warnings on record.")
-			return await ctx.send(output)
+			for page in paginator.pages:
+				await ctx.send(page)
+		else:
+			user_id = str(user.id)
 
-		user_id = str(user.id)
+			if not settings.warnings.get(user_id):
+				return await ctx.send("This user doesn't have any warning on record.")
 
-		if not settings.warnings.get(user_id):
-			return await ctx.send("This user doesn't have any warning on record.")
+			if not settings.warnings[user_id]:
+				settings.warnings.pop(user_id)
+				settings.update(settings.warnings, "warnings")
 
-		if not settings.warnings[user_id]:
-			settings.warnings.pop(user_id)
-			settings.update(settings.warnings, "warnings")
-		
-		em = discord.Embed(title="Warnings for {}".format(str(user)), colour=roxbot.EmbedColours.pink)
-		em.set_thumbnail(url=user.avatar_url)
-		x = 1
-		userlist = settings.warnings[user_id]
-		for warning in userlist:
-			try:
-				warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
-			except discord.ext.commands.CommandInvokeError:
-				warned_by = warning["warned-by"]
-			date = roxbot.datetime_formatting.format(datetime.datetime.fromtimestamp(warning["date"]))
-			warn_reason = warning["warning"]
-			em.add_field(name="Warning %s" % x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
-			x += 1
-		return await ctx.send(embed=em)
+			em = discord.Embed(title="Warnings for {}".format(str(user)), colour=roxbot.EmbedColours.pink)
+			em.set_thumbnail(url=user.avatar_url)
+
+			x = 1
+			userlist = settings.warnings[user_id]
+			for warning in userlist:
+				try:
+					warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
+				except discord.ext.commands.CommandInvokeError:
+					warned_by = warning["warned-by"]
+				date = roxbot.datetime_formatting.format(datetime.datetime.fromtimestamp(warning["date"]))
+				warn_reason = warning["warning"]
+				em.add_field(name="Warning %s" % x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
+				x += 1
+			return await ctx.send(embed=em)
 
 	@warn.command()
 	async def remove(self, ctx, user: roxbot.converters.User=None, index=None):

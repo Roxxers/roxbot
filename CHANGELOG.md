@@ -9,10 +9,11 @@
 
 ### Regular Updates
 #### New Features
-- Roxbot will remove all redundant settings (removed roles from self assign, etc.).
-- Cogs have a message if they fail to load. This is better than the entire program breaking.
+- Roxbot Facts!
 
 #### Minor Changes
+- Roxbot will remove all redundant settings (removed roles from self assign, etc.).
+- Cogs have a message if they fail to load instead of breaking entire bot.
 - NSFW commands should have even less chance of dupes.
 - All time formatting is now standardised.
 - Error messages dont time out anymore.
@@ -27,6 +28,7 @@
 - Roxbot can now fully function in DMs. Before, she would break. DM's have less commands.
 - `;subreddit`'s "subscriptable" error has been fixed.
 - is_anal value can be changed again and check now works.
+- Common commands that would go over 2000 characters have been paginated to avoid this error.
 
 ## v1.8.0
 #### New Features
