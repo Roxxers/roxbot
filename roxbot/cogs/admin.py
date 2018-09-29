@@ -29,7 +29,6 @@ import time
 import discord
 import datetime
 from discord.ext import commands
-from discord.ext.commands import bot
 
 import roxbot
 from roxbot import guild_settings as gs
@@ -49,6 +48,32 @@ class Admin:
 	"""
 	Admin Commands for those admins
 	"""
+
+	OK_SLOWMODE_ON = "Slowmode on :snail: ({} seconds)"
+	OK_SLOWMODE_OFF = "Slowmode off"
+	OK_SLOWMODE_CHANGED = "Slowmode set to :snail: ({} seconds)"
+
+	OK_PURGE_CONFIRMATION = "{} message(s) purged from chat."
+
+	OK_WARN_ADD = "Reported {}."
+	OK_WARN_ADD_USER_LIMIT_DM = "{} has been reported {} time(s). This is a reminder that this is over the set limit of {}."
+	WARN_WARN_ADD_LIMIT_REACHED = "You can only warn a user {} times!"
+
+	OK_WARN_LIST_NO_WARNINGS = "No warnings on record."
+	OK_WARN_LIST_USER_NO_WARNINGS = "This user doesn't have any warning on record."
+
+	OK_WARN_REMOVE_REMOVED_WARNING = "Removed Warning {} from {}"
+	OK_WARN_REMOVE_REMOVED_WARNINGS = "Removed all warnings for {}"
+	WARN_WARN_REMOVE_USER_NOT_FOUND = "Could not find user {} in warning list."
+	ERROR_WARN_REMOVE_INDEXERROR = "Index Error: Warning index doesn't exist. User only has {} warning(s)."
+	ERROR_WARN_REMOVE_VALUEERROR = "Value Error: Please enter a valid index number."
+
+	OK_WARN_PRUNE_PRUNED = "Pruned {} banned users from the warn list."
+
+	OK_MOD_ACTION = "{} with reason: '{}'"
+	WARN_MOD_LACK_PERMS = "I can't kick the owner or users higher or equal to me."
+	WARN_UNBAN_NOTFOUND = "User is not banned."
+
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.slow_mode = False
@@ -89,17 +114,17 @@ class Admin:
 			self.slow_mode = False
 			self.slow_mode_channels.pop(ctx.channel.id)
 			self.users.pop(ctx.channel.id)
-			return await ctx.send("Slowmode off")
+			return await ctx.send(self.OK_SLOWMODE_OFF)
 
 		elif seconds.isdigit() and not self.slow_mode:  # Turn Slow Mode On
 			self.users[ctx.channel.id] = {}
 			self.slow_mode_channels[ctx.channel.id] = int(seconds)
 			self.slow_mode = True
-			return await ctx.send("Slowmode on :snail: ({} seconds)".format(seconds))
+			return await ctx.send(self.OK_SLOWMODE_ON.format(seconds))
 
 		elif seconds.isdigit and self.slow_mode:  # Change value of Slow Mode timer
 			self.slow_mode_channels[ctx.channel.id] = int(seconds)
-			return await ctx.send("Slowmode set to :snail: ({} seconds)".format(seconds))
+			return await ctx.send(self.OK_SLOWMODE_CHANGED.format(seconds))
 
 		else:
 			pass
@@ -118,7 +143,7 @@ class Admin:
 		else:
 			predicate = lambda message: message.id != ctx.message.id
 		messages = await ctx.channel.purge(limit=limit, check=predicate)
-		return await ctx.send("{} message(s) purged from chat.".format(len(messages)))
+		return await ctx.send(self.OK_PURGE_CONFIRMATION.format(len(messages)))
 
 	@commands.guild_only()
 	@roxbot.checks.is_admin_or_mod()
@@ -146,17 +171,16 @@ class Admin:
 
 		warn_limit = 10
 		if len(settings.warnings[user_id]) > warn_limit:
-			raise commands.CommandError("You can only warn a user {} times!".format(warn_limit))
+			return await ctx.send(self.WARN_WARN_ADD_LIMIT_REACHED.format(warn_limit))
 
 		settings.warnings[user_id].append(warning_dict)
 		settings.update(settings.warnings, "warnings")
 
 		amount_warnings = len(settings.warnings[user_id])
 		if amount_warnings > warning_limit:
-			await ctx.author.send("{} has been reported {} time(s). This is a reminder that this is over the set limit of {}.".format(
-					str(user), amount_warnings, warning_limit))
+			await ctx.author.send(self.OK_WARN_ADD_USER_LIMIT_DM.format(str(user), amount_warnings, warning_limit))
 
-		return await ctx.send("Reported {}.".format(str(user)))
+		return await ctx.send(self.OK_WARN_ADD.format(str(user)))
 
 	@warn.command()
 	async def list(self, ctx, *, user: roxbot.converters.User=None):
@@ -176,14 +200,14 @@ class Admin:
 					else:
 						paginator.add_line("{}: {} Warning(s)".format(member, len(settings.warnings[member])))
 			if len(paginator.pages) <= 0:
-				return await ctx.send("No warnings on record.")
+				return await ctx.send(self.OK_WARN_LIST_NO_WARNINGS)
 			for page in paginator.pages:
 				await ctx.send(page)
 		else:
 			user_id = str(user.id)
 
 			if not settings.warnings.get(user_id):
-				return await ctx.send("This user doesn't have any warning on record.")
+				return await ctx.send(self.OK_WARN_LIST_USER_NO_WARNINGS)
 
 			if not settings.warnings[user_id]:
 				settings.warnings.pop(user_id)
@@ -220,24 +244,24 @@ class Admin:
 					settings.warnings.pop(user_id)
 
 				settings.update(settings.warnings, "warnings")
-				return await ctx.send("Removed Warning {} from {}".format(index+1, str(user)))
+				return await ctx.send(self.OK_WARN_REMOVE_REMOVED_WARNING.format(index+1, str(user)))
 
 			except Exception as e:
 				if isinstance(e, IndexError):
-					return await ctx.send(":warning: Index Error.")
+					return await ctx.send(self.ERROR_WARN_REMOVE_INDEXERROR.format(len(settings.warnings[user_id])))
 				elif isinstance(e, KeyError):
-					return await ctx.send("Could not find user in warning list.")
+					return await ctx.send(self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)))
 				elif isinstance(e, ValueError):
-					return await ctx.send("Please enter a valid index number.")
+					return await ctx.send(self.ERROR_WARN_REMOVE_VALUEERROR)
 				else:
 					raise e
 		else:
 			try:
 				settings.warnings.pop(user_id)
 				settings.update(settings.warnings, "warnings")
-				return await ctx.send("Removed all warnings for {}".format(str(user)))
+				return await ctx.send(self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)))
 			except KeyError:
-				return await ctx.send("Could not find user in warning list.")
+				return await ctx.send(self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)))
 
 	@commands.bot_has_permissions(ban_members=True)
 	@warn.command()
@@ -253,7 +277,7 @@ class Admin:
 						settings.warnings.pop(user)
 					count += 1
 		settings.update(settings.warnings, "warnings")
-		return await ctx.send("Purged {} banned users from the warn list.".format(count))
+		return await ctx.send(self.OK_WARN_PRUNE_PRUNED.format(count))
 
 	@commands.guild_only()
 	@commands.has_permissions(kick_members=True)
@@ -263,9 +287,9 @@ class Admin:
 		"""Kicks mentioned user. Allows you to give a reason."""
 		try:
 			await member.kick(reason=reason)
-			return await ctx.send("Kicked {} with reason: '{}'".format(member, reason))
+			return await ctx.send(self.OK_MOD_ACTION.format("Kicked", member, reason))
 		except discord.Forbidden:
-			return await ctx.send("I can't kick the owner or users higher or equal to me.")
+			return await ctx.send(self.WARN_MOD_LACK_PERMS)
 
 	@commands.guild_only()
 	@commands.has_permissions(ban_members=True)
@@ -275,9 +299,9 @@ class Admin:
 		"""Bans mentioned user. Allows you to give a reason."""
 		try:
 			await member.ban(reason=reason, delete_message_days=0)
-			return await ctx.send("Banned {} with reason: '{}'".format(member, reason))
+			return await ctx.send(self.OK_MOD_ACTION.format("Banned", member, reason))
 		except discord.Forbidden:
-			return await ctx.send("I can't kick the owner or users higher or equal to me.")
+			return await ctx.send(self.WARN_MOD_LACK_PERMS)
 
 	@commands.guild_only()
 	@commands.has_permissions(ban_members=True)
@@ -288,12 +312,13 @@ class Admin:
 		ban = await ctx.guild.get_ban(member)
 		mem = ban.user
 		if mem is None:
-			raise bot.CommandError("User not found in bans.")
+			# TODO: For issues like this, make BadArgument a negative response embed not an error
+			return await ctx.send(self.WARN_UNBAN_NOTFOUND)
 		try:
 			await ctx.guild.unban(mem, reason=reason)
-			return await ctx.send("Unbanned {} with reason: '{}'".format(mem, reason))
+			return await ctx.send(self.OK_MOD_ACTION.format("Unbanned", mem, reason))
 		except discord.Forbidden:
-			return await ctx.send("I can't kick the owner or users higher or equal to me.")
+			return await ctx.send(self.WARN_MOD_LACK_PERMS)
 
 
 def setup(bot_client):
