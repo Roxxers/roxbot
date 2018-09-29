@@ -32,7 +32,6 @@ import datetime
 import discord
 from discord import Embed
 from discord.ext import commands
-from discord.ext.commands import bot
 
 import roxbot
 
@@ -41,6 +40,7 @@ class Fun:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.croak = {}
+		self.roxbot_fact_cache = {}
 
 	@commands.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
 	async def roll(self, ctx, *, expression=""):
@@ -464,8 +464,32 @@ class Fun:
 
 	@commands.command(aliases=["rf", "roxfacts", "roxfact"])
 	async def roxbotfact(self, ctx):
-		fact_index = random.randrange(0, len(roxbot.roxbotfacts.facts))
-		fact = roxbot.roxbotfacts.facts[fact_index]
+		# Roxbot fact cache
+		if isinstance(ctx.channel, discord.DMChannel):
+			cache_id = ctx.author.id
+		else:
+			cache_id = ctx.guild.id
+		# IF ID is not in cache, create cache for ID
+		if not self.roxbot_fact_cache.get(cache_id, False):
+			self.roxbot_fact_cache[cache_id] = []
+
+		fact = None
+		fact_index = 0
+
+		# Loop in case of duplicate facts
+		for x in range(10):
+			fact_index = random.randrange(0, len(roxbot.roxbotfacts.facts))
+			if fact_index not in self.roxbot_fact_cache:
+				self.roxbot_fact_cache[cache_id].append(fact_index)
+				fact = roxbot.roxbotfacts.facts[fact_index]
+				if len(self.roxbot_fact_cache[cache_id]) >= 10:
+					self.roxbot_fact_cache[cache_id].pop(0)
+				break
+
+		# This should never happen
+		if fact is None:
+			raise commands.CommandError("Cache Failure. Unable to post fact.")
+
 		if fact[1] in roxbot.roxbotfacts.contributors:
 			author = self.bot.get_user(roxbot.roxbotfacts.contributors[fact[1]])
 		else:
@@ -474,7 +498,7 @@ class Fun:
 			author = fact[1]
 		embed = discord.Embed(title="Roxbot Fact #{}!".format(fact_index+1), description=fact[0], colour=roxbot.EmbedColours.pink)
 		embed.set_footer(text="Credit: {}".format(author))
-
+		print(self.roxbot_fact_cache)
 		return await ctx.send(embed=embed)
 
 def setup(bot_client):
