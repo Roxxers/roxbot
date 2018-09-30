@@ -37,10 +37,19 @@ class Twitch():
 	"""
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.settings = {
+			"twitch": {
+				"enabled": 0,
+				"convert": {"enabled": "bool", "channel": "channel", "whitelist_enabled": "bool", "whitelist": "user"},
+				"channel": 0,
+				"whitelist_enabled": 0,
+				"whitelist": []
+			}
+		}
 
 	async def on_member_update(self, member_b, member_a):
 		"""Twitch Shilling Part"""
-		twitch = roxbot.guild_settings.get(member_b.guild).twitch
+		twitch = roxbot.guild_settings.get(member_b.guild)["twitch"]
 		if roxbot.blacklisted(member_b) or not twitch["enabled"]:
 			return
 
@@ -64,13 +73,13 @@ class Twitch():
 		Usage:
 			;whitelist enable"""
 		settings = roxbot.guild_settings.get(ctx.guild)
-		if not settings.twitch["whitelist"]["enabled"]:
-			settings.twitch["whitelist"]["enabled"] = 1
-			settings.update(settings.twitch, "twitch")
+		if not settings["twitch"]["whitelist"]["enabled"]:
+			settings["twitch"]["whitelist"]["enabled"] = 1
+			settings.update(settings["twitch"], "twitch")
 			return await ctx.send("Whitelist for Twitch shilling has been enabled.")
 		else:
-			settings.twitch["whitelist"]["enabled"] = 0
-			settings.update(settings.twitch, "twitch")
+			settings["twitch"]["whitelist"]["enabled"] = 0
+			settings.update(settings["twitch"], "twitch")
 			return await ctx.send("Whitelist for Twitch shilling has been disabled.")
 
 	@whitelist.command()
@@ -90,21 +99,21 @@ class Twitch():
 
 		if option in ['+', 'add']:
 			for user in ctx.message.mentions:
-				settings.twitch["whitelist"]["list"].append(user.id)
+				settings["twitch"]["whitelist"]["list"].append(user.id)
 				whitelist_count += 1
-			settings.update(settings.twitch, "twitch")
+			settings.update(settings["twitch"], "twitch")
 			return await ctx.send('{} user(s) have been added to the whitelist'.format(whitelist_count))
 
 		elif option in ['-', 'remove']:
 			for user in ctx.message.mentions:
-				if user.id in settings.twitch["whitelist"]["list"]:
-					settings.twitch["whitelist"]["list"].remove(user.id)
+				if user.id in settings["twitch"]["whitelist"]["list"]:
+					settings["twitch"]["whitelist"]["list"].remove(user.id)
 					whitelist_count += 1
-			settings.update(settings.twitch, "twitch")
+			settings.update(settings["twitch"], "twitch")
 			return await ctx.send('{} user(s) have been removed to the whitelist'.format(whitelist_count))
 
 		elif option == 'list':
-			return await ctx.send(settings.twitch["whitelist"]["list"])
+			return await ctx.send(settings["twitch"]["whitelist"]["list"])
 
 
 def setup(bot_client):

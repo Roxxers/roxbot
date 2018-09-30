@@ -35,10 +35,17 @@ from roxbot import guild_settings as gs
 class SelfAssign():
 	def __init__(self, Bot):
 		self.bot = Bot
+		self.settings = {
+			"self_assign": {
+				"enabled": 0,
+				"convert": {"enabled": "bool", "roles": "role"},
+				"roles": []
+			}
+		}
 
 	async def on_guild_role_delete(self, role):
 		settings = gs.get(role.guild)
-		sa = settings.self_assign
+		sa = settings["self_assign"]
 		for sa_role in sa["roles"]:
 			if int(sa_role) == role.id:
 				sa["roles"].remove(role.id)
@@ -55,12 +62,12 @@ class SelfAssign():
 		settings = gs.get(ctx.guild)
 		paginator = commands.Paginator(prefix="`", suffix="`")
 
-		if not settings.self_assign["enabled"]:
+		if not settings["self_assign"]["enabled"]:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
 		paginator.add_line("The self-assignable roles for this server are: \n")
-		for role in settings.self_assign["roles"]:
+		for role in settings["self_assign"]["roles"]:
 			for serverrole in ctx.guild.roles:
 				if role == serverrole.id:
 					paginator.add_line("- {}".format(serverrole.name))
@@ -80,7 +87,7 @@ class SelfAssign():
 		"""
 		settings = gs.get(ctx.guild)
 
-		if not settings.self_assign["enabled"]:
+		if not settings["self_assign"]["enabled"]:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
@@ -89,7 +96,7 @@ class SelfAssign():
 		if role in member.roles:
 			return await ctx.send("You already have that role.")
 
-		if role.id in settings.self_assign["roles"]:
+		if role.id in settings["self_assign"]["roles"]:
 			await member.add_roles(role, reason="'iam' command triggered.")
 			return await ctx.send("Yay {}! You now have the {} role!".format(member.mention, role.name))
 		else:
@@ -107,16 +114,16 @@ class SelfAssign():
 		"""
 		settings = gs.get(ctx.guild)
 
-		if not settings.self_assign["enabled"]:
+		if not settings["self_assign"]["enabled"]:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
 			return await ctx.send(embed=embed)
 
 		member = ctx.author
 
-		if role in member.roles and role.id in settings.self_assign["roles"]:
+		if role in member.roles and role.id in settings["self_assign"]["roles"]:
 			await member.remove_roles(role, reason="'iamn' command triggered.")
 			return await ctx.send("{} has been successfully removed.".format(role.name))
-		elif role not in member.roles and role.id in settings.self_assign["roles"]:
+		elif role not in member.roles and role.id in settings["self_assign"]["roles"]:
 			return await ctx.send("You do not have {}.".format(role.name))
 		else:
 			return await ctx.send("That role is not self-assignable.")

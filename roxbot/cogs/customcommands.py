@@ -48,6 +48,13 @@ class CustomCommands:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.embed_fields = ("title", "description", "colour", "color", "footer", "image", "thumbnail", "url")
+		self.settings = {
+			"custom_commands": {
+				"0": {},
+				"1": {},
+				"2": {}
+			}
+		}
 
 	@staticmethod
 	def _get_output(command):
@@ -108,18 +115,18 @@ class CustomCommands:
 
 		if msg.startswith(self.bot.command_prefix):
 			command = msg.split(self.bot.command_prefix)[1]
-			if command in settings.custom_commands["1"]:
-				command_output = self._get_output(settings.custom_commands["1"][command])
+			if command in settings["custom_commands"]["1"]:
+				command_output = self._get_output(settings["custom_commands"]["1"][command])
 				return await channel.send(command_output)
 
-			elif command in settings.custom_commands["2"]:
-				command_output = self._get_output(settings.custom_commands["2"][command])
+			elif command in settings["custom_commands"]["2"]:
+				command_output = self._get_output(settings["custom_commands"]["2"][command])
 				embed = self._embed_values(command_output)
 				return await channel.send(embed=embed)
 		else:
-			for command in settings.custom_commands["0"]:
+			for command in settings["custom_commands"]["0"]:
 				if msg == command:
-					command_output = self._get_output(settings.custom_commands["0"][command])
+					command_output = self._get_output(settings["custom_commands"]["0"][command])
 					return await channel.send(command_output)
 
 	@commands.guild_only()
@@ -154,9 +161,9 @@ class CustomCommands:
 			return await ctx.send(self.ERROR_INCORRECT_TYPE)
 
 		settings = roxbot.guild_settings.get(ctx.guild)
-		no_prefix_commands = settings.custom_commands["0"]
-		prefix_commands = settings.custom_commands["1"]
-		embed_commands = settings.custom_commands["2"]
+		no_prefix_commands = settings["custom_commands"]["0"]
+		prefix_commands = settings["custom_commands"]["1"]
+		embed_commands = settings["custom_commands"]["2"]
 		command = command.lower()
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
@@ -170,17 +177,17 @@ class CustomCommands:
 		elif len(command.split(" ")) > 1 and command_type == "1":
 			return await ctx.send()
 
-		settings.custom_commands[command_type][command] = output
-		settings.update(settings.custom_commands, "custom_commands")
+		settings["custom_commands"][command_type][command] = output
+		settings.update(settings["custom_commands"], "custom_commands")
 		return await ctx.send(self.OUTPUT_ADD.format(command, output))
 
 	@custom.command()
 	async def edit(self, ctx, command, *edit):
 		""""Edits an existing custom command."""
 		settings = roxbot.guild_settings.get(ctx.guild)
-		no_prefix_commands = settings.custom_commands["0"]
-		prefix_commands = settings.custom_commands["1"]
-		embed_commands = settings.custom_commands["2"]
+		no_prefix_commands = settings["custom_commands"]["0"]
+		prefix_commands = settings["custom_commands"]["1"]
+		embed_commands = settings["custom_commands"]["2"]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
 			return await ctx.send(self.ERROR_AT_MENTION)
@@ -188,15 +195,15 @@ class CustomCommands:
 		if command in no_prefix_commands:
 			if len(edit) == 1:
 				edit = edit[0]
-			settings.custom_commands["0"][command] = edit
-			settings.update(settings.custom_commands, "custom_commands")
+			settings["custom_commands"]["0"][command] = edit
+			settings.update(settings["custom_commands"], "custom_commands")
 			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		elif command in prefix_commands:
 			if len(edit) == 1:
 				edit = edit[0]
-			settings.custom_commands["1"][command] = edit
-			settings.update(settings.custom_commands, "custom_commands")
+			settings["custom_commands"]["1"][command] = edit
+			settings.update(settings["custom_commands"], "custom_commands")
 			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		elif command in embed_commands:
@@ -206,8 +213,8 @@ class CustomCommands:
 				edit = self._embed_parse_options(edit)
 			except ValueError:
 				return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
-			settings.custom_commands["2"][command] = edit
-			settings.update(settings.custom_commands, "custom_commands")
+			settings["custom_commands"]["2"][command] = edit
+			settings.update(settings["custom_commands"], "custom_commands")
 			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		else:
@@ -219,9 +226,9 @@ class CustomCommands:
 		settings = roxbot.guild_settings.get(ctx.guild)
 
 		command = command.lower()
-		no_prefix_commands = settings.custom_commands["0"]
-		prefix_commands = settings.custom_commands["1"]
-		embed_commands = settings.custom_commands["2"]
+		no_prefix_commands = settings["custom_commands"]["0"]
+		prefix_commands = settings["custom_commands"]["1"]
+		embed_commands = settings["custom_commands"]["2"]
 
 		if command in no_prefix_commands:
 			command_type = "0"
@@ -232,8 +239,8 @@ class CustomCommands:
 		else:
 			return await ctx.send(self.ERROR_COMMAND_NULL)
 
-		settings.custom_commands[command_type].pop(command)
-		settings.update(settings.custom_commands, "custom_commands")
+		settings["custom_commands"][command_type].pop(command)
+		settings.update(settings["custom_commands"], "custom_commands")
 		return await ctx.send(self.OUTPUT_REMOVE.format(command))
 
 	@custom.command()
@@ -242,7 +249,7 @@ class CustomCommands:
 		if debug != "0" and debug != "1":
 			debug = "0"
 		settings = roxbot.guild_settings.get(ctx.guild)
-		cc = settings.custom_commands
+		cc = settings["custom_commands"]
 		no_prefix_commands = cc["0"]
 		prefix_commands = {**cc["1"], **cc["2"]}
 

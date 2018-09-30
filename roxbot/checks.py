@@ -41,7 +41,7 @@ def is_owner_or_admin():
 			return False
 		else:
 			for role in ctx.author.roles:
-				if role.id in gs.get(ctx.guild).perm_roles["admin"]:
+				if role.id in gs.get(ctx.guild)["admin"]["admin_roles"]:
 					return True
 		return False
 	return commands.check(predicate)
@@ -53,8 +53,8 @@ def _is_admin_or_mod(ctx):
 	elif isinstance(ctx.channel, discord.DMChannel):
 		return False
 	else:
-		admin_roles = gs.get(ctx.guild).perm_roles["admin"]
-		mod_roles = gs.get(ctx.guild).perm_roles["mod"]
+		admin_roles = gs.get(ctx.guild)["admin"]["admin_roles"]
+		mod_roles = gs.get(ctx.guild)["admin"]["mod_roles"]
 		for role in ctx.author.roles:
 			if role.id in mod_roles or role.id in admin_roles:
 				return True
@@ -68,7 +68,7 @@ def is_admin_or_mod():
 def nsfw_predicate(ctx):
 	if isinstance(ctx.channel, discord.DMChannel):
 		return False
-	nsfw = gs.get(ctx.guild).nsfw
+	nsfw = gs.get(ctx.guild)["nsfw"]
 	if not nsfw["channels"] and nsfw["enabled"]:
 		return nsfw["enabled"] == 1
 	elif nsfw["enabled"] and nsfw["channels"]:
@@ -85,7 +85,7 @@ def isnt_anal():
 	def predicate(ctx):
 		if isinstance(ctx.channel, discord.DMChannel):
 			return False
-		anal = gs.get(ctx.guild).is_anal["y/n"]
+		anal = gs.get(ctx.guild)["admin"]["is_anal"]
 		if not anal or (nsfw_predicate(ctx) and gs.get(ctx.guild).is_anal["y/n"]):
 			return True
 		else:

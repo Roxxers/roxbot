@@ -57,6 +57,13 @@ class GaySoundsShitposts:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.acceptable_roles = (394939389823811584, 394941004043649036)
+		self.settings = {
+			"gss": {
+				"log_channel": "",
+				"required_days": "",
+				"required_score": "",
+			}
+		}
 
 	async def on_member_join(self, member):
 		if member.guild.id == gssp_id:
@@ -81,8 +88,8 @@ class GaySoundsShitposts:
 			return False
 		settings = roxbot.guild_settings.get(ctx.guild)
 		member = ctx.author
-		required_score = settings.gss["required_score"]
-		days = int(settings.gss["required_days"])
+		required_score = settings["gss"]["required_score"]
+		days = int(settings["gss"]["required_days"])
 		data = await tatsumaki_api_call(member, ctx.guild)
 		if data is None:
 			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")

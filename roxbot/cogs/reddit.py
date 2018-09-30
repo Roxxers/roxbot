@@ -174,7 +174,7 @@ class Reddit:
 
 		if ctx.invoked_with == "subreddit" and isinstance(ctx.channel, discord.TextChannel):
 			# Only log the command when it is this command being used. Not the inbuilt commands.
-			logging = guild_settings.get(ctx.guild).logging
+			logging = guild_settings.get(ctx.guild)["logging"]
 			log_channel = self.bot.get_channel(logging["channel"])
 			await roxbot.log(
 				ctx.guild,

@@ -43,20 +43,26 @@ class System:
 
 	async def auto_backups(self):
 		await self.bot.wait_until_ready()
-		raw_settings = roxbot.guild_settings._open_config()
+		raw_settings = {}
+		for guild in self.bot.guilds:
+			raw_settings = {**raw_settings, **roxbot.guild_settings._open_config(guild, os.listdir('roxbot/settings/servers/{}'.format(guild.id)))}
 		while not self.bot.is_closed():
-			if raw_settings != roxbot.guild_settings._open_config():
-				raw_settings = roxbot.guild_settings._open_config()
+			current_settings = {}
+			for guild in self.bot.guilds:
+				current_settings = {**current_settings, **roxbot.guild_settings._open_config(guild, os.listdir('roxbot/settings/servers/{}'.format(guild.id)))}
+			if raw_settings != current_settings:
+				raw_settings = current_settings
 				time = datetime.datetime.now()
-				roxbot.guild_settings.backup(raw_settings, "{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
-			await asyncio.sleep(300)
+				roxbot.guild_settings.backup("{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
+				await asyncio.sleep(300)
+
 
 	@commands.command()
 	@commands.is_owner()
 	async def backup(self, ctx):
 		time = datetime.datetime.now()
 		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
-		roxbot.guild_settings.backup(roxbot.guild_settings._open_config(), filename)
+		roxbot.guild_settings.backup(filename)
 		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
 
 	@commands.command()

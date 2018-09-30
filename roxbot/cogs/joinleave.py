@@ -33,26 +33,41 @@ from roxbot import guild_settings
 class JoinLeave():
 	def __init__(self, Bot):
 		self.bot = Bot
+		self.settings = {
+			"greets": {
+					"enabled": 0,
+					"convert": {"enabled": "bool", "welcome-channel": "channel"},
+					"welcome-channel": 0,
+					"member-role": "",
+					"custom-message": "",
+					"default-message": "Be sure to read the rules."
+					},
+				"goodbyes": {
+					"enabled": 0,
+					"convert": {"enabled": "bool", "goodbye-channel": "channel"},
+					"goodbye-channel": 0,
+					}
+			}
 
 	async def on_member_join(self, member):
 		"""
 		Greets users when they join a server.
 		"""
 		settings = guild_settings.get(member.guild)
-		if not settings.greets["enabled"]:
+		if not settings["greets"]["enabled"]:
 			return
 
-		if settings.greets["custom-message"]:
-			message = settings.greets["custom-message"]
+		if settings["greets"]["custom-message"]:
+			message = settings["greets"]["custom-message"]
 		else:
-			message = settings.greets["default-message"]
+			message = settings["greets"]["default-message"]
 		em = discord.Embed(
 			title="Welcome to {}!".format(member.guild),
 			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.guild, message),
 			colour=roxbot.EmbedColours.pink)
 		em.set_thumbnail(url=member.avatar_url)
 
-		channel = self.bot.get_channel(settings.greets["welcome-channel"])
+		channel = self.bot.get_channel(settings["greets"]["welcome-channel"])
 		return await channel.send(embed=em)
 
 	async def on_member_remove(self, member):
@@ -60,8 +75,8 @@ class JoinLeave():
 		The same but the opposite
 		"""
 		settings = guild_settings.get(member.guild)
-		channel = settings.goodbyes["goodbye-channel"]
-		if not settings.goodbyes["enabled"]:
+		channel = settings["goodbyes"]["goodbye-channel"]
+		if not settings["goodbyes"]["enabled"]:
 			return
 		else:
 			channel = self.bot.get_channel(channel)

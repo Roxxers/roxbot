@@ -62,7 +62,7 @@ def _format_duration(duration):
 def volume_perms():
 	def predicate(ctx):
 		gs = guild_settings.get(ctx.guild)
-		if gs.voice["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
+		if gs["voice"]["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
 			if ctx.message.author.id == roxbot.owner:
 				return True
 			else:
@@ -147,6 +147,15 @@ class Voice:
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
+		self.settings = {
+			"voice": {
+				"need_perms": 0,
+				"skip_voting": 0,
+				"skip_ratio": 0.6,
+				"convert": {"need_perms": "bool", "skip_voting": "bool"},
+				"max_length": 600
+			}
+		}
 		self.refresh_rate = 1/60  # 60hz
 		self._volume = {}
 		self.playlist = {}  # All audio to be played
@@ -227,8 +236,8 @@ class Voice:
 	@commands.command(aliases=["yt"])
 	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
-		voice = guild_settings.get(ctx.guild).voice
 		guild = ctx.guild
+		voice = guild_settings.get(guild).get("voice")
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
 		if not (roxbot.checks._is_admin_or_mod(ctx) or from_queue):
@@ -369,7 +378,7 @@ class Voice:
 	@commands.command()
 	async def skip(self, ctx, option=""):
 		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
-		voice = guild_settings.get(ctx.guild).voice
+		voice = guild_settings.get(ctx.guild)["voice"]
 		if ctx.voice_client.is_playing():
 			if voice["skip_voting"] and not (option == "--force" and roxbot.checks._is_admin_or_mod(ctx)):  # Admin force skipping
 				if ctx.author in self.skip_votes[ctx.guild.id]:

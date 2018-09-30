@@ -291,7 +291,7 @@ class Fun:
 		converted = str(convert).translate(wide_map)
 		output = await ctx.send(converted)
 
-		logging = roxbot.guild_settings.get(ctx.guild).logging
+		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
 		log_channel = self.bot.get_channel(logging["channel"])
 		await roxbot.log(
 			ctx.guild,
@@ -448,7 +448,7 @@ class Fun:
 		response = random.choice(zalgo_chars).join(zalgoised)
 		output = await ctx.send(response)
 
-		logging = roxbot.guild_settings.get(ctx.guild).logging
+		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
 		log_channel = self.bot.get_channel(logging["channel"])
 		await roxbot.log(
 			ctx.guild,

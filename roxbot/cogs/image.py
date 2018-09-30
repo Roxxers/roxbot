@@ -204,7 +204,7 @@ class ImageEditor:
 	async def image_logging(self, ctx, output):
 		"""Logging function for all image commands to avoid shit loads or repeating code.
 		Required because image has outputs that are user decided and therefore could need logging for."""
-		logging = roxbot.guild_settings.get(ctx.guild).logging
+		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
 		log_channel = self.bot.get_channel(logging["channel"])
 		return await roxbot.log(
 			ctx.guild,

@@ -108,11 +108,7 @@ async def on_ready():
 	for server in bot.guilds:
 		print(server)
 		# this is so if we're added to a server while we're offline we deal with it
-		try:
-			gs.get(server)
-		except KeyError:
-			print("Server not found in servers.json - adding example config")
-			gs.add_guild(server)
+		roxbot.guild_settings.error_check(bot.guilds, bot.cogs)
 	print("")
 
 
@@ -165,10 +161,6 @@ if __name__ == "__main__":
 		print(
 			"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
 		exit(0)
-
-	if not os.path.isfile("roxbot/settings/servers.json"):
-		with open("roxbot/settings/servers.json", "w") as fp:
-			fp.write("{}")
 
 	start_time = time.time()
 	bot.run(roxbot.token)

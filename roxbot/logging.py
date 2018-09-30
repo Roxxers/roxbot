@@ -47,7 +47,7 @@ async def log(guild, channel, command_name, **kwargs):
 		All kwargs and two other params will be added to the logging embed as fields, allowing you to customise the output
 
 	"""
-	logging = guild_settings.get(guild).logging
+	logging = guild_settings.get(guild)["logging"]
 	if logging["enabled"]:
 		embed = discord.Embed(title="{} command logging".format(command_name), colour=roxbot.EmbedColours.pink)
 		for key, value in kwargs.items():
@@ -60,7 +60,7 @@ class Logging:
 		self.bot = bot_client
 
 	async def on_member_join(self, member):
-		logging = guild_settings.get(member.guild).logging
+		logging = guild_settings.get(member.guild)["logging"]
 		if logging["enabled"]:
 			channel = self.bot.get_channel(logging["channel"])
 			embed = discord.Embed(title="{} joined the server".format(member), colour=roxbot.EmbedColours.pink)
@@ -73,7 +73,7 @@ class Logging:
 
 	async def on_member_remove(self, member):
 		# TODO: Add some way of detecting whether a user left/was kicked or was banned.
-		logging = guild_settings.get(member.guild).logging
+		logging = guild_settings.get(member.guild)["logging"]
 		if logging["enabled"]:
 			channel = self.bot.get_channel(logging["channel"])
 			embed = discord.Embed(description="{} left the server".format(member), colour=roxbot.EmbedColours.pink)

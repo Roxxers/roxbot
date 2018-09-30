@@ -76,6 +76,20 @@ class Admin:
 
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.settings = {
+			"admin": {
+				"convert": {"admin_roles": "role", "mod_roles": "role"},
+				"admin_roles": [],
+				"mod_roles": [],
+				"is_anal": 0,
+				"warnings": {},
+			},
+			"logging": {
+				"enabled": 0,
+				"convert": {"enabled": "bool", "channel": "channel"},
+				"channel": 0
+			}
+		}
 		self.slow_mode = False
 		self.slow_mode_channels = {}
 		self.users = {}

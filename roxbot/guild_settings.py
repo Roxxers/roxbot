@@ -25,85 +25,27 @@ SOFTWARE.
 """
 
 
+import os
 import json
-# TODO: Make the convert stuff seperate but cant do that now cause it would require how you interact with the guild settings api.
-# Cause a settings dict would be split into two more instead of just the settings.
-
-guild_template = {
-			"example": {
-				"greets": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "welcome-channel": "channel"},
-					"welcome-channel": 0,
-					"member-role": "",
-					"custom-message": "",
-					"default-message": "Be sure to read the rules."
-				},
-				"goodbyes": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "goodbye-channel": "channel"},
-					"goodbye-channel": 0,
-				},
-				"self_assign": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "roles": "role"},
-					"roles": []
-				},
-				"twitch": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "channel": "channel", "whitelist_enabled": "bool", "whitelist": "user"},
-					"channel": 0,
-					"whitelist_enabled": 0,
-					"whitelist": []
-				},
-				"nsfw": {
-					"enabled": 0,
-					"channels": [],
-					"convert": {"enabled": "bool", "channels": "channel"},
-					"blacklist": []
-				},
-				"perm_roles": {
-					"convert": {"admin": "role", "mod": "role"},
-					"admin": [],
-					"mod": []
-				},
-				"custom_commands": {
-					"0": {},
-					"1": {},
-					"2": {}
-				},
-				"gss": {
-					"log_channel": "",
-					"required_days": "",
-					"required_score": "",
-				},
-				"warnings": {},
-				"is_anal": {"y/n": 0},
-				"logging": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "channel": "channel"},
-					"channel": 0
-				},
-				"voice": {
-					"need_perms": 0,
-					"skip_voting": 0,
-					"skip_ratio": 0.6,
-					"convert": {"need_perms": "bool", "skip_voting": "bool"},
-					"max_length": 600
-				}
-			}
-}
+import errno
+import shutil
 
 
-def _open_config():
+def _open_config(server, cogs):
 	"""Opens the guild settings file
+
+	servers: server id str
+	cogs: list of cog names
 
 	Returns
 	=======
 	servers.json: dict
 	"""
-	with open('roxbot/settings/servers.json', 'r') as config_file:
-		return json.load(config_file)
+	settings = {}
+	for cog in cogs:
+		with open('roxbot/settings/servers/{}/{}'.format(server, cog), 'r') as config_file:
+			settings = {**settings, **json.load(config_file)}
+	return settings
 
 
 def _write_changes(config):
@@ -111,57 +53,84 @@ def _write_changes(config):
 	:param config: :type dict:
 	:return:
 	"""
+	# TODO: Change to new version
 	with open('roxbot/settings/servers.json', 'w') as conf_file:
 		json.dump(config, conf_file)
 
 
-def backup(config, name):
-	with open('roxbot/settings/backups/{}.json'.format(name), "w") as f:
-		json.dump(config, f)
+def backup(name):
+	try:
+		shutil.copytree('roxbot/settings/server', 'roxbot/settings/backups/{}'.format(name))
+	except OSError as e:
+		# If the error was caused because the source wasn't a directory
+		if e.errno == errno.ENOTDIR:
+			shutil.copy('roxbot/settings/server', 'roxbot/settings/backups/{}'.format(name))
+		else:
+			print('Directory not copied. Error: %s' % e)
 
 
 def remove_guild(guild):
 	"""Removes given guild from settings file and saves changes."""
-	settings = _open_config()
-	settings.pop(str(guild.id))
-	_write_changes(settings)
+	shutil.rmtree('roxbot/settings/server/{}'.format(guild.id))
 
 
-def add_guild(guild):
+def add_guild(guild, cogs):
 	"""Adds given guild from settings file and saves changes."""
-	settings = _open_config()
-	settings[str(guild.id)] = guild_template["example"]
-	_write_changes(settings)
+	_make_server_folder(guild, cogs)
 
 
-def error_check(servers):
-	settings = _open_config()
-	for server in servers:
-		# Server ID needs to be made a string for this statement because keys have to be strings in JSON.
-		server_id = str(server.id)
-		if str(server_id) not in settings:
-			settings[server_id] = guild_template["example"]
-			_write_changes(settings)
-			print(
-				"WARNING: The settings file for {} was not found. A template has been loaded and saved. All cogs are turned off by default.".format(
-					server.name.upper()))
-		else:
-			for cog_setting in guild_template["example"]:
-				if cog_setting not in settings[server_id]:
-					settings[server_id][cog_setting] = guild_template["example"][
-						cog_setting]
-					_write_changes(settings)
-					print(
-						"WARNING: The settings file for {} was missing the {} cog. This has been fixed with the template version. It is disabled by default.".format(
-							server.name.upper(), cog_setting.upper()))
-				for setting in guild_template["example"][cog_setting]:
-					if setting not in settings[server_id][cog_setting]:
-						settings[server_id][cog_setting][setting] = guild_template["example"][
-							cog_setting][setting]
-						_write_changes(settings)
-						print(
-							"WARNING: The settings file for {} was missing the {} setting in the {} cog. This has been fixed with the template version. It is disabled by default.".format(
-								server.name.upper(), setting.upper(), cog_setting.upper()))
+def _make_cog_json_file(server_id, name, data):
+	with open("roxbot/settings/servers/{}/{}.json".format(server_id, name), "w") as fp:
+		return json.dump(data, fp)
+
+
+def _make_server_folder(server, cogs):
+	os.mkdir("roxbot/settings/servers/{}".format(str(server.id)))
+	for name, cog in cogs.items():
+		try:
+			if cog.settings:
+				_make_cog_json_file(str(server.id), name, cog.settings)
+		except AttributeError:
+			pass
+
+
+def error_check(servers, cogs):
+	# Check for missing servers folder
+	if "servers" not in os.listdir("roxbot/settings/"):
+		print("WARNING: Settings folder not found, making new default settings folder.")
+		os.mkdir("roxbot/settings/servers")
+		for server in servers:
+			_make_server_folder(server, cogs)
+
+	else:
+		for server in servers:
+			# Server ID made a string for ease of use
+			server_id = str(server.id)
+
+			# Check for missing server
+			if server_id not in os.listdir("roxbot/settings/servers/"):
+				_make_server_folder(server, cogs)
+				print("WARNING: The settings folder for {} was not found. The defaults have been created.".format(str(server)))
+
+			# Check for missing cog settings
+			for name, cog in cogs.items():
+				if name != "Settings":
+					try:
+						if cog.settings:
+							if "{}.json".format(name) not in os.listdir("roxbot/settings/servers/{}".format(server_id)):
+								_make_cog_json_file(server_id, name, cog.settings)
+								print("WARNING: The settings folder for {} is missing the file {}. The defaults have been created.".format(str(server), name))
+					except AttributeError:
+						pass  # If Cog has no settings
+
+			# NEXT SECTION IN ERROR CHECKED IS FLAWED SO JUST IGNORE IT FOR NOW. LEADS TO DATA LOSS>
+			# Check for incorrect settings in cog settings file
+			#for cog in os.listdir("roxbot/settings/servers/{}".format(server_id)):
+			#	cog_data = json.load("roxbot/settings/servers/{}/{}.json".format(server_id, name))
+			#	for key, item, in cog_data():
+			#		if cogs.settings[key].keys() != item.keys():
+			#			_make_cog_json_file(server_id, name, cogs.settings)
+			#			print("WARNING: Error was found in {}'s {} settings file. It has been reset to default.")
 
 
 def get(guild):
@@ -178,14 +147,13 @@ class GuildSettings(object):
 	An Object to store all settings for one guild.
 	The goal is to make editing settings a lot easier and make it so you don't have to handle things like ID's which caused a lot of issues when moving over to discord.py 1.0
 	"""
-	__slots__ = ["settings", "id", "name", "logging", "nsfw", "self_assign", "greets", "goodbyes", "twitch", "perm_roles", "custom_commands", "warnings", "is_anal", "voice", "gss"]
+	__slots__ = ["settings", "id", "name", "cogs"]
 
 	def __init__(self, guild):
 		self.id = guild.id
 		self.name = str(guild)
+		self.cogs = os.listdir("roxbot/settings/servers/{}".format(self.id))
 		self.settings = self.refresh()
-
-		self.get_settings()
 
 	def __str__(self):
 		return self.name
@@ -217,35 +185,19 @@ class GuildSettings(object):
 		return settings
 
 	def refresh(self):
-		settings = _open_config()[str(self.id)]
+		settings = _open_config(self.id, self.cogs)
 		self._convert(settings)
 		return settings
 
-	def get_settings(self):
-		self.logging = self.settings["logging"]
-		self.nsfw = self.settings["nsfw"]
-		self.self_assign = self.settings["self_assign"]
-		self.greets = self.settings["greets"]
-		self.goodbyes = self.settings["goodbyes"]
-		self.twitch = self.settings["twitch"]
-		self.perm_roles = self.settings["perm_roles"]
-		self.custom_commands = self.settings["custom_commands"]
-		self.warnings = self.settings["warnings"]
-		self.is_anal = self.settings["is_anal"]
-		self.voice = self.settings["voice"]
-		# Add custom cog settings loading here
-		self.gss = self.settings["gss"]
-
 	def update(self, changed_dict, setting = None):
+		# TODO: Change to new version
 		self.settings = self.refresh()
-		self.get_settings()
 		if setting is not None:
 			self.settings[setting] = changed_dict
 		else:
 			self.settings = changed_dict
 		settings = self.settings.copy()
 		self._convert(settings, "str")
-		json = _open_config()
+		json = _open_config(self.id, self.cogs)
 		json[str(self.id)] = settings
 		_write_changes(json)
-		self.get_settings()
