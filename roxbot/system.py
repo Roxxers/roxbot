@@ -63,7 +63,7 @@ class System:
 		time = datetime.datetime.now()
 		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
 		roxbot.guild_settings.backup(filename)
-		return await ctx.send("Settings file backed up as '{}.json'".format(filename))
+		return await ctx.send("Settings file backed up as a folder named '{}".format(filename))
 
 	@commands.command()
 	@commands.is_owner()

@@ -5,7 +5,7 @@
 - easy setup and get that wiki going
 
 ### Big Changes 
-
+-  All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independant commands. This doesn't effect custom commands or warnings.
 
 ### Regular Updates
 #### New Features
@@ -25,7 +25,7 @@
 - If music bot can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
 - Fixed bug where nowplaying embeds would have the wrong queued_by value. 
 - NSFW commands fixed.
-- Roxbot can now fully function in DMs. Before, she would break. DM's have less commands.
+- Roxbot can now fully function in DMs. Before, she would break. DM's have less commands that can be invoked.
 - `;subreddit`'s "subscriptable" error has been fixed.
 - is_anal value can be changed again and check now works.
 - Common commands that would go over 2000 characters have been paginated to avoid this error.
