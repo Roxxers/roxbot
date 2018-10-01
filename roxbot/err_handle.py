@@ -40,7 +40,7 @@ from roxbot import guild_settings
 class ErrHandle:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.dev = False  # For debugging
+		self.dev = roxbot.dev_mode
 
 	async def on_error(self, event):
 		if self.dev:

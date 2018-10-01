@@ -32,6 +32,7 @@ from roxbot.utils import blacklisted
 
 import configparser
 
+dev_mode = False
 
 settings = configparser.ConfigParser()
 settings.read("roxbot/settings/preferences.ini")
