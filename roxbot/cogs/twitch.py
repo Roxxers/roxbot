@@ -25,7 +25,8 @@ SOFTWARE.
 """
 
 
-from discord import ActivityType
+import typing
+import discord
 from discord.ext import commands
 
 import roxbot
@@ -54,14 +55,14 @@ class Twitch():
 			return
 
 		if member_a.activitiy:
-			if member_a.activity.type == ActivityType.streaming and member_b.activity.type != ActivityType.streaming:
+			if member_a.activity.type == discord.ActivityType.streaming and member_b.activity.type != discord.ActivityType.streaming:
 				if not twitch["whitelist"]["enabled"] or member_a.id in twitch["whitelist"]["list"]:
 					channel = self.bot.get_channel(twitch["channel"])
 					return await channel.send(":video_game:** {} is live!** :video_game:\n{}\n{}".format(
 						member_a.name, member_a.game.name, member_a.game.url))
 
-	@commands.group()
-	@roxbot.checks.is_admin_or_mod()
+	@commands.group(aliases=["wl"])
+	@commands.has_permissions(manage_channels=True)
 	async def whitelist(self, ctx):
 		"""Command group that handles the twitch cog's whitelist."""
 		if ctx.invoked_subcommand is None:
@@ -114,6 +115,33 @@ class Twitch():
 
 		elif option == 'list':
 			return await ctx.send(settings["twitch"]["whitelist"]["list"])
+
+	@commands.has_permissions(manage_channels=True)
+	@commands.command()
+	async def twitch(self, ctx, setting, *, channel: discord.TextChannel = None):
+		"""Edits settings for self assign cog.
+
+		Options:
+			enable/disable: Enable/disables the cog.
+			channel: Sets the channel to shill in.
+		"""
+
+		setting = setting.lower()
+		settings = roxbot.guild_settings.get(ctx.guild)
+		twitch = settings["twitch"]
+
+		if setting == "enable":
+			twitch["enabled"] = 1
+			await ctx.send("'twitch' was enabled!")
+		elif setting == "disable":
+			twitch["enabled"] = 0
+			await ctx.send("'twitch' was disabled :cry:")
+		elif setting == "channel":
+			twitch["channel"] = channel.id
+			await ctx.send("{} has been set as the twitch shilling channel!".format(channel.mention))
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(twitch, "twitch")
 
 
 def setup(bot_client):

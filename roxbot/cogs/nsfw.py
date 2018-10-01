@@ -25,6 +25,7 @@ SOFTWARE.
 """
 
 
+import typing
 import random
 import discord
 from discord.ext import commands
@@ -44,6 +45,14 @@ class NFSW():
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.cache = {}
+		self.settings = {
+			"nsfw": {
+				"enabled": 0,
+				"channels": [],
+				"convert": {"enabled": "bool", "channels": "channel"},
+				"blacklist": []
+			}
+		}
 
 	@roxbot.checks.is_nfsw_enabled()
 	@commands.command(hidden=True)
@@ -112,6 +121,59 @@ class NFSW():
 		post_url = "https://simg3.gelbooru.com/images/"
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
+	@commands.command()
+	async def nsfw(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, changes=None):
+		"""Edits settings for the nsfw cog and other nsfw commands.
+		If nsfw is enabled and nsfw channels are added, the bot will only allow nsfw commands in the specified channels.
+
+		Options:
+			enable/disable: Enable/disables nsfw commands.
+			addchannel/removechannel: Adds/Removes a nsfw channel.
+			addbadtag/removebadtag: Add/Removes blacklisted tags so that you can avoid em with the commands.
+			Example:
+				;settings nsfw addchannel #nsfw_stuff
+		"""
+		setting = setting.lower()
+		settings = roxbot.guild_settings.get(ctx.guild)
+		nsfw = settings["nsfw"]
+
+		if setting == "enable":
+			nsfw["enabled"] = 1
+			await ctx.send("'nsfw' was enabled!")
+		elif setting == "disable":
+			nsfw["enabled"] = 0
+			await ctx.send("'nsfw' was disabled :cry:")
+		elif setting == "addchannel":
+			if not channel and not changes:
+				channel = ctx.channel
+			if channel.id not in nsfw["channels"]:
+				nsfw["channels"].append(channel.id)
+				await ctx.send("'{}' has been added to the nsfw channel list.".format(channel.name))
+			else:
+				return await ctx.send("'{}' is already in the list.".format(channel.name))
+		elif setting == "removechannel":
+			if not channel and not changes:
+				channel = ctx.channel
+			try:
+				nsfw["channels"].remove(channel.id)
+				await ctx.send("'{}' has been removed from the nsfw channel list.".format(channel.name))
+			except ValueError:
+				return await ctx.send("That role was not in the list.")
+		elif setting == "addbadtag":
+			if changes not in nsfw["blacklist"]:
+				nsfw["blacklist"].append(changes)
+				await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
+			else:
+				return await ctx.send("'{}' is already in the list.".format(changes))
+		elif setting == "removebadtag":
+			try:
+				nsfw["blacklist"].remove(changes)
+				await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
+			except ValueError:
+				return await ctx.send("That tag was not in the blacklisted tag list.")
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(nsfw, "nsfw")
 
 def setup(bot_client):
 	bot_client.add_cog(NFSW(bot_client))

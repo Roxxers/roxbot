@@ -24,8 +24,9 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-
+import typing
 import discord
+from discord.ext import commands
 
 import roxbot
 from roxbot import guild_settings
@@ -58,6 +59,13 @@ async def log(guild, channel, command_name, **kwargs):
 class Logging:
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		self.settings = {
+			"logging": {
+				"enabled": 0,
+				"convert": {"enabled": "bool", "channel": "channel"},
+				"channel": 0
+			}
+		}
 
 	async def on_member_join(self, member):
 		logging = guild_settings.get(member.guild)["logging"]
@@ -78,6 +86,34 @@ class Logging:
 			channel = self.bot.get_channel(logging["channel"])
 			embed = discord.Embed(description="{} left the server".format(member), colour=roxbot.EmbedColours.pink)
 			return await channel.send(embed=embed)
+
+	@commands.guild_only()
+	@commands.command(aliases=["log"])
+	async def logging(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):
+		"""Edits the logging settings.
+
+		Options:
+			enable/disable: Enable/disables logging.
+			channel: sets the channel.
+		"""
+
+		setting = setting.lower()
+		settings = guild_settings.get(ctx.guild)
+
+		if setting == "enable":
+			settings["logging"]["enabled"] = 1
+			await ctx.send("'logging' was enabled!")
+		elif setting == "disable":
+			settings["logging"]["enabled"] = 0
+			await ctx.send("'logging' was disabled :cry:")
+		elif setting == "channel":
+			if not channel:
+				channel = ctx.channel
+			settings["logging"]["channel"] = channel.id
+			await ctx.send("{} has been set as the logging channel!".format(channel.mention))
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(settings["logging"], "logging")
 
 
 def setup(bot_client):

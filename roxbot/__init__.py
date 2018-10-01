@@ -55,3 +55,19 @@ __author__ = "Roxanne Gibson"
 __version__ = "2.0.0a"
 
 datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"
+
+cogs = [
+	"roxbot.cogs.admin",
+	"roxbot.cogs.customcommands",
+	"roxbot.cogs.fun",
+	"roxbot.cogs.image",
+	"roxbot.cogs.joinleave",
+	"roxbot.cogs.nsfw",
+	"roxbot.cogs.reddit",
+	"roxbot.cogs.selfassign",
+	"roxbot.cogs.trivia",
+	"roxbot.cogs.twitch",
+	"roxbot.cogs.util",
+	"roxbot.cogs.voice",
+	#"roxbot.cogs.gss"
+]

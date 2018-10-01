@@ -78,16 +78,11 @@ class Admin:
 		self.bot = bot_client
 		self.settings = {
 			"admin": {
-				"convert": {"admin_roles": "role", "mod_roles": "role"},
+				"convert": {"warnings": "hide"},
 				"admin_roles": [],
 				"mod_roles": [],
 				"is_anal": 0,
 				"warnings": {},
-			},
-			"logging": {
-				"enabled": 0,
-				"convert": {"enabled": "bool", "channel": "channel"},
-				"channel": 0
 			}
 		}
 		self.slow_mode = False
@@ -115,11 +110,11 @@ class Admin:
 				pass
 
 	@commands.guild_only()
-	@roxbot.checks.is_admin_or_mod()
+	@commands.has_permissions(manage_messages=True)
 	@commands.bot_has_permissions(manage_messages=True)
 	@commands.command()
 	async def slowmode(self, ctx, seconds):
-		"""Puts the current channel in slowmode.
+		"""Puts the current channel in slowmode. Requires the Manage Messages permission.
 		Usage:
 			;slowmode [time/"off"]
 			seconds =  number of seconds for the cooldown between messages a user has.
@@ -148,7 +143,7 @@ class Admin:
 	@commands.cooldown(1, 5)
 	@commands.command()
 	async def purge(self, ctx, limit=0, *, author: roxbot.converters.User=None):
-		"""Purges messages from the text channel.
+		"""Purges messages from the text channel. Requires the Manage Messages permission.
 		Limit = Limit of messages to be deleted
 		Author (optional) =  If given, roxbot will selectively only delete this user's messages."""
 		# TODO: To sort out the limit == how many to delete for the author, and not just a limit.
@@ -160,10 +155,10 @@ class Admin:
 		return await ctx.send(self.OK_PURGE_CONFIRMATION.format(len(messages)))
 
 	@commands.guild_only()
-	@roxbot.checks.is_admin_or_mod()
+	@commands.has_permissions(kick_members=True)
 	@commands.group(case_insensitive=True)
 	async def warn(self, ctx):
-		"""Group of commands handling warnings"""
+		"""Group of commands handling . Requires the Kick Members permission."""
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 
@@ -172,6 +167,7 @@ class Admin:
 		"""Adds a warning to a user."""
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		settings = gs.get(ctx.guild)
+		warnings = settings["admin"]["warnings"]
 		warning_limit = 2
 		warning_dict = {
 			"warned-by": ctx.author.id,
@@ -180,17 +176,18 @@ class Admin:
 		}
 		user_id = str(user.id)
 
-		if user_id not in settings.warnings:
-			settings.warnings[user_id] = []
+		if user_id not in warnings:
+			warnings[user_id] = []
 
 		warn_limit = 10
-		if len(settings.warnings[user_id]) > warn_limit:
+		if len(warnings[user_id]) > warn_limit:
 			return await ctx.send(self.WARN_WARN_ADD_LIMIT_REACHED.format(warn_limit))
 
-		settings.warnings[user_id].append(warning_dict)
-		settings.update(settings.warnings, "warnings")
+		warnings[user_id].append(warning_dict)
+		settings["admin"]["warnings"] = warnings
+		settings.update(settings["admin"], "admin")
 
-		amount_warnings = len(settings.warnings[user_id])
+		amount_warnings = len(warnings[user_id])
 		if amount_warnings > warning_limit:
 			await ctx.author.send(self.OK_WARN_ADD_USER_LIMIT_DM.format(str(user), amount_warnings, warning_limit))
 
@@ -200,19 +197,22 @@ class Admin:
 	async def list(self, ctx, *, user: roxbot.converters.User=None):
 		"""Lists all or just the warnings for one user."""
 		settings = gs.get(ctx.guild)
+		warnings = settings["admin"]["warnings"]
 
 		if user is None:
 			paginator = commands.Paginator()
-			for member in settings.warnings:
+			for member in warnings:
 				# Remove users with no warning here instead of remove cause im lazy
-				if not settings.warnings[member]:
-					settings.warnings.pop(member)
+				if not warnings[member]:
+					warnings.pop(member)
 				else:
 					member_obj = discord.utils.get(ctx.guild.members, id=int(member))
 					if member_obj:
-						paginator.add_line("{}: {} Warning(s)".format(str(member_obj), len(settings.warnings[member])))
+						paginator.add_line("{}: {} Warning(s)".format(str(member_obj), len(warnings[member])))
 					else:
-						paginator.add_line("{}: {} Warning(s)".format(member, len(settings.warnings[member])))
+						paginator.add_line("{}: {} Warning(s)".format(member, len(warnings[member])))
+			settings["admin"]["warnings"] = warnings
+			settings.update(settings["admin"], "admin")
 			if len(paginator.pages) <= 0:
 				return await ctx.send(self.OK_WARN_LIST_NO_WARNINGS)
 			for page in paginator.pages:
@@ -220,18 +220,14 @@ class Admin:
 		else:
 			user_id = str(user.id)
 
-			if not settings.warnings.get(user_id):
+			if not warnings.get(user_id):
 				return await ctx.send(self.OK_WARN_LIST_USER_NO_WARNINGS)
-
-			if not settings.warnings[user_id]:
-				settings.warnings.pop(user_id)
-				settings.update(settings.warnings, "warnings")
 
 			em = discord.Embed(title="Warnings for {}".format(str(user)), colour=roxbot.EmbedColours.pink)
 			em.set_thumbnail(url=user.avatar_url)
 
 			x = 1
-			userlist = settings.warnings[user_id]
+			userlist = warnings[user_id]
 			for warning in userlist:
 				try:
 					warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
@@ -248,21 +244,23 @@ class Admin:
 		"""Removes one or all of the warnings for a user."""
 		user_id = str(user.id)
 		settings = gs.get(ctx.guild)
+		warnings = settings["admin"]["warnings"]
 
 		if index:
 			try:
 				index = int(index)
 				index -= 1
-				settings.warnings[user_id].pop(index)
-				if not settings.warnings[user_id]:
-					settings.warnings.pop(user_id)
+				warnings[user_id].pop(index)
+				if not warnings[user_id]:
+					warnings.pop(user_id)
 
-				settings.update(settings.warnings, "warnings")
+				settings["admin"]["warnings"] = warnings
+				settings.update(settings["admin"], "admin")
 				return await ctx.send(self.OK_WARN_REMOVE_REMOVED_WARNING.format(index+1, str(user)))
 
 			except Exception as e:
 				if isinstance(e, IndexError):
-					return await ctx.send(self.ERROR_WARN_REMOVE_INDEXERROR.format(len(settings.warnings[user_id])))
+					return await ctx.send(self.ERROR_WARN_REMOVE_INDEXERROR.format(len(settings["warnings"][user_id])))
 				elif isinstance(e, KeyError):
 					return await ctx.send(self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)))
 				elif isinstance(e, ValueError):
@@ -271,8 +269,9 @@ class Admin:
 					raise e
 		else:
 			try:
-				settings.warnings.pop(user_id)
-				settings.update(settings.warnings, "warnings")
+				warnings.pop(user_id)
+				settings["admin"]["warnings"] = warnings
+				settings.update(settings["admin"], "admin")
 				return await ctx.send(self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)))
 			except KeyError:
 				return await ctx.send(self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)))
@@ -282,15 +281,15 @@ class Admin:
 	async def prune(self, ctx, dry_run=0):
 		"""Purges banned users from the warn list. Add a 1 at the end to do a dry run."""
 		settings = gs.get(ctx.guild)
-		warnings = settings.warnings.copy()
+		warnings = settings["admin"]["warnings"].copy()
 		count = 0
 		for ban in await ctx.guild.bans():
 			for user in warnings:
 				if int(user) == ban.user.id:
 					if dry_run == 0:
-						settings.warnings.pop(user)
+						settings["admin"]["warnings"].pop(user)
 					count += 1
-		settings.update(settings.warnings, "warnings")
+		settings.update(settings["admin"], "admin")
 		return await ctx.send(self.OK_WARN_PRUNE_PRUNED.format(count))
 
 	@commands.guild_only()
@@ -298,7 +297,7 @@ class Admin:
 	@commands.bot_has_permissions(kick_members=True)
 	@commands.command()
 	async def kick(self, ctx, member: discord.Member, *, reason=""):
-		"""Kicks mentioned user. Allows you to give a reason."""
+		"""Kicks mentioned user. Allows you to give a reason. Requires the Kick Members permission."""
 		try:
 			await member.kick(reason=reason)
 			return await ctx.send(self.OK_MOD_ACTION.format("Kicked", member, reason))
@@ -310,7 +309,7 @@ class Admin:
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()
 	async def ban(self, ctx, member: discord.Member, *, reason=""):
-		"""Bans mentioned user. Allows you to give a reason."""
+		"""Bans mentioned user. Allows you to give a reason. Requires the Ban Members permission."""
 		try:
 			await member.ban(reason=reason, delete_message_days=0)
 			return await ctx.send(self.OK_MOD_ACTION.format("Banned", member, reason))
@@ -322,11 +321,10 @@ class Admin:
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()
 	async def unban(self, ctx, member: roxbot.converters.User, *, reason=""):
-		"""Unbans user with given ID. Allows you to give a reason."""
+		"""Unbans user with given ID. Allows you to give a reason. Requires the Ban Members permission."""
 		ban = await ctx.guild.get_ban(member)
 		mem = ban.user
 		if mem is None:
-			# TODO: For issues like this, make BadArgument a negative response embed not an error
 			return await ctx.send(self.WARN_UNBAN_NOTFOUND)
 		try:
 			await ctx.guild.unban(mem, reason=reason)

@@ -34,7 +34,6 @@ from math import ceil
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings
 
 
 def _clear_cache():
@@ -61,7 +60,7 @@ def _format_duration(duration):
 
 def volume_perms():
 	def predicate(ctx):
-		gs = guild_settings.get(ctx.guild)
+		gs = roxbot.guild_settings.get(ctx.guild)
 		if gs["voice"]["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
 			if ctx.message.author.id == roxbot.owner:
 				return True
@@ -212,7 +211,7 @@ class Voice:
 		embed.set_footer(text="{}/{} | Volume: {}%".format(time_played, duration, int(self.now_playing[guild.id].volume*100)))
 		return embed
 
-	@roxbot.checks.is_admin_or_mod()
+	@roxbot.checks.has_permission_or_owner(manage_channels=True)
 	@commands.guild_only()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
@@ -237,7 +236,7 @@ class Voice:
 	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
 		guild = ctx.guild
-		voice = guild_settings.get(guild).get("voice")
+		voice = roxbot.guild_settings.get(guild).get("voice")
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
 		if not (roxbot.checks._is_admin_or_mod(ctx) or from_queue):
@@ -377,10 +376,10 @@ class Voice:
 	@commands.guild_only()
 	@commands.command()
 	async def skip(self, ctx, option=""):
-		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
-		voice = guild_settings.get(ctx.guild)["voice"]
+		"""Skips or votes to skip the current video. Can use option "--force" if you have manage_channels permission. """
+		voice = roxbot.guild_settings.get(ctx.guild)["voice"]
 		if ctx.voice_client.is_playing():
-			if voice["skip_voting"] and not (option == "--force" and roxbot.checks._is_admin_or_mod(ctx)):  # Admin force skipping
+			if voice["skip_voting"] and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
 				if ctx.author in self.skip_votes[ctx.guild.id]:
 					return await ctx.send("You have already voted to skip the current track.")
 				else:
@@ -443,10 +442,10 @@ class Voice:
 				await ctx.send(embed=page)
 
 	@commands.guild_only()
-	@roxbot.checks.is_admin_or_mod()
+	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def remove(self, ctx, index):
-		"""Removes a item from the queue with the given index. Can also input all to delete all queued items."""
+		"""Removes a item from the queue with the given index. Can also input all to delete all queued items. Requires the Manage Channels permission"""
 		# Try and convert index into an into. If not possible, just move forward
 		try:
 			index = int(index)
@@ -470,10 +469,10 @@ class Voice:
 				raise commands.CommandError("Valid Index not given.")
 
 	@commands.guild_only()
-	@roxbot.checks.is_admin_or_mod()
+	@commands.has_permissions(manage_channels=True)
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):
-		"""Stops and disconnects the bot from voice."""
+		"""Stops and disconnects the bot from voice. Requires the Manage Channels permission"""
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
 		else:
@@ -483,6 +482,64 @@ class Voice:
 			self.queue_logic[ctx.guild.id].cancel()
 			await ctx.voice_client.disconnect()
 			return await ctx.send(":wave:")
+
+	@commands.has_permissions(manage_channels=True)
+	@commands.command()
+	async def voice(self, ctx, setting=None, change=None):
+		"""Edits settings for the voice cog. Requires the Manage Channels permission
+		Options:
+			enable/disable: Enable/disables specified change.
+			skipratio: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
+			maxlength/duration: Specify (in seconds) the max duration of a video that can be played. Ignored if staff of the server/bot owner.
+		Possible settings to enable/disable:
+			needperms: specifies whether volume controls and other bot functions need mod/admin perms.
+			skipvoting: specifies whether skipping should need over half of voice users to vote to skip. Bypassed by mods.
+		Example:
+			;settings voice enable skipvoting
+		"""
+		setting = setting.lower()
+		change = change.lower()
+		settings = roxbot.guild_settings.get(ctx.guild)
+		voice = settings["voice"]
+
+		if setting == "enable":
+			if change == "needperms":
+				voice["need_perms"] = 1
+				await ctx.send("'{}' has been enabled!".format(change))
+			elif change == "skipvoting":
+				voice["skip_voting"] = 1
+				await ctx.send("'{}' has been enabled!".format(change))
+			else:
+				return await ctx.send("Not a valid change.")
+		elif setting == "disable":
+			if change == "needperms":
+				voice["need_perms"] = 1
+				await ctx.send("'{}' was disabled :cry:".format(change))
+			elif change == "skipvoting":
+				voice["skip_voting"] = 1
+				await ctx.send("'{}' was disabled :cry:".format(change))
+			else:
+				return await ctx.send("Not a valid change.")
+		elif setting == "skipratio":
+			change = float(change)
+			if 1 > change > 0:
+				voice["skip_ratio"] = change
+			elif 0 < change <= 100:
+				change = change/10
+				voice["skip_ratio"] = change
+			else:
+				return await ctx.send("Valid ratio not given.")
+			await ctx.send("Skip Ratio was set to {}".format(change))
+		elif setting == "maxlength" or setting == "maxduration":
+			change = int(change)
+			if change >= 1:
+				voice["skip_ratio"] = change
+			else:
+				return await ctx.send("Valid max duration not given.")
+			await ctx.send("Max Duration was set to {}".format(change))
+		else:
+			return await ctx.send("Valid option not given.")
+		return settings.update(voice, "voice")
 
 
 def setup(bot_client):

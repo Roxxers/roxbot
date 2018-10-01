@@ -179,7 +179,7 @@ class GuildSettings(object):
 		for key, setting in settings.items():
 			if setting.get("convert"):
 				for x in setting["convert"].keys():
-					if setting["convert"][x] != "bool":
+					if setting["convert"][x] not in ("bool", "hide"):
 						if isinstance(setting[x], list):
 							for y, value in enumerate(setting[x]):
 								if option == "str":
@@ -207,14 +207,20 @@ class GuildSettings(object):
 		"""
 		Get latest settings, and update them with a change.
 		:param changed_dict:
-		:param setting: Setting should be a str of the setting key. If nothing is passed, it is assumed changed_dict is the settings file for the whole server.
+		:param setting: Setting should be a str of the setting key.
+		If nothing is passed, it is assumed changed_dict is the settings file for the whole server.
+		THIS IS NOT RECOMMENED. Always try and just pass the cogs settings and not a whole settings file.
 		:return:
 		"""
 		self.settings = self.refresh()
-		if setting is not None:
-			self.settings[setting] = changed_dict
-		else:
-			self.settings = changed_dict
 		settings = self.settings.copy()
-		self._convert(settings, "str")
+		if setting is not None:
+			settings[setting] = changed_dict
+		elif isinstance(changed_dict, dict):
+			settings = changed_dict
+		elif isinstance(changed_dict, GuildSettings):
+			settings = changed_dict.settings
+		else:
+			raise TypeError("changed_dict can only be a dict or GuildSettings object.")
+		settings = self._convert(settings, "str")
 		_write_changes(self.id, self.cogs, settings)

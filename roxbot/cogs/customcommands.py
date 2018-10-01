@@ -52,7 +52,8 @@ class CustomCommands:
 			"custom_commands": {
 				"0": {},
 				"1": {},
-				"2": {}
+				"2": {},
+				"convert": {"0": "hide", "1": "hide", "2": "hide"}
 			}
 		}
 
@@ -129,11 +130,14 @@ class CustomCommands:
 					command_output = self._get_output(settings["custom_commands"]["0"][command])
 					return await channel.send(command_output)
 
+	@commands.has_permissions(manage_messages=True)
 	@commands.guild_only()
 	@commands.group(aliases=["cc"])
-	@roxbot.checks.is_owner_or_admin()
 	async def custom(self, ctx):
-		""""A group of commands to manage custom commands for your server."""
+		""""
+		A group of commands to manage custom commands for your server.
+		Requires the Manage Messages permission.
+		"""
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 

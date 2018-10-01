@@ -24,7 +24,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
-
 import discord
 from discord.ext import commands
 
@@ -50,6 +49,48 @@ class SelfAssign():
 			if int(sa_role) == role.id:
 				sa["roles"].remove(role.id)
 				return settings.update(sa, "self_assign")
+
+	@commands.has_permissions(manage_roles=True)
+	@commands.guild_only()
+	@commands.command(aliases=["sa"])
+	async def selfassign(self, ctx, setting, *, role: discord.Role):
+		"""Edits settings for self assign cog. Requires Manage Roles permission.
+
+		Options:
+			enable/disable: Enable/disables the cog.
+			add/remove: adds or removes a role that can be self assigned in the server.
+		"""
+		settings = roxbot.guild_settings.get(ctx.guild)
+		self_assign = settings["self_assign"]
+		setting = setting.lower()
+
+
+		if setting == "enable":
+			self_assign["enabled"] = 1
+			await ctx.send("'self_assign' was enabled!")
+		elif setting == "disable":
+			self_assign["enabled"] = 0
+			await ctx.send("'self_assign' was disabled :cry:")
+		elif setting == "add":
+			try:
+				if role.id in self_assign["roles"]:
+					return await ctx.send("{} is already a self-assignable role.".format(role.name))
+				self_assign["roles"].append(role.id)
+				await ctx.send('Role "{}" added'.format(str(role)))
+			except AttributeError:
+				raise commands.BadArgument("Could not find that role.")
+		elif setting == "remove":
+			try:
+				if role.id in self_assign["roles"]:
+					self_assign["roles"].remove(role.id)
+					await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
+				else:
+					return await ctx.send("That role was not in the list.")
+			except AttributeError:
+				raise commands.BadArgument("Could not find that role.")
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(self_assign, "self_assign")
 
 	@commands.guild_only()
 	@commands.command(pass_context=True)

@@ -419,10 +419,10 @@ class Trivia:
 		else:
 			await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
-	@checks.is_admin_or_mod()
+	@commands.has_permissions(manage_channels=True)
 	@trivia.command()
 	async def kick(self, ctx, user: discord.Member):
-		"""Mod command to kick users out of the game. Useful if a user is AFK."""
+		"""Mod command to kick users out of the game. Useful if a user is AFK. Requires Manage Channels permission."""
 		channel = ctx.channel
 		player = user
 		if channel.id in self.games:

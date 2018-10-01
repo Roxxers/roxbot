@@ -25,7 +25,10 @@ SOFTWARE.
 """
 
 
+import typing
 import discord
+from discord.ext import commands
+
 import roxbot
 from roxbot import guild_settings
 
@@ -83,6 +86,63 @@ class JoinLeave():
 			return await channel.send(embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=roxbot.EmbedColours.pink))
 
+	@commands.has_permissions(manage_messages=True)
+	@commands.command()
+	async def greets(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, text: str):
+		"""Edits settings for the Welcome Messages
+
+		Options:
+			enable/disable: Enable/disables parts of the cog. Needs to specify which part.
+			channel: Sets the channels for either option. Must be a ID or mention.
+			message: specifies a custom message for the greet messages.
+		"""
+		setting = setting.lower()
+		settings = guild_settings.get(ctx.guild)
+		greets = settings["greets"]
+		if setting == "enable":
+			greets["enabled"] = 1
+			await ctx.send("'greets' was enabled!")
+		elif setting == "disable":
+			greets["enabled"] = 0
+			await ctx.send("'greets' was disabled :cry:")
+		elif setting == "channel":
+			if channel is None:
+				channel = ctx.channel
+			greets["welcome-channel"] = channel.id
+		elif setting == "custommessage":
+			greets["custom-message"] = text
+			await ctx.send("Custom message set to '{}'".format(text))
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(greets, "greets")
+
+
+	@commands.has_permissions(manage_messages=True)
+	@commands.command()
+	async def goodbyes(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):
+		"""Edits settings for the Welcome Messages
+
+		Options:
+			enable/disable: Enable/disables parts of the cog. Needs to specify which part.
+			channel: Sets the channels for either option. Must be a ID or mention.
+			message: specifies a custom message for the greet messages.
+		"""
+		setting = setting.lower()
+		settings = guild_settings.get(ctx.guild)
+		goodbyes = settings["goodbyes"]
+		if setting == "enable":
+			goodbyes["enabled"] = 1
+			await ctx.send("'goodbyes' was enabled!")
+		elif setting == "disable":
+			goodbyes["enabled"] = 0
+			await ctx.send("'goodbyes' was disabled :cry:")
+		elif setting == "channel":
+			if channel is None:
+				channel = ctx.channel
+			goodbyes["goodbye-channel"] = channel.id
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(goodbyes, "goodbyes")
 
 def setup(Bot):
 	Bot.add_cog(JoinLeave(Bot))

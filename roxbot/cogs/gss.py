@@ -133,6 +133,30 @@ class GaySoundsShitposts:
 			return ctx.send("Error, message roxie thanks.")
 		return await ctx.invoke(self.perms, role=arg)
 
+	@commands.command()
+	async def gss(self, ctx, selection=None, *, changes=None):
+		"""Custom Cog for the GaySoundsShitposts Discord Server."""
+		selection = selection.lower()
+		settings = roxbot.guild_settings.get(ctx.guild)
+		gss = settings["gss"]
+
+		if selection == "loggingchannel":
+			if ctx.message.channel_mentions:
+				channel = ctx.channel_mentions[0]
+			else:
+				channel = self.bot.get_channel(changes)
+			gss["log_channel"] = channel.id
+			await ctx.send("Logging Channel set to '{}'".format(channel.name))
+		elif selection == "requireddays":
+			gss["required_days"] = int(changes)
+			await ctx.send("Required days set to '{}'".format(str(changes)))
+		elif selection == "requiredscore":
+			gss["required_score"] = int(changes)
+			await ctx.send("Required score set to '{}'".format(str(changes)))
+		else:
+			return await ctx.send("No valid option given.")
+		return settings.update(gss, "gss")
+
 
 def setup(bot_client):
 	bot_client.add_cog(GaySoundsShitposts(bot_client))

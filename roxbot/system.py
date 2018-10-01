@@ -180,6 +180,102 @@ class System:
 		await self.bot.change_presence(status=discord_status)
 		await ctx.send("**:ok:** Status set to {}".format(discord_status))
 
+	def parse_setting(self, ctx, settings_to_copy, raw=False):
+		settingcontent = ""
+		setting = settings_to_copy.copy()
+		convert = setting.get("convert", None)
+		if convert is not None and not raw:
+			for x in convert.keys():
+				if convert[x] == "bool":
+					if setting[x] == 0:
+						setting[x] = "False"
+					else:
+						setting[x] = "True"
+				elif convert[x] == "channel":
+					if isinstance(setting[x], list):
+						if len(setting[x]) >= 60:
+							setting[x] = "There is too many channels to display."
+						else:
+							new_channels = []
+							for channel in setting[x]:
+								try:
+									new_channels.append(self.bot.get_channel(channel).mention)
+								except AttributeError:
+									new_channels.append(channel)
+							setting[x] = new_channels
+					else:
+						try:
+							setting[x] = self.bot.get_channel(setting[x]).mention
+						except AttributeError:
+							pass
+				elif convert[x] == "role":
+					if isinstance(setting[x], list):
+						if len(setting[x]) >= 60:
+							setting[x] = "There is too many roles to display."
+						else:
+							new_roles = []
+							for role_id in setting[x]:
+								try:
+									new_roles.append(discord.utils.get(ctx.guild.roles, id=role_id).name)
+								except AttributeError:
+									new_roles.append(role_id)
+							setting[x] = new_roles
+					else:
+						try:
+							setting[x] = discord.utils.get(ctx.guild.roles, id=setting[x]).name
+						except AttributeError:
+							pass
+				elif convert[x] == "user":
+					if isinstance(setting[x], list):
+						if len(setting[x]) >= 60:
+							setting[x] = "There is too many users to display."
+						else:
+							new_users = []
+							for user_id in setting[x]:
+
+								user = self.bot.get_user(user_id)
+								if user is None:
+									new_users.append(str(user_id))
+								else:
+									new_users.append(str(user))
+							setting[x] = new_users
+					else:
+						user = self.bot.get_user(setting[x])
+						if user is None:
+							setting[x] = str(setting[x])
+						else:
+							setting[x] = str(user)
+				elif convert[x] == "hide":
+					setting[x] = "This is hidden. Please use other commands to get this data."
+		for x in setting.items():
+			if x[0] != "convert":
+				settingcontent += str(x).strip("()") + "\n"
+		return settingcontent
+
+	@commands.command(aliases=["printsettingsraw"])
+	@commands.has_permissions(manage_guild=True)
+	async def printsettings(self, ctx, option=None):
+		"""OWNER OR ADMIN ONLY: Prints the servers settings file."""
+		config = roxbot.guild_settings.get(ctx.guild)
+		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
+		paginator = commands.Paginator(prefix="```md")
+		paginator.add_line("{} settings for {}.\n".format(self.bot.user.name, ctx.message.guild.name))
+		if option in settings:
+			raw = bool(ctx.invoked_with == "printsettingsraw")
+			settingcontent = self.parse_setting(ctx, settings[option], raw=raw)
+			paginator.add_line("**{}**".format(option))
+			paginator.add_line(settingcontent)
+			for page in paginator.pages:
+				await ctx.send(page)
+		else:
+			for setting in settings:
+				raw = bool(ctx.invoked_with == "printsettingsraw")
+				settingcontent = self.parse_setting(ctx, settings[setting], raw=raw)
+				paginator.add_line("**{}**".format(setting))
+				paginator.add_line(settingcontent)
+			for page in paginator.pages:
+				await ctx.send(page)
+
 	@commands.command()
 	@commands.is_owner()
 	async def shutdown(self, ctx):

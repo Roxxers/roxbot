@@ -33,36 +33,13 @@ from roxbot import guild_settings as gs
 
 # TODO: Clean up this file.
 
-def is_owner_or_admin():
+
+def has_permission_or_owner(**perms):
 	def predicate(ctx):
 		if ctx.author.id == roxbot.owner:
 			return True
-		elif isinstance(ctx.channel, discord.DMChannel):
-			return False
-		else:
-			for role in ctx.author.roles:
-				if role.id in gs.get(ctx.guild)["admin"]["admin_roles"]:
-					return True
-		return False
+		return commands.has_permissions(**perms)
 	return commands.check(predicate)
-
-
-def _is_admin_or_mod(ctx):
-	if ctx.message.author.id == roxbot.owner:
-		return True
-	elif isinstance(ctx.channel, discord.DMChannel):
-		return False
-	else:
-		admin_roles = gs.get(ctx.guild)["admin"]["admin_roles"]
-		mod_roles = gs.get(ctx.guild)["admin"]["mod_roles"]
-		for role in ctx.author.roles:
-			if role.id in mod_roles or role.id in admin_roles:
-				return True
-	return False
-
-
-def is_admin_or_mod():
-	return commands.check(_is_admin_or_mod)
 
 
 def nsfw_predicate(ctx):
@@ -79,15 +56,3 @@ def nsfw_predicate(ctx):
 
 def is_nfsw_enabled():
 	return commands.check(lambda ctx: nsfw_predicate(ctx))
-
-
-def isnt_anal():
-	def predicate(ctx):
-		if isinstance(ctx.channel, discord.DMChannel):
-			return False
-		anal = gs.get(ctx.guild)["admin"]["is_anal"]
-		if not anal or (nsfw_predicate(ctx) and gs.get(ctx.guild).is_anal["y/n"]):
-			return True
-		else:
-			return False
-	return commands.check(predicate)

@@ -188,7 +188,7 @@ class Fun:
 				response += '\n'
 		return await ctx.send(response)
 
-	@roxbot.checks.isnt_anal()
+	@commands.is_nsfw()
 	@commands.command()
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
@@ -201,7 +201,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to spank")
 		return await ctx.send(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
-	@roxbot.checks.isnt_anal()
+	@commands.is_nsfw()
 	@commands.command(aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
