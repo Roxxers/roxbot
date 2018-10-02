@@ -6,6 +6,7 @@
 
 ### Big Changes 
 - All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independant commands. This doesn't effect custom commands or warnings.
+- Many commands have had overhalls in how they work. Parameters have changed on a number of commands. Please check documentation on all the commands to familarise yourself with the new way to input params.
 - is_anal setting is now depreciated.`;suck` and `;spank` now only work in channels marked NSFW. 
 - perm_roles setting is now depreciated. All commands will work of Discord's permission system.
 
