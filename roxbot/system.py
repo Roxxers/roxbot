@@ -228,6 +228,7 @@ class System:
 				settingcontent += str(x).strip("()") + "\n"
 		return settingcontent
 
+	@commands.guild_only()
 	@commands.command(aliases=["printsettingsraw"])
 	@commands.has_permissions(manage_guild=True)
 	async def printsettings(self, ctx, option=None):
