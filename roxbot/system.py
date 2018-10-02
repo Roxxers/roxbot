@@ -188,7 +188,6 @@ class System:
 		if convert is not None and not raw:
 			for x in convert.keys():
 				converter = None
-				convert_type = None
 				if convert[x] == "bool":
 					if setting[x] == 0:
 						setting[x] = False
@@ -196,24 +195,20 @@ class System:
 						setting[x] = True
 				elif convert[x] == "channel":
 					converter = ctx.guild.get_channel
-					convert_type = "channel"
 				elif convert[x] == "role":
 					converter = ctx.guild.get_role
-					convert_type = "role"
 				elif convert[x] in ("user", "member"):
 					converter = ctx.guild.get_member
-					convert_type = "member"
 				elif convert[x] == "hide":
 					converter = None
 					setting[x] = "This is hidden. Please use other commands to get this data."
 				else:
-					convert_type = None
 					converter = None
 
 				if converter:
 					if isinstance(setting[x], list):
 						if len(setting[x]) >= 60:
-							setting[x] = "There is too many {}s to display. Please use other commands to get this data.".format(convert_type)
+							setting[x] = "There is too many {}s to display. Please use other commands to get this data.".format(convert[x])
 						else:
 							new_entries = []
 							for entry in setting[x]:
