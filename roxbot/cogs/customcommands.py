@@ -130,7 +130,6 @@ class CustomCommands:
 					command_output = self._get_output(settings["custom_commands"]["0"][command])
 					return await channel.send(command_output)
 
-	@commands.has_permissions(manage_messages=True)
 	@commands.guild_only()
 	@commands.group(aliases=["cc"])
 	async def custom(self, ctx):
@@ -141,6 +140,7 @@ class CustomCommands:
 		if ctx.invoked_subcommand is None:
 			return await ctx.send('Missing Argument')
 
+	@commands.has_permissions(manage_messages=True)
 	@custom.command()
 	async def add(self, ctx, command_type, command, *output):
 		"""Adds a custom command to the list of custom commands."""
@@ -185,6 +185,7 @@ class CustomCommands:
 		settings.update(settings["custom_commands"], "custom_commands")
 		return await ctx.send(self.OUTPUT_ADD.format(command, output))
 
+	@commands.has_permissions(manage_messages=True)
 	@custom.command()
 	async def edit(self, ctx, command, *edit):
 		""""Edits an existing custom command."""
@@ -224,6 +225,7 @@ class CustomCommands:
 		else:
 			return await ctx.send(self.ERROR_COMMAND_NULL)
 
+	@commands.has_permissions(manage_messages=True)
 	@custom.command()
 	async def remove(self, ctx, command):
 		""""Removes a custom command."""
