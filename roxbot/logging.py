@@ -87,6 +87,7 @@ class Logging:
 			embed = discord.Embed(description="{} left the server".format(member), colour=roxbot.EmbedColours.pink)
 			return await channel.send(embed=embed)
 
+	@commands.has_permissions(manage_channels=True)
 	@commands.guild_only()
 	@commands.command(aliases=["log"])
 	async def logging(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):

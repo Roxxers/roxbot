@@ -36,46 +36,6 @@ from discord.ext import commands
 import roxbot
 
 
-def _clear_cache():
-	"""Clears the cache folder for the music bot. Ignores the ".gitignore" file to avoid deleting versioned files."""
-	for file in os.listdir("roxbot/cache"):
-		if file != ".gitignore":
-			os.remove("roxbot/cache/{}".format(file))
-
-
-def _format_duration(duration):
-	"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
-	if not duration:
-		return duration
-	hours = duration // 3600
-	minutes = (duration % 3600) // 60
-	seconds = duration % 60
-	format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
-	formatted = datetime.time(**format_me)
-	output = "{:%M:%S}".format(formatted)
-	if formatted.hour >= 1:
-		output = "{:%H:}".format(formatted) + output
-	return output
-
-
-def volume_perms():
-	def predicate(ctx):
-		gs = roxbot.guild_settings.get(ctx.guild)
-		if gs["voice"]["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
-			if ctx.message.author.id == roxbot.owner:
-				return True
-			else:
-				admin_roles = gs.perm_roles["admin"]
-				mod_roles = gs.perm_roles["mod"]
-				for role in ctx.author.roles:
-					if role.id in mod_roles or role.id in admin_roles:
-						return True
-			return False
-		else:
-			return True
-	return commands.check(predicate)
-
-
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
 
@@ -98,6 +58,69 @@ ffmpeg_options = {
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+
+
+def volume_perms():
+	def predicate(ctx):
+		gs = roxbot.guild_settings.get(ctx.guild)
+		if gs["voice"]["need_perms"]:
+			return roxbot.checks.has_permission_or_owner(manage_channels=True)
+		else:
+			return True
+
+	return commands.check(predicate)
+
+
+class NowPlayingEmbed(discord.Embed):
+	def __init__(self, **kwargs):
+		image = kwargs.pop("image", None)
+		thumbnail = kwargs.pop("thumbnail", None)
+		footer = kwargs.pop("footer", None)
+
+		super().__init__(**kwargs)
+
+		if thumbnail:
+			super().set_thumbnail(url=thumbnail)
+		if footer:
+			super().set_footer(text=footer)
+		if image:
+			super().set_image(url=image)
+
+	@staticmethod
+	def _format_duration(duration):
+		"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
+		if not duration:
+			return duration
+		hours = duration // 3600
+		minutes = (duration % 3600) // 60
+		seconds = duration % 60
+		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
+		formatted = datetime.time(**format_me)
+		output = "{:%M:%S}".format(formatted)
+		if formatted.hour >= 1:
+			output = "{:%H:}".format(formatted) + output
+		return output
+
+	@classmethod
+	def make(cls, now_playing, playing_status):
+		np = now_playing
+		title = "{0}: '{1.title}' from {1.host}".format(playing_status, now_playing)
+		duration = cls._format_duration(np.duration)
+		time_played = cls._format_duration(np.source.timer / 1000)
+		description = """Uploaded by: [{0.uploader}]({0.uploader_url})
+		URL: [Here]({0.webpage_url})
+		Duration: {1}
+		Queued by: {0.queued_by}""".format(now_playing, duration)
+		image = np.thumbnail_url
+		footer_text="{}/{} | Volume: {}%".format(time_played, duration, int(now_playing.volume * 100))
+		return cls(
+			title=title,
+			url=np.webpage_url,
+			description=description,
+			colour=roxbot.EmbedColours.pink,
+			image=image,
+			footer=footer_text
+		)
 
 
 class ModifiedFFmpegPMCAudio(discord.FFmpegPCMAudio):
@@ -130,11 +153,9 @@ class YTDLSource(discord.PCMVolumeTransformer):
 	async def from_url(cls, url, *, loop=None, stream=False, volume=0.2):
 		loop = loop or asyncio.get_event_loop()
 		data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
-
 		if 'entries' in data:
 			# take first item from a playlist. This shouldn't need to happen but in case it does.
 			data = data['entries'][0]
-
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
 		return cls(ModifiedFFmpegPMCAudio(filename, ffmpeg_options), data=data, volume=volume)
 
@@ -142,7 +163,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 class Voice:
 	def __init__(self, bot):
 		# Auto Cleanup cache files on boot
-		_clear_cache()
+		self._clear_cache()
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
@@ -169,6 +190,13 @@ class Voice:
 			self.am_queuing[guild.id] = False
 			self.now_playing[guild.id] = None
 			self.queue_logic[guild.id] = None
+
+	@staticmethod
+	def _clear_cache():
+		"""Clears the cache folder for the music bot. Ignores the ".gitignore" file to avoid deleting versioned files."""
+		for file in os.listdir("roxbot/cache"):
+			if file != ".gitignore":
+				os.remove("roxbot/cache/{}".format(file))
 
 	async def on_guild_join(self, guild):
 		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
@@ -197,19 +225,6 @@ class Voice:
 		video["queued_by"] = ctx.author
 		self.playlist[ctx.guild.id].append(video)
 		return video
-
-	def _generate_np_embed(self, guild, playing_status):
-		np = self.now_playing[guild.id]
-		title = "{0}: '{1.title}' from {1.host}".format(playing_status, np)
-		duration = _format_duration(np.duration)
-		time_played = _format_duration(np.source.timer/1000)
-
-		embed = discord.Embed(title=title, colour=roxbot.EmbedColours.pink, url=np.webpage_url)
-		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
-		if np.thumbnail_url:
-			embed.set_image(url=np.thumbnail_url)
-		embed.set_footer(text="{}/{} | Volume: {}%".format(time_played, duration, int(self.now_playing[guild.id].volume*100)))
-		return embed
 
 	@roxbot.checks.has_permission_or_owner(manage_channels=True)
 	@commands.guild_only()
@@ -284,7 +299,7 @@ class Voice:
 				await self._play(ctx, url, stream, queued_by)
 			self.am_queuing[ctx.guild.id] = False
 
-			embed = self._generate_np_embed(ctx.guild, "Now Playing")
+			embed = NowPlayingEmbed.make(self.now_playing[ctx.guild.id], "Now Playing")
 			await ctx.send(embed=embed)
 		else:
 			# Queue the song as there is already a song playing or paused.
@@ -415,7 +430,7 @@ class Voice:
 				x = "Paused"
 			else:
 				x = "Now Playing"
-			embed = self._generate_np_embed(ctx.guild, x)
+			embed = NowPlayingEmbed.make(self.now_playing[ctx.guild.id], x)
 			return await ctx.send(embed=embed)
 
 	@commands.guild_only()
