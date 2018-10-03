@@ -319,24 +319,11 @@ class Voice:
 		# Just invoke the play command with the stream argument as true. Deals with everything else anyway.
 		return await ctx.invoke(self.play, url=url, stream=True)
 
-	@play.before_invoke
-	@stream.before_invoke
-	async def ensure_voice(self, ctx):
-		"""Ensures the bot is in a voice channel before continuing and if it cannot auto join, raise an error."""
-		if ctx.voice_client is None:
-			if ctx.author.voice:
-				await ctx.author.voice.channel.connect()
-			else:
-				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
-
 	@volume_perms()
 	@commands.guild_only()
 	@commands.command()
 	async def volume(self, ctx, volume):
 		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
-		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
-
 		try:
 			volume = int(volume)
 		except ValueError:
@@ -358,66 +345,52 @@ class Voice:
 	@commands.command()
 	async def pause(self, ctx):
 		"""Pauses the current video, if playing."""
-		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+		if ctx.voice_client.is_paused():
+			return await ctx.send("I already am paused!")
 		else:
-			if not ctx.voice_client.is_playing():
-				return await ctx.send("Nothing is playing.")
-			elif ctx.voice_client.is_paused():
-				return await ctx.send("I already am paused!")
-			else:
-				ctx.voice_client.pause()
-				return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
+			ctx.voice_client.pause()
+			return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
 
 	@commands.guild_only()
 	@commands.command()
 	async def resume(self, ctx):
 		"""Resumes the bot if paused. Also will play the next thing in the queue if the bot is stuck."""
-		if ctx.voice_client is None:
-			if len(self.playlist[ctx.guild.id]) < 1:
-				raise commands.CommandError("Roxbot is not in a voice channel.")
-			else:
-				video = self.playlist[ctx.guild.id].pop(0)
-				await ctx.invoke(self.play, url=video)
+		if ctx.voice_client.is_paused():
+			ctx.voice_client.resume()
+			return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
 		else:
-			if ctx.voice_client.is_paused():
-				ctx.voice_client.resume()
-				return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
+			if ctx.voice_client.is_playing():
+				return await ctx.send("Can't resume if I'm already playing something!")
 			else:
-				if ctx.voice_client.is_playing():
-					return await ctx.send("Can't resume if I'm already playing something!")
-				else:
-					return await ctx.send("Nothing to resume.")
+				return await ctx.send("Nothing to resume.")
 
 	@commands.guild_only()
 	@commands.command()
 	async def skip(self, ctx, option=""):
 		"""Skips or votes to skip the current video. Can use option "--force" if you have manage_channels permission. """
 		voice = roxbot.guild_settings.get(ctx.guild)["voice"]
-		if ctx.voice_client.is_playing():
-			if voice["skip_voting"] and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
-				if ctx.author in self.skip_votes[ctx.guild.id]:
-					return await ctx.send("You have already voted to skip the current track.")
-				else:
-					self.skip_votes[ctx.guild.id].append(ctx.author)
-					# -1 due to the bot being counted in the members generator
-					ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
-					needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
-					if ratio >= voice["skip_ratio"]:
-						await ctx.send("{} voted the skip the video.".format(ctx.author))
-						await ctx.send("Votes to skip now playing has been met. Skipping video...")
-						self.skip_votes[ctx.guild.id] = []
-					else:
-						await ctx.send("{} voted the skip the song.".format(ctx.author))
-						return await ctx.send("{}/{} votes required to skip the video. To vote, use the command `{}skip`".format(len(self.skip_votes[ctx.guild.id]), needed_users, ctx.prefix))
+		if voice["skip_voting"] and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
+			if ctx.author in self.skip_votes[ctx.guild.id]:
+				return await ctx.send("You have already voted to skip the current track.")
 			else:
-				await ctx.send("Skipped video")
-
-			# This should be fine as the queue_logic function should handle moving to the next song and all that.
-			self.now_playing[ctx.guild.id] = None
-			ctx.voice_client.stop()
+				self.skip_votes[ctx.guild.id].append(ctx.author)
+				# -1 due to the bot being counted in the members generator
+				ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
+				needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
+				if ratio >= voice["skip_ratio"]:
+					await ctx.send("{} voted the skip the video.".format(ctx.author))
+					await ctx.send("Votes to skip now playing has been met. Skipping video...")
+					self.skip_votes[ctx.guild.id] = []
+				else:
+					await ctx.send("{} voted the skip the song.".format(ctx.author))
+					return await ctx.send("{}/{} votes required to skip the video. To vote, use the command `{}skip`".format(len(self.skip_votes[ctx.guild.id]), needed_users, ctx.prefix))
 		else:
-			await ctx.send("I'm not playing anything.")
+			await ctx.send("Skipped video")
+
+		# This should be fine as the queue_logic function should handle moving to the next song and all that.
+		self.now_playing[ctx.guild.id] = None
+		ctx.voice_client.stop()
+
 
 	@commands.guild_only()
 	@commands.command(aliases=["np"])
@@ -489,15 +462,40 @@ class Voice:
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):
 		"""Stops and disconnects the bot from voice. Requires the Manage Channels permission"""
+		# Clear up variables before stopping.
+		self.playlist[ctx.guild.id] = []
+		self.now_playing[ctx.guild.id] = None
+		self.queue_logic[ctx.guild.id].cancel()
+		await ctx.voice_client.disconnect()
+		return await ctx.send(":wave:")
+
+	@play.before_invoke
+	@stream.before_invoke
+	async def ensure_voice(self, ctx):
+		"""Ensures the bot is in a voice channel before continuing and if it cannot auto join, raise an error."""
+		if ctx.voice_client is None:
+			if ctx.author.voice:
+				await ctx.author.voice.channel.connect()
+			else:
+				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
+
+	@skip.before_invoke
+	@stop.before_invoke
+	@pause.before_invoke
+	@resume.before_invoke
+	@volume.before_invoke
+	async def check_in_voice(self, ctx):
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
-		else:
-			# Clear up variables before stopping.
-			self.playlist[ctx.guild.id] = []
-			self.now_playing[ctx.guild.id] = None
-			self.queue_logic[ctx.guild.id].cancel()
-			await ctx.voice_client.disconnect()
-			return await ctx.send(":wave:")
+
+	@skip.before_invoke
+	@pause.before_invoke
+	async def check_playing(self, ctx):
+		try:
+			if not ctx.voice_client.is_playing():
+				raise commands.CommandError("I'm not playing anything.")
+		except AttributeError:
+			raise commands.CommandError("I'm not playing anything.")
 
 	@commands.has_permissions(manage_channels=True)
 	@commands.command()
