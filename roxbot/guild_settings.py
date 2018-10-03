@@ -98,7 +98,6 @@ def _check_for_missing_cog(server_id, name, cog):
 				cog.settings.pop("limited_to_guild")
 			except KeyError:
 				pass  # limited_to_guild is a arg that can be passed to limit a cog to one server.
-			print("{}.json".format(name))
 			if "{}.json".format(name) not in os.listdir("roxbot/settings/servers/{}".format(server_id)):
 				_make_cog_json_file(server_id, name, cog.settings)
 				return True
