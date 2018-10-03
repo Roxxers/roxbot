@@ -230,16 +230,25 @@ class Voice:
 			await channel.connect()
 		return await ctx.send("Joined {0.name} :ok_hand:".format(channel))
 
+	async def _play(self, ctx, url, stream, queued_by):
+		player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
+		player.stream = stream
+		player.queued_by = queued_by or ctx.author
+		self.now_playing[ctx.guild.id] = player
+		ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+		# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
+		self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
+
 	@commands.guild_only()
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
 	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
 		guild = ctx.guild
-		voice = roxbot.guild_settings.get(guild).get("voice")
+		voice = roxbot.guild_settings.get(guild)["voice"]
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
-		if not (roxbot.checks._is_admin_or_mod(ctx) or from_queue):
+		if not (roxbot.checks.has_permission_or_owner(manage_channels=True) or from_queue):
 			if not ctx.author.voice:
 				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
@@ -259,29 +268,21 @@ class Voice:
 			video = data["entries"].pop(0)
 			for entry in data["entries"]:
 				self._queue_song(ctx, entry, stream)
+
 		elif 'entries' in video and video.get("extractor_key") == "YoutubeSearch":
 			video = video["entries"][0]
 
 		# Duration limiter handling
-		if video.get("duration", 1) > voice["max_length"] and not roxbot.checks._is_admin_or_mod(ctx):
+		if video.get("duration", 1) > voice["max_length"] and not roxbot.checks.has_permission_or_owner(manage_channels=True):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
 		# If not playing and not queuing, and not paused, play the song. Otherwise queue it.
 		if (not ctx.voice_client.is_playing() and self.am_queuing[guild.id] is False) and not ctx.voice_client.is_paused():
 			self.am_queuing[guild.id] = True
-
 			async with ctx.typing():
-				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
-				player.stream = stream
-				player.queued_by = queued_by or ctx.author
-				self.now_playing[guild.id] = player
-				self.am_queuing[guild.id] = False
-
-				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-			# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
-			self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
+				await self._play(ctx, url, stream, queued_by)
+			self.am_queuing[ctx.guild.id] = False
 
 			embed = self._generate_np_embed(ctx.guild, "Now Playing")
 			await ctx.send(embed=embed)
