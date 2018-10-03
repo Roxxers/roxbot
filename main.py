@@ -85,11 +85,12 @@ async def on_ready():
 			print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
 	print("")
 
-	print("Servers I am currently in:")
-	for server in bot.guilds:
-		print(server)
-		# this is so if we're added to a server while we're offline we deal with it
-		roxbot.guild_settings.error_check(bot.guilds, bot.cogs)
+	# this is so if we're added to a server while we're offline we deal with it
+	roxbot.guild_settings.error_check(bot.guilds, bot.cogs)
+
+	print("Guilds I'm currently in:")
+	for guild in bot.guilds:
+		print(guild)
 	print("")
 
 
@@ -135,6 +136,12 @@ async def about(ctx):
 	em.add_field(name="Current Uptime", value=str(uptime.split(".")[0]))
 
 	return await ctx.channel.send(embed=em)
+
+@commands.command(pass_context=False, hidden=True)
+async def settings():
+	# This is to block any customcommand or command from being made with the same name.
+	# This is to avoid conflicts with the internal settings system.
+	raise commands.CommandNotFound()
 
 if __name__ == "__main__":
 	# Pre-Boot checks
