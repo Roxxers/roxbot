@@ -69,7 +69,7 @@ facts = [
 	["Roxbot is frustrated with her inability to defeat all the Mario games. She has 100 percented Super Mario World and Super Mario 3D Land, but she lacks the computing skills to figure out the game franchise's open-world counterparts.", "elise"],
 	["Roxbot knows the meaning of the world, the universe, and everything.", "roxie"],
 	["Roxbot’s voice feature is actually quite rudimentary. The current setup is Roxbot puts her Blue Yeti microphone up to her brand new subwoofers. This is the reason it can be so loud sometimes.", "roxie"],
-	["Roxbot was very apprehensive of her new friend, GSSPE, but she gets along with her nowadays. GSSPE’s “agile development” caught her off-guard at first.", "summer"],
+	["Roxbot was very apprehensive of her new friend, AGSE, but she gets along with her nowadays. AGSE’s “agile development” caught her off-guard at first.", "summer"],
 	["Roxbot used to hate surreal memes. “They don’t make any damn sense!” she’d say. After explaining to her that that’s the entire point, she’s kind of gone off the deep end with it. Loves to “deep fry” things now and can be heard laughing from down the hall.", "summer"],
 	["Roxbot shares her mother’s interest in Vexillology, or the study of flags, their use, and design. Roxbot hopes to make a flag that she thinks is worth showing her mom one day; until then she designs in secret.", "summer"],
 	["Roxbot can get annoyed when people ask her to do too much at once.", "Summer"],

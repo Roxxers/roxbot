@@ -25,25 +25,29 @@ SOFTWARE.
 """
 
 
+import typing
 import datetime
 
 import discord
 from discord.ext import commands
-from discord.ext.commands import bot
 
 import roxbot
 
-gssp_id = 393764974444675073
+
+ags_id = 393764974444675073
+nsfw_disabled = 397866388145831937
+selfieperms = 394939389823811584
+nsfwimageperms = 394941004043649036
+newbie = 450042170112475136
 
 
-def is_gss():
-	return commands.check(lambda ctx: ctx.guild.id == gssp_id)
+def is_ags():
+	return commands.check(lambda ctx: ctx.guild.id == ags_id)
 
 
 def is_not_nsfw_disabled():
 	def predicate(ctx):
-		role = discord.utils.get(ctx.guild.roles, id=397866388145831937)
-		return role not in ctx.author.roles
+		return ctx.guild.get_role(nsfw_disabled) not in ctx.author.roles
 	return commands.check(predicate)
 
 
@@ -53,12 +57,13 @@ async def tatsumaki_api_call(member, guild):
 	return await roxbot.http.api_request(url, headers={"Authorization": roxbot.tat_token})
 
 
-class GaySoundsShitposts:
+class AsortedGenderSounds:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.acceptable_roles = (394939389823811584, 394941004043649036)
+		self.acceptable_roles = (nsfwimageperms, selfieperms)
 		self.settings = {
-			"gss": {
+			"limited_to_guild": str(ags_id),
+			"ags": {
 				"log_channel": "",
 				"required_days": "",
 				"required_score": "",
@@ -66,15 +71,14 @@ class GaySoundsShitposts:
 		}
 
 	async def on_member_join(self, member):
-		if member.guild.id == gssp_id:
-			role = discord.utils.get(member.guild.roles, id=450042170112475136)
+		if member.guild.id == ags_id:
+			role = member.guild.get_role(newbie)
 			await member.add_roles(role, reason="Auto-add role on join")
-			#channel = self.bot.get_channel(450040463794241536)
-			#await channel.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
+			await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
 
 	@commands.command()
 	async def agree(self, ctx):
-		role = discord.utils.get(ctx.author.guild.roles, id=450042170112475136)
+		role = ctx.guild.get_role(newbie)
 		try:
 			return await ctx.author.remove_roles(role, reason="User has agreed the rules and has been given access to the server.")
 		except discord.HTTPException:
@@ -88,8 +92,8 @@ class GaySoundsShitposts:
 			return False
 		settings = roxbot.guild_settings.get(ctx.guild)
 		member = ctx.author
-		required_score = settings["gss"]["required_score"]
-		days = int(settings["gss"]["required_days"])
+		required_score = settings["ags"]["required_score"]
+		days = int(settings["ags"]["required_days"])
 		data = await tatsumaki_api_call(member, ctx.guild)
 		if data is None:
 			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
@@ -108,55 +112,57 @@ class GaySoundsShitposts:
 				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
 			)
 
-	@is_gss()
+	@is_ags()
 	@commands.command()
 	async def selfieperms(self, ctx):
 		"""Requests the selfie perm role."""
 		arg = None
 		for role in ctx.guild.roles:
-			if role.id == 394939389823811584:
+			if role.id == selfieperms:
 				arg = role
 		if not arg:
 			return ctx.send("Error, message roxie thanks.")
 		return await ctx.invoke(self.perms, role=arg)
 
 	@is_not_nsfw_disabled()
-	@is_gss()
+	@is_ags()
 	@commands.command()
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
 		arg = None
 		for role in ctx.guild.roles:
-			if role.id == 394941004043649036:
+			if role.id == nsfwimageperms:
 				arg = role
 		if not arg:
 			return ctx.send("Error, message roxie thanks.")
 		return await ctx.invoke(self.perms, role=arg)
 
 	@commands.command()
-	async def gss(self, ctx, selection=None, *, changes=None):
+	async def ags(self, ctx, selection, amount: typing.Optional[int], *, channel: typing.Optional[discord.TextChannel] = None):
 		"""Custom Cog for the GaySoundsShitposts Discord Server."""
 		selection = selection.lower()
 		settings = roxbot.guild_settings.get(ctx.guild)
-		gss = settings["gss"]
+		ags = settings["ags"]
 
 		if selection == "loggingchannel":
-			if ctx.message.channel_mentions:
+			if not channel:
+				channel = ctx.channel
+			elif ctx.message.channel_mentions:
 				channel = ctx.channel_mentions[0]
 			else:
-				channel = self.bot.get_channel(changes)
-			gss["log_channel"] = channel.id
+				channel = ctx.guild.get_channel(channel)
+			ags["log_channel"] = channel.id
 			await ctx.send("Logging Channel set to '{}'".format(channel.name))
 		elif selection == "requireddays":
-			gss["required_days"] = int(changes)
-			await ctx.send("Required days set to '{}'".format(str(changes)))
+			ags["required_days"] = amount
+			await ctx.send("Required days set to '{}'".format(str(amount)))
 		elif selection == "requiredscore":
-			gss["required_score"] = int(changes)
-			await ctx.send("Required score set to '{}'".format(str(changes)))
+			ags["required_score"] = amount
+			await ctx.send("Required score set to '{}'".format(str(amount)))
 		else:
 			return await ctx.send("No valid option given.")
-		return settings.update(gss, "gss")
+		return settings.update(ags, "ags")
 
 
 def setup(bot_client):
-	bot_client.add_cog(GaySoundsShitposts(bot_client))
+	bot_client.add_cog(AsortedGenderSounds(bot_client))

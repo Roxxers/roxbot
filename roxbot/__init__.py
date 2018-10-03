@@ -69,5 +69,5 @@ cogs = [
 	"roxbot.cogs.twitch",
 	"roxbot.cogs.util",
 	"roxbot.cogs.voice",
-	#"roxbot.cogs.gss"
+	#"roxbot.cogs.ags"
 ]
