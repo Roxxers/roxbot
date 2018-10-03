@@ -91,16 +91,26 @@ def _make_cog_json_file(server_id, name, data):
 	with open("roxbot/settings/servers/{}/{}.json".format(server_id, name), "w") as fp:
 		return json.dump(data, fp)
 
+def _check_for_missing_cog(server_id, name, cog):
+	try:
+		if cog.settings and (cog.settings.get("limited_to_guild", server_id) == server_id):
+			try:
+				cog.settings.pop("limited_to_guild")
+			except KeyError:
+				pass  # limited_to_guild is a arg that can be passed to limit a cog to one server.
+			print("{}.json".format(name))
+			if "{}.json".format(name) not in os.listdir("roxbot/settings/servers/{}".format(server_id)):
+				_make_cog_json_file(server_id, name, cog.settings)
+				return True
+	except AttributeError:
+		pass  # If Cog has no settings
+	return False
+
 
 def _make_server_folder(server, cogs):
 	os.mkdir("roxbot/settings/servers/{}".format(str(server.id)))
 	for name, cog in cogs.items():
-		if name != "Settings":
-			try:
-				if cog.settings:
-					_make_cog_json_file(str(server.id), name, cog.settings)
-			except AttributeError:
-				pass
+		_check_for_missing_cog(str(server.id), name, cog)
 
 
 def error_check(servers, cogs):
@@ -123,14 +133,9 @@ def error_check(servers, cogs):
 
 			# Check for missing cog settings
 			for name, cog in cogs.items():
-				if name != "Settings":
-					try:
-						if cog.settings:
-							if "{}.json".format(name) not in os.listdir("roxbot/settings/servers/{}".format(server_id)):
-								_make_cog_json_file(server_id, name, cog.settings)
-								print("WARNING: The settings folder for {} is missing the file {}. The defaults have been created.".format(str(server), name))
-					except AttributeError:
-						pass  # If Cog has no settings
+				resp = _check_for_missing_cog(server_id, name, cog)
+				if resp:
+					print("WARNING: The settings folder for {} is missing the file {}. The defaults have been created.".format(str(server), name))
 
 
 def get(guild):
