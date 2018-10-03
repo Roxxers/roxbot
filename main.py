@@ -96,7 +96,7 @@ async def on_ready():
 
 @bot.event
 async def on_guild_join(guild):
-	gs.add_guild(guild)
+	gs.add_guild(guild, bot.cogs)
 
 
 @bot.event
@@ -137,6 +137,7 @@ async def about(ctx):
 
 	return await ctx.channel.send(embed=em)
 
+
 @commands.command(pass_context=False, hidden=True)
 async def settings():
 	# This is to block any customcommand or command from being made with the same name.
@@ -146,8 +147,7 @@ async def settings():
 if __name__ == "__main__":
 	# Pre-Boot checks
 	if not os.path.isfile("roxbot/settings/preferences.ini"):
-		print(
-			"PREFERENCE FILE MISSING. Something has gone wrong. Please make sure there is a file called 'preferences.ini' in the settings folder")
+		print("PREFERENCE FILE MISSING. Please make sure there is a file called 'preferences.ini' in the settings folder")
 		exit(0)
 
 	start_time = time.time()

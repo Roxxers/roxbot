@@ -77,29 +77,24 @@ def backup(name):
 			print('Directory not copied. Error: %s' % e)
 
 
-def remove_guild(guild):
-	"""Removes given guild from settings folders and saves changes."""
-	shutil.rmtree('roxbot/settings/server/{}'.format(guild.id))
-
-
-def add_guild(guild, cogs):
-	"""Adds given guild to settings folder saves changes."""
-	_make_server_folder(guild, cogs)
-
-
 def _make_cog_json_file(server_id, name, data):
 	with open("roxbot/settings/servers/{}/{}.json".format(server_id, name), "w") as fp:
 		return json.dump(data, fp)
 
+
 def _check_for_missing_cog(server_id, name, cog):
 	try:
-		if cog.settings and (cog.settings.get("limited_to_guild", server_id) == server_id):
-			try:
-				cog.settings.pop("limited_to_guild")
-			except KeyError:
-				pass  # limited_to_guild is a arg that can be passed to limit a cog to one server.
+		if cog.settings:
+			settings = cog.settings.copy()
+			limited = settings.get("limited_to_guild")
+			if limited:
+				if limited != server_id:
+					return False
+				else:
+					settings.pop("limited_to_guild")
+
 			if "{}.json".format(name) not in os.listdir("roxbot/settings/servers/{}".format(server_id)):
-				_make_cog_json_file(server_id, name, cog.settings)
+				_make_cog_json_file(server_id, name, settings)
 				return True
 	except AttributeError:
 		pass  # If Cog has no settings
@@ -122,19 +117,26 @@ def error_check(servers, cogs):
 
 	else:
 		for server in servers:
-			# Server ID made a string for ease of use
-			server_id = str(server.id)
-
 			# Check for missing server
-			if server_id not in os.listdir("roxbot/settings/servers/"):
+			if str(server.id) not in os.listdir("roxbot/settings/servers/"):
 				_make_server_folder(server, cogs)
 				print("WARNING: The settings folder for {} was not found. The defaults have been created.".format(str(server)))
 
 			# Check for missing cog settings
 			for name, cog in cogs.items():
-				resp = _check_for_missing_cog(server_id, name, cog)
+				resp = _check_for_missing_cog(str(server.id), name, cog)
 				if resp:
 					print("WARNING: The settings folder for {} is missing the file {}. The defaults have been created.".format(str(server), name))
+
+
+def remove_guild(guild):
+	"""Removes given guild from settings folders and saves changes."""
+	shutil.rmtree('roxbot/settings/server/{}'.format(guild.id))
+
+
+def add_guild(guild, cogs):
+	"""Adds given guild to settings folder saves changes."""
+	_make_server_folder(guild, cogs)
 
 
 def get(guild):
