@@ -279,7 +279,7 @@ class Fun:
 				waifu_list.append(w.name)
 
 		if len(waifu_list) > 1:
-			if len(waifu) == 2:
+			if len(waifu_list) == 2:
 				oxford_comma = " and {}"
 			else:
 				oxford_comma = ", and {}"
