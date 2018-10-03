@@ -239,23 +239,25 @@ class Fun:
 		return await ctx.send("Nyaa! :3 *{} gives headpats to {}*".format(self.bot.user.name, user.name))
 
 	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
-	async def waifurate(self, ctx):
+	async def waifurate(self, ctx, *waifu: commands.Greedy[discord.Member]):
 		"""
 		Rates the mentioned waifu(s). husbando/spousu-rate also work.
 		Usage:
 			{command_prefix}waifurate @user#9999
 		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
 		"""
-		mentions = ctx.message.mentions
+		# TODO: Mention to users can be changed to mentions when we move to embeds.
 		if ctx.invoked_with in ["hr", "husbandorate"]:
-			waifu = "husbando"
+			waifu_text = "husbando"
 		elif ctx.invoked_with in ["sr", "spousurate"]:
-			waifu = "spousu"
+			waifu_text = "spousu"
 		else:
-			waifu = "waifu"
+			waifu_text = "waifu"
 
-		if not mentions:
+		if not waifu:
 			return await ctx.send("You didn't mention anyone for me to rate.", delete_after=10)
+		elif len(waifu) >= 20:
+			return await ctx.send("I think you have too many {}s :thinking: I am not even gunna try and rate that.".format(waifu_text))
 
 		rating = random.randrange(1, 11)
 		if rating <= 2:
@@ -271,10 +273,21 @@ class Fun:
 		else:
 			emoji = ":heart_eyes:"
 
-		if len(mentions) > 1:
-			return await ctx.send("Oh poly {0} rating? :smirk: Your combined {0} rating is {1}/10. {2}".format(waifu, rating, emoji))
+		waifu_list = []
+		for x, w in enumerate(waifu):
+			if w.name not in waifu_list:  # To remove dupes
+				waifu_list.append(w.name)
+
+		if len(waifu_list) > 1:
+			if len(waifu) == 2:
+				oxford_comma = " and {}"
+			else:
+				oxford_comma = ", and {}"
+
+			waifus = ", ".join(waifu_list[:-1]).strip(", ") + oxford_comma.format(waifu_list[-1])
+			return await ctx.send("Oh poly {0} rating? :smirk: Your combined {0} rating for {3} is {1}/10. {2}".format(waifu_text, rating, emoji, waifus))
 		else:
-			return await ctx.send("Oh that's your {}? I rate them a {}/10. {}".format(waifu, rating, emoji))
+			return await ctx.send("Oh that's your {}? I rate {} a {}/10. {}".format(waifu_text, waifu[0].name, rating, emoji))
 
 	@commands.command(aliases=["cf"])
 	async def coinflip(self, ctx):
@@ -499,6 +512,7 @@ class Fun:
 		embed = discord.Embed(title="Roxbot Fact #{}!".format(fact_index+1), description=fact[0], colour=roxbot.EmbedColours.pink)
 		embed.set_footer(text="Credit: {}".format(author))
 		return await ctx.send(embed=embed)
+
 
 def setup(bot_client):
 	bot_client.add_cog(Fun(bot_client))
