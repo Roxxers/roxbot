@@ -35,7 +35,6 @@ import roxbot
 
 
 ags_id = 393764974444675073
-nsfw_disabled = 397866388145831937
 selfieperms = 394939389823811584
 nsfwimageperms = 394941004043649036
 newbie = 450042170112475136
@@ -43,12 +42,6 @@ newbie = 450042170112475136
 
 def is_ags():
 	return commands.check(lambda ctx: ctx.guild.id == ags_id)
-
-
-def is_not_nsfw_disabled():
-	def predicate(ctx):
-		return ctx.guild.get_role(nsfw_disabled) not in ctx.author.roles
-	return commands.check(predicate)
 
 
 async def tatsumaki_api_call(member, guild):
@@ -124,9 +117,9 @@ class AsortedGenderSounds:
 			return ctx.send("Error, message roxie thanks.")
 		return await ctx.invoke(self.perms, role=arg)
 
-	@is_not_nsfw_disabled()
+	#@is_not_nsfw_disabled()
 	@is_ags()
-	@commands.command()
+	@commands.command(hidden=True, enabled=False)
 	async def nsfwperms(self, ctx):
 		"""Requests the NSFW Image Perm role."""
 		arg = None
