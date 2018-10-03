@@ -154,7 +154,7 @@ class Reddit:
 				x += 1
 
 		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
-		if (choice["over_18"] and not roxbot.checks.nsfw_predicate(ctx)) and isinstance(ctx.channel, discord.TextChannel):
+		if (choice["over_18"] and not ctx.channel.is_nsfw()) and isinstance(ctx.channel, discord.TextChannel):
 			return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
 		if not url:  # If no image posts could be found with the for loop.
 			return await ctx.send("I couldn't find any images from that subreddit.")
@@ -229,11 +229,6 @@ class Reddit:
 		"""
 		subreddit = "gaysoundsshitposts"
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
-
-	@commands.command(hidden=True, name="subreddit_dryrun")
-	async def _subreddit_test(self, ctx, url):
-		return await ctx.send(await parse_url(url))
-
 
 def setup(bot_client):
 	bot_client.add_cog(Reddit(bot_client))

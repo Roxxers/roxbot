@@ -37,10 +37,6 @@ import roxbot
 from roxbot import guild_settings as gs
 
 
-# REMEMBER TO UNCOMMENT THE GSS LINE, ROXIE
-# DO NOT UNCOMMENT GSS IF YOU ARE NOT ROXIE
-
-
 # Sets up Logging that discord.py does on its own
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)

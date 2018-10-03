@@ -25,13 +25,8 @@ SOFTWARE.
 """
 
 
-import discord
-from discord.ext import commands
-
 import roxbot
-from roxbot import guild_settings as gs
-
-# TODO: Clean up this file.
+from discord.ext import commands
 
 
 def has_permission_or_owner(**perms):
@@ -41,18 +36,3 @@ def has_permission_or_owner(**perms):
 		return commands.has_permissions(**perms)
 	return commands.check(predicate)
 
-
-def nsfw_predicate(ctx):
-	if isinstance(ctx.channel, discord.DMChannel):
-		return False
-	nsfw = gs.get(ctx.guild)["nsfw"]
-	if not nsfw["channels"] and nsfw["enabled"]:
-		return nsfw["enabled"] == 1
-	elif nsfw["enabled"] and nsfw["channels"]:
-		return ctx.channel.id in nsfw["channels"]
-	else:
-		return False
-
-
-def is_nfsw_enabled():
-	return commands.check(lambda ctx: nsfw_predicate(ctx))

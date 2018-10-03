@@ -48,13 +48,12 @@ class NFSW():
 		self.settings = {
 			"nsfw": {
 				"enabled": 0,
-				"channels": [],
-				"convert": {"enabled": "bool", "channels": "channel"},
+				"convert": {"enabled": "bool"},
 				"blacklist": []
 			}
 		}
 
-	@roxbot.checks.is_nfsw_enabled()
+	@commands.is_nsfw()
 	@commands.command(hidden=True)
 	async def gelbooru_clone(self, ctx, base_url, post_url, tags):
 		limit = 150
@@ -92,7 +91,7 @@ class NFSW():
 		output = await ctx.send(url)
 		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
-	@roxbot.checks.is_nfsw_enabled()
+	@commands.is_nsfw()
 	@commands.command()
 	async def e621(self, ctx, *, tags=""):
 		"""
@@ -101,7 +100,7 @@ class NFSW():
 		base_url = "https://e621.net/post/index.json?tags="
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url="", tags=tags)
 
-	@roxbot.checks.is_nfsw_enabled()
+	@commands.is_nsfw()
 	@commands.command()
 	async def rule34(self, ctx, *, tags=""):
 		"""
@@ -111,7 +110,7 @@ class NFSW():
 		post_url = "https://img.rule34.xxx/images/"
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
-	@roxbot.checks.is_nfsw_enabled()
+	@commands.is_nsfw()
 	@commands.command()
 	async def gelbooru(self, ctx, *, tags=""):
 		"""
@@ -121,8 +120,9 @@ class NFSW():
 		post_url = "https://simg3.gelbooru.com/images/"
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
+	@commands.has_permissions(manage_channels=True)
 	@commands.command()
-	async def nsfw(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, changes=None):
+	async def nsfw(self, ctx, setting, *, changes=None):
 		"""Edits settings for the nsfw cog and other nsfw commands.
 		If nsfw is enabled and nsfw channels are added, the bot will only allow nsfw commands in the specified channels.
 
@@ -143,22 +143,6 @@ class NFSW():
 		elif setting == "disable":
 			nsfw["enabled"] = 0
 			await ctx.send("'nsfw' was disabled :cry:")
-		elif setting == "addchannel":
-			if not channel and not changes:
-				channel = ctx.channel
-			if channel.id not in nsfw["channels"]:
-				nsfw["channels"].append(channel.id)
-				await ctx.send("'{}' has been added to the nsfw channel list.".format(channel.name))
-			else:
-				return await ctx.send("'{}' is already in the list.".format(channel.name))
-		elif setting == "removechannel":
-			if not channel and not changes:
-				channel = ctx.channel
-			try:
-				nsfw["channels"].remove(channel.id)
-				await ctx.send("'{}' has been removed from the nsfw channel list.".format(channel.name))
-			except ValueError:
-				return await ctx.send("That role was not in the list.")
 		elif setting == "addbadtag":
 			if changes not in nsfw["blacklist"]:
 				nsfw["blacklist"].append(changes)

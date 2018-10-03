@@ -4,11 +4,12 @@
 - More better open source stuff - pls pr me
 - easy setup and get that wiki going
 
-### Big Changes 
+### Big and Breaking Changes
 - All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independant commands. This doesn't effect custom commands or warnings.
 - Many commands have had overhalls in how they work. Parameters have changed on a number of commands. Please check documentation on all the commands to familarise yourself with the new way to input params.
 - is_anal setting is now depreciated.`;suck` and `;spank` now only work in channels marked NSFW. 
 - perm_roles setting is now depreciated. All commands will work of Discord's permission system.
+- Roxbot will now check for a channel being marked NSFW in Discord rather than her own internal system. Roxbot's NSFW channels have be depreciated.
 
 ### Regular Updates
 #### New Features
@@ -17,12 +18,12 @@
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
 - Cogs have a message if they fail to load instead of breaking entire bot.
-- NSFW commands should have even less chance of dupes.
-- All time formatting is now standardised.
-- Error messages dont time out anymore.
+- NSFW commands should have even less chance of dupes with better caching.
+- All datetime formatting is now standardised.
+- Error messages don't timeout anymore.
 
 #### Bug Fixes
-- `deepfry` command now works all the time.
+- `;deepfry` command now works all the time.
 - Pride filter filenames fixed.
 - As many spelling mistakes as possible.
 - If music bot can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
@@ -30,7 +31,6 @@
 - NSFW commands fixed.
 - Roxbot can now fully function in DMs. Before, she would break. DM's have less commands that can be invoked.
 - `;subreddit`'s "subscriptable" error has been fixed.
-- is_anal value can be changed again and check now works.
 - Common commands that would go over 2000 characters have been paginated to avoid this error.
 
 ## v1.8.0
