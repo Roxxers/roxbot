@@ -36,72 +36,127 @@ import roxbot
 from roxbot import guild_settings
 
 
-async def _imgur_removed(url):
-	page = await roxbot.http.get_page(url)
-	soup = BeautifulSoup(page, 'html.parser')
-	try:
-		return bool("removed.png" in soup.img["src"])
-	except TypeError:  # This should protect roxbot in case bs4 returns nothing.
-		return False
+class Scrapper:
+	# TODO: Reimplement eroshare, eroshae, and erome support. Also implement better api interaction with imgur now we require api key
+	def __init__(self, cache_limit=10):
+		self.post_cache = {}
+		self.cache_limit = cache_limit
 
-
-async def imgur_get(url):
-	if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv"):
-		return url
-	else:
-		if await _imgur_removed(url):
+	@staticmethod
+	async def _imgur_removed(url):
+		page = await roxbot.http.get_page(url)
+		soup = BeautifulSoup(page, 'html.parser')
+		try:
+			return bool("removed.png" in soup.img["src"])
+		except TypeError:  # This should protect roxbot in case bs4 returns nothing.
 			return False
 
-		if not roxbot.imgur_token:
-			return False
-
-		base_endpoint = "https://api.imgur.com/3/"
-		endpoint_album = base_endpoint + "album/{}/images.json".format(url.split("/")[-1])
-		endpoint_image = base_endpoint + "image/{}.json".format(url.split("/")[-1])
-
-		resp = await roxbot.http.api_request(endpoint_image, headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
-		if bool(resp["success"]) is True:
-			return resp["data"]["link"]
+	async def imgur_get(self, url):
+		if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv"):
+			return url
 		else:
-			resp = await roxbot.http.api_request(endpoint_album,
+			if await self._imgur_removed(url):
+				return False
+
+			if not roxbot.imgur_token:
+				return False
+
+			base_endpoint = "https://api.imgur.com/3/"
+			endpoint_album = base_endpoint + "album/{}/images.json".format(url.split("/")[-1])
+			endpoint_image = base_endpoint + "image/{}.json".format(url.split("/")[-1])
+
+			resp = await roxbot.http.api_request(endpoint_image,
 												 headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
-			return resp["data"][0]["link"]
+			if bool(resp["success"]) is True:
+				return resp["data"]["link"]
+			else:
+				resp = await roxbot.http.api_request(endpoint_album,headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
+				return resp["data"][0]["link"]
 
+	async def parse_url(self, url):
+		if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv", "webm", "mp4", "webp"):
+			return url
+		if "imgur" in url:
+			return await self.imgur_get(url)
+		elif "eroshare" in url or "eroshae" in url or "erome" in url:
+			return None
+		# return ero_get(url)
+		elif "gfycat" in url or "redd.it" in url or "i.reddituploads" in url or "media.tumblr" in url or "streamable" in url:
+			return url
+		else:
+			return None
 
-# TODO: Reimplement eroshare, eroshae, and erome support. Also implement better api interaction with imgur now we require api key
+	@staticmethod
+	async def sub_request(subreddit):
+		options = [".json?count=1000", "/top/.json?sort=top&t=all&count=1000"]
+		choice = random.choice(options)
+		subreddit += choice
+		url = "https://reddit.com/r/" + subreddit
+		r = await roxbot.http.api_request(url)
+		try:
+			posts = r["data"]
+			# This part is to check for some common errors when doing a sub request
+			# t3 is a post in a listing. We want to avoid not having this instead of a subreddit search, which would be t5.
+			if not posts.get("after") or posts["children"][0]["kind"] != "t3":
+				return {}
+			return posts
+		except (KeyError, TypeError):
+			return {}
 
+	def cache_refresh(self, cache_id):
+		# IF ID is not in cache, create cache for ID
+		if not self.post_cache.get(cache_id, False):
+			self.post_cache[cache_id] = [("", "")]
 
-async def subreddit_request(subreddit):
-	options = [".json?count=1000", "/top/.json?sort=top&t=all&count=1000"]
-	choice = random.choice(options)
-	subreddit += choice
-	url = "https://reddit.com/r/"+subreddit
-	r = await roxbot.http.api_request(url)
-	try:
-		posts = r["data"]
-		return posts
-	except (KeyError, TypeError):
-		return {}
+	async def random(self, posts, subreddit, cache_id, nsfw_allowed, loop_amount=20):
+		"""Function to pick a random post of a given list of reddit posts. Using the internal cache.
+		Returns:
+			None for failing to get a url that could be posted.
+			A dict with the key success and the value False for failing the NSFW check
+			or the post dict if getting the post is successful
+		"""
+		# This returns False if the subreddit is set the NSFW and the channel isn't.
+		sub_search = await roxbot.http.api_request("https://reddit.com/subreddits/search.json?q={}".format(subreddit))
+		for listing in sub_search["data"]["children"]:
+			if listing["data"]["id"] == posts[0]["data"]["subreddit_id"].strip("t5_"):
+				if listing["data"]["over18"] and not nsfw_allowed:
+					return False
 
+		# Loop to get the post randomly and make sure it hasn't been posted before
+		url = None
+		choice = None
+		for x in range(loop_amount):
+			choice = random.choice(posts)
+			url = await self.parse_url(choice["data"]["url"])
+			if url:
+				# "over_18" is not a typo. For some fucking reason, reddit has "over_18" for posts, "over18" for subs.
+				if not nsfw_allowed and choice["data"]["over_18"]:
+					url = False  # Reject post and move to next loop
+				else:
+					# Check cache for post
+					for cache in self.post_cache[cache_id]:
+						if url in cache or choice["data"]["id"] in cache:
+							continue
+					break
 
-async def parse_url(url):
-	if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv", "webm", "mp4", "webp"):
-		return url
-	if "imgur" in url:
-		return await imgur_get(url)
-	elif "eroshare" in url or "eroshae" in url or "erome" in url:
-		return False
-		#return ero_get(url)
-	elif "gfycat" in url or "redd.it" in url or "i.reddituploads" in url or "media.tumblr" in url or "streamable" in url:
-		return url
-	else:
-		return False
+		# This is for either a False (NSFW post not allowed) or a None for none.
+		if url is None:
+			return {}
+		elif url is False:
+			return {"success": False}
+		# Cache post
+		post = (choice["data"]["id"], url)
+		self.post_cache[cache_id].append(post)
+		# If too many posts in cache, remove oldest value.
+		if len(self.post_cache[cache_id]) >= self.cache_limit:
+			self.post_cache[cache_id].pop(0)
+		return choice["data"]
 
 
 class Reddit:
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.post_cache = {}
+		self.scrapper = Scrapper()
 
 	@commands.command()
 	@commands.has_permissions(add_reactions=True)
@@ -113,59 +168,30 @@ class Reddit:
 		{command_prefix}subreddit pics
 		"""
 		subreddit = subreddit.lower()
-		links = await subreddit_request(subreddit)
-		title = ""
-		choice = {}
 		if isinstance(ctx.channel, discord.DMChannel):
 			cache_id = ctx.author.id
 		else:
 			cache_id = ctx.guild.id
-		cache_amount = 10
-		# IF ID is not in cache, create cache for ID
-		if not self.post_cache.get(cache_id, False):
-			self.post_cache[cache_id] = [("", "")]
 
-		if not links or not links.get("after") or links["children"][0]["kind"] == "t5":  # Determine if response is valid
+		self.scrapper.cache_refresh(cache_id)
+		posts = await self.scrapper.sub_request(subreddit)
+		if not posts:
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 
-		url = ""
-		x = 0
-		# While loop here to make sure that we check if there is any image posts in the links we have. If so, just take the first one.
-		# Choosing a while loop here because, for some reason, the for loop would never exit till the end. Leading to slow times.
-		while not url and x <= 20:
-			choice = random.choice(links["children"])["data"]
-			url = await parse_url(choice["url"])
-			if url:
-				x_old = int(x)
-				# If the url or id are in the cache,  continue the loop. If not, proceed with the post.
-				for cache in self.post_cache[cache_id]:
-					if url in cache or choice["id"] in cache:
-						x += 1
-						break
-				if x_old != x:  # Has x been incremented
-					url = ""  # Restart search for new post
-					if x > 20:
-						break
-					continue
+		if isinstance(ctx.channel, discord.TextChannel):
+			nsfw_allowed = ctx.channel.is_nsfw()
+		else:
+			nsfw_allowed = True
 
-				title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]), subreddit)
-				break
-			else:
-				x += 1
+		choice = await self.scrapper.random(posts["children"], subreddit, cache_id, nsfw_allowed)
 
-		# Check if post is NSFW, and if it is and this channel doesn't past the NSFW check, then return with the error message.
-		if (choice["over_18"] and not ctx.channel.is_nsfw()) and isinstance(ctx.channel, discord.TextChannel):
-			return await ctx.send("This server/channel doesn't have my NSFW stuff enabled. This extends to posting NFSW content from Reddit.")
-		if not url:  # If no image posts could be found with the for loop.
+		if not choice:
 			return await ctx.send("I couldn't find any images from that subreddit.")
+		elif choice.get("success", True) is False:
+			return await ctx.send("This channel isn't marked NSFW. The subreddit given or all posts found are NSFW.")
 
-		# CACHE SECTION
-		# Put the post ID and url in the cache. The url is used in case of two posts having the same link to avoid crossposts getting through the cache.
-		post = (choice["id"], url)
-
-		self.post_cache[cache_id].append(post)
-		if len(self.post_cache[cache_id]) >= cache_amount:
-			self.post_cache[cache_id].pop(0)
+		title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]), subreddit)
+		url = str(choice["url"])
 
 		if url.split("/")[-2] == "a":
 			text = "This is an album, click on the link to see more.\n"
@@ -185,7 +211,7 @@ class Reddit:
 				Returned="<{}>".format(url),
 				Channel=ctx.channel,
 				Channel_Mention=ctx.channel.mention,
-				Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+				Time=roxbot.datetime_formatting.format(ctx.message.created_at)
 			)
 
 		# Not using a embed here because we can't use video in rich embeds but they work in embeds now :/
@@ -229,6 +255,7 @@ class Reddit:
 		"""
 		subreddit = "gaysoundsshitposts"
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
+
 
 def setup(bot_client):
 	bot_client.add_cog(Reddit(bot_client))
