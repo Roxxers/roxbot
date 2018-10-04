@@ -67,6 +67,14 @@ class Logging:
 			}
 		}
 
+	async def on_guild_channel_delete(self, channel):
+		"""Cleans up settings on removal of stored IDs."""
+		settings = roxbot.guild_settings.get(channel.guild)
+		logging = settings["logging"]
+		if channel.id == logging["channel"]:
+			logging["channel"] = 0
+			settings.update(logging, "logging")
+
 	async def on_member_join(self, member):
 		logging = guild_settings.get(member.guild)["logging"]
 		if logging["enabled"]:

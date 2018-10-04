@@ -41,7 +41,6 @@ class JoinLeave():
 					"enabled": 0,
 					"convert": {"enabled": "bool", "welcome-channel": "channel"},
 					"welcome-channel": 0,
-					"member-role": "",
 					"custom-message": "",
 					"default-message": "Be sure to read the rules."
 					},
@@ -85,6 +84,18 @@ class JoinLeave():
 			channel = member.guild.get_channel(channel)
 			return await channel.send(embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=roxbot.EmbedColours.pink))
+
+	async def on_guild_channel_delete(self, channel):
+		"""Cleans up settings on removal of stored IDs."""
+		settings = guild_settings.get(channel.guild)
+		greets = settings["greets"]
+		goodbyes = settings["goodbyes"]
+		if channel.id == greets["welcome-channel"]:
+			greets["welcome-channel"] = 0
+			settings.update(greets, "greets")
+		if channel.id == goodbyes["goodbye-channel"]:
+			goodbyes["goodbye-channel"] = 0
+			settings.update(goodbyes, "goodbyes")
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)

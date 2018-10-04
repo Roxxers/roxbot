@@ -48,6 +48,14 @@ class Twitch():
 			}
 		}
 
+	async def on_guild_channel_delete(self, channel):
+		"""Cleans up settings on removal of stored IDs."""
+		settings = roxbot.guild_settings.get(channel.guild)
+		twitch = settings["twitch"]
+		if channel.id == twitch["channel"]:
+			twitch["channel"] = 0
+			settings.update(twitch, "twitch")
+
 	async def on_member_update(self, member_b, member_a):
 		"""Twitch Shilling Part"""
 		twitch = roxbot.guild_settings.get(member_b.guild)["twitch"]

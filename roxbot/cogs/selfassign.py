@@ -43,6 +43,7 @@ class SelfAssign():
 		}
 
 	async def on_guild_role_delete(self, role):
+		"""Cleans up settings on removal of stored IDs."""
 		settings = gs.get(role.guild)
 		sa = settings["self_assign"]
 		for sa_role in sa["roles"]:
