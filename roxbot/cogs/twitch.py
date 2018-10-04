@@ -61,6 +61,7 @@ class Twitch():
 					return await channel.send(":video_game:** {} is live!** :video_game:\n{}\n{}".format(
 						member_a.name, member_a.game.name, member_a.game.url))
 
+	@commands.guild_only()
 	@commands.group(aliases=["wl"])
 	@commands.has_permissions(manage_channels=True)
 	async def whitelist(self, ctx):
@@ -116,6 +117,7 @@ class Twitch():
 		elif option == 'list':
 			return await ctx.send(settings["twitch"]["whitelist"]["list"])
 
+	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def twitch(self, ctx, setting, *, channel: discord.TextChannel = None):

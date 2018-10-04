@@ -119,6 +119,7 @@ class Admin:
 			;slowmode [time/"off"]
 			seconds =  number of seconds for the cooldown between messages a user has.
 			off = turns off slowmode for this channel"""
+		# TODO: Edit this when api is avalible for discord's new slowmode feature.
 		if seconds == "off" and self.slow_mode:  # Turn Slow Mode off
 			self.slow_mode = False
 			self.slow_mode_channels.pop(ctx.channel.id)
@@ -138,6 +139,7 @@ class Admin:
 		else:
 			pass
 
+	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)

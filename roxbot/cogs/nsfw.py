@@ -120,6 +120,7 @@ class NFSW():
 		post_url = "https://simg3.gelbooru.com/images/"
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
+	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def nsfw(self, ctx, setting, *, changes=None):

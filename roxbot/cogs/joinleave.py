@@ -70,7 +70,7 @@ class JoinLeave():
 			colour=roxbot.EmbedColours.pink)
 		em.set_thumbnail(url=member.avatar_url)
 
-		channel = self.bot.get_channel(settings["greets"]["welcome-channel"])
+		channel = member.guild.get_channel(settings["greets"]["welcome-channel"])
 		return await channel.send(embed=em)
 
 	async def on_member_remove(self, member):
@@ -82,10 +82,11 @@ class JoinLeave():
 		if not settings["goodbyes"]["enabled"]:
 			return
 		else:
-			channel = self.bot.get_channel(channel)
+			channel = member.guild.get_channel(channel)
 			return await channel.send(embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=roxbot.EmbedColours.pink))
 
+	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
 	@commands.command()
 	async def greets(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, text: str):
@@ -116,7 +117,7 @@ class JoinLeave():
 			return await ctx.send("No valid option given.")
 		return settings.update(greets, "greets")
 
-
+	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
 	@commands.command()
 	async def goodbyes(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):

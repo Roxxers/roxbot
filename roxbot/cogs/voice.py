@@ -112,7 +112,7 @@ class NowPlayingEmbed(discord.Embed):
 		Duration: {1}
 		Queued by: {0.queued_by}""".format(now_playing, duration)
 		image = np.thumbnail_url
-		footer_text="{}/{} | Volume: {}%".format(time_played, duration, int(now_playing.volume * 100))
+		footer_text = "{}/{} | Volume: {}%".format(time_played, duration, int(now_playing.volume * 100))
 		return cls(
 			title=title,
 			url=np.webpage_url,
@@ -497,6 +497,7 @@ class Voice:
 		except AttributeError:
 			raise commands.CommandError("I'm not playing anything.")
 
+	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def voice(self, ctx, setting=None, change=None):
