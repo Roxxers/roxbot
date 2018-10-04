@@ -55,12 +55,11 @@ class User(commands.UserConverter):
 		return result
 
 
-class Emoji(commands.EmojiConverter):
-	"""The Emoji conveter from discord.py but instead it returns the argument if an error is raised
-	It's messier than using the EmojiConverter proper but the issue is you can try converters."""
+class Emoji():
+	"""discord.Emoji converter for Roxbot. Is a combo of the EmojiConverter and PartialEmojiConverter converter classes."""
 	async def convert(self, ctx, argument):
 		try:
-			return await super().convert(ctx, argument)
+			return await commands.EmojiConverter().convert(ctx, argument)
 		except commands.errors.BadArgument:
 			return await commands.PartialEmojiConverter().convert(ctx, argument)
 

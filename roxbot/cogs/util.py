@@ -203,7 +203,7 @@ class Util():
 	@commands.command(aliases=["emoji"])
 	async def emote(self, ctx, emote: roxbot.converters.Emoji):
 		"""
-		Uploads the emote given. Useful for downloading emotes.
+		Displays info on the given emote.
 		Usage:
 			;emote [emote]
 		"""
@@ -236,6 +236,7 @@ class Util():
 	@commands.command()
 	@commands.is_owner()
 	async def echo(self, ctx, channel: discord.TextChannel, *, message: str):
+		"""Repeats after you, Roxie."""
 		await channel.send(message)
 		return await ctx.send(":point_left:")
 

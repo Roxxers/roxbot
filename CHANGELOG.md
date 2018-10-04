@@ -14,6 +14,7 @@
 ### Regular Updates
 #### New Features
 - Roxbot Facts!
+- Custom commands now have two new options. Prefix and Non-Prefix commands can have multiple outputs that can be choose at random. As well, a new type of prefix cc, embed, will allow custom rich embeds.
 
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
