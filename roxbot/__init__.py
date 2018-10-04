@@ -26,6 +26,7 @@ SOFTWARE.
 
 
 from roxbot import checks, http, guild_settings, converters, utils, roxbotfacts
+from roxbot.errors import *
 from roxbot.enums import EmbedColours
 from roxbot.logging import log
 from roxbot.utils import blacklisted

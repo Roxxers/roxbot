@@ -45,39 +45,48 @@ class ErrHandle:
 	async def on_error(self, event):
 		if self.dev:
 			traceback.print_exc()
-		else:
-			embed = discord.Embed(title="Roxbot Error", colour=roxbot.EmbedColours.red)
-			embed.add_field(name='Event', value=event)
-			embed.description = '```py\n{}\n```'.format(traceback.format_exc())
-			embed.timestamp = datetime.datetime.utcnow()
-			await self.bot.get_user(self.bot.owner_id).send(embed=embed)
 
 	async def on_command_error(self, ctx, error):
 		owner = self.bot.get_user(self.bot.owner_id)
 		if self.dev:
 			raise error
 		else:
+			# UserError warning section
+
+			user_errors = (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)
+
+			if isinstance(error, user_errors):
+				embed = discord.Embed(colour=roxbot.EmbedColours.orange)
+				if isinstance(error, commands.MissingRequiredArgument):
+					embed.description = "Required argument missing. {}".format(error.args[0])
+				elif isinstance(error, commands.BadArgument):
+					embed.description = "Bad Argument given. {}".format(error.args[0])
+				elif isinstance(error, commands.TooManyArguments):
+					embed.description = "Too many arguments given."
+				elif isinstance(error, roxbot.UserError):
+					embed.description = error.args[0]
+				elif isinstance(error, roxbot.CogSettingDisabled):
+					embed.description = "The following is not enabled on this server: {}".format(error.args[0])
+				return await ctx.send(embed=embed)
+
+			# ActualErrorHandling
 			embed = discord.Embed()
 			if isinstance(error, commands.NoPrivateMessage):
 				embed.description = "This command cannot be used in private messages."
 			elif isinstance(error, commands.DisabledCommand):
 				embed.description = "This command is disabled."
-			elif isinstance(error, commands.MissingRequiredArgument):
-				embed.description = "Required argument missing. {}".format(error.args[0])
-			elif isinstance(error, commands.BadArgument):
-				embed.description = "Bad Argument given. {}".format(error.args[0])
-			elif isinstance(error, commands.TooManyArguments):
-				embed.description = "Too many arguments given."
 			elif isinstance(error, commands.CommandNotFound):
-				cc = guild_settings.get(ctx.guild)["custom_commands"]
-				if ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"]:
-					embed = None
-				elif len(ctx.message.content) <= 2:
-					embed = None
-				elif any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]):
-					# Should avoid punctuation emoticons. Checks all of the command for punctuation in the string.
-					embed = None
-				else:
+				try:
+					# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
+					cc = guild_settings.get(ctx.guild)["custom_commands"]
+					is_custom_command = bool(ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"])
+					is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
+					is_too_short = bool(len(ctx.message.content) <= 2)
+					if is_custom_command or is_emoticon_face or is_too_short:
+						embed = None
+					else:
+						embed.description = "That Command doesn't exist."
+				except KeyError:
 					embed.description = "That Command doesn't exist."
 			elif isinstance(error, commands.BotMissingPermissions):
 				embed.description = "{}".format(error.args[0].replace("Bot", "roxbot"))
@@ -99,21 +108,16 @@ class ErrHandle:
 
 				# Final catches for errors undocumented.
 				else:
+
 					embed = discord.Embed(title='Command Error', colour=roxbot.EmbedColours.dark_red)
 					embed.description = str(error)
-					embed.add_field(name='Server', value=ctx.guild)
-					try:
-						embed.add_field(name='Channel', value=ctx.channel.mention)
-					except AttributeError:
-						embed.add_field(name='Channel', value=ctx.channel.id)
 					embed.add_field(name='User', value=ctx.author)
 					embed.add_field(name='Message', value=ctx.message.content)
 					embed.timestamp = datetime.datetime.utcnow()
 			elif isinstance(error, commands.CommandError):
 				embed.description = "Command Error. {}".format(error.args[0])
 			else:
-				embed = discord.Embed(
-					description="Placeholder embed. If you see this please message {}.".format(str(owner)))
+				raise error
 			if embed:
 				embed.colour = roxbot.EmbedColours.dark_red
 				await ctx.send(embed=embed)

@@ -25,16 +25,28 @@ SOFTWARE.
 """
 
 
-from enum import IntEnum
+from discord.ext import commands
 
 
-class EmbedColours(IntEnum):
-	pink       = 0xDEADBF  # Roxbot Pink
-	yellow     = 0xFDDF86  # Roxbot Yellow
-	blue       = 0x6F90F5  # Roxbot Blue
-	orange     = 0xefa940  # Used for warnings (not the admin cog command)
-	red        = 0xe74c3c  # Used for errors
-	dark_red   = 0x992d22  # Used for on_command_error
-	frog_green = 0x4C943D  # Used for FROGTIPS
-	triv_green = 0x1fb600  # Used for the correct answer in trivia
-	gold       = 0xd4af3a  # Used for displaying the winner in trivia
+__all__ = ["UserError", "CogSettingDisabled"]
+
+
+class RoxbotException(commands.CommandError):
+	"""Base Exception for Roxbot."""
+	pass
+
+
+class UserError(RoxbotException):
+	"""Exception for user errors (similar to BadArgument in discord.ext.commands)"""
+	def __init__(self, message=None):
+		if message is not None:
+			m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
+			super().__init__(m)
+
+
+class CogSettingDisabled(RoxbotException):
+	"""Exception for cog setting being disabled"""
+	def __init__(self, message=None):
+		if message is not None:
+			m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
+			super().__init__(m)
