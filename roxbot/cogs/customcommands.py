@@ -156,13 +156,13 @@ class CustomCommands:
 		elif command_type in ("2", "embed"):
 			command_type = "2"
 			if len(output) < 2:
-				return await ctx.send(self.ERROR_EMBED_VALUE)
+				raise roxbot.UserError(self.ERROR_EMBED_VALUE)
 			try:
 				output = self._embed_parse_options(output)
 			except ValueError:
-				return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
+				raise roxbot.UserError(self.ERROR_OUTPUT_TOO_LONG)
 		else:
-			return await ctx.send(self.ERROR_INCORRECT_TYPE)
+			raise roxbot.UserError(self.ERROR_INCORRECT_TYPE)
 
 		settings = roxbot.guild_settings.get(ctx.guild)
 		no_prefix_commands = settings["custom_commands"]["0"]
@@ -171,15 +171,15 @@ class CustomCommands:
 		command = command.lower()
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
-			return await ctx.send(self.ERROR_AT_MENTION)
+			raise roxbot.UserError(self.ERROR_AT_MENTION)
 		elif len(output) > 1800:
-			return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
+			raise roxbot.UserError(self.ERROR_OUTPUT_TOO_LONG)
 		elif command in self.bot.all_commands.keys() and command_type == "1":
-			return await ctx.send(self.ERROR_COMMAND_EXISTS_INTERNAL)
+			raise roxbot.UserError(self.ERROR_COMMAND_EXISTS_INTERNAL)
 		elif command in no_prefix_commands or command in prefix_commands or command in embed_commands:
-			return await ctx.send(self.ERROR_COMMAND_EXISTS)
+			raise roxbot.UserError(self.ERROR_COMMAND_EXISTS)
 		elif len(command.split(" ")) > 1 and command_type == "1":
-			return await ctx.send()
+			raise roxbot.UserError(self.ERROR_PREFIX_SPACE)
 
 		settings["custom_commands"][command_type][command] = output
 		settings.update(settings["custom_commands"], "custom_commands")
@@ -195,7 +195,7 @@ class CustomCommands:
 		embed_commands = settings["custom_commands"]["2"]
 
 		if ctx.message.mentions or ctx.message.mention_everyone or ctx.message.role_mentions:
-			return await ctx.send(self.ERROR_AT_MENTION)
+			raise roxbot.UserError(self.ERROR_AT_MENTION)
 
 		if command in no_prefix_commands:
 			if len(edit) == 1:
@@ -213,17 +213,17 @@ class CustomCommands:
 
 		elif command in embed_commands:
 			if len(edit) < 2:
-				return await ctx.send(self.ERROR_EMBED_VALUE)
+				raise roxbot.UserError(self.ERROR_EMBED_VALUE)
 			try:
 				edit = self._embed_parse_options(edit)
 			except ValueError:
-				return await ctx.send(self.ERROR_OUTPUT_TOO_LONG)
+				raise roxbot.UserError(self.ERROR_OUTPUT_TOO_LONG)
 			settings["custom_commands"]["2"][command] = edit
 			settings.update(settings["custom_commands"], "custom_commands")
 			return await ctx.send(self.OUTPUT_EDIT.format(command, edit))
 
 		else:
-			return await ctx.send(self.ERROR_COMMAND_NULL)
+			raise roxbot.UserError(self.ERROR_COMMAND_NULL)
 
 	@commands.has_permissions(manage_messages=True)
 	@custom.command()
@@ -243,7 +243,7 @@ class CustomCommands:
 		elif command in embed_commands:
 			command_type = "2"
 		else:
-			return await ctx.send(self.ERROR_COMMAND_NULL)
+			raise roxbot.UserError(self.ERROR_COMMAND_NULL)
 
 		settings["custom_commands"][command_type].pop(command)
 		settings.update(settings["custom_commands"], "custom_commands")

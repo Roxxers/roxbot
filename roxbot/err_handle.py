@@ -47,13 +47,12 @@ class ErrHandle:
 			traceback.print_exc()
 
 	async def on_command_error(self, ctx, error):
-		owner = self.bot.get_user(self.bot.owner_id)
 		if self.dev:
 			raise error
 		else:
 			# UserError warning section
-
-			user_errors = (commands.MissingRequiredArgument, commands.BadArgument, commands.TooManyArguments)
+			user_errors = (commands.MissingRequiredArgument, commands.BadArgument,
+						   commands.TooManyArguments, roxbot.UserError)
 
 			if isinstance(error, user_errors):
 				embed = discord.Embed(colour=roxbot.EmbedColours.orange)
@@ -65,8 +64,6 @@ class ErrHandle:
 					embed.description = "Too many arguments given."
 				elif isinstance(error, roxbot.UserError):
 					embed.description = error.args[0]
-				elif isinstance(error, roxbot.CogSettingDisabled):
-					embed.description = "The following is not enabled on this server: {}".format(error.args[0])
 				return await ctx.send(embed=embed)
 
 			# ActualErrorHandling
@@ -75,6 +72,8 @@ class ErrHandle:
 				embed.description = "This command cannot be used in private messages."
 			elif isinstance(error, commands.DisabledCommand):
 				embed.description = "This command is disabled."
+			elif isinstance(error, roxbot.CogSettingDisabled):
+				embed.description = "The following is not enabled on this server: {}".format(error.args[0])
 			elif isinstance(error, commands.CommandNotFound):
 				try:
 					# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
