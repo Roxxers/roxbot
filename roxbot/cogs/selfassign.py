@@ -54,7 +54,7 @@ class SelfAssign():
 	@commands.guild_only()
 	@commands.has_permissions(manage_roles=True)
 	@commands.command(aliases=["sa"])
-	async def selfassign(self, ctx, setting, *, role: discord.Role):
+	async def selfassign(self, ctx, setting, *, role: discord.Role = None):
 		"""Edits settings for self assign cog. Requires Manage Roles permission.
 
 		Options:
