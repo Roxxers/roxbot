@@ -56,14 +56,10 @@ class ErrHandle:
 
 			if isinstance(error, user_errors):
 				embed = discord.Embed(colour=roxbot.EmbedColours.orange)
-				if isinstance(error, commands.MissingRequiredArgument):
-					embed.description = "Required argument missing. {}".format(error.args[0])
-				elif isinstance(error, commands.BadArgument):
-					embed.description = "Bad Argument given. {}".format(error.args[0])
+				if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, roxbot.UserError)):
+					embed.description = error.args[0]
 				elif isinstance(error, commands.TooManyArguments):
 					embed.description = "Too many arguments given."
-				elif isinstance(error, roxbot.UserError):
-					embed.description = error.args[0]
 				return await ctx.send(embed=embed)
 
 			# ActualErrorHandling
@@ -85,17 +81,16 @@ class ErrHandle:
 						embed = None
 					else:
 						embed.description = "That Command doesn't exist."
-				except KeyError:
+				except (KeyError, AttributeError):
+					# KeyError for cog missing, AttributeError if a command invoked via DM
 					embed.description = "That Command doesn't exist."
 			elif isinstance(error, commands.BotMissingPermissions):
-				embed.description = "{}".format(error.args[0].replace("Bot", "roxbot"))
+				embed.description = "{}".format(error.args[0].replace("Bot", "Roxbot"))
 			elif isinstance(error, commands.MissingPermissions):
 				embed.description = "{}".format(error.args[0])
-			elif isinstance(error, commands.NotOwner):
-				embed.description = "You do not have permission to do this. You are not Roxie!"
 			elif isinstance(error, commands.CommandOnCooldown):
 				embed.description = "This command is on cooldown, please wait {:.2f} seconds before trying again.".format(error.retry_after)
-			elif isinstance(error, commands.CheckFailure):
+			elif isinstance(error, (commands.CheckFailure, commands.NotOwner)):
 				embed.description = "You do not have permission to do this. Back off, thot!"
 
 			elif isinstance(error, commands.CommandInvokeError):
@@ -114,7 +109,7 @@ class ErrHandle:
 					embed.add_field(name='Message', value=ctx.message.content)
 					embed.timestamp = datetime.datetime.utcnow()
 			elif isinstance(error, commands.CommandError):
-				embed.description = "Command Error. {}".format(error.args[0])
+				embed.description = "{}".format(error.args[0])
 			else:
 				raise error
 			if embed:
