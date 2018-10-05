@@ -23,7 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
-import time
+
 
 import random
 import fnmatch
@@ -178,7 +178,6 @@ class Reddit:
 		Example:
 		{command_prefix}subreddit pics
 		"""
-		start = time.time()
 		subreddit = subreddit.lower()
 		if isinstance(ctx.channel, discord.DMChannel):
 			cache_id = ctx.author.id
@@ -187,6 +186,7 @@ class Reddit:
 
 		self.scrapper.cache_refresh(cache_id)
 		posts = await self.scrapper.sub_request(subreddit)
+
 		if not posts:
 			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
 
@@ -196,9 +196,6 @@ class Reddit:
 			nsfw_allowed = True
 
 		choice = await self.scrapper.random(posts["children"], cache_id, nsfw_allowed)
-
-		end = time.time()
-		print("Time Taken: {}s".format(end-start))
 
 		if not choice:
 			return await ctx.send("I couldn't find any images from that subreddit.")
