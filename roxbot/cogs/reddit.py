@@ -62,26 +62,25 @@ class Scrapper:
 		for ext in extensions:
 			if fnmatch.fnmatch(url.split(".")[-1], ext+"*"):
 				return url
-		else:
 
-			if await self._imgur_removed(url):
-				return False
+		if await self._imgur_removed(url):
+			return False
 
-			if not roxbot.imgur_token:
-				return False
-			base_endpoint = "https://api.imgur.com/3/"
-			endpoint_album = base_endpoint + "album/{}/images.json".format(url.split("/")[-1])
-			endpoint_image = base_endpoint + "image/{}.json".format(url.split("/")[-1])
+		if not roxbot.imgur_token:
+			return False
+		base_endpoint = "https://api.imgur.com/3/"
+		endpoint_album = base_endpoint + "album/{}/images.json".format(url.split("/")[-1])
+		endpoint_image = base_endpoint + "image/{}.json".format(url.split("/")[-1])
 
-			try:
-				resp = await roxbot.http.api_request(endpoint_image, headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
-				if bool(resp["success"]) is True:
-					return resp["data"]["link"]
-				else:
-					resp = await roxbot.http.api_request(endpoint_album, headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
-					return resp["data"][0]["link"]
-			except TypeError as e:
-				raise e
+		try:
+			resp = await roxbot.http.api_request(endpoint_image, headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
+			if bool(resp["success"]) is True:
+				return resp["data"]["link"]
+			else:
+				resp = await roxbot.http.api_request(endpoint_album, headers={"Authorization": "Client-ID {}".format(roxbot.imgur_token)})
+				return resp["data"][0]["link"]
+		except TypeError:
+			return False
 
 	async def parse_url(self, url):
 		if url.split(".")[-1] in ("png", "jpg", "jpeg", "gif", "gifv", "webm", "mp4", "webp"):
