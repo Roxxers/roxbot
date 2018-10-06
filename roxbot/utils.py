@@ -27,6 +27,15 @@ SOFTWARE.
 
 import asyncio
 import discord
+import argparse
+
+
+class ArgParser(argparse.ArgumentParser):
+	"""Create Roxbot's own version of ArgumentParser that doesn't exit the program on error."""
+	def error(self, message):
+		# By passing here, it will just continue in cases where a user inputs an arg that can't be parsed.
+		pass
+
 
 class Menu:
 
