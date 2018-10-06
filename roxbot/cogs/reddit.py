@@ -38,7 +38,7 @@ from roxbot import guild_settings
 
 
 class Scrapper:
-	"""Scrapper is a class to aid in the scrapping of reddit subreddit's of images.
+	"""Scrapper is a class to aid in the scrapping of reddit subreddit's of images. (includes small amount of video support)
 	This includes its own caching system."""
 	# TODO: Reimplement eroshare, eroshae, and erome support. Also implement better api interaction with imgur now we require api key
 	def __init__(self, cache_limit=10):
@@ -94,6 +94,8 @@ class Scrapper:
 			return None
 		# return ero_get(url)
 		elif "gfycat" in url or "redd.it" in url or "i.reddituploads" in url or "media.tumblr" in url or "streamable" in url:
+			return url
+		elif "youtube" in url or "youtu.be" in url:
 			return url
 		else:
 			return None
@@ -236,8 +238,10 @@ class Reddit:
 	async def aww(self, ctx):
 		"""
 		Gives you cute pics from reddit
+		Subreddits: "aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorableart"
 		"""
-		subreddit = "aww"
+		subreddits = ("aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorableart")
+		subreddit = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
 	@commands.command()
@@ -247,7 +251,7 @@ class Reddit:
 		Yes, I was very hungry when trying to find the subreddits for this command.
 		Subreddits: "foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "Pizza", "grilledcheese", "PutAnEggOnIt", "sushi"
 		"""
-		subreddits = ["foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "Pizza", "grilledcheese", "PutAnEggOnIt", "sushi"]
+		subreddits = ("foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "Pizza", "grilledcheese", "PutAnEggOnIt", "sushi")
 		subreddit_choice = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
 
@@ -262,14 +266,26 @@ class Reddit:
 		subreddit_choice = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit_choice)
 
-	@commands.command(aliases=["gssp"])
-	async def gss(self, ctx):
+	@commands.command(aliases=["gssp", "gss", "trans_irl"])
+	async def traa(self, ctx):
 		"""
-		Gives you the best trans memes ever
+		Gives you the trans memes for daysssss
 		"""
-		subreddit = "gaysoundsshitposts"
+		subreddits = ("gaysoundsshitposts", "traaaaaaannnnnnnnnns")
+		subreddit = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
+	@commands.command()
+	async def me_irl(self, ctx):
+		"""
+		The full (mostly) me_irl network of subs.
+		Subreddits: "me_irl", "woof_irl", "meow_irl", "metal_me_irl"
+		:param ctx:
+		:return:
+		"""
+		subreddits = ("me_irl", "woof_irl", "meow_irl", "metal_me_irl")
+		subreddit = random.choice(subreddits)
+		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
 def setup(bot_client):
 	bot_client.add_cog(Reddit(bot_client))

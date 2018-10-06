@@ -13,9 +13,12 @@
 
 ### Regular Updates
 #### New Features
-- Roxbot Facts!
+- Roxbot Facts! Only the deepest of lore for our dear Roxbot. 
 - Custom commands now have two new options. Prefix and Non-Prefix commands can have multiple outputs that can be choose at random. As well, a new type of prefix cc, embed, will allow custom rich embeds.
 - `;warn set_limit` will allow guilds to set the number of warnings before Roxbot will DM a mod about it. This is set to zero (disabled) by default.
+- Added `;me_irl` subreddit command that outputs images from the me_irl network of subreddits.
+- Added more subreddits to the `;aww` command.
+- Changed the main name of the `;gss` command to `;traa` while adding ;gss as a alias. Also added `;trans_irl` as a alias.
 
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
