@@ -70,6 +70,10 @@ class Admin:
 
 	OK_WARN_PRUNE_PRUNED = "Pruned {} banned users from the warn list."
 
+	OK_WARN_SL_SET = "Number of warnings needed to DM's set to {}"
+	OK_WARN_SL_SET_ZERO = "DM's to mods for warning limits disabled."
+	ERROR_WARN_SL_NEG = "number_of_warnings can only be a positive integer."
+
 	OK_MOD_ACTION = "{} with reason: '{}'"
 	WARN_MOD_LACK_PERMS = "I can't kick the owner or users higher or equal to me."
 	WARN_UNBAN_NOTFOUND = "User is not banned."
@@ -82,6 +86,7 @@ class Admin:
 				"admin_roles": [],
 				"mod_roles": [],
 				"is_anal": 0,
+				"warning_limit": 0,
 				"warnings": {},
 			}
 		}
@@ -170,7 +175,7 @@ class Admin:
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		settings = gs.get(ctx.guild)
 		warnings = settings["admin"]["warnings"]
-		warning_limit = 2
+		warning_limit = settings["admin"]["warning_limit"]
 		warning_dict = {
 			"warned-by": ctx.author.id,
 			"date": time.time(),
@@ -190,7 +195,7 @@ class Admin:
 		settings.update(settings["admin"], "admin")
 
 		amount_warnings = len(warnings[user_id])
-		if amount_warnings > warning_limit:
+		if amount_warnings >= warning_limit > 0:
 			await ctx.author.send(self.OK_WARN_ADD_USER_LIMIT_DM.format(str(user), amount_warnings, warning_limit))
 
 		return await ctx.send(self.OK_WARN_ADD.format(str(user)))
@@ -293,6 +298,26 @@ class Admin:
 					count += 1
 		settings.update(settings["admin"], "admin")
 		return await ctx.send(self.OK_WARN_PRUNE_PRUNED.format(count))
+
+	@warn.command(aliases=["set_limits", "sl", "setlimit", "setlimits"])
+	async def set_limit(self, ctx, number_of_warnings: int):
+		"""
+		Sets the limit for how many warnings a user can get before mod's are notified.
+		Example: if 3 is set, on the third warning, mods will be DM'd. If this is set to 0, DM's will be disabled.
+		:param ctx:
+		:param number_of_warnings: A positive integer.
+		:return:
+		"""
+		if number_of_warnings < 0:
+			raise commands.BadArgument(self.ERROR_WARN_SL_NEG)
+		settings = gs.get(ctx.guild)
+		admin = settings["admin"]
+		admin["warning_limit"] = number_of_warnings
+		settings.update(admin, "admin")
+		if number_of_warnings == 0:
+			return await ctx.send(self.OK_WARN_SL_SET_ZERO)
+		else:
+			return await ctx.send(self.OK_WARN_SL_SET.format(number_of_warnings))
 
 	@commands.guild_only()
 	@commands.has_permissions(kick_members=True)

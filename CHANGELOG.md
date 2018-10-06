@@ -15,14 +15,15 @@
 #### New Features
 - Roxbot Facts!
 - Custom commands now have two new options. Prefix and Non-Prefix commands can have multiple outputs that can be choose at random. As well, a new type of prefix cc, embed, will allow custom rich embeds.
+- `;warn set_limit` will allow guilds to set the number of warnings before Roxbot will DM a mod about it. This is set to zero (disabled) by default.
 
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
 - Cogs have a message if they fail to load instead of breaking entire bot.
+- Twitch cog disabled and depreciated. This is a minor change because no one uses it anyway. 
 - NSFW commands should have even less chance of dupes with better caching.
 - All datetime formatting is now standardised.
 - Error messages don't timeout anymore.
-- Twitch cog disabled and depreciated. This is a minor change because no one uses it anyway. 
 
 #### Bug Fixes
 - `;deepfry` command now works all the time.
