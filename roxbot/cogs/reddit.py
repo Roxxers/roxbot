@@ -40,7 +40,8 @@ from roxbot import guild_settings
 class Scrapper:
 	"""Scrapper is a class to aid in the scrapping of reddit subreddit's of images. (includes small amount of video support)
 	This includes its own caching system."""
-	# TODO: Reimplement eroshare, eroshae, and erome support. Also implement better api interaction with imgur now we require api key
+	# TODO: Reimplement eroshare, eroshae, and erome support.
+	# Also implement better api interaction with imgur now we require api key
 	def __init__(self, cache_limit=10):
 		self.post_cache = {}
 		self.cache_limit = cache_limit
@@ -102,12 +103,13 @@ class Scrapper:
 
 	@staticmethod
 	async def sub_request(subreddit):
+		# TODO: Incorperate /random.json for better random results
 		options = [".json?count=1000", "/top/.json?sort=top&t=all&count=1000"]
 		choice = random.choice(options)
 		subreddit += choice
 		url = "https://reddit.com/r/" + subreddit
-		r = await roxbot.http.api_request(url)
 		try:
+			r = await roxbot.http.api_request(url)
 			posts = r["data"]
 			# This part is to check for some common errors when doing a sub request
 			# t3 is a post in a listing. We want to avoid not having this instead of a subreddit search, which would be t5.
@@ -177,6 +179,8 @@ class Reddit:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.scrapper = Scrapper()
+		if not roxbot.imgur_token:
+			print("REDDIT COG REQUIRES A IMGUR API TOKEN. Without this, roxbot will not return imgur links.")
 
 	@commands.command()
 	@commands.has_permissions(add_reactions=True)
