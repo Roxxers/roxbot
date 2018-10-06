@@ -36,6 +36,10 @@ from discord.ext import commands
 from roxbot import http, checks, EmbedColours
 
 
+# TODO: Refactor the game into its own class and have the commands interact with that api.
+# Then I can refactor the game into its own lib and then make a cli version.
+
+
 class Trivia:
 	"""
 	Trivia is based off the lovely https://opentdb.com made by PixelTail Games.

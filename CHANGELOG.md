@@ -32,6 +32,7 @@
 - `;deepfry` command now works all the time.
 - Pride filter filenames fixed.
 - As many spelling mistakes as possible.
+- Music bot in Roxbot has had a majority of its bugginess fixed. Queuing now works all of the time for example.
 - If music bot can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
 - Fixed bug where nowplaying embeds would have the wrong queued_by value. 
 - NSFW commands fixed.
