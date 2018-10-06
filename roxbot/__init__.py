@@ -67,7 +67,7 @@ cogs = [
 	"roxbot.cogs.reddit",
 	"roxbot.cogs.selfassign",
 	"roxbot.cogs.trivia",
-	"roxbot.cogs.twitch",
+	#"roxbot.cogs.twitch",
 	"roxbot.cogs.util",
 	"roxbot.cogs.voice",
 	#"roxbot.cogs.ags"

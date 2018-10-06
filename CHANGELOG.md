@@ -22,6 +22,7 @@
 - NSFW commands should have even less chance of dupes with better caching.
 - All datetime formatting is now standardised.
 - Error messages don't timeout anymore.
+- Twitch cog disabled and depreciated. This is a minor change because no one uses it anyway. 
 
 #### Bug Fixes
 - `;deepfry` command now works all the time.
