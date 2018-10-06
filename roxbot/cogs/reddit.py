@@ -169,6 +169,11 @@ class Scrapper:
 
 
 class Reddit:
+
+	SUB_NOT_FOUND = "Error ;-; That subreddit probably doesn't exist. Please check your spelling"
+	NO_IMAGES = "I couldn't find any images/videos from that subreddit."
+	NSFW_FAIL = "This channel isn't marked NSFW and therefore I can't post NSFW content. The subreddit given or all posts found are NSFW."
+
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.scrapper = Scrapper()
@@ -192,7 +197,7 @@ class Reddit:
 		posts = await self.scrapper.sub_request(subreddit)
 
 		if not posts:
-			return await ctx.send("Error ;-; That subreddit probably doesn't exist. Please check your spelling")
+			raise roxbot.UserError(self.SUB_NOT_FOUND)
 
 		if isinstance(ctx.channel, discord.TextChannel):
 			nsfw_allowed = ctx.channel.is_nsfw()
@@ -202,9 +207,9 @@ class Reddit:
 		choice = await self.scrapper.random(posts["children"], cache_id, nsfw_allowed)
 
 		if not choice:
-			return await ctx.send("I couldn't find any images from that subreddit.")
+			raise commands.CommandError(self.NO_IMAGES)
 		elif choice.get("success", True) is False:
-			return await ctx.send("This channel isn't marked NSFW. The subreddit given or all posts found are NSFW.")
+			raise roxbot.UserError(self.NSFW_FAIL)
 
 		title = "**{}** \nby /u/{} from /r/{}\n".format(unescape(choice["title"]), unescape(choice["author"]), subreddit)
 		url = str(choice["url"])

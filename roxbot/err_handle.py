@@ -38,6 +38,17 @@ from roxbot import guild_settings
 
 
 class ErrHandle:
+
+	COMMANDNOTFOUND = "That Command doesn't exist."
+	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
+	CHECKFAILURE = "You do not have permission to do this. Back off, thot!"
+	TOOMANYARGS = "Too many arguments given."
+	DISABLEDCOMMAND = "This command is disabled."
+	COGSETTINGDISABLED = "{} is disabled on this server."
+	NODMS = "This command cannot be used in private messages."
+
+	YTDLDOWNLOADERROR = "Video could not be downloaded: {}"
+
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.dev = roxbot.dev_mode
@@ -59,17 +70,17 @@ class ErrHandle:
 				if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, roxbot.UserError)):
 					embed.description = error.args[0]
 				elif isinstance(error, commands.TooManyArguments):
-					embed.description = "Too many arguments given."
+					embed.description = self.TOOMANYARGS
 				return await ctx.send(embed=embed)
 
 			# ActualErrorHandling
 			embed = discord.Embed()
 			if isinstance(error, commands.NoPrivateMessage):
-				embed.description = "This command cannot be used in private messages."
+				embed.description = self.NODMS
 			elif isinstance(error, commands.DisabledCommand):
-				embed.description = "This command is disabled."
+				embed.description = self.DISABLEDCOMMAND
 			elif isinstance(error, roxbot.CogSettingDisabled):
-				embed.description = "The following is not enabled on this server: {}".format(error.args[0])
+				embed.description = self.COGSETTINGDISABLED.format(error.args[0])
 			elif isinstance(error, commands.CommandNotFound):
 				try:
 					# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
@@ -80,25 +91,25 @@ class ErrHandle:
 					if is_custom_command or is_emoticon_face or is_too_short:
 						embed = None
 					else:
-						embed.description = "That Command doesn't exist."
+						embed.description = self.COMMANDNOTFOUND
 				except (KeyError, AttributeError):
 					# KeyError for cog missing, AttributeError if a command invoked via DM
-					embed.description = "That Command doesn't exist."
+					embed.description = self.COMMANDNOTFOUND
 			elif isinstance(error, commands.BotMissingPermissions):
 				embed.description = "{}".format(error.args[0].replace("Bot", "Roxbot"))
 			elif isinstance(error, commands.MissingPermissions):
 				embed.description = "{}".format(error.args[0])
 			elif isinstance(error, commands.CommandOnCooldown):
-				embed.description = "This command is on cooldown, please wait {:.2f} seconds before trying again.".format(error.retry_after)
+				embed.description = self.COMMANDONCOOLDOWN.format(error.retry_after)
 			elif isinstance(error, (commands.CheckFailure, commands.NotOwner)):
-				embed.description = "You do not have permission to do this. Back off, thot!"
+				embed.description = self.CHECKFAILURE
 
 			elif isinstance(error, commands.CommandInvokeError):
 				# YOUTUBE_DL ERROR HANDLING
 				if isinstance(error.original, youtube_dl.utils.GeoRestrictedError):
-					embed.description = "Video is GeoRestricted. Cannot download."
+					embed.description = self.YTDLDOWNLOADERROR.format("Video is GeoRestricted.")
 				elif isinstance(error.original, youtube_dl.utils.DownloadError):
-					embed.description = "Video could not be downloaded: {}".format(error.original.exc_info[1])
+					embed.description = self.YTDLDOWNLOADERROR.format(error.original.exc_info[1])
 
 				# Final catches for errors undocumented.
 				else:
@@ -109,7 +120,7 @@ class ErrHandle:
 					embed.add_field(name='Message', value=ctx.message.content)
 					embed.timestamp = datetime.datetime.utcnow()
 			elif isinstance(error, commands.CommandError):
-				embed.description = "{}".format(error.args[0])
+				embed.description = "Error: {}".format(error.args[0])
 			else:
 				raise error
 			if embed:
