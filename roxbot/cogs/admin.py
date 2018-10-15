@@ -52,6 +52,7 @@ class Admin:
 	OK_SLOWMODE_ON = "Slowmode on :snail: ({} seconds)"
 	OK_SLOWMODE_OFF = "Slowmode off"
 	OK_SLOWMODE_CHANGED = "Slowmode set to :snail: ({} seconds)"
+	ERROR_SLOWMODE_SECONDS = "Rate limit has to be between 0-120."
 
 	OK_PURGE_CONFIRMATION = "{} message(s) purged from chat."
 
@@ -90,59 +91,31 @@ class Admin:
 				"warnings": {},
 			}
 		}
-		self.slow_mode = False
-		self.slow_mode_channels = {}
-		self.users = {}
-
-	async def on_message(self, message):
-		# Slow Mode Code
-		channel = message.channel
-		author = message.author
-
-		if not author == self.bot.user:
-			if (self.slow_mode and channel.id in self.slow_mode_channels) and not _is_admin_or_mod(message):
-				if author.id not in self.users[channel.id]:
-					# If user hasn't sent a message in this channel after slow mode was turned on
-					self.users[channel.id][author.id] = message.created_at
-				else:
-					# Else, check when their last message was and if time is smaller than the timer, delete the message.
-					timer = datetime.timedelta(seconds=self.slow_mode_channels[channel.id])
-					if message.created_at - self.users[channel.id][author.id] < timer:
-						await message.delete()
-					else:
-						self.users[message.channel.id][author.id] = message.created_at
-			else:
-				pass
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
 	@commands.bot_has_permissions(manage_messages=True)
 	@commands.command()
-	async def slowmode(self, ctx, seconds):
+	async def slowmode(self, ctx, seconds: int):
 		"""Puts the current channel in slowmode. Requires the Manage Messages permission.
+		Users with manage_channel or manage_messages permissions will not be effected.
 		Usage:
-			;slowmode [time/"off"]
+			;slowmode [time]
 			seconds =  number of seconds for the cooldown between messages a user has.
-			off = turns off slowmode for this channel"""
-		# TODO: Edit this when api is avalible for discord's new slowmode feature.
-		if seconds == "off" and self.slow_mode:  # Turn Slow Mode off
-			self.slow_mode = False
-			self.slow_mode_channels.pop(ctx.channel.id)
-			self.users.pop(ctx.channel.id)
+			0 turns off slowmode for this channel"""
+		if seconds == 0:  # Turn Slow Mode off
+			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested to turn off slowmode.".format(ctx.author))
 			return await ctx.send(self.OK_SLOWMODE_OFF)
 
-		elif seconds.isdigit() and not self.slow_mode:  # Turn Slow Mode On
-			self.users[ctx.channel.id] = {}
-			self.slow_mode_channels[ctx.channel.id] = int(seconds)
-			self.slow_mode = True
+		elif 0 < seconds <= 120 and ctx.channel.slowmode_delay == 0:  # Turn Slow Mode On
+			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested slowmode with a timer of {}".format(ctx.author, seconds))
 			return await ctx.send(self.OK_SLOWMODE_ON.format(seconds))
 
-		elif seconds.isdigit and self.slow_mode:  # Change value of Slow Mode timer
-			self.slow_mode_channels[ctx.channel.id] = int(seconds)
+		elif 0 < seconds <= 120 and ctx.channel.slowmode_delay > 0:  # Change value of Slow Mode timer
+			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested slowmode timer be changed to {}".format(ctx.author, seconds))
 			return await ctx.send(self.OK_SLOWMODE_CHANGED.format(seconds))
-
-		else:
-			pass
+		elif seconds < 0 or seconds > 120:
+			raise commands.BadArgument(self.ERROR_SLOWMODE_SECONDS)
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)

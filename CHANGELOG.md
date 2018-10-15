@@ -19,6 +19,7 @@
 - Added `;me_irl` subreddit command that outputs images from the me_irl network of subreddits.
 - Added more subreddits to the `;aww` command.
 - Changed the main name of the `;gss` command to `;traa` while adding ;gss as a alias. Also added `;trans_irl` as a alias.
+- Slowmode now uses Discord's own slowmode rather than its own system. 
 
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
