@@ -104,16 +104,23 @@ class CustomCommands:
 		return output
 
 	async def on_message(self, message):
-		# Limits customcommands to pm's as customcommands are handled at a guild level.
-		if roxbot.blacklisted(message.author) or not isinstance(message.channel, discord.TextChannel):
-			return
+		"""
+		"""
+		# Emulate discord.py's feature of not running commands invoked by the bot (expects not to be used for self-botting)
 		if message.author == self.bot.user:
 			return
+
+		# Limit custom commands to guilds only.
+		if not isinstance(message.channel, discord.TextChannel):
+			return
+
+		# Emulate Roxbot's blacklist system
+		if roxbot.blacklisted(message.author):
+			raise commands.CheckFailure()
 
 		settings = roxbot.guild_settings.get(message.guild)
 		msg = message.content.lower()
 		channel = message.channel
-
 		if msg.startswith(self.bot.command_prefix):
 			command = msg.split(self.bot.command_prefix)[1]
 			if command in settings["custom_commands"]["1"]:
