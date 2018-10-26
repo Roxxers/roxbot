@@ -10,12 +10,12 @@ Roxbot should be easier for users to setup too with this update. I have made ful
 - Many commands have had overhalls in how they work. Parameters have changed on a number of commands. Please check documentation on all the commands to familarise yourself with the new way to input params.
 - `is_anal` setting is now depreciated.`;suck` and `;spank` now only work in channels marked NSFW. 
 - `perm_roles` setting is now depreciated. All commands will work of Discord's permission system.
-- Roxbot will now check for a channel being marked NSFW in Discord rather than her own internal system. Roxbot's NSFW channels have be depreciated.
+- Roxbot will now check for a channel being marked NSFW in Discord rather than her own internal system. Roxbot's NSFW channels have been depreciated.
 
 ### Regular Updates
 #### New Features
 - Roxbot Facts! Only the deepest of lore for our dear Roxbot. 
-- Custom commands now have two new options. Prefix and Non-Prefix commands can have multiple outputs that can be choose at random. As well, a new type of prefix cc, embed, will allow custom rich embeds.
+- Custom commands now have two new options. Prefix and Non-Prefix commands can have multiple outputs that can be choosen at random. As well, a new type of prefix cc, embed, will allow custom rich embeds.
 - `;warn set_limit` will allow guilds to set the number of warnings before Roxbot will DM a mod about it. This is set to zero (disabled) by default.
 - Added `;me_irl` subreddit command that outputs images from the me_irl network of subreddits.
 - Added more subreddits to the `;aww` command.
