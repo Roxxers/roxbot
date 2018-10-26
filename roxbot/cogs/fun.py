@@ -43,7 +43,7 @@ class Fun:
 		self.roxbot_fact_cache = {}
 
 	@commands.command(aliases=["dice", "die"])  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
-	async def roll(self, ctx, *, expression=""):
+	async def roll(self, ctx, *, expression: str):
 		"""
 		Rolls a die using dice expression format.
 		Usage:
