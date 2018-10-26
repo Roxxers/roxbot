@@ -324,6 +324,7 @@ class Voice:
 	@commands.command()
 	async def volume(self, ctx, volume):
 		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
+		# FIXME: This option shit is fucking disgusting pls fix
 		try:
 			volume = int(volume)
 		except ValueError:

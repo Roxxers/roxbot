@@ -1,8 +1,9 @@
 **WARNING** It is not recommended to use any release before v2.0.0. All previous versions are logged and released as pre-releases and are only here as a historical record for myself. All post-v2.0.0 releases are finished products that are stable.
 
 ## v2.0.0
-- More better open source stuff - pls pr me
-- easy setup and get that wiki going
+With this update, I wanted Roxbot to reach an almost finished state. The base of the program should be complete and functional. This update brings a lot of internal changes that should make development of Roxbot easier for others and myself. It also should make her a lot more stable. Still expect updates with new features, bug fixes, and UX changes. Maybe just at a slower rate.
+
+Roxbot should be easier for users to setup too with this update. I have made full documentation of how she works and how to contribute to the project to make this easier. As well as a setup script.
 
 ### Big and Breaking Changes
 - All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independant commands. This doesn't effect custom commands or warnings.

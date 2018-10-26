@@ -65,7 +65,7 @@ class CustomCommands:
 		return command
 
 	@staticmethod
-	def _embed_values(command_output):
+	def _cc_to_embed(command_output):
 		# discord.Embed.Empty is used by discord.py to denote when a field is empty. Hence why it is the fallback here
 		title = command_output.get("title", discord.Embed.Empty)
 		desc = command_output.get("description", discord.Embed.Empty)
@@ -129,7 +129,7 @@ class CustomCommands:
 
 			elif command in settings["custom_commands"]["2"]:
 				command_output = self._get_output(settings["custom_commands"]["2"][command])
-				embed = self._embed_values(command_output)
+				embed = self._cc_to_embed(command_output)
 				return await channel.send(embed=embed)
 		else:
 			for command in settings["custom_commands"]["0"]:
@@ -145,7 +145,7 @@ class CustomCommands:
 		Requires the Manage Messages permission.
 		"""
 		if ctx.invoked_subcommand is None:
-			return await ctx.send('Missing Argument')
+			raise commands.CommandNotFound(ctx.subcommand_passed)
 
 	@commands.has_permissions(manage_messages=True)
 	@custom.command()

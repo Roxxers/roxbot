@@ -222,7 +222,8 @@ class ImageEditor:
 	async def pride(self, ctx):
 		"""A collection of filters that show simple LGBT pride flags over the image provided.
 		The filters work with either your pfp, someone elses', or an image provided either by attachment or URL."""
-		pass
+		if ctx.invoked_subcommand is None:
+			raise commands.CommandNotFound(ctx.subcommand_passed)
 
 	@pride.command()
 	async def lgbt(self, ctx, image: roxbot.converters.AvatarURL=None):

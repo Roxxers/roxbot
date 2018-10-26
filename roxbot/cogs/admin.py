@@ -76,7 +76,7 @@ class Admin:
 	ERROR_WARN_SL_NEG = "number_of_warnings can only be a positive integer."
 
 	OK_MOD_ACTION = "{} with reason: '{}'"
-	WARN_MOD_LACK_PERMS = "I can't kick the owner or users higher or equal to me."
+	WARN_MOD_LACK_PERMS = "Cannot kick owner or users higher or equal to me role hierarchy."
 	WARN_UNBAN_NOTFOUND = "User is not banned."
 
 	def __init__(self, bot_client):
@@ -105,15 +105,18 @@ class Admin:
 			0 turns off slowmode for this channel"""
 		if seconds == 0:  # Turn Slow Mode off
 			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested to turn off slowmode.".format(ctx.author))
-			return await ctx.send(self.OK_SLOWMODE_OFF)
+			embed = discord.Embed(description=self.OK_SLOWMODE_OFF, colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 
 		elif 0 < seconds <= 120 and ctx.channel.slowmode_delay == 0:  # Turn Slow Mode On
 			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested slowmode with a timer of {}".format(ctx.author, seconds))
-			return await ctx.send(self.OK_SLOWMODE_ON.format(seconds))
+			embed = discord.Embed(description=self.OK_SLOWMODE_ON.format(seconds), colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 
 		elif 0 < seconds <= 120 and ctx.channel.slowmode_delay > 0:  # Change value of Slow Mode timer
 			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested slowmode timer be changed to {}".format(ctx.author, seconds))
-			return await ctx.send(self.OK_SLOWMODE_CHANGED.format(seconds))
+			embed = discord.Embed(description=self.OK_SLOWMODE_CHANGED.format(seconds), colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 		elif seconds < 0 or seconds > 120:
 			raise commands.BadArgument(self.ERROR_SLOWMODE_SECONDS)
 
@@ -132,7 +135,8 @@ class Admin:
 		else:
 			predicate = lambda message: message.id != ctx.message.id
 		messages = await ctx.channel.purge(limit=limit, check=predicate)
-		return await ctx.send(self.OK_PURGE_CONFIRMATION.format(len(messages)))
+		embed = discord.Embed(description=self.OK_PURGE_CONFIRMATION.format(len(messages)), colour=roxbot.EmbedColours.pink)
+		return await ctx.send(embed=embed)
 
 	@commands.guild_only()
 	@commands.has_permissions(kick_members=True)
@@ -140,7 +144,7 @@ class Admin:
 	async def warn(self, ctx):
 		"""Group of commands handling . Requires the Kick Members permission."""
 		if ctx.invoked_subcommand is None:
-			return await ctx.send('Missing Argument')
+			raise commands.CommandNotFound(ctx.subcommand_passed)
 
 	@warn.command()
 	async def add(self, ctx, user: discord.User=None, *, warning=""):
@@ -161,7 +165,8 @@ class Admin:
 
 		warn_limit = 10
 		if len(warnings[user_id]) > warn_limit:
-			return await ctx.send(self.WARN_WARN_ADD_LIMIT_REACHED.format(warn_limit))
+			embed = discord.Embed(description=self.WARN_WARN_ADD_LIMIT_REACHED.format(warn_limit), colour=roxbot.EmbedColours.red)
+			return await ctx.send()
 
 		warnings[user_id].append(warning_dict)
 		settings["admin"]["warnings"] = warnings
@@ -171,7 +176,8 @@ class Admin:
 		if amount_warnings >= warning_limit > 0:
 			await ctx.author.send(self.OK_WARN_ADD_USER_LIMIT_DM.format(str(user), amount_warnings, warning_limit))
 
-		return await ctx.send(self.OK_WARN_ADD.format(str(user)))
+		embed = discord.Embed(description=self.OK_WARN_ADD.format(str(user)), colour=roxbot.EmbedColours.pink)
+		return await ctx.send(embed=embed)
 
 	@warn.command()
 	async def list(self, ctx, *, user: roxbot.converters.User=None):
@@ -191,17 +197,21 @@ class Admin:
 						paginator.add_line("{}: {} Warning(s)".format(str(member_obj), len(warnings[member])))
 					else:
 						paginator.add_line("{}: {} Warning(s)".format(member, len(warnings[member])))
+			# This is in case we have removed some users from the list.
 			settings["admin"]["warnings"] = warnings
 			settings.update(settings["admin"], "admin")
+
 			if len(paginator.pages) <= 0:
-				return await ctx.send(self.OK_WARN_LIST_NO_WARNINGS)
+				embed = discord.Embed(description=self.OK_WARN_LIST_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
+				return await ctx.send(embed=embed)
 			for page in paginator.pages:
-				await ctx.send(page)
+				await ctx.send(embed=discord.Embed(description=page, colour=roxbot.EmbedColours.pink))
 		else:
 			user_id = str(user.id)
 
 			if not warnings.get(user_id):
-				return await ctx.send(self.OK_WARN_LIST_USER_NO_WARNINGS)
+				embed = discord.Embed(description=self.OK_WARN_LIST_USER_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
+				return await ctx.send(embed=embed)
 
 			em = discord.Embed(title="Warnings for {}".format(str(user)), colour=roxbot.EmbedColours.pink)
 			em.set_thumbnail(url=user.avatar_url)
@@ -236,25 +246,30 @@ class Admin:
 
 				settings["admin"]["warnings"] = warnings
 				settings.update(settings["admin"], "admin")
-				return await ctx.send(self.OK_WARN_REMOVE_REMOVED_WARNING.format(index+1, str(user)))
+				embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNING.format(index+1, str(user)), colour=roxbot.EmbedColours.pink)
+				return await ctx.send(embed=embed)
 
 			except Exception as e:
+				embed = discord.Embed(colour=roxbot.EmbedColours.red)
 				if isinstance(e, IndexError):
-					return await ctx.send(self.ERROR_WARN_REMOVE_INDEXERROR.format(len(settings["warnings"][user_id])))
+					embed.description = self.ERROR_WARN_REMOVE_INDEXERROR.format(len(settings["warnings"][user_id]))
 				elif isinstance(e, KeyError):
-					return await ctx.send(self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)))
+					embed.description = self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user))
 				elif isinstance(e, ValueError):
-					return await ctx.send(self.ERROR_WARN_REMOVE_VALUEERROR)
+					embed.description = self.ERROR_WARN_REMOVE_VALUEERROR
 				else:
 					raise e
+				return ctx.send(embed=embed)
 		else:
 			try:
 				warnings.pop(user_id)
 				settings["admin"]["warnings"] = warnings
 				settings.update(settings["admin"], "admin")
-				return await ctx.send(self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)))
+				embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)), colour=roxbot.EmbedColours.pink)
+				return await ctx.send(embed=embed)
 			except KeyError:
-				return await ctx.send(self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)))
+				embed = discord.Embed(description=self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)), colour=roxbot.EmbedColours.orange)
+				return await ctx.send(embed=embed)
 
 	@commands.bot_has_permissions(ban_members=True)
 	@warn.command()
@@ -270,7 +285,8 @@ class Admin:
 						settings["admin"]["warnings"].pop(user)
 					count += 1
 		settings.update(settings["admin"], "admin")
-		return await ctx.send(self.OK_WARN_PRUNE_PRUNED.format(count))
+		embed = discord.Embed(description=self.OK_WARN_PRUNE_PRUNED.format(count), colour=roxbot.EmbedColours.pink)
+		return await ctx.send(embed=embed)
 
 	@warn.command(aliases=["set_limits", "sl", "setlimit", "setlimits"])
 	async def set_limit(self, ctx, number_of_warnings: int):
@@ -288,9 +304,11 @@ class Admin:
 		admin["warning_limit"] = number_of_warnings
 		settings.update(admin, "admin")
 		if number_of_warnings == 0:
-			return await ctx.send(self.OK_WARN_SL_SET_ZERO)
+			embed = discord.Embed(description=self.OK_WARN_SL_SET_ZERO, colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 		else:
-			return await ctx.send(self.OK_WARN_SL_SET.format(number_of_warnings))
+			embed = discord.Embed(description=self.OK_WARN_SL_SET.format(number_of_warnings), colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 
 	@commands.guild_only()
 	@commands.has_permissions(kick_members=True)
@@ -300,9 +318,11 @@ class Admin:
 		"""Kicks mentioned user. Allows you to give a reason. Requires the Kick Members permission."""
 		try:
 			await member.kick(reason=reason)
-			return await ctx.send(self.OK_MOD_ACTION.format("Kicked", member, reason))
+			embed = discord.Embed(description=self.OK_MOD_ACTION.format("Kicked", member, reason), colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 		except discord.Forbidden:
-			return await ctx.send(self.WARN_MOD_LACK_PERMS)
+			embed = discord.Embed(description=self.WARN_MOD_LACK_PERMS, colour=roxbot.EmbedColours.red)
+			return await ctx.send(embed=embed)
 
 	@commands.guild_only()
 	@commands.has_permissions(ban_members=True)
@@ -312,9 +332,11 @@ class Admin:
 		"""Bans mentioned user. Allows you to give a reason. Requires the Ban Members permission."""
 		try:
 			await member.ban(reason=reason, delete_message_days=0)
-			return await ctx.send(self.OK_MOD_ACTION.format("Banned", member, reason))
+			embed = discord.Embed(description=self.OK_MOD_ACTION.format("Banned", member, reason), colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 		except discord.Forbidden:
-			return await ctx.send(self.WARN_MOD_LACK_PERMS)
+			embed = discord.Embed(description=self.WARN_MOD_LACK_PERMS, colour=roxbot.EmbedColours.red)
+			return await ctx.send(embed=embed)
 
 	@commands.guild_only()
 	@commands.has_permissions(ban_members=True)
@@ -325,12 +347,15 @@ class Admin:
 		ban = await ctx.guild.get_ban(member)
 		mem = ban.user
 		if mem is None:
-			return await ctx.send(self.WARN_UNBAN_NOTFOUND)
+			embed = discord.Embed(description=self.WARN_UNBAN_NOTFOUND, colour=roxbot.EmbedColours.red)
+			return await ctx.send(embed=embed)
 		try:
 			await ctx.guild.unban(mem, reason=reason)
-			return await ctx.send(self.OK_MOD_ACTION.format("Unbanned", mem, reason))
+			embed = discord.Embed(description=self.OK_MOD_ACTION.format("Unbanned", mem, reason), colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
 		except discord.Forbidden:
-			return await ctx.send(self.WARN_MOD_LACK_PERMS)
+			embed = discord.Embed(description=self.WARN_MOD_LACK_PERMS, colour=roxbot.EmbedColours.red)
+			return await ctx.send(embed=embed)
 
 
 def setup(bot_client):
