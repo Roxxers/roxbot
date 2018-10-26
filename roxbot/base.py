@@ -56,7 +56,6 @@ class Base:
 				roxbot.guild_settings.backup("{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
 				await asyncio.sleep(300)
 
-
 	@commands.command()
 	@commands.is_owner()
 	async def backup(self, ctx):
@@ -180,7 +179,8 @@ class Base:
 		await self.bot.change_presence(status=discord_status)
 		await ctx.send("**:ok:** Status set to {}".format(discord_status))
 
-	def parse_setting(self, ctx, settings_to_copy, raw=False):
+	@staticmethod
+	def _parse_setting(ctx, settings_to_copy, raw=False):
 		settingcontent = ""
 		setting = settings_to_copy.copy()
 		convert = setting.get("convert", None)
@@ -239,7 +239,7 @@ class Base:
 		paginator.add_line("{} settings for {}.\n".format(self.bot.user.name, ctx.message.guild.name))
 		if option in settings:
 			raw = bool(ctx.invoked_with == "printsettingsraw")
-			settingcontent = self.parse_setting(ctx, settings[option], raw=raw)
+			settingcontent = self._parse_setting(ctx, settings[option], raw=raw)
 			paginator.add_line("@{}".format(option))
 			paginator.add_line(settingcontent)
 			for page in paginator.pages:
@@ -247,7 +247,7 @@ class Base:
 		else:
 			for setting in settings:
 				raw = bool(ctx.invoked_with == "printsettingsraw")
-				settingcontent = self.parse_setting(ctx, settings[setting], raw=raw)
+				settingcontent = self._parse_setting(ctx, settings[setting], raw=raw)
 				paginator.add_line("@{}".format(setting))
 				paginator.add_line(settingcontent)
 			for page in paginator.pages:
