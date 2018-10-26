@@ -15,7 +15,7 @@ Roxbot should be easier for users to setup too with this update. I have made ful
 ### Regular Updates
 #### New Features
 - Roxbot Facts! Only the deepest of lore for our dear Roxbot. 
-- Custom commands now have two new options. Prefix and Non-Prefix commands can have multiple outputs that can be choosen at random. As well, a new type of prefix cc, embed, will allow custom rich embeds.
+- CCustom commands now have two new options. Multiple options can be passed for both prefixed and non-prefixed cc's to allow for custom commands to have random outputs. A new type of prefixed cc has been added, embed, that allows the creation of custom rich embeds.
 - `;warn set_limit` will allow guilds to set the number of warnings before Roxbot will DM a mod about it. This is set to zero (disabled) by default.
 - Added `;me_irl` subreddit command that outputs images from the me_irl network of subreddits.
 - Added more subreddits to the `;aww` command.
