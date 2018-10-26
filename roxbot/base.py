@@ -85,7 +85,6 @@ class Base:
 
 		for user in mentions:
 			if user.id == roxbot.owner:
-				print("[Commands:Blacklist] The owner cannot be blacklisted.")
 				await ctx.send("The owner cannot be blacklisted.")
 				mentions.remove(user)
 
