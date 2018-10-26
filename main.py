@@ -30,6 +30,8 @@ import time
 import logging
 import os.path
 import datetime
+import traceback
+
 import discord
 from discord.ext import commands
 
@@ -37,10 +39,10 @@ import roxbot
 from roxbot import guild_settings as gs
 
 
-# Sets up Logging that discord.py does on its own
+# Sets up Logging
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+handler = logging.FileHandler(filename='roxbot.log', encoding='utf-8', mode='w')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
@@ -58,8 +60,8 @@ async def on_ready():
 	# Load Roxbots inbuilt cogs and settings
 	print("Loading Bot internals...")
 
-	bot.load_extension("roxbot.system")
-	print("system.py Loaded")
+	bot.load_extension("roxbot.base")
+	print("base.py Loaded")
 
 	bot.load_extension("roxbot.err_handle")
 	print("err_handle.py Loaded")
@@ -101,13 +103,22 @@ async def on_guild_remove(guild):
 
 
 @bot.event
-async def on_message(message):
-	"""
-	Checks if the user is blacklisted, if not, process the message for commands as usual.
-	"""
-	if roxbot.blacklisted(message.author):
-		return
-	return await bot.process_commands(message)
+async def on_error(event, *args, **kwargs):
+	if roxbot.dev_mode:
+		traceback.print_exc()
+	else:
+		logging.exception(event)
+
+
+@bot.event
+async def on_command_error(self, ctx, error):
+	pass  # This needs to overwrite the discord.py version and allow roxbot's errpr handling to kick in
+
+
+@bot.check
+def check_blacklist(ctx):
+	"""Adds global check to the bot to check for a user being blacklisted."""
+	return not roxbot.blacklisted(ctx.author)
 
 
 @bot.command()
