@@ -110,11 +110,6 @@ async def on_error(event, *args, **kwargs):
 		logging.exception(event)
 
 
-@bot.event
-async def on_command_error(self, ctx, error):
-	pass  # This needs to overwrite the discord.py version and allow roxbot's errpr handling to kick in
-
-
 @bot.check
 def check_blacklist(ctx):
 	"""Adds global check to the bot to check for a user being blacklisted."""
