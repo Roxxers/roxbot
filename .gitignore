@@ -16,3 +16,5 @@ roxbot/settings/preferences.ini
 env/
 
 roxbot/settings/servers/*
+
+site/
