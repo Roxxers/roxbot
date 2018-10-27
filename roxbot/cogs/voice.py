@@ -345,6 +345,7 @@ class Voice:
 	@commands.guild_only()
 	@commands.command()
 	async def pause(self, ctx):
+		# TODO: Add some timeouts on pause and resumes
 		"""Pauses the current video, if playing."""
 		if ctx.voice_client.is_paused():
 			return await ctx.send("I already am paused!")

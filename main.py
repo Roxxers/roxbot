@@ -60,8 +60,8 @@ async def on_ready():
 	# Load Roxbots inbuilt cogs and settings
 	print("Loading Bot internals...")
 
-	bot.load_extension("roxbot.base")
-	print("base.py Loaded")
+	bot.load_extension("roxbot.core")
+	print("core.py Loaded")
 
 	bot.load_extension("roxbot.err_handle")
 	print("err_handle.py Loaded")

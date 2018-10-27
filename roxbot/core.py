@@ -35,7 +35,7 @@ import discord
 from discord.ext import commands
 
 
-class Base:
+class Core:
 	"""Cog for commands that change the bot account and bot running."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -261,4 +261,4 @@ class Base:
 
 
 def setup(bot_client):
-	bot_client.add_cog(Base(bot_client))
+	bot_client.add_cog(Core(bot_client))
