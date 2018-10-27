@@ -29,21 +29,11 @@ Rolls a die using dice expression format. Spaces in the expression are ignored.
 !!! example "Examples"
     Roll one d10 two times
     
-        ;roll d10x2
-    
-    Output
-        
-        Roll 1: (8) Totaling: 8    
-        Roll 2: (4) Totaling: 4
-
+    ![Output](assets/images/outputs/roll1.png)
 
     Roll two d20s and takes the highest value, then adds 7
     
-        ;roll 2d20h1 + 7
-    
-    Output
-    
-        Rolled: (10,7) + 7 Totaling: 17
+    ![Output](assets/images/outputs/roll2.png)
 
 
 An expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.
