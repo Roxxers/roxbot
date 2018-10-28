@@ -42,6 +42,12 @@ owner = int(config["Roxbot"]["OwnerID"])
 token = config["Tokens"]["Discord"]
 imgur_token = config["Tokens"]["Imgur"]
 
+if config["Backups"]["enabled"] == "False":
+	backup_enabled = False
+else:
+	backup_enabled = True
+backup_rate = config["Backups"]["rate"] * 60  # Convert minutes to seconds
+
 
 __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
 

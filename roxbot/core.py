@@ -220,7 +220,8 @@ class Core(ErrorHandling, Logging):
 		super().__init__(self.bot)
 
 		# Backup setup
-		self.backup_task = self.bot.loop.create_task(self.auto_backups())
+		if roxbot.backup_enabled:
+			self.backup_task = self.bot.loop.create_task(self.auto_backups())
 
 	#############
 	#  Backups  #
@@ -241,11 +242,12 @@ class Core(ErrorHandling, Logging):
 				raw_settings = current_settings
 				time = datetime.datetime.now()
 				roxbot.guild_settings.backup("{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
-				await asyncio.sleep(300)
+			await asyncio.sleep(roxbot.backup_rate)
 
-	@commands.command()
+	@commands.command(enabled=roxbot.backup_enabled)
 	@commands.is_owner()
 	async def backup(self, ctx):
+		"""Manually create a backup of the settings."""
 		time = datetime.datetime.now()
 		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
 		roxbot.guild_settings.backup(filename)
