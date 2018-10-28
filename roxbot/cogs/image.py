@@ -406,7 +406,7 @@ class ImageEditor:
 
 	@commands.command(aliases=["df"])
 	async def deepfry(self, ctx, image: roxbot.converters.AvatarURL=None):
-		"""Deepfry's the given image
+		"""Deepfrys the given image
 		Args:
 			image: Optional
 				If nothing, your avatar
