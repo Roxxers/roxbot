@@ -24,24 +24,23 @@
 
 
 from roxbot import checks, http, guild_settings, converters, utils, roxbotfacts
+
 from roxbot.exceptions import *
 from roxbot.enums import EmbedColours
-from roxbot.logging import log
-from roxbot.utils import blacklisted
+from roxbot.utils import blacklisted, log
 
 import configparser
 
 dev_mode = False
 
-settings = configparser.ConfigParser()
-settings.read("roxbot/settings/preferences.ini")
+config = configparser.ConfigParser()
+config.read("roxbot/settings/preferences.ini")
 
-command_prefix = settings["Roxbot"]["Command_Prefix"]
-owner = int(settings["Roxbot"]["OwnerID"])
+command_prefix = config["Roxbot"]["Command_Prefix"]
+owner = int(config["Roxbot"]["OwnerID"])
 
-token = settings["Tokens"]["Discord"]
-tat_token = settings["Tokens"]["Tatsumaki"]
-imgur_token = settings["Tokens"]["Imgur"]
+token = config["Tokens"]["Discord"]
+imgur_token = config["Tokens"]["Imgur"]
 
 
 __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
@@ -51,7 +50,7 @@ __description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built wi
 [Found a bug or need to report an issue? Report it here](https://gitlab.roxxers.xyz/roxxers/roxbot/issues/new?issue)
 [Say Thanks](https://saythanks.io/to/Roxxers)"""
 __author__ = "Roxanne Gibson"
-__version__ = "2.0.0a"
+__version__ = "2.0.0"
 
 datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 

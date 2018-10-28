@@ -40,7 +40,7 @@ from roxbot import guild_settings as gs
 # Sets up Logging
 logger = logging.getLogger('discord')
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename='roxbot.log', encoding='utf-8', mode='w')
+handler = logging.FileHandler(filename='roxbot.log', encoding='utf-8', mode='a')
 handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
 logger.addHandler(handler)
 
@@ -60,12 +60,6 @@ async def on_ready():
 
 	bot.load_extension("roxbot.core")
 	print("core.py Loaded")
-
-	bot.load_extension("roxbot.err_handle")
-	print("err_handle.py Loaded")
-
-	bot.load_extension("roxbot.logging")
-	print("logging.py Loaded")
 
 	print("")
 	print("Discord.py version: " + discord.__version__)

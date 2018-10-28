@@ -36,6 +36,7 @@ ags_id = 393764974444675073
 selfieperms = 394939389823811584
 nsfwimageperms = 394941004043649036
 newbie = 450042170112475136
+tat_token = roxbot.config["Tokens"]["Tatsumaki"]
 
 
 def is_ags():
@@ -45,7 +46,7 @@ def is_ags():
 async def tatsumaki_api_call(member, guild):
 	base = "https://api.tatsumaki.xyz/"
 	url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
-	return await roxbot.http.api_request(url, headers={"Authorization": roxbot.tat_token})
+	return await roxbot.http.api_request(url, headers={"Authorization": tat_token})
 
 
 class AsortedGenderSounds:

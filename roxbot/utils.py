@@ -27,6 +27,9 @@ import asyncio
 import discord
 import argparse
 
+from roxbot import guild_settings
+from roxbot.enums import EmbedColours
+
 
 class ArgParser(argparse.ArgumentParser):
 	"""Create Roxbot's own version of ArgumentParser that doesn't exit the program on error."""
@@ -138,3 +141,27 @@ def blacklisted(user):
 			if str(user.id)+"\n" == line:
 				return True
 	return False
+
+
+async def log(guild, channel, command_name, **kwargs):
+	"""Logs activity internally for Roxbot. Will only do anything if the server enables internal logging.
+
+	This is mostly used for logging when certain commands are used that can be an issue for admins. Esp when Roxbot outputs
+	something that could break the rules, then deletes their message.
+
+	Params
+	=======
+	guild: discord.Guild
+		Used to check if the guild has logging enabled
+	channel: discord.TextChannel
+	command_name: str
+	kwargs: dict
+		All kwargs and two other params will be added to the logging embed as fields, allowing you to customise the output
+
+	"""
+	logging = guild_settings.get(guild)["logging"]
+	if logging["enabled"]:
+		embed = discord.Embed(title="{} command logging".format(command_name), colour=EmbedColours.pink)
+		for key, value in kwargs.items():
+			embed.add_field(name=key, value=value)
+		return await channel.send(embed=embed)
