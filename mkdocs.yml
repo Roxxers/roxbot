@@ -45,13 +45,21 @@ nav:
 
 # Customisation
 theme:
-  name: 'material'
+  name: null
+  language: en
+  custom_dir: 'material/'
   palette:
     primary: 'deep purple'
     accent: 'deep purple'
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
+  logo:
+    icon: "\uE80C"
+  feature:
+    tabs: true
+  static_templates:
+    - 404.html
 
 extra:
   social:
@@ -71,7 +79,7 @@ markdown_extensions:
   - pymdownx.critic
   - pymdownx.details
   - pymdownx.emoji:
-      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+      emoji_generator: python/name:pymdownx.emoji.to_svg
   - pymdownx.inlinehilite
   - pymdownx.magiclink
   - pymdownx.mark
