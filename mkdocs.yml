@@ -45,9 +45,8 @@ nav:
 
 # Customisation
 theme:
-  name: null
+  name: 'material'
   language: en
-  custom_dir: 'material/'
   palette:
     primary: 'deep purple'
     accent: 'deep purple'
