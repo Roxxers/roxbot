@@ -199,11 +199,12 @@ class Admin:
 			settings["admin"]["warnings"] = warnings
 			settings.update(settings["admin"], "admin")
 
-			if len(paginator.pages) <= 0:
+			if not paginator.pages:
 				embed = discord.Embed(description=self.OK_WARN_LIST_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
 				return await ctx.send(embed=embed)
+
 			for page in paginator.pages:
-				await ctx.send(embed=discord.Embed(description=page, colour=roxbot.EmbedColours.pink))
+				return await ctx.send(embed=discord.Embed(description=page, colour=roxbot.EmbedColours.pink))
 		else:
 			user_id = str(user.id)
 
