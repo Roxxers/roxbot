@@ -331,6 +331,7 @@ class Trivia:
 		embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 		return await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@trivia.command()
 	@commands.bot_has_permissions(manage_messages=True)
 	async def start(self, ctx, *args):
@@ -384,10 +385,14 @@ class Trivia:
 	async def trivia_err(self, ctx, error):
 		# TODO: Better before and after invoke systems to deal with variable cleanup
 		# This is here to make sure that if an error occurs, the game will be removed from the dict and will safely exit the game, then raise the error like normal.
-		self.games.pop(ctx.channel.id)
-		await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...", colour=self.error_colour))
-		raise error
+		try:
+			self.games.pop(ctx.channel.id)
+			await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...", colour=self.error_colour))
+			raise error
+		except KeyError:
+			pass
 
+	@commands.guild_only()
 	@trivia.command()
 	async def join(self, ctx):
 		"""Joins a trivia game. Can only be done when a game is waiting for players to join. Not when a game is currently active."""
@@ -407,6 +412,7 @@ class Trivia:
 		else:
 			return await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
+	@commands.guild_only()
 	@trivia.command()
 	async def leave(self, ctx):
 		"""Leaves the game in this channel. Can be done anytime in the game."""
@@ -424,6 +430,7 @@ class Trivia:
 		else:
 			await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
+	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
 	@trivia.command()
 	async def kick(self, ctx, user: discord.Member):
