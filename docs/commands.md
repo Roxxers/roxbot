@@ -15,50 +15,124 @@ These are the base commands for Roxbot that are a part of the core bot. All of t
 
 #### ;backup
 
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
+
 #### ;blacklist
+
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
 
 #### ;changeactivity
 
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
+
 #### ;changeavatar
+
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
 
 #### ;changenickname
 
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
+
 #### ;changestatus
+
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
 
 #### ;printsettings
 
+!!! warning
+    Command requires the user has the `manage_guild` permission.
+
+!!! warning
+    This command cannot be used in private messages.
+
 #### ;shutdown
+
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
 
 ## Cog Commands
 
 ### Admin
 The Admin cog adds admin commands to Roxbot which should make moderating a Discord server easier.
 
+!!! warning
+    This whole cog cannot be used in private messages.
+
 #### ;ban
+
+!!! warning
+    Command requires the user **and** Roxbot have the `ban_users` permission.
 
 #### ;kick
 
+!!! warning
+    Command requires the user **and** Roxbot have the `kick_users` permission.
+
+
 #### ;purge
+
+!!! warning
+    Command requires the user **and** Roxbot have the `manage_messages` permission.
+
 
 #### ;slowmode
 
+!!! warning
+    Command requires the user **and** Roxbot have the `manage_channels` permission.
+
 #### ;unban
 
+!!! warning
+    Command requires the user **and** Roxbot have the `ban_users` permission.
+
+
 #### ;warn
+
+!!! warning
+    Group requires the user has the `kick_users` permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small>
+
+__;warn add__
+
+__;warn list__
+
+__;warn prune__
+
+__;warn remove__
+
+__;warn set_limit__
 
 ### Custom Commands
 
 #### ;custom
 
+!!! warning
+    This command group cannot be used in private messages.
+
 ##### Subcommands
 
 __;custom add__
 
+!!! warning
+    Command requires the user has the `manage_messages` permission.
+
 __;custom edit__
+
+!!! warning
+    Command requires the user has the `manage_messages` permission.
 
 __;custom list__
 
 __;custom remove__
+
+!!! warning
+    Command requires the user has the `manage_messages` permission.
+
 
 ### Fun
 
@@ -116,7 +190,13 @@ Credit: TBTerra#5677
 
 #### ;spank
 
+!!! warning
+    This command will only work in channels marked NSFW 
+
 #### ;suck
+
+!!! warning
+    This command will only work in channels marked NSFW 
 
 #### ;waifurate
 
@@ -230,21 +310,42 @@ __;pride transgender__
 
 #### ;goodbyes
 
+!!! warning
+    This command cannot be used in private messages.
+
 #### ;greets
+
+!!! warning
+    This command cannot be used in private messages.
 
 ### NSFW
 
 #### ;e621
 
+!!! warning
+    This command will only work in channels marked NSFW or DMs.
+
 #### ;gelbooru
 
+!!! warning
+    This command will only work in channels marked NSFW or DMs.
+
 #### ;rule34
+
+!!! warning
+    This command will only work in channels marked NSFW or DMs.
 
 ---
 
 #### ;nsfw
 
+!!! warning
+    This command cannot be used in private messages.
+
+
 ### Reddit
+
+#### ;subreddit
 
 #### ;aww
 
@@ -254,25 +355,36 @@ __;pride transgender__
 
 #### ;me_irl
 
-#### ;subreddit
-
 #### ;traa
 
 ### Self Assign
 
+!!! warning
+    This whole cog cannot be used in private messages.
+
 #### ;iam
+
 
 #### ;iamn
 
+
+
 #### ;listroles
+
 
 ---
 
 #### ;selfassign
 
+
+
 ### Trivia
 
 #### ;trivia
+
+!!! warning
+    This command group cannot be used in private messages.
+
 
 ##### Subcommands
 
@@ -296,11 +408,25 @@ __;trivia kick__
 
 #### ;guild
 
+!!! warning
+    This command cannot be used in private messages.
+
+
 #### ;info
+
+#### ;invite
 
 #### ;role
 
+!!! warning
+    This command cannot be used in private messages.
+
 ### Voice
+
+!!! warning
+    This whole cog cannot be used in private messages.
+
+#### ;join
 
 #### ;nowplaying
 
@@ -310,18 +436,16 @@ __;trivia kick__
 
 #### ;queue
 
+#### ;remove
+
 #### ;resume
 
 #### ;skip
 
+#### ;stop
+
 #### ;stream
 
 #### ;volume
-
-#### ;join
-
-#### ;remove
-
-#### ;stop
 
 #### ;voice

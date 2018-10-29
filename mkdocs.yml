@@ -38,7 +38,7 @@ nav:
     - 'Quick Start': 'quickstart.md'
     - 'Configuring Roxbot': 'config.md'
     - 'Command Documentation': 'commands.md'
-    - 'Creating Cogs For Roxbot': 'cogs.md'
+    - 'Creating Cogs For Roxbot': 'creating_cogs.md'
     - 'Contributing': 'contributing.md'
     - 'License': 'license.md'
 
