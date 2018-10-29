@@ -199,7 +199,7 @@ class Fun:
 			return await ctx.send("You didn't mention someone for me to spank")
 		return await ctx.send(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
-	@oxbot.checks.is_nsfw()
+	@roxbot.checks.is_nsfw()
 	@commands.command(aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
