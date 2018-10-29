@@ -7,14 +7,14 @@
 # | |\ \\ \_/ / /^\ \| |_/ /\ \_/ / | |
 # \_| \_|\___/\/   \/\____/  \___/  \_/
 
-# Roxbot, a lgbtq friendly Discord bot.
+# Roxbot, an inclusive Discord bot
 
 __title__ = "roxbot"
 __author__ = "Roxanne Gibson"
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2017 Roxanne Gibson"
 __version__ = "2.0.0"
-__description__ = """RoxBot, a LGBTQ friendly Discord bot. Built with love (and discord.py) by Roxxers#7443.
+__description__ = """Roxbot, an inclusive Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
 [Github link](https://github.com/roxxers/roxbot)
 [Changelog](https://github.com/roxxers/roxbot/blob/master/CHANGELOG.md)
