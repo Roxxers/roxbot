@@ -26,7 +26,6 @@
 import os
 import string
 import typing
-import logging
 import asyncio
 import datetime
 import youtube_dl
@@ -39,7 +38,7 @@ from discord.ext import commands
 
 class ErrorHandling:
 
-	COMMANDNOTFOUND = "That Command doesn't exist."
+	COMMANDNOTFOUND = "Command '{}' does not exist."
 	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
 	CHECKFAILURE = "You do not have permission to do this. Back off, thot!"
 	TOOMANYARGS = "Too many arguments given."
@@ -73,13 +72,10 @@ class ErrorHandling:
 			embed = discord.Embed()
 			if isinstance(error, commands.NoPrivateMessage):
 				embed.description = self.NODMS
-				logging.info(embed.description)
 			elif isinstance(error, commands.DisabledCommand):
 				embed.description = self.DISABLEDCOMMAND
-				logging.info(embed.description)
 			elif isinstance(error, roxbot.CogSettingDisabled):
 				embed.description = self.COGSETTINGDISABLED.format(error.args[0])
-				logging.info(embed.description)
 			elif isinstance(error, commands.CommandNotFound):
 				try:
 					# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
@@ -90,37 +86,29 @@ class ErrorHandling:
 					if is_custom_command or is_emoticon_face or is_too_short:
 						embed = None
 					else:
-						embed.description = self.COMMANDNOTFOUND
-						logging.info(embed.description)
+						embed.description = self.COMMANDNOTFOUND.format(error.args[0])
 				except (KeyError, AttributeError):
 					# KeyError for cog missing, AttributeError if a command invoked via DM
-					embed.description = self.COMMANDNOTFOUND
-					logging.info(embed.description)
+					embed.description = self.COMMANDNOTFOUND.format(error.args[0])
 			elif isinstance(error, commands.BotMissingPermissions):
 				embed.description = "{}".format(error.args[0].replace("Bot", "Roxbot"))
-				logging.info(embed.description)
 			elif isinstance(error, commands.MissingPermissions):
 				embed.description = "{}".format(error.args[0])
-				logging.info(embed.description)
 			elif isinstance(error, commands.CommandOnCooldown):
 				embed.description = self.COMMANDONCOOLDOWN.format(error.retry_after)
-				logging.info(embed.description)
 			elif isinstance(error, (commands.CheckFailure, commands.NotOwner)):
 				embed.description = self.CHECKFAILURE
-				logging.info(embed.description)
 
 			elif isinstance(error, commands.CommandInvokeError):
 				# YOUTUBE_DL ERROR HANDLING
 				if isinstance(error.original, youtube_dl.utils.GeoRestrictedError):
 					embed.description = self.YTDLDOWNLOADERROR.format("Video is GeoRestricted.")
-					logging.info(embed.description)
 				elif isinstance(error.original, youtube_dl.utils.DownloadError):
 					embed.description = self.YTDLDOWNLOADERROR.format(error.original.exc_info[1])
-					logging.info(embed.description)
 
 				# Final catches for errors undocumented.
 				else:
-					logging.error(str(error))
+					roxbot.logger.error(str(error))
 					embed = discord.Embed(title='Command Error', colour=roxbot.EmbedColours.dark_red)
 					embed.description = str(error)
 					embed.add_field(name='User', value=ctx.author)
@@ -128,9 +116,9 @@ class ErrorHandling:
 					embed.timestamp = datetime.datetime.utcnow()
 			elif isinstance(error, commands.CommandError):
 				embed.description = "Error: {}".format(error.args[0])
-				logging.error(embed.description)
+				roxbot.logger.error(embed.description)
 			else:
-				logging.error(str(error))
+				roxbot.logger.error(str(error))
 
 			if embed:
 				embed.colour = roxbot.EmbedColours.dark_red

@@ -38,11 +38,10 @@ from roxbot import guild_settings as gs
 
 
 # Sets up Logging
-logger = logging.getLogger('discord')
-logger.setLevel(logging.INFO)
-handler = logging.FileHandler(filename='roxbot.log', encoding='utf-8', mode='a')
-handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-logger.addHandler(handler)
+discord_logger = logging.getLogger('discord')
+discord_logger.setLevel(logging.INFO)
+discord_logger.addHandler(roxbot.handler)
+
 
 bot = commands.Bot(
 	command_prefix=roxbot.command_prefix,
@@ -136,7 +135,7 @@ async def about(ctx):
 async def settings():
 	# This is to block any customcommand or command from being made with the same name.
 	# This is to avoid conflicts with the internal settings system.
-	raise commands.CommandNotFound()
+	raise commands.CommandNotFound("settings")
 
 if __name__ == "__main__":
 	# Pre-Boot checks
