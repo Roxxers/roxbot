@@ -192,19 +192,16 @@ class Reddit:
 		subreddit = subreddit.lower()
 		if isinstance(ctx.channel, discord.DMChannel):
 			cache_id = ctx.author.id
-		else:
+			nsfw_allowed = True
+		else:  # Is text channel in guild
 			cache_id = ctx.guild.id
+			nsfw_allowed = ctx.channel.is_nsfw()
 
 		self.scrapper.cache_refresh(cache_id)
 		posts = await self.scrapper.sub_request(subreddit)
 
 		if not posts:
 			raise roxbot.UserError(self.SUB_NOT_FOUND)
-
-		if isinstance(ctx.channel, discord.TextChannel):
-			nsfw_allowed = ctx.channel.is_nsfw()
-		else:
-			nsfw_allowed = True
 
 		choice = await self.scrapper.random(posts["children"], cache_id, nsfw_allowed)
 

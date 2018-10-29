@@ -51,11 +51,12 @@ class NFSW():
 			}
 		}
 
-	@commands.is_nsfw()
+	@roxbot.checks.is_nsfw()
 	@commands.command(hidden=True)
 	async def gelbooru_clone(self, ctx, base_url, post_url, tags):
 		limit = 150
-		tags = tags + tag_blacklist(ctx.guild)
+		if isinstance(ctx.channel, discord.TextChannel):
+			tags = tags + tag_blacklist(ctx.guild)
 		page = random.randrange(20)
 		url = base_url + tags + '&limit=' + str(limit) + '%pid=' + str(page)
 		if isinstance(ctx.channel, discord.DMChannel):
@@ -89,7 +90,7 @@ class NFSW():
 		output = await ctx.send(url)
 		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
-	@commands.is_nsfw()
+	@roxbot.checks.is_nsfw()
 	@commands.command()
 	async def e621(self, ctx, *, tags=""):
 		"""
@@ -98,7 +99,7 @@ class NFSW():
 		base_url = "https://e621.net/post/index.json?tags="
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url="", tags=tags)
 
-	@commands.is_nsfw()
+	@roxbot.checks.is_nsfw()
 	@commands.command()
 	async def rule34(self, ctx, *, tags=""):
 		"""
@@ -108,7 +109,7 @@ class NFSW():
 		post_url = "https://img.rule34.xxx/images/"
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
 
-	@commands.is_nsfw()
+	@roxbot.checks.is_nsfw()
 	@commands.command()
 	async def gelbooru(self, ctx, *, tags=""):
 		"""

@@ -24,6 +24,8 @@
 
 
 import roxbot
+
+import discord
 from discord.ext import commands
 
 
@@ -34,3 +36,11 @@ def has_permission_or_owner(**perms):
 		return commands.has_permissions(**perms)
 	return commands.check(predicate)
 
+
+def is_nsfw():
+	"""A :func:`.check` that checks if the channel is a NSFW channel or a DM channel."""
+	def pred(ctx):
+		is_dm_channel = bool(isinstance(ctx.channel, discord.DMChannel))
+		is_nsfw_guild_channel = bool(isinstance(ctx.channel, discord.TextChannel) and ctx.channel.is_nsfw())
+		return bool(is_nsfw_guild_channel or is_dm_channel)
+	return commands.check(pred)
