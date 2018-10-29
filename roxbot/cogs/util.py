@@ -225,11 +225,11 @@ class Util():
 		except IndexError:
 			return await ctx.send("This command only supports custom emojis at the moment. Sorry.")
 
-	@commands.command(hidden=True)
-	async def inviteme(self, ctx):
+	@commands.command()
+	async def invite(self, ctx):
 		"""Returns an invite link to invite the bot to your server."""
 		link = discord.utils.oauth_url(self.bot.user.id, discord.Permissions.all_channel())
-		return await ctx.send("WARNING: This is only for Roxie to use atm. Here is a link to invite me to your server! <{}>".format(link))
+		return await ctx.send("Invite me to your server! <{}>".format(link))
 
 	@commands.command()
 	@commands.is_owner()
