@@ -82,6 +82,3 @@ class AvatarURL(commands.UserConverter):
 				return user.avatar_url_as(format="png")
 			except:  # Same as above
 				raise commands.BadArgument("No valid image/user given.")
-
-
-# TODO: Make functions that work like converters but aren't so they actually work in other areas too.

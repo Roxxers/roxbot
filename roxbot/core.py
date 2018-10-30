@@ -247,48 +247,42 @@ class Core(ErrorHandling, Logging):
 
 	@commands.command()
 	@commands.is_owner()
-	async def blacklist(self, ctx, option):
+	async def blacklist(self, ctx, option, users: commands.Greedy[discord.User]):
 		"""
 		Add or remove users to the blacklist. Blacklisted users are forbidden from using bot commands.
 		Usage:
-			;blacklist [add|+ OR remove|-] @user#0000
-		OWNER OR ADMIN ONLY
+			;blacklist [add|+ OR remove|-] @user1#0000 user2
 		"""
-		# TODO: Make this better instead of relying on mentions
 		blacklist_amount = 0
-		mentions = ctx.message.mentions
-
-		if not mentions:
-			return await ctx.send("You didn't mention anyone")
 
 		if option not in ['+', '-', 'add', 'remove']:
-			return await ctx.send('Invalid option "%s" specified, use +, -, add, or remove' % option, expire_in=20)
+			raise commands.BadArgument("Invalid option.")
 
-		for user in mentions:
+		for user in users:
 			if user.id == roxbot.owner:
 				await ctx.send("The owner cannot be blacklisted.")
-				mentions.remove(user)
+				users.remove(user)
 
 		if option in ['+', 'add']:
-			with open("roxbot/blacklist.txt", "r") as fp:
-				for user in mentions:
+			with open("roxbot/settings/blacklist.txt", "r") as fp:
+				for user in users:
 					for line in fp.readlines():
 						if user.id + "\n" in line:
-							mentions.remove(user)
+							users.remove(user)
 
-			with open("roxbot/blacklist.txt", "a+") as fp:
+			with open("roxbot/settings/blacklist.txt", "a+") as fp:
 				lines = fp.readlines()
-				for user in mentions:
+				for user in users:
 					if user.id not in lines:
 						fp.write("{}\n".format(user.id))
 						blacklist_amount += 1
 			return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
 
 		elif option in ['-', 'remove']:
-			with open("roxbot/blacklist.txt", "r") as fp:
+			with open("roxbot/settings/blacklist.txt", "r") as fp:
 				lines = fp.readlines()
-			with open("roxbot/blacklist.txt", "w") as fp:
-				for user in mentions:
+			with open("roxbot/settings/blacklist.txt", "w") as fp:
+				for user in users:
 					for line in lines:
 						if str(user.id) + "\n" != line:
 							fp.write(line)
