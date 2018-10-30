@@ -244,7 +244,6 @@ class Fun:
 			{command_prefix}waifurate @user#9999
 		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
 		"""
-		# TODO: Mention to users can be changed to mentions when we move to embeds.
 		if ctx.invoked_with in ["hr", "husbandorate"]:
 			waifu_text = "husbando"
 		elif ctx.invoked_with in ["sr", "spousurate"]:

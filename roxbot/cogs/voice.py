@@ -253,7 +253,7 @@ class Voice:
 		self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
 
 	@commands.guild_only()
-	@commands.cooldown(1, 0.5, commands.BucketType.guild)
+	@commands.cooldown(1, 0.8, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
 	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
 		"""Plays from a url or search query (almost anything youtube_dl supports)"""
@@ -320,19 +320,8 @@ class Voice:
 	@volume_perms()
 	@commands.guild_only()
 	@commands.command()
-	async def volume(self, ctx, volume):
-		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
-		# FIXME: This option shit is fucking disgusting pls fix
-		try:
-			volume = int(volume)
-		except ValueError:
-			pass
-
-		if volume != "show" and not isinstance(volume, int):
-			raise commands.BadArgument("Not int or 'show'")
-		elif volume == "show":
-			return await ctx.send("Volume: {}%".format(self._volume[ctx.guild.id]*100))
-
+	async def volume(self, ctx, volume: int):
+		"""Changes the player's volume. Only accepts integers representing x% between 0-100%"""
 		if 0 < volume <= 100:
 			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 			self._volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
@@ -341,6 +330,7 @@ class Voice:
 		return await ctx.send("Changed volume to {}%".format(volume))
 
 	@commands.guild_only()
+	@commands.cooldown(1, 2)
 	@commands.command()
 	async def pause(self, ctx):
 		# TODO: Add some timeouts on pause and resumes
@@ -352,9 +342,10 @@ class Voice:
 			return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
 
 	@commands.guild_only()
+	@commands.cooldown(1, 2)
 	@commands.command()
 	async def resume(self, ctx):
-		"""Resumes the bot if paused. Also will play the next thing in the queue if the bot is stuck."""
+		"""Resumes the bot if paused.."""
 		if ctx.voice_client.is_paused():
 			ctx.voice_client.resume()
 			return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
