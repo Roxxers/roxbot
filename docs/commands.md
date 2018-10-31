@@ -346,18 +346,26 @@ Example:
 Edits settings for the welcome messages
 
 Command Structure:
-    `;greets option [changes: optional]`
+
+`;greets option [changes: optional]`
 
 Options:
-    enable/disable: Enable/disables greet messages.
-    channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
-    message: Specifies a custom message for the greet messages.
+
+`enable/disable`: Enable/disables greet messages.
+
+`channel`: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+
+`message`: Specifies a custom message for the greet messages.
 
 Example:
-    Enable greet messages, set the channel to the current one, and set a custom message to be appended.
-    `;greets enable`
-    `;greets message "Be sure to read the rules and say hi! :wave:"`
-    `;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
+
+Enable greet messages, set the channel to the current one, and set a custom message to be appended.
+
+```py
+;greets enable
+;greets message "Be sure to read the rules and say hi! :wave:"
+;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
+```
 
 
 ---

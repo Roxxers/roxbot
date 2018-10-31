@@ -45,20 +45,20 @@ nav:
 
 # Customisation
 theme:
-  name: 'material'
+  name: 'readthedocs'
   language: en
-  palette:
-    primary: 'deep purple'
-    accent: 'deep purple'
+#  palette:
+#    primary: 'deep purple'
+#    accent: 'deep purple'
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
-  logo:
-    icon: "\uE80C"
-  feature:
-    tabs: true
-  static_templates:
-    - 404.html
+#  logo:
+#    icon: "\uE80C"
+#  feature:
+#    tabs: true
+#  static_templates:
+#    - 404.html
 
 extra:
   social:
@@ -67,8 +67,7 @@ extra:
 
 markdown_extensions:
   - admonition
-  - codehilite:
-      linenums: true
+  - codehilite
   - toc:
       permalink: true
   - pymdownx.arithmatex
