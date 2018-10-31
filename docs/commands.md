@@ -43,10 +43,13 @@ These are the base commands for Roxbot that are a part of the core bot. All of t
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
+#### ;help
+
+
 #### ;printsettings
 
 !!! warning
-    Command requires the user has the `manage_guild` permission.
+    Command requires the user to have the `manage_guild` permission.
 
 !!! warning
     This command cannot be used in private messages.
@@ -67,35 +70,35 @@ The Admin cog adds admin commands to Roxbot which should make moderating a Disco
 #### ;ban
 
 !!! warning
-    Command requires the user **and** Roxbot have the `ban_users` permission.
+    Command requires the user **and** Roxbot to have the `ban_users` permission.
 
 #### ;kick
 
 !!! warning
-    Command requires the user **and** Roxbot have the `kick_users` permission.
+    Command requires the user **and** Roxbot to have the `kick_users` permission.
 
 
 #### ;purge
 
 !!! warning
-    Command requires the user **and** Roxbot have the `manage_messages` permission.
+    Command requires the user **and** Roxbot to have the `manage_messages` permission.
 
 
 #### ;slowmode
 
 !!! warning
-    Command requires the user **and** Roxbot have the `manage_channels` permission.
+    Command requires the user **and** Roxbot to have the `manage_channels` permission.
 
 #### ;unban
 
 !!! warning
-    Command requires the user **and** Roxbot have the `ban_users` permission.
+    Command requires the user **and** Roxbot to have the `ban_users` permission.
 
 
 #### ;warn
 
 !!! warning
-    Group requires the user has the `kick_users` permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small>
+    Group requires the user to have the `kick_users` permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small>
 
 __;warn add__
 
@@ -121,19 +124,19 @@ __;warn set_limit__
 __;custom add__
 
 !!! warning
-    Command requires the user has the `manage_messages` permission.
+    Command requires the user to have the `manage_messages` permission.
 
 __;custom edit__
 
 !!! warning
-    Command requires the user has the `manage_messages` permission.
+    Command requires the user to have the `manage_messages` permission.
 
 __;custom list__
 
 __;custom remove__
 
 !!! warning
-    Command requires the user has the `manage_messages` permission.
+    Command requires the user to have the `manage_messages` permission.
 
 
 ---
@@ -195,30 +198,35 @@ Credit: TBTerra#5677
 #### ;spank
 
 !!! warning
-    This command will only work in channels marked NSFW 
+    This command will only work in channels marked NSFW or DMs.
 
 #### ;suck
 
 !!! warning
-    This command will only work in channels marked NSFW 
+    This command will only work in channels marked NSFW or DMs.
 
 #### ;waifurate
 
 #### ;xkcd
 
-Grabs the image & metadata of the given xkcd comic
+Grabs the image & metadata of the given xkcd comic. The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
+
+Command Structure:
+    `;xkcd [query: optional]`
 
 Example:
 
-    {command_prefix}xkcd 666
-    {command_prefix}xkcd Silent Hammer
-    {command_prefix}xkcd latest
+    `;xkcd 666`
+    `;xkcd "Silent Hammer"`
+    `;xkcd latest`
 
 #### ;zalgo
 
 ---
 
-### Image Editor
+### ImageEditor
+
+The ImageEditor cog is a cog with multiple commands to manipulate images provided by the user.
 
 #### ;deepfry
 
@@ -310,17 +318,47 @@ __;pride transgender__
 
 ---
 
-### Join Leave
+### JoinLeave
+
+JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. 
+
+!!! warning
+    This whole cog cannot be used in private messages.
 
 #### ;goodbyes
 
-!!! warning
-    This command cannot be used in private messages.
+Edits settings for the goodbye messages.
+
+Command Structure:
+    `;goodbyes option [changes: optional]`
+
+Options:
+	enable/disable: Enable/disables goodbye messages.
+	channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+
+Example:
+	Enable goodbye messages, set the channel one called `#logs`
+	`;goodbyes enable`
+	`;goodbyes channel #logs` 
 
 #### ;greets
 
-!!! warning
-    This command cannot be used in private messages.
+Edits settings for the welcome messages
+
+Command Structure:
+    `;greets option [changes: optional]`
+
+Options:
+    enable/disable: Enable/disables greet messages.
+    channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+    message: Specifies a custom message for the greet messages.
+
+Example:
+    Enable greet messages, set the channel to the current one, and set a custom message to be appended.
+    `;greets enable`
+    `;greets message "Be sure to read the rules and say hi! :wave:"`
+    `;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
+
 
 ---
 
@@ -352,6 +390,8 @@ __;pride transgender__
 ---
 
 ### Reddit
+
+The Reddit cog is a cog that allows users to get images and videos from their favourite subreddits.
 
 #### ;subreddit
 
@@ -428,26 +468,67 @@ Subreddits: `"gaysoundsshitposts", "traaaaaaannnnnnnnnns"`
 
 ---
 
-### Self Assign
+### SelfAssign
+
+The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'.
 
 !!! warning
     This whole cog cannot be used in private messages.
 
 #### ;iam
 
+Self-assign yourself a role. Can only be done one role at a time.
+
+Command Structure:
+	`;iam role`
+
+Example:
+	`;iam OverwatchPing`
+
 
 #### ;iamn
 
+Remove a self-assigned role. Can only be done one role at a time.
+
+Command Structure:
+	`;iamn role`
+
+Example:
+	`;iamn OverwatchPing`
 
 
 #### ;listroles
+
+List's all roles that can be self-assigned on this server.
+
+Command Structure:
+	`;listroles`
 
 
 ---
 
 #### ;selfassign
 
+!!! warning
+    Command requires the user to have the `manage_roles` permission.
 
+Edits settings for self assign cog.
+
+Command Structure:
+    `;sa option [role: optional]`
+
+Aliases:
+    `sa`
+
+Options:
+    enable/disable: Enable/disables the cog.
+    add/remove: adds or removes a role that can be self assigned in the server.
+
+Example:
+    Turn on self assigned roles and add a role called "ROLE"
+
+    `;sa enable`
+    `;sa add ROLE`
 
 ---
 

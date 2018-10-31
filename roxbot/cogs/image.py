@@ -133,6 +133,8 @@ class PrideFlags:
 
 
 class ImageEditor:
+	"""The ImageEditor cog is a cog with multiple commands to manipulate images provided by the user."""
+
 	def __init__(self, bot_client):
 		self.bot = bot_client
 

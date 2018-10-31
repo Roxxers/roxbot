@@ -32,6 +32,7 @@ from roxbot import guild_settings
 
 
 class JoinLeave():
+	"""JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. """
 	def __init__(self, Bot):
 		self.bot = Bot
 		self.settings = {
@@ -102,9 +103,15 @@ class JoinLeave():
 		"""Edits settings for the Welcome Messages
 
 		Options:
-			enable/disable: Enable/disables parts of the cog. Needs to specify which part.
-			channel: Sets the channels for either option. Must be a ID or mention.
-			message: specifies a custom message for the greet messages.
+			enable/disable: Enable/disables greet messages.
+			channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+			message: Specifies a custom message for the greet messages.
+
+		Example:
+			Enable greet messages, set the channel to the current one, and set a custom message to be appended.
+			`;greets enable`
+			`;greets message "Be sure to read the rules and say hi! :wave:"`
+			`;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
 		"""
 		setting = setting.lower()
 		settings = guild_settings.get(ctx.guild)
@@ -130,12 +137,16 @@ class JoinLeave():
 	@commands.has_permissions(manage_messages=True)
 	@commands.command()
 	async def goodbyes(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):
-		"""Edits settings for the Welcome Messages
+		"""Edits settings for the goodbye messages.
 
 		Options:
-			enable/disable: Enable/disables parts of the cog. Needs to specify which part.
-			channel: Sets the channels for either option. Must be a ID or mention.
-			message: specifies a custom message for the greet messages.
+			enable/disable: Enable/disables goodbye messages.
+			channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+
+		Example:
+			Enable goodbye messages, set the channel one called `#logs`
+			`;goodbyes enable`
+			`;goodbyes channel #logs`
 		"""
 		setting = setting.lower()
 		settings = guild_settings.get(ctx.guild)

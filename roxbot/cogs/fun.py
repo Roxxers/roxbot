@@ -374,7 +374,7 @@ class Fun:
 	@commands.bot_has_permissions(add_reactions=True)
 	async def xkcd(self, ctx, *, query=None):
 		"""
-		Grabs the image & metadata of the given xkcd comic
+		Grabs the image & metadata of the given xkcd comic. The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
 		Example:
 		{command_prefix}xkcd 666
 		{command_prefix}xkcd Silent Hammer

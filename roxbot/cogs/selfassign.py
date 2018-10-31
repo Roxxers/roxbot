@@ -30,6 +30,7 @@ from roxbot import guild_settings as gs
 
 
 class SelfAssign():
+	"""The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'."""
 	def __init__(self, Bot):
 		self.bot = Bot
 		self.settings = {
@@ -58,6 +59,10 @@ class SelfAssign():
 		Options:
 			enable/disable: Enable/disables the cog.
 			add/remove: adds or removes a role that can be self assigned in the server.
+		Example:
+			Turn on self assigned roles and add a role called "ROLE"
+			`;sa enable`
+			`;sa add ROLE`
 		"""
 		settings = roxbot.guild_settings.get(ctx.guild)
 		self_assign = settings["self_assign"]
@@ -119,7 +124,7 @@ class SelfAssign():
 	@commands.command(pass_context=True)
 	async def iam(self, ctx, *, role: discord.Role):
 		"""
-		Self-assign yourself a role. Only one role at a time. # TODO: Experiment with special converters here.
+		Self-assign yourself a role. Can only be done one role at a time.
 		Usage:
 			{command_prefix}iam [role]
 		Example:
@@ -146,7 +151,7 @@ class SelfAssign():
 	@commands.command(pass_context=True)
 	async def iamn(self, ctx, *, role: discord.Role):
 		"""
-		Remove a self-assigned role
+		Remove a self-assigned role. Can only be done one role at a time.
 		Usage:
 			{command_prefix}iamn [role]
 		Example:

@@ -169,6 +169,7 @@ class Scrapper:
 
 
 class Reddit:
+	"""The Reddit cog is a cog that allows users to get images and videos from their favourite subreddits."""
 
 	SUB_NOT_FOUND = "Error ;-; That subreddit probably doesn't exist. Please check your spelling"
 	NO_IMAGES = "I couldn't find any images/videos from that subreddit."
