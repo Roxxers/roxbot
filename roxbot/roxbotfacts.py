@@ -74,6 +74,7 @@ facts = [
 	["""Roxbot hates printing settings, especially in large, complex servers. “Ask me all these most intimate details will you? Hmph.”""", "summer"],
 	["Roxbot is not bothered by not requiring sleep. She loves spending time with all her friends in discord, and wants to do so as often as possible.", "summer"],
 	["""Roxbot’s favorite animals are dogs. “Dog girls are the best form of girls with animal traits, of course!”""", "summer"],
+	["Roxbot merely tolorates pineapple on pizza; though she personally doesn't like it.", "roxie"],
 
 ]
 
