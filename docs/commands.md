@@ -107,6 +107,8 @@ __;warn remove__
 
 __;warn set_limit__
 
+---
+
 ### Custom Commands
 
 #### ;custom
@@ -133,6 +135,8 @@ __;custom remove__
 !!! warning
     Command requires the user has the `manage_messages` permission.
 
+
+---
 
 ### Fun
 
@@ -212,19 +216,17 @@ Example:
 
 #### ;zalgo
 
+---
+
 ### Image Editor
 
 #### ;deepfry
 
 Deepfrys the given image
 
-**Command structure**
+Command structure: `;deepfry image`
 
-`;deepfry image`
-
-**Aliases**
-
-`df`
+Aliases: `df`
 
 **Args**
 
@@ -306,6 +308,8 @@ __;pride transgender__
 
 `trans`
 
+---
+
 ### Join Leave
 
 #### ;goodbyes
@@ -317,6 +321,8 @@ __;pride transgender__
 
 !!! warning
     This command cannot be used in private messages.
+
+---
 
 ### NSFW
 
@@ -343,19 +349,84 @@ __;pride transgender__
     This command cannot be used in private messages.
 
 
+---
+
 ### Reddit
 
 #### ;subreddit
 
+Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.
+
+**Command Structure**
+`;subreddit name_of_subreddit`
+
+**Example**
+`;subreddit pics`
+
+---
+
+!!! info
+    The following commands are alias-like commands that function like `;subreddit`, randomly selecting a subreddit in a collection of themed subreddits to get a post from.
+
 #### ;aww
+
+Gives you cute pics from reddit
+
+Subreddits: `"aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorableart"`
+
+**Command Structure**
+
+`;aww`
 
 #### ;feedme
 
+Feeds you with food porn.
+
+Subreddits: `"foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "pizza", "grilledcheese", "PutAnEggOnIt", "sushi"`
+
+**Command Structure**
+
+`;feedme`
+
 #### ;feedmevegan
+
+Feeds you with vegan food porn.
+
+Subreddits: `"veganrecipes", "vegangifrecipes", "veganfoodporn"`
+
+**Command Structure**
+
+`;feedmevegan`
 
 #### ;me_irl
 
+The full (mostly) me_irl network of subs.
+
+Subreddits: `"me_irl", "woof_irl", "meow_irl", "metal_me_irl"`
+
+**Command Structure**
+
+`;me_irl`
+
+**Aliases**
+
+`meirl`
+
 #### ;traa
+
+Gives you the best trans memes for daysssss
+
+Subreddits: `"gaysoundsshitposts", "traaaaaaannnnnnnnnns"`
+
+**Command Structure**
+
+`;traa`
+
+**Aliases**
+
+`gssp`, `gss`, `trans_irl`
+
+---
 
 ### Self Assign
 
@@ -378,6 +449,8 @@ __;pride transgender__
 
 
 
+---
+
 ### Trivia
 
 #### ;trivia
@@ -397,6 +470,8 @@ __;trivia leave__
 __;trivia start__
 
 __;trivia kick__
+
+---
 
 ### Util
 
@@ -420,6 +495,8 @@ __;trivia kick__
 
 !!! warning
     This command cannot be used in private messages.
+
+---
 
 ### Voice
 
