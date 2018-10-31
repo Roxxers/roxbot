@@ -1867,6 +1867,7 @@
 <p><strong>;warn prune</strong></p>
 <p><strong>;warn remove</strong></p>
 <p><strong>;warn set_limit</strong></p>
+<hr />
 <h3 id="custom-commands">Custom Commands<a class="headerlink" href="#custom-commands" title="Permanent link">&para;</a></h3>
 <h4 id="custom">;custom<a class="headerlink" href="#custom" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
@@ -1890,6 +1891,7 @@
 <p class="admonition-title">Warning</p>
 <p>Command requires the user has the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
+<hr />
 <h3 id="fun">Fun<a class="headerlink" href="#fun" title="Permanent link">&para;</a></h3>
 <h4 id="aesthetics">;aesthetics<a class="headerlink" href="#aesthetics" title="Permanent link">&para;</a></h4>
 <h4 id="coinflip">;coinflip<a class="headerlink" href="#coinflip" title="Permanent link">&para;</a></h4>
@@ -1949,13 +1951,12 @@
 </td></tr></table>
 
 <h4 id="zalgo">;zalgo<a class="headerlink" href="#zalgo" title="Permanent link">&para;</a></h4>
+<hr />
 <h3 id="image-editor">Image Editor<a class="headerlink" href="#image-editor" title="Permanent link">&para;</a></h3>
 <h4 id="deepfry">;deepfry<a class="headerlink" href="#deepfry" title="Permanent link">&para;</a></h4>
 <p>Deepfrys the given image</p>
-<p><strong>Command structure</strong></p>
-<p><code class="codehilite">;deepfry image</code></p>
-<p><strong>Aliases</strong></p>
-<p><code class="codehilite">df</code></p>
+<p>Command structure: <code class="codehilite">;deepfry image</code></p>
+<p>Aliases: <code class="codehilite">df</code></p>
 <p><strong>Args</strong></p>
 <p>image: Optional</p>
 <ol>
@@ -2002,6 +2003,7 @@
 <p><strong>;pride transgender</strong></p>
 <p><strong>Aliases</strong></p>
 <p><code class="codehilite">trans</code></p>
+<hr />
 <h3 id="join-leave">Join Leave<a class="headerlink" href="#join-leave" title="Permanent link">&para;</a></h3>
 <h4 id="goodbyes">;goodbyes<a class="headerlink" href="#goodbyes" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
@@ -2013,6 +2015,7 @@
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
+<hr />
 <h3 id="nsfw">NSFW<a class="headerlink" href="#nsfw" title="Permanent link">&para;</a></h3>
 <h4 id="e621">;e621<a class="headerlink" href="#e621" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
@@ -2035,13 +2038,49 @@
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
+<hr />
 <h3 id="reddit">Reddit<a class="headerlink" href="#reddit" title="Permanent link">&para;</a></h3>
 <h4 id="subreddit">;subreddit<a class="headerlink" href="#subreddit" title="Permanent link">&para;</a></h4>
+<p>Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.</p>
+<p><strong>Command Structure</strong>
+<code class="codehilite">;subreddit name_of_subreddit</code></p>
+<p><strong>Example</strong>
+<code class="codehilite">;subreddit pics</code></p>
+<hr />
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The following commands are alias-like commands that function like <code class="codehilite">;subreddit</code>, randomly selecting a subreddit in a collection of themed subreddits to get a post from.</p>
+</div>
 <h4 id="aww">;aww<a class="headerlink" href="#aww" title="Permanent link">&para;</a></h4>
+<p>Gives you cute pics from reddit</p>
+<p>Subreddits: <code class="codehilite">&quot;aww&quot;, &quot;redpandas&quot;, &quot;lazycats&quot;, &quot;rarepuppers&quot;, &quot;awwgifs&quot;, &quot;adorableart&quot;</code></p>
+<p><strong>Command Structure</strong></p>
+<p><code class="codehilite">;aww</code></p>
 <h4 id="feedme">;feedme<a class="headerlink" href="#feedme" title="Permanent link">&para;</a></h4>
+<p>Feeds you with food porn.</p>
+<p>Subreddits: <code class="codehilite">&quot;foodporn&quot;, &quot;food&quot;, &quot;DessertPorn&quot;, &quot;tonightsdinner&quot;, &quot;eatsandwiches&quot;, &quot;steak&quot;, &quot;burgers&quot;, &quot;pizza&quot;, &quot;grilledcheese&quot;, &quot;PutAnEggOnIt&quot;, &quot;sushi&quot;</code></p>
+<p><strong>Command Structure</strong></p>
+<p><code class="codehilite">;feedme</code></p>
 <h4 id="feedmevegan">;feedmevegan<a class="headerlink" href="#feedmevegan" title="Permanent link">&para;</a></h4>
+<p>Feeds you with vegan food porn.</p>
+<p>Subreddits: <code class="codehilite">&quot;veganrecipes&quot;, &quot;vegangifrecipes&quot;, &quot;veganfoodporn&quot;</code></p>
+<p><strong>Command Structure</strong></p>
+<p><code class="codehilite">;feedmevegan</code></p>
 <h4 id="me_irl">;me_irl<a class="headerlink" href="#me_irl" title="Permanent link">&para;</a></h4>
+<p>The full (mostly) me_irl network of subs.</p>
+<p>Subreddits: <code class="codehilite">&quot;me_irl&quot;, &quot;woof_irl&quot;, &quot;meow_irl&quot;, &quot;metal_me_irl&quot;</code></p>
+<p><strong>Command Structure</strong></p>
+<p><code class="codehilite">;me_irl</code></p>
+<p><strong>Aliases</strong></p>
+<p><code class="codehilite">meirl</code></p>
 <h4 id="traa">;traa<a class="headerlink" href="#traa" title="Permanent link">&para;</a></h4>
+<p>Gives you the best trans memes for daysssss</p>
+<p>Subreddits: <code class="codehilite">&quot;gaysoundsshitposts&quot;, &quot;traaaaaaannnnnnnnnns&quot;</code></p>
+<p><strong>Command Structure</strong></p>
+<p><code class="codehilite">;traa</code></p>
+<p><strong>Aliases</strong></p>
+<p><code class="codehilite">gssp</code>, <code class="codehilite">gss</code>, <code class="codehilite">trans_irl</code></p>
+<hr />
 <h3 id="self-assign">Self Assign<a class="headerlink" href="#self-assign" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
@@ -2052,6 +2091,7 @@
 <h4 id="listroles">;listroles<a class="headerlink" href="#listroles" title="Permanent link">&para;</a></h4>
 <hr />
 <h4 id="selfassign">;selfassign<a class="headerlink" href="#selfassign" title="Permanent link">&para;</a></h4>
+<hr />
 <h3 id="trivia">Trivia<a class="headerlink" href="#trivia" title="Permanent link">&para;</a></h3>
 <h4 id="trivia_1">;trivia<a class="headerlink" href="#trivia_1" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
@@ -2064,6 +2104,7 @@
 <p><strong>;trivia leave</strong></p>
 <p><strong>;trivia start</strong></p>
 <p><strong>;trivia kick</strong></p>
+<hr />
 <h3 id="util">Util<a class="headerlink" href="#util" title="Permanent link">&para;</a></h3>
 <h4 id="avatar">;avatar<a class="headerlink" href="#avatar" title="Permanent link">&para;</a></h4>
 <h4 id="echo">;echo<a class="headerlink" href="#echo" title="Permanent link">&para;</a></h4>
@@ -2080,6 +2121,7 @@
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
+<hr />
 <h3 id="voice">Voice<a class="headerlink" href="#voice" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
