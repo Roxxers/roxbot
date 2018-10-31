@@ -273,7 +273,8 @@ class Reddit:
 	@commands.command(aliases=["gssp", "gss", "trans_irl"])
 	async def traa(self, ctx):
 		"""
-		Gives you the trans memes for daysssss
+		Gives you the best trans memes for daysssss
+		Subreddits: "gaysoundsshitposts", "traaaaaaannnnnnnnnns"
 		"""
 		subreddits = ("gaysoundsshitposts", "traaaaaaannnnnnnnnns")
 		subreddit = random.choice(subreddits)
@@ -284,8 +285,6 @@ class Reddit:
 		"""
 		The full (mostly) me_irl network of subs.
 		Subreddits: "me_irl", "woof_irl", "meow_irl", "metal_me_irl"
-		:param ctx:
-		:return:
 		"""
 		subreddits = ("me_irl", "woof_irl", "meow_irl", "metal_me_irl")
 		subreddit = random.choice(subreddits)
