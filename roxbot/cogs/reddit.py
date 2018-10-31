@@ -279,7 +279,7 @@ class Reddit:
 		subreddit = random.choice(subreddits)
 		return await ctx.invoke(self.subreddit, subreddit=subreddit)
 
-	@commands.command()
+	@commands.command(aliases=["meirl"])
 	async def me_irl(self, ctx):
 		"""
 		The full (mostly) me_irl network of subs.
