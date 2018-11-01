@@ -61,41 +61,41 @@ These are the base commands for Roxbot that are a part of the core bot. All of t
 
 ## Cog Commands
 
-### Admin
+## Admin
 The Admin cog adds admin commands to Roxbot which should make moderating a Discord server easier.
 
 !!! warning
     This whole cog cannot be used in private messages.
 
-#### ;ban
+### ;ban
 
 !!! warning
     Command requires the user **and** Roxbot to have the `ban_users` permission.
 
-#### ;kick
+### ;kick
 
 !!! warning
     Command requires the user **and** Roxbot to have the `kick_users` permission.
 
 
-#### ;purge
+### ;purge
 
 !!! warning
     Command requires the user **and** Roxbot to have the `manage_messages` permission.
 
 
-#### ;slowmode
+### ;slowmode
 
 !!! warning
     Command requires the user **and** Roxbot to have the `manage_channels` permission.
 
-#### ;unban
+### ;unban
 
 !!! warning
     Command requires the user **and** Roxbot to have the `ban_users` permission.
 
 
-#### ;warn
+### ;warn
 
 !!! warning
     Group requires the user to have the `kick_users` permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small>
@@ -112,28 +112,26 @@ __;warn set_limit__
 
 ---
 
-### Custom Commands
+## Custom Commands
 
-#### ;custom
+### ;custom
 
 !!! warning
     This command group cannot be used in private messages.
 
-##### Subcommands
-
-__;custom add__
+#### ;custom add
 
 !!! warning
     Command requires the user to have the `manage_messages` permission.
 
-__;custom edit__
+#### ;custom edit
 
 !!! warning
     Command requires the user to have the `manage_messages` permission.
 
-__;custom list__
+#### ;custom list
 
-__;custom remove__
+#### ;custom remove
 
 !!! warning
     Command requires the user to have the `manage_messages` permission.
@@ -141,23 +139,23 @@ __;custom remove__
 
 ---
 
-### Fun
+## Fun
 
-#### ;aesthetics
+### ;aesthetics
 
-#### ;coinflip
+### ;coinflip
 
-#### ;frogtips
+### ;frogtips
 
-#### ;hug
+### ;hug
 
-#### ;numberfact
+### ;numberfact
 
-#### ;onthisday
+### ;onthisday
 
-#### ;pet
+### ;pet
 
-#### ;roll
+### ;roll
 
 Rolls a die using dice expression format. Spaces in the expression are ignored.
 
@@ -193,21 +191,21 @@ Sub expressions can be of many types:
 
 Credit: TBTerra#5677
 
-#### ;roxbotfact
+### ;roxbotfact
 
-#### ;spank
-
-!!! warning
-    This command will only work in channels marked NSFW or DMs.
-
-#### ;suck
+### ;spank
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-#### ;waifurate
+### ;suck
 
-#### ;xkcd
+!!! warning
+    This command will only work in channels marked NSFW or DMs.
+
+### ;waifurate
+
+### ;xkcd
 
 Grabs the image & metadata of the given xkcd comic. The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
 
@@ -220,15 +218,15 @@ Example:
     `;xkcd "Silent Hammer"`
     `;xkcd latest`
 
-#### ;zalgo
+### ;zalgo
 
 ---
 
-### ImageEditor
+## ImageEditor
 
 The ImageEditor cog is a cog with multiple commands to manipulate images provided by the user.
 
-#### ;deepfry
+### ;deepfry
 
 Deepfrys the given image
 
@@ -246,7 +244,7 @@ image: Optional
 4. Provide an image via upload, that image will be deepfried
 
 
-#### ;pride
+### ;pride
 
 `;pride` is a command group for multiple pride flag filters. Avalible pride filters are: LGBT, Bisexual, Asexual, Pansexual, Transgender, Non Binary, Agender, Gender Queer, Gender Fluid.
 
@@ -269,48 +267,46 @@ image: Optional
 !!! note
     If you want there to be more pride flag filters or feel there are some missing, don't be afraid to [submit an issue to the Github repo!](https://github.com/Roxxers/roxbot/issues/new)
 
-##### Subcommands
+Subcommands
 
-__;pride agender__
+#### ;pride agender
 
 
-__;pride asexual__
+#### ;pride asexual
 
 **Aliases**
 
 `ace`
 
-__;pride bisexual__
-
+#### ;pride bisexual
 
 **Aliases**
 
 `bi`
 
-__;pride genderfluid__
+#### ;pride genderfluid
 
 **Aliases**
 
 `gf`
 
-__;pride genderqueer__
-
+#### ;pride genderqueer
 
 **Aliases**
 
 `gq`
 
-__;pride lgbt__
+#### ;pride lgbt
 
 
-__;pride nonbinary__
+#### ;pride nonbinary
 
 
 **Aliases**
 
 `nb`, `enby`
 
-__;pride transgender__
+#### ;pride transgender
 
 **Aliases**
 
@@ -318,78 +314,85 @@ __;pride transgender__
 
 ---
 
-### JoinLeave
+## JoinLeave
 
 JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. 
 
 !!! warning
     This whole cog cannot be used in private messages.
 
-#### ;goodbyes
+### ;goodbyes
 
 Edits settings for the goodbye messages.
 
-Command Structure:
-    `;goodbyes option [changes: optional]`
+**Command Structure**
 
-Options:
-	enable/disable: Enable/disables goodbye messages.
-	channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+`;goodbyes option [changes: optional]`
 
-Example:
-	Enable goodbye messages, set the channel one called `#logs`
-	`;goodbyes enable`
-	`;goodbyes channel #logs` 
+**Options**
 
-#### ;greets
+```py
+'enable/disable' # Enable/disables goodbye messages.
+'channel' # Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+```
+
+**Example**
+
+Enable goodbye messages, set the channel one called `#logs` using a channel mention.
+```
+;goodbyes enable
+;goodbyes channel #logs
+```
+
+### ;greets
 
 Edits settings for the welcome messages
 
-Command Structure:
+**Command Structure**
 
 `;greets option [changes: optional]`
 
-Options:
+**Options**
 
-`enable/disable`: Enable/disables greet messages.
+```py
+'enable/disable' # Enable/disables greet messages.
+'channel' # Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+'message' # Specifies a custom message for the greet messages.
+```
 
-`channel`: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
-
-`message`: Specifies a custom message for the greet messages.
-
-Example:
+**Example**
 
 Enable greet messages, set the channel to the current one, and set a custom message to be appended.
 
 ```py
 ;greets enable
 ;greets message "Be sure to read the rules and say hi! :wave:"
-;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
+;greets channel # if no channel is provided, it will default to the channel the command is executed in.
 ```
 
 
 ---
 
-### NSFW
+## NSFW
 
-#### ;e621
-
-!!! warning
-    This command will only work in channels marked NSFW or DMs.
-
-#### ;gelbooru
+### ;e621
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-#### ;rule34
+### ;gelbooru
+
+!!! warning
+    This command will only work in channels marked NSFW or DMs.
+
+### ;rule34
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
 ---
 
-#### ;nsfw
+### ;nsfw
 
 !!! warning
     This command cannot be used in private messages.
@@ -397,11 +400,11 @@ Enable greet messages, set the channel to the current one, and set a custom mess
 
 ---
 
-### Reddit
+## Reddit
 
 The Reddit cog is a cog that allows users to get images and videos from their favourite subreddits.
 
-#### ;subreddit
+### ;subreddit
 
 Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.
 
@@ -416,7 +419,7 @@ Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inpu
 !!! info
     The following commands are alias-like commands that function like `;subreddit`, randomly selecting a subreddit in a collection of themed subreddits to get a post from.
 
-#### ;aww
+### ;aww
 
 Gives you cute pics from reddit
 
@@ -426,7 +429,7 @@ Subreddits: `"aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorable
 
 `;aww`
 
-#### ;feedme
+### ;feedme
 
 Feeds you with food porn.
 
@@ -436,7 +439,7 @@ Subreddits: `"foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches
 
 `;feedme`
 
-#### ;feedmevegan
+### ;feedmevegan
 
 Feeds you with vegan food porn.
 
@@ -446,7 +449,7 @@ Subreddits: `"veganrecipes", "vegangifrecipes", "veganfoodporn"`
 
 `;feedmevegan`
 
-#### ;me_irl
+### ;me_irl
 
 The full (mostly) me_irl network of subs.
 
@@ -460,7 +463,7 @@ Subreddits: `"me_irl", "woof_irl", "meow_irl", "metal_me_irl"`
 
 `meirl`
 
-#### ;traa
+### ;traa
 
 Gives you the best trans memes for daysssss
 
@@ -476,14 +479,14 @@ Subreddits: `"gaysoundsshitposts", "traaaaaaannnnnnnnnns"`
 
 ---
 
-### SelfAssign
+## SelfAssign
 
 The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'.
 
 !!! warning
     This whole cog cannot be used in private messages.
 
-#### ;iam
+### ;iam
 
 Self-assign yourself a role. Can only be done one role at a time.
 
@@ -494,7 +497,7 @@ Example:
 	`;iam OverwatchPing`
 
 
-#### ;iamn
+### ;iamn
 
 Remove a self-assigned role. Can only be done one role at a time.
 
@@ -505,7 +508,7 @@ Example:
 	`;iamn OverwatchPing`
 
 
-#### ;listroles
+### ;listroles
 
 List's all roles that can be self-assigned on this server.
 
@@ -515,7 +518,7 @@ Command Structure:
 
 ---
 
-#### ;selfassign
+### ;selfassign
 
 !!! warning
     Command requires the user to have the `manage_roles` permission.
@@ -540,78 +543,76 @@ Example:
 
 ---
 
-### Trivia
+## Trivia
 
-#### ;trivia
+### ;trivia
 
 !!! warning
     This command group cannot be used in private messages.
 
 
-##### Subcommands
+#### ;trivia about
 
-__;trivia about__
+#### ;trivia join
 
-__;trivia join__
+#### ;trivia leave
 
-__;trivia leave__
+#### ;trivia start
 
-__;trivia start__
-
-__;trivia kick__
+#### ;trivia kick
 
 ---
 
-### Util
+## Util
 
-#### ;avatar
+### ;avatar
 
-#### ;echo
+### ;echo
 
-#### ;emote
+### ;emote
 
-#### ;guild
+### ;guild
 
 !!! warning
     This command cannot be used in private messages.
 
 
-#### ;info
+### ;info
 
-#### ;invite
+### ;invite
 
-#### ;role
+### ;role
 
 !!! warning
     This command cannot be used in private messages.
 
 ---
 
-### Voice
+## Voice
 
 !!! warning
     This whole cog cannot be used in private messages.
 
-#### ;join
+### ;join
 
-#### ;nowplaying
+### ;nowplaying
 
-#### ;pause
+### ;pause
 
-#### ;play
+### ;play
 
-#### ;queue
+### ;queue
 
-#### ;remove
+### ;remove
 
-#### ;resume
+### ;resume
 
-#### ;skip
+### ;skip
 
-#### ;stop
+### ;stop
 
-#### ;stream
+### ;stream
 
-#### ;volume
+### ;volume
 
-#### ;voice
+### ;voice

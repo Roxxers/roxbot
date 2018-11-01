@@ -34,31 +34,33 @@ copyright: 'Copyright &copy; 2017 - 2018 Roxanne Gibson'
 
 # Layout
 nav:
-    - 'Introduction': 'index.md'
-    - 'Quick Start': 'quickstart.md'
-    - 'Configuring Roxbot': 'config.md'
-    - 'Command Documentation': 'commands.md'
-    - 'Creating Cogs For Roxbot': 'creating_cogs.md'
-    - 'Contributing': 'contributing.md'
-    - 'License': 'license.md'
+    - 'Command Docs': 'commands.md'
+    - User Guide:
+        - 'Quick Start': 'quickstart.md'
+        - 'Configuring Roxbot': 'config.md'
+        - 'Creating Cogs For Roxbot': 'creating_cogs.md'
+    - About:
+        - 'Contributing': 'contributing.md'
+        - 'License': 'license.md'
 
 
 # Customisation
-theme:
-  name: 'readthedocs'
+theme: 
+  name: material
   language: en
-#  palette:
-#    primary: 'deep purple'
-#    accent: 'deep purple'
+  navigation-depth: 5
+  palette:
+    primary: 'deep purple'
+    accent: 'deep purple'
   font:
     text: 'Roboto'
     code: 'Roboto Mono'
-#  logo:
-#    icon: "\uE80C"
-#  feature:
-#    tabs: true
-#  static_templates:
-#    - 404.html
+  logo:
+    icon: "\uE80C"
+  feature:
+    tabs: false
+  static_templates:
+    - 404.html
 
 extra:
   social:
