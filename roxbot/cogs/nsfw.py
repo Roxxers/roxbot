@@ -40,6 +40,7 @@ def tag_blacklist(guild):
 
 
 class NFSW():
+	"""The NSFW cog is a collection of commands that post images from popular NSFW sites. """
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.cache = {}

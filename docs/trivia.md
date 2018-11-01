@@ -22,7 +22,7 @@ Yes! You can change the length of the game by using the argument `-l or --length
 
 Yes! Trivia is best with friends. How else would friendships come to their untimely demise? You can only join a game during the 20 second waiting period after a game is started. Just type `;trivia join` and you're in! You can leave a game at anytime (even if its just you) by doing `;trivia leave`. If no players are in a game, the game will end and no one will win ;-;
 
-## What if I don't want anyone to join my solo game? Waiting is boring!**
+## What if I don't want anyone to join my solo game? Waiting is boring!
 
 No problem! Just put `-s or --solo` anywhere after `;trivia start`
 

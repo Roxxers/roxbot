@@ -159,6 +159,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 
 class Voice:
+	"""The Voice cog is a cog that adds and manages a fully-functional music bot for Roxbot."""
 	def __init__(self, bot):
 		# Auto Cleanup cache files on boot
 		self._clear_cache()

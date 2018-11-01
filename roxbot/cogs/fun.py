@@ -35,6 +35,7 @@ import roxbot
 
 
 class Fun:
+	"""The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.croak = {}
@@ -191,9 +192,10 @@ class Fun:
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
 		Spanks the mentioned user ;)
-		Usage:
-			{command_prefix}spank @roxbot#4170
-			{command_prefix}spank roxbot
+		Exmaples:
+			# Two ways to give Roxbot spanks.
+			;spank @Roxbot#4170
+			;spank Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to spank")
@@ -204,9 +206,11 @@ class Fun:
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
 		Sucks the mentioned user ;)
-		Usage:
-			{command_prefix}suck @roxbot#4170
-			{command_prefix}suck roxbot
+
+		Examples:
+			# Two ways to give Roxbot the succ.
+			;suck @Roxbot#4170
+			;suck Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to suck")
@@ -216,9 +220,11 @@ class Fun:
 	async def hug(self, ctx, *, user: discord.User = None):
 		"""
 		Hugs the mentioned user :3
-		Usage:
-			{command_prefix}hug @roxbot#4170
-			{command_prefix}hug Roxbott
+
+		Examples:
+			# Two ways to give Roxbot hugs.
+			;hug @Roxbot#4170
+			;hug Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to hug")
@@ -228,9 +234,11 @@ class Fun:
 	async def pet(self, ctx, *, user: discord.User = None):
 		"""
 		Gives headpats to the mentioned user :3
-		Usage:
-			{command_prefix}pet @roxbot#4170
-			{command_prefix}pet roxbot
+
+		Examples:
+			# Two ways to give Roxbot headpats.
+			;pet @Roxbot#4170
+			;pet Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to headpat")
@@ -239,10 +247,11 @@ class Fun:
 	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx, *waifu: commands.Greedy[discord.Member]):
 		"""
-		Rates the mentioned waifu(s). husbando/spousu-rate also work.
-		Usage:
-			{command_prefix}waifurate @user#9999
-		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
+		Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated.
+		Example:
+			;waifurate @user#9999
+
+		This command is dedicated to Hannah, who came up with the command. I hope she's out there getting her waifus rated in peace.
 		"""
 		if ctx.invoked_with in ["hr", "husbandorate"]:
 			waifu_text = "husbando"
@@ -289,16 +298,21 @@ class Fun:
 	@commands.command(aliases=["cf"])
 	async def coinflip(self, ctx):
 		"""
-		Flip a coin
+		Filps a magical digital coin!
 		"""
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
 	@commands.command(aliases=["ae", "aesthetic"])
-	async def aesthetics(self, ctx, *, convert):
-		"""Converts text to be more  a e s t h e t i c s"""
+	async def aesthetics(self, ctx, *, text):
+		"""Converts text to be more  a e s t h e t i c
+
+		Example:
+			# Convert "Hello World" to fixed-width text.
+			;ae Hello World
+		"""
 		wide_map = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))  # Create dict with fixed width equivalents for chars
 		wide_map[0x20] = 0x3000  # replace space with 'IDEOGRAPHIC SPACE'
-		converted = str(convert).translate(wide_map)
+		converted = str(text).translate(wide_map)
 		output = await ctx.send(converted)
 
 		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
@@ -330,7 +344,7 @@ class Fun:
 
 	@commands.command(aliases=["otd"])
 	async def onthisday(self, ctx):
-		"""Returns a fact that happened on this day."""
+		"""Returns a random fact of something that happened today!"""
 		base_url = "http://numbersapi.com/"
 		day = datetime.datetime.today().day
 		month = datetime.datetime.today().month
@@ -348,7 +362,12 @@ class Fun:
 
 	@commands.command(aliases=["nf"])
 	async def numberfact(self, ctx, number=-54):
-		"""Returns a fact for the positive integer given. A random number is chosen if none is given."""
+		"""Returns a fact for the positive integer given. A random number is chosen if none is given.
+
+		Example:
+			# Random fact for the number 35
+			;nf 35
+		"""
 		base_url = "http://numbersapi.com/"
 		if number < 0:
 			endpoint = "/random/?json"
@@ -442,10 +461,11 @@ class Fun:
 	@commands.command(aliases=["za"])
 	async def zalgo(self, ctx, *, text):
 		"""
-		Returns Z͇͇͋Á͇͇L͇͔͇G̛͇͇O͇͇͜
-		:param ctx:
-		:param text:
-		:return:
+		Sends text to the nether and returns it back to you ̭҉̭̭ͭi̭͎̭ṋ̭̀҈̭̭̋ ̭͉̭z̭̩̭a̭̭̽ḽ̦̭g̭̞̭o̭̤̭ ̭̭͑f̭̻̭o̭̭͢r̭̭̀m̭̭ͮ
+		
+		Example:
+			# Convert "Hello World" to zalgo.
+			;zalgo Hello World
 		"""
 		intensity = 10
 		zalgo_chars = [*[chr(i) for i in range(0x0300, 0x036F + 1)], *[u'\u0488', u'\u0489']]
@@ -474,6 +494,7 @@ class Fun:
 
 	@commands.command(aliases=["rf", "roxfacts", "roxfact"])
 	async def roxbotfact(self, ctx):
+		"""Returns a random fact about Roxbot! Roxbot has her own lore that you can discover through out these facts. Written especially for Roxbot."""
 		# Roxbot fact cache
 		if isinstance(ctx.channel, discord.DMChannel):
 			cache_id = ctx.author.id

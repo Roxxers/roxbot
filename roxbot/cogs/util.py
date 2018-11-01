@@ -33,7 +33,7 @@ import roxbot
 
 class Util():
 	"""
-	A cog that offers utility commands.
+	The Util cog is a cog filled with a number of utility commands to help more advanced users of Discord.
 	"""
 	def __init__(self, bot_client):
 		self.bot = bot_client

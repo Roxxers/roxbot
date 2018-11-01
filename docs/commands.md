@@ -12,6 +12,12 @@ Before reading this, it is highly recommened you read the [quick start](quicksta
 
 ## How to use the docs
 
+### What is an alias?
+
+An alias is just another way of executing the command. Usually to shorten the command to be easier to type. If `emoji` is an alias of `emote`, using either `emoji` or `emote` will execute `emote`.
+
+### What do I do when a command wants a channel, user, role, etc.?
+
 When the command wants a CHANNEL, USER, MEMBER, or ROLE. This means the ID, name, or mention of that part of Discord. Role, User, and Member mentions start with a '@' and Channel mentions start with a '#'. A Member is the same as a User except a Member is explicitly a User in a Guild.
 
 ## Core Commands
@@ -174,19 +180,123 @@ __;warn set_limit__
 
 ## Fun
 
+The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining.
+
 ### ;aesthetics
+
+Converts text to be more ａｅｓｔｈｅｔｉｃ <small>fix-width text</small>
+
+Command Structure:
+
+`;aesthetics text`
+
+Aliases:
+
+`ae`, `aesthetic`
+
+Example:
+
+```py
+# Convert "Hello World" to fixed-width text.
+;ae Hello World
+```
 
 ### ;coinflip
 
+Filps a magical digital coin!
+
+Command Structure:
+
+`;coinfilp`
+
+Aliases:
+
+`cf`
+
 ### ;frogtips
+
+RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG
+
+Command Structure:
+
+`;frogtips`
+
+Aliases:
+
+`ft`, `frog`
 
 ### ;hug
 
+Gives headpats to the mentioned user :3
+
+Command Structure:
+
+`;hug USER`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+Examples:
+```py
+# Two ways to give Roxbot hugs.
+;hug @Roxbot#4170
+;hug Roxbot
+```
+
 ### ;numberfact
+
+Returns a fact for the positive integer given. A random number is chosen if none is given.
+
+Command Structure:
+
+`;numberfact postive_integer`
+
+Aliases:
+
+`nf`
+
+Example:
+
+```py
+# Random fact for the number 35
+;nf 35
+```
 
 ### ;onthisday
 
+Returns a random fact of something that happened today!
+
+Command Structure:
+
+`;onthisday`
+
+Aliases:
+
+`otd`
+
 ### ;pet
+
+Gives headpats to the mentioned user :3
+
+Command Structure:
+
+`;pet USER`
+
+Aliases:
+
+`headpat`, `pat`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+Examples:
+```py
+# Two ways to give Roxbot headpats.
+;pet @Roxbot#4170
+;pet Roxbot
+```
 
 ### ;roll
 
@@ -226,17 +336,95 @@ Credit: TBTerra#5677
 
 ### ;roxbotfact
 
+Returns a random fact about Roxbot! Roxbot has her own lore that you can discover through out these facts. Written especially for Roxbot.
+
+Command Structure:
+
+`;roxbotfact`
+
+Aliases:
+
+`rf`, `roxfact`
+
 ### ;spank
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
+
+Spanks the mentioned user :wink:
+
+Command Structure:
+
+`;spank USER`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+Examples:
+```py
+# Two ways to give Roxbot spanks.
+;spank @Roxbot#4170
+;spank Roxbot
+```
 
 ### ;suck
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
+Sucks the mentioned user :wink:
+
+Command Structure:
+
+`;suck USER`
+
+Aliases:
+
+`succ`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+Examples:
+```py
+# Two ways to give Roxbot the succ.
+;suck @Roxbot#4170
+;suck Roxbot
+```
+
 ### ;waifurate
+
+Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated.
+
+Command Structure:
+
+`;waifurate`
+
+Aliases:
+
+Waifu Aliases: 
+
+`wf`, `wr`
+
+Husbando Aliases: 
+
+`husbandorate`, `hr`
+
+Spousu Aliases: 
+
+`spousurate`, `sr`
+
+Example:
+
+```py
+# Rate user#9999    
+;waifurate @user#9999
+```
+
+!!! quote ""
+    This command is dedicated to Hannah, who came up with the command. I hope she's out there getting her waifus rated in peace.
 
 ### ;xkcd
 
@@ -260,6 +448,23 @@ Example:
 ```
 
 ### ;zalgo
+
+Sends text to the nether and returns it back to you ̭҉̭̭ͭi̭͎̭ṋ̭̀҈̭̭̋ ̭͉̭z̭̩̭a̭̭̽ḽ̦̭g̭̞̭o̭̤̭ ̭̭͑f̭̻̭o̭̭͢r̭̭̀m̭̭ͮ
+
+Command Structure:
+
+`;zalgo text`
+
+Aliases:
+
+`za`
+
+Example:
+
+```py
+# Convert "Hello World" to zalgo.
+;zalgo Hello World
+```
 
 ---
 
@@ -414,6 +619,8 @@ Example:
 ---
 
 ## NSFW
+
+The NSFW cog is a collection of commands that post images from popular NSFW sites. 
 
 ### ;e621
 
@@ -777,7 +984,7 @@ Example:
 
 ## Util
 
-This cog is filled with a number of utility commands.
+The Util cog is a cog filled with a number of utility commands to help more advanced users of Discord.
 
 ### ;avatar
 
@@ -889,6 +1096,8 @@ Example:
 ---
 
 ## Voice
+
+The Voice cog is a cog that adds and manages a fully-functional music bot for Roxbot.
 
 !!! warning
     This whole cog cannot be used in private messages.
