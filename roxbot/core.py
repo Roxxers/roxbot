@@ -434,6 +434,19 @@ class Core(ErrorHandling, Logging):
 		await ctx.send(":wave:")
 		await self.bot.logout()
 
+	@commands.command()
+	async def invite(self, ctx):
+		"""Returns an invite link to invite the bot to your server."""
+		link = discord.utils.oauth_url(self.bot.user.id, discord.Permissions.all_channel())
+		return await ctx.send("Invite me to your server! <{}>".format(link))
+
+	@commands.command()
+	@commands.is_owner()
+	async def echo(self, ctx, channel: discord.TextChannel, *, message: str):
+		"""Repeats after you, Roxie."""
+		await channel.send(message)
+		return await ctx.send(":point_left:")
+
 
 def setup(bot_client):
 	bot_client.add_cog(Core(bot_client))

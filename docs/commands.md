@@ -10,6 +10,10 @@ date: 2018-10-27
 
 Before reading this, it is highly recommened you read the [quick start](quickstart.md) guide that will get you upto date with how Roxbot works and how to run her. This is handy if you expect to use commands that will edit Roxbot or Roxbot's guild settings.
 
+## How to use the docs
+
+When the command wants a CHANNEL, USER, MEMBER, or ROLE. This means the ID, name, or mention of that part of Discord. Role, User, and Member mentions start with a '@' and Channel mentions start with a '#'. A Member is the same as a User except a Member is explicitly a User in a Guild.
+
 ## Core Commands
 These are the base commands for Roxbot that are a part of the core bot. All of them deal with internal management and are, for the most part, unavalible to average users.
 
@@ -43,7 +47,36 @@ These are the base commands for Roxbot that are a part of the core bot. All of t
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
+
+### ;echo
+
+!!! warning
+    This command can only be exectuted by the owner of the Roxbot instance.
+
+Echos the given string to a given channel.
+
+Command Structure:
+
+`;echo channel message`
+
+Example:
+
+```py
+# Post the message "Hello World" to the channel #general
+;echo #general Hello World
+```
+
 #### ;help
+
+
+
+### ;invite
+
+Posts [this](https://discordapp.com/oauth2/authorize?client_id=259869304369971200&scope=bot&permissions=871890001) invite. This allows you to invite Roxbot to your own server.
+
+Command Structure:
+
+`;invite`
 
 
 #### ;printsettings
@@ -387,6 +420,8 @@ Example:
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
+Posts a random image from https://
+
 ### ;gelbooru
 
 !!! warning
@@ -664,6 +699,10 @@ Command Structure:
 
 `;trivia kick user`
 
+Options:
+
+- `user` - A name, ID, or mention of a user.
+
 Example:
 
 ```py
@@ -675,26 +714,114 @@ Example:
 
 ## Util
 
+This cog is filled with a number of utility commands.
+
 ### ;avatar
 
-### ;echo
+Uploads a downloadable picture of an avatar. 
+
+Command Structure:
+
+`;avatar [user: optional]`
+
+Options:
+
+- `user` - OPTIONAL: A name, ID, or mention of a user. If provided, the command will return the user's avatar, if not, it will provide your own.
+
+Example:
+
+```py
+# Get my avatar
+;avatar
+# Get USER's avatar
+;avatar USER#0001
+```
+
 
 ### ;emote
+
+Displays infomation (creation date, guild, ID) and an easily downloadable version of the given custom emote.
+
+Command Structure:
+
+`;emote EMOTE`
+
+Aliases:
+
+`emoji`
+
+Options:
+
+- `emote` - Needs to be a valid custom emoji
+
+Example:
+
+```py
+# Get infomation of the emoji ":Kappa:"
+;emote :Kappa:
+```
 
 ### ;guild
 
 !!! warning
     This command cannot be used in private messages.
 
+Gives information (creation date, owner, ID) on the guild this command is executed in.
+
+Command Structure:
+
+`;guild`
+
+Aliases:
+
+`server`
 
 ### ;info
 
-### ;invite
+Provides information (account creation date, ID, roles [if in a guild]) on your or another persons account.
+
+Command Structure:
+
+`;info [USER: optional]`
+
+Aliases:
+
+`user`
+
+Options:
+
+- `USER` - OPTIONAL: A name, ID, or mention of a user.
+
+Examples:
+
+```py
+# Get account information for yourself
+;info
+# Get account information for a user called USER
+;info @USER
+```
 
 ### ;role
 
 !!! warning
     This command cannot be used in private messages.
+
+Gives information (creation date, colour, ID) on the role given. Can only work if the role is in the guild you execute this command in.
+
+Command Structure:
+
+`;role ROLE`
+
+Options:
+
+- `ROLE` - Name, ID, or mention of the role you want the info for. 
+
+Example:
+
+```py
+# Get information on the role called Admin
+;role Admin
+```
 
 ---
 
