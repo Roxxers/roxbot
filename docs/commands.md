@@ -17,32 +17,32 @@ When the command wants a CHANNEL, USER, MEMBER, or ROLE. This means the ID, name
 ## Core Commands
 These are the base commands for Roxbot that are a part of the core bot. All of them deal with internal management and are, for the most part, unavalible to average users.
 
-#### ;backup
+### ;backup
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
-#### ;blacklist
+### ;blacklist
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
-#### ;changeactivity
+### ;changeactivity
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
-#### ;changeavatar
+### ;changeavatar
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
-#### ;changenickname
+### ;changenickname
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
 
-#### ;changestatus
+### ;changestatus
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
@@ -66,7 +66,7 @@ Example:
 ;echo #general Hello World
 ```
 
-#### ;help
+### ;help
 
 
 
@@ -79,7 +79,7 @@ Command Structure:
 `;invite`
 
 
-#### ;printsettings
+### ;printsettings
 
 !!! warning
     Command requires the user to have the `manage_guild` permission.
@@ -87,7 +87,7 @@ Command Structure:
 !!! warning
     This command cannot be used in private messages.
 
-#### ;shutdown
+### ;shutdown
 
 !!! warning
     This command can only be exectuted by the owner of the Roxbot instance.
@@ -420,25 +420,88 @@ Example:
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-Posts a random image from https://
+Posts a random image from [e621](https://e621.net) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+
+Command Structure:
+
+`;e621 [*tags: optional]`
+
+Examples:
+
+```py
+# Post a random image
+;e621
+# Post a random image with the tag "test"
+;e621 test
+```
 
 ### ;gelbooru
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
+Posts a random image from [gelbooru](https://gelbooru.com) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+
+Command Structure:
+
+`;gelbooru [*tags: optional]`
+
+Examples:
+
+```py
+# Post a random image
+;gelbooru
+# Post a random image with the tag "test"
+;gelbooru test
+```
+
 ### ;rule34
+
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
+
+Posts a random image from [rule34.xxx](https://rule34.xxx/) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+
+Command Structure:
+
+`;rule34 [*tags: optional]`
+
+Examples:
+
+```py
+# Post a random image
+;rule34
+# Post a random image with the tag "test"
+;rule34 test
+```
 
 ---
 
 ### ;nsfw
 
 !!! warning
+    Command requires the user to have the `manage_channels` permission.
+
+!!! warning
     This command cannot be used in private messages.
 
+Edits settings for the nsfw cog and other nsfw commands.
+
+Options:
+	`enable/disable`: Enable/disables nsfw commands.
+	`addbadtag/removebadtag`: Add/Removes blacklisted tags so that you can avoid em with the commands.
+
+Example:
+
+```py
+# Enabled NSFW commands
+;nsfw enable
+# Add "test" as a blacklisted tag
+;nsfw addbagtag test
+# Remove "Roxbot" as a blacklisted tag
+;nsfw removebadtag Roxbot
+```
 
 ---
 

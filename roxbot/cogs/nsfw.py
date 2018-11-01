@@ -93,8 +93,12 @@ class NFSW():
 	@roxbot.checks.is_nsfw()
 	@commands.command()
 	async def e621(self, ctx, *, tags=""):
-		"""
-		Returns an image from e621.com and can use tags you provide.
+		"""Posts a random image from https://e621.net using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+		Examples:
+			# Post a random image
+			;e621
+			# Post a random image with the tag "test"
+			;e621 test
 		"""
 		base_url = "https://e621.net/post/index.json?tags="
 		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url="", tags=tags)
@@ -102,8 +106,12 @@ class NFSW():
 	@roxbot.checks.is_nsfw()
 	@commands.command()
 	async def rule34(self, ctx, *, tags=""):
-		"""
-		Returns an image from rule34.xxx and can use tags you provide.
+		"""Posts a random image from https://rule34.xxx/ using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+		Examples:
+			# Post a random image
+			;rule34
+			# Post a random image with the tag "test"
+			;rule34 test
 		"""
 		base_url = "https://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="
 		post_url = "https://img.rule34.xxx/images/"
@@ -112,8 +120,12 @@ class NFSW():
 	@roxbot.checks.is_nsfw()
 	@commands.command()
 	async def gelbooru(self, ctx, *, tags=""):
-		"""
-		Returns an image from gelbooru.com and can use tags you provide.
+		"""Posts a random image from https://gelbooru.com using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+		Examples:
+			# Post a random image
+			;gelbooru
+			# Post a random image with the tag "test"
+			;gelbooru test
 		"""
 		base_url = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="
 		post_url = "https://simg3.gelbooru.com/images/"
@@ -124,14 +136,18 @@ class NFSW():
 	@commands.command()
 	async def nsfw(self, ctx, setting, *, changes=None):
 		"""Edits settings for the nsfw cog and other nsfw commands.
-		If nsfw is enabled and nsfw channels are added, the bot will only allow nsfw commands in the specified channels.
 
 		Options:
 			enable/disable: Enable/disables nsfw commands.
-			addchannel/removechannel: Adds/Removes a nsfw channel.
 			addbadtag/removebadtag: Add/Removes blacklisted tags so that you can avoid em with the commands.
-			Example:
-				;settings nsfw addchannel #nsfw_stuff
+		
+		Examples:
+			# Enabled NSFW commands
+			;nsfw enable
+			# Add "test" as a blacklisted tag
+			;nsfw addbagtag test
+			# Remove "Roxbot" as a blacklisted tag
+			;nsfw removebadtag Roxbot
 		"""
 		setting = setting.lower()
 		settings = roxbot.guild_settings.get(ctx.guild)
