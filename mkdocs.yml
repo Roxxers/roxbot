@@ -34,8 +34,11 @@ copyright: 'Copyright &copy; 2017 - 2018 Roxanne Gibson'
 
 # Layout
 nav:
-    - 'Command Docs': 'commands.md'
     - User Guide:
+        - 'Command Docs': 'commands.md'
+        - 'About Roxbot Trivia': 'trivia.md'
+    
+    - Setup Roxbot:
         - 'Quick Start': 'quickstart.md'
         - 'Configuring Roxbot': 'config.md'
         - 'Creating Cogs For Roxbot': 'creating_cogs.md'

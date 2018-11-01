@@ -40,7 +40,7 @@ import roxbot
 
 class Trivia:
 	"""
-	Trivia is based off the lovely https://opentdb.com made by PixelTail Games.
+	Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's Trivia mini-game. Uses the [Open Trivia Database](https://opentdb.com) made by PixelTail Games.
 
 	This cog works better if the bot account is in the RoxBot Emoji Server. If it cannot find the emotes it needs, it will default to unicode emoji.
 	"""
@@ -305,7 +305,7 @@ class Trivia:
 	@commands.guild_only()
 	@commands.group(aliases=["tr"], case_insensitive=True)
 	async def trivia(self, ctx):
-		"""Command group for the Roxbot Trivia game."""
+		"""Command group for the Roxbot Trivia game. All interactions with the game are done through this command."""
 		if ctx.invoked_subcommand == self.start and ctx.channel.id not in self.games:
 			embed = discord.Embed(colour=roxbot.EmbedColours.pink)
 			embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
@@ -316,18 +316,19 @@ class Trivia:
 
 	@trivia.command()
 	async def about(self, ctx):
-		"""He;p using the trivia game."""
+		"""Displays help in playing Roxbot Trivia. If nothing/an incorrect subcommand is passed to the trivia command, this command is invoked instead."""
 		embed = discord.Embed(
 			title="About Roxbot Trivia",
-			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's trivia game. (and even uses the same questions database!) To start, just type `{}trivia start`.".format(self.bot.command_prefix),
+			description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's Trivia mini-game. Uses the [Open Trivia Database](https://opentdb.com) made by PixelTail Games. To start, just type `{}trivia start`.".format(self.bot.command_prefix),
 			colour=roxbot.EmbedColours.pink)
 		embed.add_field(name="How to Play", value="Once the game has started, questions will be asked and you will be given 20 seconds to answer them. To answer, react with the corrosponding emoji. Roxbot will only accept your first answer. Score is calculated by how quickly you can answer correctly, so make sure to be as quick as possible to win! Person with the most score at the end wins. Glhf!")
+		embed.add_field(name="How does the game end?", value="The game ends once all questions have been answered or if everyone has left the game using the `{}trivia leave` command.".format(self.bot.command_prefix))
 		embed.add_field(name="Can I have shorter or longer games?", value="Yes! You can change the length of the game by using the argument `-l or --length` adding short (5 questions), medium (10), or long (15) at the end. `{}trivia start --length short`. The default is medium.".format(self.bot.command_prefix))
 		embed.add_field(name="Can I play with friends?", value="Yes! Trivia is best with friends. How else would friendships come to their untimely demise? You can only join a game during the 20 second waiting period after a game is started. Just type `{0}trivia join` and you're in! You can leave a game at anytime (even if its just you) by doing `{0}trivia leave`. If no players are in a game, the game will end and no one will win ;-;".format(self.bot.command_prefix))
 		embed.add_field(name="What if I don't want anyone to join my solo game? Waiting is boring!", value="No problem! Just put `-s or --solo` anywhere after `{}trivia start`".format(self.bot.command_prefix))
 		embed.add_field(name="I can't read the questions on mobile!", value="Sadly this is an issue with Discord on mobile. To get around this, Roxbot Trivia has a mobile compatible version. Just put `-m or --mobile` anywhere after `{}trivia start`".format(self.bot.command_prefix))
 		embed.add_field(name="Can I have a mobile compatible short solo game?", value="Yes, you can use any of the three arguments at once. The Trivia command takes commands just like a cli. Example: `{0}tr start -ms` or `{0}tr start --length long --mobile`".format(self.bot.command_prefix))
-		embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. Find out more at https://opentdb.com/")
+		embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. OpenTDB is licensed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) Find out more at [https://opentdb.com/](https://opentdb.com/)")
 		embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
 		return await ctx.send(embed=embed)
 
@@ -335,7 +336,23 @@ class Trivia:
 	@trivia.command()
 	@commands.bot_has_permissions(manage_messages=True)
 	async def start(self, ctx, *args):
-		"""Starts a trivia game and waits 20 seconds for other people to join."""
+		"""Starts a trivia game in the channel the command was invoked in. 
+
+		Args: 
+			- `--mobile`/`-m` - Launches the game in a mobile compatible mode. In case rich embeds are not readable, especially for Android users.
+			- `--solo`/`-s` - Skips waiting for users to join and launches the game immediatly. Useful for users just wanting to play solo.
+			- `--length`/`-l` - Takes option for the length of the game. Acceptable options are `short` (5 Questions), `medium` (10), and `long` (15).
+
+		Examples:
+			# Start a standard trivia game
+			;trivia start
+
+			# Start a mobile compatible solo game of Roxbot Trivia
+			;tr start -ms
+
+			# Start a solo short game
+			;tr start --solo --length short
+		"""
 		channel = ctx.channel
 		player = ctx.author
 		# Check if a game is already running and if so exit.
@@ -395,7 +412,7 @@ class Trivia:
 	@commands.guild_only()
 	@trivia.command()
 	async def join(self, ctx):
-		"""Joins a trivia game. Can only be done when a game is waiting for players to join. Not when a game is currently active."""
+		"""Joins a Trivia game in this channel. The game must be waiting for players to join after a user has executed the `;trivia start` command. You cannot join a game in progress."""
 		channel = ctx.channel
 		# Checks if game is in this channel. Then if one isn't active, then if the player has already joined.
 		if channel.id in self.games:
@@ -415,7 +432,7 @@ class Trivia:
 	@commands.guild_only()
 	@trivia.command()
 	async def leave(self, ctx):
-		"""Leaves the game in this channel. Can be done anytime in the game."""
+		"""Command to leave the game. When invoked, the user leaves the game and their score is removed from the leaderboard. This can be done at any point of the game."""
 		channel = ctx.channel
 		player = ctx.author
 		# CAN LEAVE:  Game is started or has been activated
@@ -434,7 +451,12 @@ class Trivia:
 	@commands.has_permissions(manage_channels=True)
 	@trivia.command()
 	async def kick(self, ctx, user: discord.Member):
-		"""Mod command to kick users out of the game. Useful if a user is AFK. Requires Manage Channels permission."""
+		"""Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions. Requires Manage Channels permission.
+
+		Example:
+			# Kick user called BadTriviaPlayer
+			;tr kick @BadTriviaPlayer
+		"""
 		channel = ctx.channel
 		player = user
 		if channel.id in self.games:

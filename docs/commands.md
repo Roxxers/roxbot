@@ -159,11 +159,11 @@ __;warn set_limit__
 
 Rolls a die using dice expression format. Spaces in the expression are ignored.
 
-**Command structure**
+Command structure:
 
 `;roll expression`
 
-**Aliases**
+Aliases:
 
 `die`, `dice`
 
@@ -181,13 +181,13 @@ An expression can consist of many sub expressions added together and then a mult
 
 Sub expressions can be of many types:
 	
-- `[number] #add this number to the total`
-- `d[sides] #roll a dice with that many sides and add it to the total`
-- `[n]d[sides] #roll n dice. each of those dice have <sides> number of sides, sum all the dice and add to the total`
-    - `add r[number] #reroll any rolls below [number]`
-    - `add h[number] #only sum the [number] highest rolls rather than all of them`
-    - `add l[number] #only sum the [number] lowest rolls rather than all of them`
-- `x[number] #only use at the end. roll the rest of the expression [number] times(max 10)`
+- `[number]` - add this number to the total
+- `d[sides]`  - roll a dice with that many sides and add it to the total
+- `[n]d[sides]` - roll n dice. each of those dice have [sides] number of sides, sum all the dice and add to the total
+    - `add r[number]` - reroll any rolls below [number]
+    - `add h[number]` - only sum the [number] highest rolls rather than all of them
+    - `add l[number]` - only sum the [number] lowest rolls rather than all of them
+- `x[number]` - only use at the end. roll the rest of the expression [number] times(max 10)
 
 Credit: TBTerra#5677
 
@@ -210,13 +210,21 @@ Credit: TBTerra#5677
 Grabs the image & metadata of the given xkcd comic. The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
 
 Command Structure:
-    `;xkcd [query: optional]`
+
+`;xkcd [query: optional]`
 
 Example:
 
-    `;xkcd 666`
-    `;xkcd "Silent Hammer"`
-    `;xkcd latest`
+```py
+# Get random comic
+;xkcd
+# Get comic number 666
+;xkcd 666
+# Get comic with the title "Silent Hammer"
+;xkcd "Silent Hammer"
+# Get latest comic
+;xkcd latest
+```
 
 ### ;zalgo
 
@@ -230,69 +238,72 @@ The ImageEditor cog is a cog with multiple commands to manipulate images provide
 
 Deepfrys the given image
 
-Command structure: `;deepfry image`
+Command structure: 
 
-Aliases: `df`
+`;deepfry image`
 
-**Args**
+Aliases: 
 
-image: Optional
+`df`
 
-1. If no image is provided, image will be your avatar
-2. Mention a user, their avatar will be the image
-3. Provide a URL, that will be the image
-4. Provide an image via upload, that image will be deepfried
+Args:
+
+- image: Optional
+
+    1. If no image is provided, image will be your avatar
+    2. Mention a user, their avatar will be the image
+    3. Provide a URL, that will be the image
+    4. Provide an image via upload, that image will be deepfried
 
 
 ### ;pride
 
 `;pride` is a command group for multiple pride flag filters. Avalible pride filters are: LGBT, Bisexual, Asexual, Pansexual, Transgender, Non Binary, Agender, Gender Queer, Gender Fluid.
 
-**Command structure**
+Command structure:
 
 `;pride subcommand image`
 
 
-**Args**
+Args:
 
-subcommand: One of the following: `lgbt, bisexual, asexual, pansexual, transgender, nonbinary, agender, genderqueer, genderfuild.`
+- subcommand: One of the following: `lgbt, bisexual, asexual, pansexual, transgender, nonbinary, agender, genderqueer, genderfuild.`
 
-image: Optional
+- image: Optional
 
-1. If no image is provided, image will be your avatar
-2. Mention a user, their avatar will be the image
-3. Provide a URL, that will be the image
-4. Provide an image via upload, that image will be deepfried
+    1. If no image is provided, image will be your avatar
+    2. Mention a user, their avatar will be the image
+    3. Provide a URL, that will be the image
+    4. Provide an image via upload, that image will be deepfried
 
 !!! note
     If you want there to be more pride flag filters or feel there are some missing, don't be afraid to [submit an issue to the Github repo!](https://github.com/Roxxers/roxbot/issues/new)
 
-Subcommands
 
 #### ;pride agender
 
 
 #### ;pride asexual
 
-**Aliases**
+Aliases:
 
 `ace`
 
 #### ;pride bisexual
 
-**Aliases**
+Aliases:
 
 `bi`
 
 #### ;pride genderfluid
 
-**Aliases**
+Aliases:
 
 `gf`
 
 #### ;pride genderqueer
 
-**Aliases**
+Aliases:
 
 `gq`
 
@@ -302,13 +313,13 @@ Subcommands
 #### ;pride nonbinary
 
 
-**Aliases**
+Aliases:
 
 `nb`, `enby`
 
 #### ;pride transgender
 
-**Aliases**
+Aliases:
 
 `trans`
 
@@ -325,21 +336,20 @@ JoinLeave is a cog that allows you to create custom welcome and goodbye messages
 
 Edits settings for the goodbye messages.
 
-**Command Structure**
+Command Structure
 
 `;goodbyes option [changes: optional]`
 
-**Options**
+Options
 
-```py
-'enable/disable' # Enable/disables goodbye messages.
-'channel' # Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+- `enable/disable` - Enable/disables goodbye messages.
+- `channel` - Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+
+
+Example:
+
 ```
-
-**Example**
-
-Enable goodbye messages, set the channel one called `#logs` using a channel mention.
-```
+# Enable goodbye messages, set the channel one called `#logs` using a channel mention.
 ;goodbyes enable
 ;goodbyes channel #logs
 ```
@@ -348,23 +358,20 @@ Enable goodbye messages, set the channel one called `#logs` using a channel ment
 
 Edits settings for the welcome messages
 
-**Command Structure**
+Command Structure:
 
 `;greets option [changes: optional]`
 
-**Options**
+Options:
+
+- `enable/disable` - Enable/disables greet messages.
+- `channel` - Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+- `message` - Specifies a custom message for the greet messages.
+
+Example:
 
 ```py
-'enable/disable' # Enable/disables greet messages.
-'channel' # Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
-'message' # Specifies a custom message for the greet messages.
-```
-
-**Example**
-
-Enable greet messages, set the channel to the current one, and set a custom message to be appended.
-
-```py
+# Enable greet messages, set the channel to the current one, and set a custom message to be appended.
 ;greets enable
 ;greets message "Be sure to read the rules and say hi! :wave:"
 ;greets channel # if no channel is provided, it will default to the channel the command is executed in.
@@ -408,11 +415,16 @@ The Reddit cog is a cog that allows users to get images and videos from their fa
 
 Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.
 
-**Command Structure**
+Command Structure:
+
 `;subreddit name_of_subreddit`
 
-**Example**
-`;subreddit pics`
+Example:
+
+```py
+# Get images from /r/pics
+;subreddit pics
+```
 
 ---
 
@@ -423,9 +435,11 @@ Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inpu
 
 Gives you cute pics from reddit
 
-Subreddits: `"aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorableart"`
+Subreddits: 
 
-**Command Structure**
+`"aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorableart"`
+
+Command Structure:
 
 `;aww`
 
@@ -433,9 +447,11 @@ Subreddits: `"aww", "redpandas", "lazycats", "rarepuppers", "awwgifs", "adorable
 
 Feeds you with food porn.
 
-Subreddits: `"foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "pizza", "grilledcheese", "PutAnEggOnIt", "sushi"`
+Subreddits: 
 
-**Command Structure**
+`"foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches", "steak", "burgers", "pizza", "grilledcheese", "PutAnEggOnIt", "sushi"`
+
+Command Structure:
 
 `;feedme`
 
@@ -443,9 +459,11 @@ Subreddits: `"foodporn", "food", "DessertPorn", "tonightsdinner", "eatsandwiches
 
 Feeds you with vegan food porn.
 
-Subreddits: `"veganrecipes", "vegangifrecipes", "veganfoodporn"`
+Subreddits: 
 
-**Command Structure**
+`"veganrecipes", "vegangifrecipes", "veganfoodporn"`
+
+Command Structure:
 
 `;feedmevegan`
 
@@ -453,13 +471,15 @@ Subreddits: `"veganrecipes", "vegangifrecipes", "veganfoodporn"`
 
 The full (mostly) me_irl network of subs.
 
-Subreddits: `"me_irl", "woof_irl", "meow_irl", "metal_me_irl"`
+Subreddits: 
 
-**Command Structure**
+`"me_irl", "woof_irl", "meow_irl", "metal_me_irl"`
+
+Command Structure:
 
 `;me_irl`
 
-**Aliases**
+Aliases:
 
 `meirl`
 
@@ -467,13 +487,15 @@ Subreddits: `"me_irl", "woof_irl", "meow_irl", "metal_me_irl"`
 
 Gives you the best trans memes for daysssss
 
-Subreddits: `"gaysoundsshitposts", "traaaaaaannnnnnnnnns"`
+Subreddits: 
 
-**Command Structure**
+`"gaysoundsshitposts", "traaaaaaannnnnnnnnns"`
+
+Command Structure:
 
 `;traa`
 
-**Aliases**
+Aliases:
 
 `gssp`, `gss`, `trans_irl`
 
@@ -491,10 +513,12 @@ The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allow
 Self-assign yourself a role. Can only be done one role at a time.
 
 Command Structure:
-	`;iam role`
+
+`;iam role`
 
 Example:
-	`;iam OverwatchPing`
+
+`;iam OverwatchPing`
 
 
 ### ;iamn
@@ -502,10 +526,12 @@ Example:
 Remove a self-assigned role. Can only be done one role at a time.
 
 Command Structure:
-	`;iamn role`
+
+`;iamn role`
 
 Example:
-	`;iamn OverwatchPing`
+
+`;iamn OverwatchPing`
 
 
 ### ;listroles
@@ -513,7 +539,8 @@ Example:
 List's all roles that can be self-assigned on this server.
 
 Command Structure:
-	`;listroles`
+
+`;listroles`
 
 
 ---
@@ -526,40 +553,123 @@ Command Structure:
 Edits settings for self assign cog.
 
 Command Structure:
-    `;sa option [role: optional]`
+
+`;sa option [role: optional]`
 
 Aliases:
-    `sa`
+
+`sa`
 
 Options:
     enable/disable: Enable/disables the cog.
     add/remove: adds or removes a role that can be self assigned in the server.
 
 Example:
-    Turn on self assigned roles and add a role called "ROLE"
-
-    `;sa enable`
-    `;sa add ROLE`
+```py
+# Turn on self assigned roles and add a role called "ROLE"
+;sa enable
+;sa add ROLE
+```
 
 ---
 
 ## Trivia
 
-### ;trivia
+![roxbottrivialogo](assets/images/roxbottriviabanner.png)
+
+Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's Trivia mini-game. Learn how to play Roxbot Trivia [here](trivia.md). More detailed documentation can be found below.
+
+
+This cog works better if the bot account is in the Roxbot Emoji Server. If it cannot find the emotes it needs, it will default to unicode emoji.
 
 !!! warning
-    This command group cannot be used in private messages.
+    This whole cog cannot be used in private messages.
 
+!!! info "Disclaimer"
+    Roxbot Trivia uses the Open Trivia Database, made and maintained by Pixeltail Games LLC. The OpenTDB is licensed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). Find out more at [https://opentdb.com/](https://opentdb.com/).
+
+### ;trivia
+
+Command group for the Roxbot Trivia game. All interactions with the game are done through this command.
+
+Command Structure: 
+
+`;trivia subcommand`
+
+Aliases: 
+
+`tr`
 
 #### ;trivia about
 
+Displays help in playing Roxbot Trivia. If nothing/an incorrect subcommand is passed to the trivia command, this command is invoked instead. This outputs something similar to the [About Roxbot Trivia page](trivia.md).
+
+Command Structure:
+
+`;trivia about`
+
 #### ;trivia join
+
+Joins a Trivia game in this channel. The game must be waiting for players to join after a user has executed the `;trivia start` command. You cannot join a game in progress.
+
+Command Structure:
+
+`;trivia join`
 
 #### ;trivia leave
 
+Command to leave the game. When invoked, the user leaves the game and their score is removed from the leaderboard. This can be done at any point of the game.
+
+Command Structure:
+
+`;trivia leave`
+
 #### ;trivia start
 
+Starts a trivia game in the channel the command was invoked in. 
+
+Command Structure: 
+
+`;trivia start [*args: optional]`
+
+Args: 
+
+- `--mobile`/`-m` - Launches the game in a mobile compatible mode. In case rich embeds are not readable, especially for Android users.
+
+- `--solo`/`-s` - Skips waiting for users to join and launches the game immediatly. Useful for users just wanting to play solo.
+
+- `--length`/`-l` - Takes option for the length of the game. Acceptable options are `short` (5 Questions), `medium` (10), and `long` (15).
+
+Examples:
+
+```py
+# Start a standard trivia game
+;trivia start
+
+# Start a mobile compatible solo game of Roxbot Trivia
+;tr start -ms
+
+# Start a solo short game
+;tr start --solo --length short
+```
+
 #### ;trivia kick
+
+!!! warning
+    Command requires the user to have the `manage_channels` permission.
+
+Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.
+
+Command Structure:
+
+`;trivia kick user`
+
+Example:
+
+```py
+# Kick user called BadTriviaPlayer
+;tr kick @BadTriviaPlayer
+```
 
 ---
 
