@@ -126,7 +126,7 @@
                 Roxbot
               </span>
               <span class="md-header-nav__topic">
-                Command Documentation
+                Command Docs
               </span>
             
           
@@ -196,38 +196,6 @@
         
       
       
-        
-
-<nav class="md-tabs" data-md-component="tabs">
-  <div class="md-tabs__inner md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  <li class="md-tabs__item">
-    
-      <a href=".." title="Introduction" class="md-tabs__link md-tabs__link--active">
-        Introduction
-      </a>
-    
-  </li>
-
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    </ul>
-  </div>
-</nav>
-      
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
           
@@ -273,41 +241,26 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href=".." title="Introduction" class="md-nav__link">
-      Introduction
-    </a>
-  </li>
 
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
     
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../quickstart/" title="Quick Start" class="md-nav__link">
-      Quick Start
-    </a>
-  </li>
-
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-1" type="checkbox" id="nav-1" checked>
     
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../config/" title="Configuring Roxbot" class="md-nav__link">
-      Configuring Roxbot
-    </a>
-  </li>
-
-    
-      
-      
-      
+    <label class="md-nav__link" for="nav-1">
+      User Guide
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-1">
+        User Guide
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
 
   
 
@@ -320,11 +273,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="__toc">
-        Command Documentation
+        Command Docs
       </label>
     
-    <a href="./" title="Command Documentation" class="md-nav__link md-nav__link--active">
-      Command Documentation
+    <a href="./" title="Command Docs" class="md-nav__link md-nav__link--active">
+      Command Docs
     </a>
     
       
@@ -336,6 +289,33 @@
   
     <label class="md-nav__title" for="__toc">Table of contents</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#how-to-use-the-docs" title="How to use the docs" class="md-nav__link">
+    How to use the docs
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-alias" title="What is an alias?" class="md-nav__link">
+    What is an alias?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-do-i-do-when-a-command-wants-a-channel-user-role-etc" title="What do I do when a command wants a channel, user, role, etc.?" class="md-nav__link">
+    What do I do when a command wants a channel, user, role, etc.?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#core-commands" title="Core Commands" class="md-nav__link">
@@ -388,6 +368,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#echo" title=";echo" class="md-nav__link">
+    ;echo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#help" title=";help" class="md-nav__link">
+    ;help
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invite" title=";invite" class="md-nav__link">
+    ;invite
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#printsettings" title=";printsettings" class="md-nav__link">
     ;printsettings
   </a>
@@ -411,10 +412,9 @@
     Cog Commands
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#admin" title="Admin" class="md-nav__link">
     Admin
   </a>
@@ -468,8 +468,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#custom-commands" title="Custom Commands" class="md-nav__link">
     Custom Commands
   </a>
@@ -486,8 +486,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#subcommands" title="Subcommands" class="md-nav__link">
-    Subcommands
+  <a href="#custom-add" title=";custom add" class="md-nav__link">
+    ;custom add
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-edit" title=";custom edit" class="md-nav__link">
+    ;custom edit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-list" title=";custom list" class="md-nav__link">
+    ;custom list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-remove" title=";custom remove" class="md-nav__link">
+    ;custom remove
   </a>
   
 </li>
@@ -501,8 +522,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#fun" title="Fun" class="md-nav__link">
     Fun
   </a>
@@ -612,10 +633,10 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#image-editor" title="Image Editor" class="md-nav__link">
-    Image Editor
+      
+        <li class="md-nav__item">
+  <a href="#imageeditor" title="ImageEditor" class="md-nav__link">
+    ImageEditor
   </a>
   
     <nav class="md-nav">
@@ -637,8 +658,57 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#subcommands_1" title="Subcommands" class="md-nav__link">
-    Subcommands
+  <a href="#pride-agender" title=";pride agender" class="md-nav__link">
+    ;pride agender
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-asexual" title=";pride asexual" class="md-nav__link">
+    ;pride asexual
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-bisexual" title=";pride bisexual" class="md-nav__link">
+    ;pride bisexual
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-genderfluid" title=";pride genderfluid" class="md-nav__link">
+    ;pride genderfluid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-genderqueer" title=";pride genderqueer" class="md-nav__link">
+    ;pride genderqueer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-lgbt" title=";pride lgbt" class="md-nav__link">
+    ;pride lgbt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-nonbinary" title=";pride nonbinary" class="md-nav__link">
+    ;pride nonbinary
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-transgender" title=";pride transgender" class="md-nav__link">
+    ;pride transgender
   </a>
   
 </li>
@@ -652,10 +722,10 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#join-leave" title="Join Leave" class="md-nav__link">
-    Join Leave
+      
+        <li class="md-nav__item">
+  <a href="#joinleave" title="JoinLeave" class="md-nav__link">
+    JoinLeave
   </a>
   
     <nav class="md-nav">
@@ -679,8 +749,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#nsfw" title="NSFW" class="md-nav__link">
     NSFW
   </a>
@@ -720,8 +790,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#reddit" title="Reddit" class="md-nav__link">
     Reddit
   </a>
@@ -775,10 +845,10 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#self-assign" title="Self Assign" class="md-nav__link">
-    Self Assign
+      
+        <li class="md-nav__item">
+  <a href="#selfassign" title="SelfAssign" class="md-nav__link">
+    SelfAssign
   </a>
   
     <nav class="md-nav">
@@ -806,7 +876,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#selfassign" title=";selfassign" class="md-nav__link">
+  <a href="#selfassign_1" title=";selfassign" class="md-nav__link">
     ;selfassign
   </a>
   
@@ -816,8 +886,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#trivia" title="Trivia" class="md-nav__link">
     Trivia
   </a>
@@ -834,8 +904,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#subcommands_2" title="Subcommands" class="md-nav__link">
-    Subcommands
+  <a href="#trivia-about" title=";trivia about" class="md-nav__link">
+    ;trivia about
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-join" title=";trivia join" class="md-nav__link">
+    ;trivia join
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-leave" title=";trivia leave" class="md-nav__link">
+    ;trivia leave
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-start" title=";trivia start" class="md-nav__link">
+    ;trivia start
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-kick" title=";trivia kick" class="md-nav__link">
+    ;trivia kick
   </a>
   
 </li>
@@ -849,8 +947,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#util" title="Util" class="md-nav__link">
     Util
   </a>
@@ -861,13 +959,6 @@
           <li class="md-nav__item">
   <a href="#avatar" title=";avatar" class="md-nav__link">
     ;avatar
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#echo" title=";echo" class="md-nav__link">
-    ;echo
   </a>
   
 </li>
@@ -894,13 +985,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#invite" title=";invite" class="md-nav__link">
-    ;invite
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#role" title=";role" class="md-nav__link">
     ;role
   </a>
@@ -911,8 +995,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#voice" title="Voice" class="md-nav__link">
     Voice
   </a>
@@ -1008,11 +1092,6 @@
     </nav>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
       
       
@@ -1024,10 +1103,70 @@
     
   </li>
 
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../trivia/" title="About Roxbot Trivia" class="md-nav__link">
+      About Roxbot Trivia
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
     
       
       
       
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-2" type="checkbox" id="nav-2">
+    
+    <label class="md-nav__link" for="nav-2">
+      Setup Roxbot
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-2">
+        Setup Roxbot
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../quickstart/" title="Quick Start" class="md-nav__link">
+      Quick Start
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../config/" title="Configuring Roxbot" class="md-nav__link">
+      Configuring Roxbot
+    </a>
+  </li>
+
+        
+          
+          
+          
 
 
   <li class="md-nav__item">
@@ -1036,16 +1175,9 @@
     </a>
   </li>
 
-    
-      
-      
-      
-
-
-  <li class="md-nav__item">
-    <a href="../contributing/" title="Contributing" class="md-nav__link">
-      Contributing
-    </a>
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -1054,10 +1186,46 @@
       
 
 
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3">
+    
+    <label class="md-nav__link" for="nav-3">
+      About
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        About
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../contributing/" title="Contributing" class="md-nav__link">
+      Contributing
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
   <li class="md-nav__item">
     <a href="../license/" title="License" class="md-nav__link">
       License
     </a>
+  </li>
+
+        
+      </ul>
+    </nav>
   </li>
 
     
@@ -1082,6 +1250,33 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#how-to-use-the-docs" title="How to use the docs" class="md-nav__link">
+    How to use the docs
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-alias" title="What is an alias?" class="md-nav__link">
+    What is an alias?
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-do-i-do-when-a-command-wants-a-channel-user-role-etc" title="What do I do when a command wants a channel, user, role, etc.?" class="md-nav__link">
+    What do I do when a command wants a channel, user, role, etc.?
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#core-commands" title="Core Commands" class="md-nav__link">
     Core Commands
   </a>
@@ -1132,6 +1327,27 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#echo" title=";echo" class="md-nav__link">
+    ;echo
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#help" title=";help" class="md-nav__link">
+    ;help
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#invite" title=";invite" class="md-nav__link">
+    ;invite
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#printsettings" title=";printsettings" class="md-nav__link">
     ;printsettings
   </a>
@@ -1155,10 +1371,9 @@
     Cog Commands
   </a>
   
-    <nav class="md-nav">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
+</li>
+      
+        <li class="md-nav__item">
   <a href="#admin" title="Admin" class="md-nav__link">
     Admin
   </a>
@@ -1212,8 +1427,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#custom-commands" title="Custom Commands" class="md-nav__link">
     Custom Commands
   </a>
@@ -1230,8 +1445,29 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#subcommands" title="Subcommands" class="md-nav__link">
-    Subcommands
+  <a href="#custom-add" title=";custom add" class="md-nav__link">
+    ;custom add
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-edit" title=";custom edit" class="md-nav__link">
+    ;custom edit
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-list" title=";custom list" class="md-nav__link">
+    ;custom list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-remove" title=";custom remove" class="md-nav__link">
+    ;custom remove
   </a>
   
 </li>
@@ -1245,8 +1481,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#fun" title="Fun" class="md-nav__link">
     Fun
   </a>
@@ -1356,10 +1592,10 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#image-editor" title="Image Editor" class="md-nav__link">
-    Image Editor
+      
+        <li class="md-nav__item">
+  <a href="#imageeditor" title="ImageEditor" class="md-nav__link">
+    ImageEditor
   </a>
   
     <nav class="md-nav">
@@ -1381,8 +1617,57 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#subcommands_1" title="Subcommands" class="md-nav__link">
-    Subcommands
+  <a href="#pride-agender" title=";pride agender" class="md-nav__link">
+    ;pride agender
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-asexual" title=";pride asexual" class="md-nav__link">
+    ;pride asexual
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-bisexual" title=";pride bisexual" class="md-nav__link">
+    ;pride bisexual
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-genderfluid" title=";pride genderfluid" class="md-nav__link">
+    ;pride genderfluid
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-genderqueer" title=";pride genderqueer" class="md-nav__link">
+    ;pride genderqueer
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-lgbt" title=";pride lgbt" class="md-nav__link">
+    ;pride lgbt
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-nonbinary" title=";pride nonbinary" class="md-nav__link">
+    ;pride nonbinary
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pride-transgender" title=";pride transgender" class="md-nav__link">
+    ;pride transgender
   </a>
   
 </li>
@@ -1396,10 +1681,10 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#join-leave" title="Join Leave" class="md-nav__link">
-    Join Leave
+      
+        <li class="md-nav__item">
+  <a href="#joinleave" title="JoinLeave" class="md-nav__link">
+    JoinLeave
   </a>
   
     <nav class="md-nav">
@@ -1423,8 +1708,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#nsfw" title="NSFW" class="md-nav__link">
     NSFW
   </a>
@@ -1464,8 +1749,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#reddit" title="Reddit" class="md-nav__link">
     Reddit
   </a>
@@ -1519,10 +1804,10 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#self-assign" title="Self Assign" class="md-nav__link">
-    Self Assign
+      
+        <li class="md-nav__item">
+  <a href="#selfassign" title="SelfAssign" class="md-nav__link">
+    SelfAssign
   </a>
   
     <nav class="md-nav">
@@ -1550,7 +1835,7 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#selfassign" title=";selfassign" class="md-nav__link">
+  <a href="#selfassign_1" title=";selfassign" class="md-nav__link">
     ;selfassign
   </a>
   
@@ -1560,8 +1845,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#trivia" title="Trivia" class="md-nav__link">
     Trivia
   </a>
@@ -1578,8 +1863,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#subcommands_2" title="Subcommands" class="md-nav__link">
-    Subcommands
+  <a href="#trivia-about" title=";trivia about" class="md-nav__link">
+    ;trivia about
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-join" title=";trivia join" class="md-nav__link">
+    ;trivia join
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-leave" title=";trivia leave" class="md-nav__link">
+    ;trivia leave
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-start" title=";trivia start" class="md-nav__link">
+    ;trivia start
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#trivia-kick" title=";trivia kick" class="md-nav__link">
+    ;trivia kick
   </a>
   
 </li>
@@ -1593,8 +1906,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#util" title="Util" class="md-nav__link">
     Util
   </a>
@@ -1605,13 +1918,6 @@
           <li class="md-nav__item">
   <a href="#avatar" title=";avatar" class="md-nav__link">
     ;avatar
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#echo" title=";echo" class="md-nav__link">
-    ;echo
   </a>
   
 </li>
@@ -1638,13 +1944,6 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#invite" title=";invite" class="md-nav__link">
-    ;invite
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#role" title=";role" class="md-nav__link">
     ;role
   </a>
@@ -1655,8 +1954,8 @@
     </nav>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#voice" title="Voice" class="md-nav__link">
     Voice
   </a>
@@ -1745,11 +2044,6 @@
   <a href="#voice_1" title=";voice" class="md-nav__link">
     ;voice
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
         
@@ -1778,89 +2072,237 @@
                 
                 
                 <h1 id="command-documentaion">Command Documentaion<a class="headerlink" href="#command-documentaion" title="Permanent link">&para;</a></h1>
-<p>Before reading this, it is highly recommened you read the <a href="../quickstart/">quick start</a> guide that will get you upto date with how Roxbot works and how to run her. This is handy if you expect to use commands that will edit Roxbot or Roxbot's guild settings.</p>
+<p>If you intend to use any commands requiring permissions, it is highly recommened you read the <a href="../quickstart/">quick start</a> guide that will get you upto date with how Roxbot works and how to run her.</p>
+<h2 id="how-to-use-the-docs">How to use the docs<a class="headerlink" href="#how-to-use-the-docs" title="Permanent link">&para;</a></h2>
+<h3 id="what-is-an-alias">What is an alias?<a class="headerlink" href="#what-is-an-alias" title="Permanent link">&para;</a></h3>
+<p>An alias is just another way of executing the command. Usually to shorten the command to be easier to type. If <code class="codehilite">emoji</code> is an alias of <code class="codehilite">emote</code>, using either <code class="codehilite">emoji</code> or <code class="codehilite">emote</code> will execute <code class="codehilite">emote</code>.</p>
+<h3 id="what-do-i-do-when-a-command-wants-a-channel-user-role-etc">What do I do when a command wants a channel, user, role, etc.?<a class="headerlink" href="#what-do-i-do-when-a-command-wants-a-channel-user-role-etc" title="Permanent link">&para;</a></h3>
+<p>When the command wants a CHANNEL, USER, MEMBER, or ROLE. This means the ID, name, or mention of that part of Discord. Role, User, and Member mentions start with a '@' and Channel mentions start with a '#'. A Member is the same as a User except a Member is explicitly a User in a Guild.</p>
 <h2 id="core-commands">Core Commands<a class="headerlink" href="#core-commands" title="Permanent link">&para;</a></h2>
 <p>These are the base commands for Roxbot that are a part of the core bot. All of them deal with internal management and are, for the most part, unavalible to average users.</p>
-<h4 id="backup">;backup<a class="headerlink" href="#backup" title="Permanent link">&para;</a></h4>
+<h3 id="backup">;backup<a class="headerlink" href="#backup" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
-<h4 id="blacklist">;blacklist<a class="headerlink" href="#blacklist" title="Permanent link">&para;</a></h4>
+<p>Creates a backup of all server's settings manually. This will make a folder in <code class="codehilite">settings/backups/</code>. The name of the folder will be outputted when you use the command. Using only this and not the automatic backups is not recommened.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;backup</code></p>
+<h3 id="blacklist">;blacklist<a class="headerlink" href="#blacklist" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
-<h4 id="changeactivity">;changeactivity<a class="headerlink" href="#changeactivity" title="Permanent link">&para;</a></h4>
+<p>Manage the global blacklist for Roxbot. </p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;blacklist option *users</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">option</code> - This is whether to add or subtract users from the blacklist. <code class="codehilite">+</code> or <code class="codehilite">add</code> for add and <code class="codehilite">-</code> or <code class="codehilite">remove</code> for remove.</p>
+</li>
+<li>
+<p><code class="codehilite">users</code> - A name, ID, or mention of a user. This allows multiple users to be mentioned.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Add three users to the blacklist</span>
+<span class="p">;</span><span class="n">blacklist</span> <span class="n">add</span> <span class="nd">@ProblemUser1</span> <span class="n">ProblemUser2</span><span class="c1">#4742 1239274620373</span>
+<span class="c1"># Remove one user from the blacklist</span>
+<span class="p">;</span><span class="n">blacklist</span> <span class="o">-</span> <span class="nd">@GoodUser</span>
+</pre></div>
+
+<h3 id="changeactivity">;changeactivity<a class="headerlink" href="#changeactivity" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
-<h4 id="changeavatar">;changeavatar<a class="headerlink" href="#changeavatar" title="Permanent link">&para;</a></h4>
+<p>Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;changeactivity text</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">activity</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">text</code> -  Either text to be added as the "game" or none to remove the activity.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Change activity to &quot;with the command line&quot; so that it displays &quot;Playing with the command line&quot;</span>
+<span class="p">;</span><span class="n">activity</span> <span class="s2">&quot;with the command line&quot;</span>
+<span class="c1"># Stop displaying any activity</span>
+<span class="p">;</span><span class="n">activity</span> <span class="n">none</span>
+</pre></div>
+
+<h3 id="changeavatar">;changeavatar<a class="headerlink" href="#changeavatar" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
-<h4 id="changenickname">;changenickname<a class="headerlink" href="#changenickname" title="Permanent link">&para;</a></h4>
+<p>Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;changeavatar image</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">setavatar</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">image</code> -  This can either be uploaded as an attachment or linked after the command.</li>
+</ul>
+<p>Example:
+<div class="codehilite"><pre><span></span><span class="c1"># Change avatar to linked image</span>
+<span class="p">;</span><span class="n">changeavatar</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">i</span><span class="o">.</span><span class="n">imgur</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">yhRVl9e</span><span class="o">.</span><span class="n">png</span>
+</pre></div></p>
+<h3 id="changenickname">;changenickname<a class="headerlink" href="#changenickname" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
+<p>This command cannot be used in private messages.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
-<h4 id="changestatus">;changestatus<a class="headerlink" href="#changestatus" title="Permanent link">&para;</a></h4>
+<p>Changes the nickname of Roxbot in the guild this command is executed in. </p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;changenickname name</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">nickname</code>, <code class="codehilite">nick</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">name</code> - OPTIONAL: If not given, Roxbot's nickname will be reset.</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Make Roxbot&#39;s nickname &quot;Best Bot 2k18&quot;</span>
+<span class="p">;</span><span class="n">nick</span> <span class="n">Best</span> <span class="n">Bot</span> <span class="mi">2</span><span class="n">k18</span>
+<span class="c1"># Reset Roxbot&#39;s nickname</span>
+<span class="p">;</span><span class="n">nick</span>
+</pre></div>
+
+<h3 id="changestatus">;changestatus<a class="headerlink" href="#changestatus" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
-<h4 id="printsettings">;printsettings<a class="headerlink" href="#printsettings" title="Permanent link">&para;</a></h4>
+<p>Changes the status of the bot account.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;changestatus status</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">status</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">status</code> - There are four different options to choose. <code class="codehilite">online</code>, <code class="codehilite">away</code>, <code class="codehilite">dnd</code> (do not disturb), and <code class="codehilite">offline</code></li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Set Roxbot to offline</span>
+<span class="p">;</span><span class="n">changestatus</span> <span class="n">offline</span>
+<span class="c1"># Set Roxbot to online</span>
+<span class="p">;</span><span class="n">changestatus</span> <span class="n">online</span>
+</pre></div>
+
+<h3 id="echo">;echo<a class="headerlink" href="#echo" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user has the <code class="codehilite">manage_guild</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>This command can only be exectuted by the owner of the Roxbot instance.</p>
+</div>
+<p>Echos the given string to a given channel.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;echo channel message</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Post the message &quot;Hello World&quot; to the channel #general</span>
+<span class="p">;</span><span class="n">echo</span> <span class="c1">#general Hello World</span>
+</pre></div>
+
+<h3 id="help">;help<a class="headerlink" href="#help" title="Permanent link">&para;</a></h3>
+<p>Displays all commands you can execute in that channel. If a command is specifed, it will show the help for that command.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;help [command: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">command</code> - OPTIONAL: If a command is specifed, it will show the help for that command. If this is a command group, it will show the commands in that group and some help. If a subcommand in a group, then the help for that command.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># List all commands I can execute in this current channel</span>
+<span class="p">;</span><span class="n">help</span>
+<span class="c1"># Show help for the &quot;subreddit&quot; command</span>
+<span class="p">;</span><span class="n">help</span> <span class="n">subreddit</span>
+<span class="c1"># Show help for the &quot;custom&quot; command group</span>
+<span class="p">;</span><span class="n">help</span> <span class="n">custom</span>
+<span class="c1"># Show help for the &quot;custom add&quot; subcommand</span>
+<span class="p">;</span><span class="n">help</span> <span class="n">custom</span> <span class="n">add</span>
+</pre></div>
+
+<h3 id="invite">;invite<a class="headerlink" href="#invite" title="Permanent link">&para;</a></h3>
+<p>Posts <a href="https://discordapp.com/oauth2/authorize?client_id=259869304369971200&amp;scope=bot&amp;permissions=871890001">this</a> invite. This allows you to invite Roxbot to your own server.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;invite</code></p>
+<h3 id="printsettings">;printsettings<a class="headerlink" href="#printsettings" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_guild</code> permission.</p>
 </div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
-<h4 id="shutdown">;shutdown<a class="headerlink" href="#shutdown" title="Permanent link">&para;</a></h4>
+<p>Prints settings for the cogs in this guild. </p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;printsettings [cog: optional]</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">printsettingsraw</code> - Using this will print the raw version of these files.</p>
+<p>Options:</p>
+<ul>
+<li>cog - OPTIONAL. If given, this will only show the setting of the cog given. This has to be the name the printsettings command gives.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Print the settings for the guild </span>
+<span class="p">;</span><span class="n">printsettings</span>
+<span class="c1"># print settings just for the Admin cog.</span>
+<span class="p">;</span><span class="n">printsettings</span> <span class="n">Admin</span>
+</pre></div>
+
+<h3 id="shutdown">;shutdown<a class="headerlink" href="#shutdown" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
+<p class="admonition-title">Required Permissions</p>
 <p>This command can only be exectuted by the owner of the Roxbot instance.</p>
 </div>
+<p>Shutdowns the bot.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;shutdown</code></p>
 <h2 id="cog-commands">Cog Commands<a class="headerlink" href="#cog-commands" title="Permanent link">&para;</a></h2>
-<h3 id="admin">Admin<a class="headerlink" href="#admin" title="Permanent link">&para;</a></h3>
+<p>Cog commands are all of the commands that aren't in the Core Roxbot code. This is anything that sits in the <code class="codehilite">cogs/</code> folder;</p>
+<h2 id="admin">Admin<a class="headerlink" href="#admin" title="Permanent link">&para;</a></h2>
 <p>The Admin cog adds admin commands to Roxbot which should make moderating a Discord server easier.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This whole cog cannot be used in private messages.</p>
 </div>
-<h4 id="ban">;ban<a class="headerlink" href="#ban" title="Permanent link">&para;</a></h4>
+<h3 id="ban">;ban<a class="headerlink" href="#ban" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user <strong>and</strong> Roxbot have the <code class="codehilite">ban_users</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">ban_users</code> permission.</p>
 </div>
-<h4 id="kick">;kick<a class="headerlink" href="#kick" title="Permanent link">&para;</a></h4>
+<h3 id="kick">;kick<a class="headerlink" href="#kick" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user <strong>and</strong> Roxbot have the <code class="codehilite">kick_users</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">kick_users</code> permission.</p>
 </div>
-<h4 id="purge">;purge<a class="headerlink" href="#purge" title="Permanent link">&para;</a></h4>
+<h3 id="purge">;purge<a class="headerlink" href="#purge" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user <strong>and</strong> Roxbot have the <code class="codehilite">manage_messages</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
-<h4 id="slowmode">;slowmode<a class="headerlink" href="#slowmode" title="Permanent link">&para;</a></h4>
+<h3 id="slowmode">;slowmode<a class="headerlink" href="#slowmode" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user <strong>and</strong> Roxbot have the <code class="codehilite">manage_channels</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">manage_channels</code> permission.</p>
 </div>
-<h4 id="unban">;unban<a class="headerlink" href="#unban" title="Permanent link">&para;</a></h4>
+<h3 id="unban">;unban<a class="headerlink" href="#unban" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user <strong>and</strong> Roxbot have the <code class="codehilite">ban_users</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">ban_users</code> permission.</p>
 </div>
-<h4 id="warn">;warn<a class="headerlink" href="#warn" title="Permanent link">&para;</a></h4>
+<h3 id="warn">;warn<a class="headerlink" href="#warn" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Group requires the user has the <code class="codehilite">kick_users</code> permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small></p>
+<p class="admonition-title">Required Permissions</p>
+<p>Group requires the user to have the <code class="codehilite">kick_users</code> permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small></p>
 </div>
 <p><strong>;warn add</strong></p>
 <p><strong>;warn list</strong></p>
@@ -1868,43 +2310,104 @@
 <p><strong>;warn remove</strong></p>
 <p><strong>;warn set_limit</strong></p>
 <hr />
-<h3 id="custom-commands">Custom Commands<a class="headerlink" href="#custom-commands" title="Permanent link">&para;</a></h3>
-<h4 id="custom">;custom<a class="headerlink" href="#custom" title="Permanent link">&para;</a></h4>
+<h2 id="custom-commands">Custom Commands<a class="headerlink" href="#custom-commands" title="Permanent link">&para;</a></h2>
+<h3 id="custom">;custom<a class="headerlink" href="#custom" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command group cannot be used in private messages.</p>
 </div>
-<h5 id="subcommands">Subcommands<a class="headerlink" href="#subcommands" title="Permanent link">&para;</a></h5>
-<p><strong>;custom add</strong></p>
+<h4 id="custom-add">;custom add<a class="headerlink" href="#custom-add" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user has the <code class="codehilite">manage_messages</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
-<p><strong>;custom edit</strong></p>
+<h4 id="custom-edit">;custom edit<a class="headerlink" href="#custom-edit" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user has the <code class="codehilite">manage_messages</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
-<p><strong>;custom list</strong></p>
-<p><strong>;custom remove</strong></p>
+<h4 id="custom-list">;custom list<a class="headerlink" href="#custom-list" title="Permanent link">&para;</a></h4>
+<h4 id="custom-remove">;custom remove<a class="headerlink" href="#custom-remove" title="Permanent link">&para;</a></h4>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>Command requires the user has the <code class="codehilite">manage_messages</code> permission.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
 <hr />
-<h3 id="fun">Fun<a class="headerlink" href="#fun" title="Permanent link">&para;</a></h3>
-<h4 id="aesthetics">;aesthetics<a class="headerlink" href="#aesthetics" title="Permanent link">&para;</a></h4>
-<h4 id="coinflip">;coinflip<a class="headerlink" href="#coinflip" title="Permanent link">&para;</a></h4>
-<h4 id="frogtips">;frogtips<a class="headerlink" href="#frogtips" title="Permanent link">&para;</a></h4>
-<h4 id="hug">;hug<a class="headerlink" href="#hug" title="Permanent link">&para;</a></h4>
-<h4 id="numberfact">;numberfact<a class="headerlink" href="#numberfact" title="Permanent link">&para;</a></h4>
-<h4 id="onthisday">;onthisday<a class="headerlink" href="#onthisday" title="Permanent link">&para;</a></h4>
-<h4 id="pet">;pet<a class="headerlink" href="#pet" title="Permanent link">&para;</a></h4>
-<h4 id="roll">;roll<a class="headerlink" href="#roll" title="Permanent link">&para;</a></h4>
+<h2 id="fun">Fun<a class="headerlink" href="#fun" title="Permanent link">&para;</a></h2>
+<p>The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining.</p>
+<h3 id="aesthetics">;aesthetics<a class="headerlink" href="#aesthetics" title="Permanent link">&para;</a></h3>
+<p>Converts text to be more ａｅｓｔｈｅｔｉｃ <small>fix-width text</small></p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;aesthetics text</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">ae</code>, <code class="codehilite">aesthetic</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Convert &quot;Hello World&quot; to fixed-width text.</span>
+<span class="p">;</span><span class="n">ae</span> <span class="n">Hello</span> <span class="n">World</span>
+</pre></div>
+
+<h3 id="coinflip">;coinflip<a class="headerlink" href="#coinflip" title="Permanent link">&para;</a></h3>
+<p>Filps a magical digital coin!</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;coinfilp</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">cf</code></p>
+<h3 id="frogtips">;frogtips<a class="headerlink" href="#frogtips" title="Permanent link">&para;</a></h3>
+<p>RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;frogtips</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">ft</code>, <code class="codehilite">frog</code></p>
+<h3 id="hug">;hug<a class="headerlink" href="#hug" title="Permanent link">&para;</a></h3>
+<p>Gives headpats to the mentioned user :3</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;hug USER</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - A name, ID, or mention of a user.</li>
+</ul>
+<p>Examples:
+<div class="codehilite"><pre><span></span><span class="c1"># Two ways to give Roxbot hugs.</span>
+<span class="p">;</span><span class="n">hug</span> <span class="nd">@Roxbot</span><span class="c1">#4170</span>
+<span class="p">;</span><span class="n">hug</span> <span class="n">Roxbot</span>
+</pre></div></p>
+<h3 id="numberfact">;numberfact<a class="headerlink" href="#numberfact" title="Permanent link">&para;</a></h3>
+<p>Returns a fact for the positive integer given. A random number is chosen if none is given.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;numberfact postive_integer</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">nf</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Random fact for the number 35</span>
+<span class="p">;</span><span class="n">nf</span> <span class="mi">35</span>
+</pre></div>
+
+<h3 id="onthisday">;onthisday<a class="headerlink" href="#onthisday" title="Permanent link">&para;</a></h3>
+<p>Returns a random fact of something that happened today!</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;onthisday</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">otd</code></p>
+<h3 id="pet">;pet<a class="headerlink" href="#pet" title="Permanent link">&para;</a></h3>
+<p>Gives headpats to the mentioned user :3</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;pet USER</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">headpat</code>, <code class="codehilite">pat</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - A name, ID, or mention of a user.</li>
+</ul>
+<p>Examples:
+<div class="codehilite"><pre><span></span><span class="c1"># Two ways to give Roxbot headpats.</span>
+<span class="p">;</span><span class="n">pet</span> <span class="nd">@Roxbot</span><span class="c1">#4170</span>
+<span class="p">;</span><span class="n">pet</span> <span class="n">Roxbot</span>
+</pre></div></p>
+<h3 id="roll">;roll<a class="headerlink" href="#roll" title="Permanent link">&para;</a></h3>
 <p>Rolls a die using dice expression format. Spaces in the expression are ignored.</p>
-<p><strong>Command structure</strong></p>
+<p>Command structure:</p>
 <p><code class="codehilite">;roll expression</code></p>
-<p><strong>Aliases</strong></p>
+<p>Aliases:</p>
 <p><code class="codehilite">die</code>, <code class="codehilite">dice</code></p>
 <div class="admonition example">
 <p class="admonition-title">Examples</p>
@@ -1916,48 +2419,120 @@
 <p>An expression can consist of many sub expressions added together and then a multiplier at the end to indicate how many times the expression should be rolled.</p>
 <p>Sub expressions can be of many types:</p>
 <ul>
-<li><code class="codehilite">[number] #add this number to the total</code></li>
-<li><code class="codehilite">d[sides] #roll a dice with that many sides and add it to the total</code></li>
-<li><code class="codehilite">[n]d[sides] #roll n dice. each of those dice have &lt;sides&gt; number of sides, sum all the dice and add to the total</code><ul>
-<li><code class="codehilite">add r[number] #reroll any rolls below [number]</code></li>
-<li><code class="codehilite">add h[number] #only sum the [number] highest rolls rather than all of them</code></li>
-<li><code class="codehilite">add l[number] #only sum the [number] lowest rolls rather than all of them</code></li>
+<li><code class="codehilite">[number]</code> - add this number to the total</li>
+<li><code class="codehilite">d[sides]</code>  - roll a dice with that many sides and add it to the total</li>
+<li><code class="codehilite">[n]d[sides]</code> - roll n dice. each of those dice have [sides] number of sides, sum all the dice and add to the total<ul>
+<li><code class="codehilite">add r[number]</code> - reroll any rolls below [number]</li>
+<li><code class="codehilite">add h[number]</code> - only sum the [number] highest rolls rather than all of them</li>
+<li><code class="codehilite">add l[number]</code> - only sum the [number] lowest rolls rather than all of them</li>
 </ul>
 </li>
-<li><code class="codehilite">x[number] #only use at the end. roll the rest of the expression [number] times(max 10)</code></li>
+<li><code class="codehilite">x[number]</code> - only use at the end. roll the rest of the expression [number] times(max 10)</li>
 </ul>
 <p>Credit: TBTerra#5677</p>
-<h4 id="roxbotfact">;roxbotfact<a class="headerlink" href="#roxbotfact" title="Permanent link">&para;</a></h4>
-<h4 id="spank">;spank<a class="headerlink" href="#spank" title="Permanent link">&para;</a></h4>
+<h3 id="roxbotfact">;roxbotfact<a class="headerlink" href="#roxbotfact" title="Permanent link">&para;</a></h3>
+<p>Returns a random fact about Roxbot! Roxbot has her own lore that you can discover through out these facts. Written especially for Roxbot.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;roxbotfact</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">rf</code>, <code class="codehilite">roxfact</code></p>
+<h3 id="spank">;spank<a class="headerlink" href="#spank" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This command will only work in channels marked NSFW </p>
+<p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<h4 id="suck">;suck<a class="headerlink" href="#suck" title="Permanent link">&para;</a></h4>
+<p>Spanks the mentioned user <img alt="😉" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f609.svg" title=":wink:" /></p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;spank USER</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - A name, ID, or mention of a user.</li>
+</ul>
+<p>Examples:
+<div class="codehilite"><pre><span></span><span class="c1"># Two ways to give Roxbot spanks.</span>
+<span class="p">;</span><span class="n">spank</span> <span class="nd">@Roxbot</span><span class="c1">#4170</span>
+<span class="p">;</span><span class="n">spank</span> <span class="n">Roxbot</span>
+</pre></div></p>
+<h3 id="suck">;suck<a class="headerlink" href="#suck" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This command will only work in channels marked NSFW </p>
+<p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<h4 id="waifurate">;waifurate<a class="headerlink" href="#waifurate" title="Permanent link">&para;</a></h4>
-<h4 id="xkcd">;xkcd<a class="headerlink" href="#xkcd" title="Permanent link">&para;</a></h4>
-<p>Grabs the image &amp; metadata of the given xkcd comic</p>
+<p>Sucks the mentioned user <img alt="😉" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f609.svg" title=":wink:" /></p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;suck USER</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">succ</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - A name, ID, or mention of a user.</li>
+</ul>
+<p>Examples:
+<div class="codehilite"><pre><span></span><span class="c1"># Two ways to give Roxbot the succ.</span>
+<span class="p">;</span><span class="n">suck</span> <span class="nd">@Roxbot</span><span class="c1">#4170</span>
+<span class="p">;</span><span class="n">suck</span> <span class="n">Roxbot</span>
+</pre></div></p>
+<h3 id="waifurate">;waifurate<a class="headerlink" href="#waifurate" title="Permanent link">&para;</a></h3>
+<p>Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated. <small>This may allow multiple people to be rated at once <img alt="👀" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f440.svg" title=":eyes:" /></small></p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;waifurate</code></p>
+<p>Aliases:</p>
+<p>Waifu Aliases: </p>
+<p><code class="codehilite">wf</code>, <code class="codehilite">wr</code></p>
+<p>Husbando Aliases: </p>
+<p><code class="codehilite">husbandorate</code>, <code class="codehilite">hr</code></p>
+<p>Spousu Aliases: </p>
+<p><code class="codehilite">spousurate</code>, <code class="codehilite">sr</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - A name, ID, or mention of a user.</li>
+</ul>
 <p>Example:</p>
-<table class="codehilitetable"><tr><td class="linenos"><div class="linenodiv"><pre>1
-2
-3</pre></div></td><td class="code"><div class="codehilite"><pre><span></span>{command_prefix}xkcd 666
-{command_prefix}xkcd Silent Hammer
-{command_prefix}xkcd latest
+<div class="codehilite"><pre><span></span><span class="c1"># Rate user#9999    </span>
+<span class="p">;</span><span class="n">waifurate</span> <span class="nd">@user</span><span class="c1">#9999</span>
 </pre></div>
-</td></tr></table>
 
-<h4 id="zalgo">;zalgo<a class="headerlink" href="#zalgo" title="Permanent link">&para;</a></h4>
+<div class="admonition quote">
+<p>This command is dedicated to Hannah, who came up with the command. I hope she's out there getting her waifus rated in peace.</p>
+</div>
+<h3 id="xkcd">;xkcd<a class="headerlink" href="#xkcd" title="Permanent link">&para;</a></h3>
+<p>Grabs the image &amp; metadata of the given xkcd comic. The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;xkcd [query: optional]</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Get random comic</span>
+<span class="p">;</span><span class="n">xkcd</span>
+<span class="c1"># Get comic number 666</span>
+<span class="p">;</span><span class="n">xkcd</span> <span class="mi">666</span>
+<span class="c1"># Get comic with the title &quot;Silent Hammer&quot;</span>
+<span class="p">;</span><span class="n">xkcd</span> <span class="s2">&quot;Silent Hammer&quot;</span>
+<span class="c1"># Get latest comic</span>
+<span class="p">;</span><span class="n">xkcd</span> <span class="n">latest</span>
+</pre></div>
+
+<h3 id="zalgo">;zalgo<a class="headerlink" href="#zalgo" title="Permanent link">&para;</a></h3>
+<p>Sends text to the nether and returns it back to you ̭҉̭̭ͭi̭͎̭ṋ̭̀҈̭̭̋ ̭͉̭z̭̩̭a̭̭̽ḽ̦̭g̭̞̭o̭̤̭ ̭̭͑f̭̻̭o̭̭͢r̭̭̀m̭̭ͮ</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;zalgo text</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">za</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Convert &quot;Hello World&quot; to zalgo.</span>
+<span class="p">;</span><span class="n">zalgo</span> <span class="n">Hello</span> <span class="n">World</span>
+</pre></div>
+
 <hr />
-<h3 id="image-editor">Image Editor<a class="headerlink" href="#image-editor" title="Permanent link">&para;</a></h3>
-<h4 id="deepfry">;deepfry<a class="headerlink" href="#deepfry" title="Permanent link">&para;</a></h4>
+<h2 id="imageeditor">ImageEditor<a class="headerlink" href="#imageeditor" title="Permanent link">&para;</a></h2>
+<p>The ImageEditor cog is a cog with multiple commands to manipulate images provided by the user.</p>
+<h3 id="deepfry">;deepfry<a class="headerlink" href="#deepfry" title="Permanent link">&para;</a></h3>
 <p>Deepfrys the given image</p>
-<p>Command structure: <code class="codehilite">;deepfry image</code></p>
-<p>Aliases: <code class="codehilite">df</code></p>
-<p><strong>Args</strong></p>
+<p>Command structure: </p>
+<p><code class="codehilite">;deepfry image</code></p>
+<p>Aliases: </p>
+<p><code class="codehilite">df</code></p>
+<p>Args:</p>
+<ul>
+<li>
 <p>image: Optional</p>
 <ol>
 <li>If no image is provided, image will be your avatar</li>
@@ -1965,12 +2540,18 @@
 <li>Provide a URL, that will be the image</li>
 <li>Provide an image via upload, that image will be deepfried</li>
 </ol>
-<h4 id="pride">;pride<a class="headerlink" href="#pride" title="Permanent link">&para;</a></h4>
+</li>
+</ul>
+<h3 id="pride">;pride<a class="headerlink" href="#pride" title="Permanent link">&para;</a></h3>
 <p><code class="codehilite">;pride</code> is a command group for multiple pride flag filters. Avalible pride filters are: LGBT, Bisexual, Asexual, Pansexual, Transgender, Non Binary, Agender, Gender Queer, Gender Fluid.</p>
-<p><strong>Command structure</strong></p>
+<p>Command structure:</p>
 <p><code class="codehilite">;pride subcommand image</code></p>
-<p><strong>Args</strong></p>
+<p>Args:</p>
+<ul>
+<li>
 <p>subcommand: One of the following: <code class="codehilite">lgbt, bisexual, asexual, pansexual, transgender, nonbinary, agender, genderqueer, genderfuild.</code></p>
+</li>
+<li>
 <p>image: Optional</p>
 <ol>
 <li>If no image is provided, image will be your avatar</li>
@@ -1978,167 +2559,414 @@
 <li>Provide a URL, that will be the image</li>
 <li>Provide an image via upload, that image will be deepfried</li>
 </ol>
+</li>
+</ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>If you want there to be more pride flag filters or feel there are some missing, don't be afraid to <a href="https://github.com/Roxxers/roxbot/issues/new">submit an issue to the Github repo!</a></p>
 </div>
-<h5 id="subcommands_1">Subcommands<a class="headerlink" href="#subcommands_1" title="Permanent link">&para;</a></h5>
-<p><strong>;pride agender</strong></p>
-<p><strong>;pride asexual</strong></p>
-<p><strong>Aliases</strong></p>
+<h4 id="pride-agender">;pride agender<a class="headerlink" href="#pride-agender" title="Permanent link">&para;</a></h4>
+<h4 id="pride-asexual">;pride asexual<a class="headerlink" href="#pride-asexual" title="Permanent link">&para;</a></h4>
+<p>Aliases:</p>
 <p><code class="codehilite">ace</code></p>
-<p><strong>;pride bisexual</strong></p>
-<p><strong>Aliases</strong></p>
+<h4 id="pride-bisexual">;pride bisexual<a class="headerlink" href="#pride-bisexual" title="Permanent link">&para;</a></h4>
+<p>Aliases:</p>
 <p><code class="codehilite">bi</code></p>
-<p><strong>;pride genderfluid</strong></p>
-<p><strong>Aliases</strong></p>
+<h4 id="pride-genderfluid">;pride genderfluid<a class="headerlink" href="#pride-genderfluid" title="Permanent link">&para;</a></h4>
+<p>Aliases:</p>
 <p><code class="codehilite">gf</code></p>
-<p><strong>;pride genderqueer</strong></p>
-<p><strong>Aliases</strong></p>
+<h4 id="pride-genderqueer">;pride genderqueer<a class="headerlink" href="#pride-genderqueer" title="Permanent link">&para;</a></h4>
+<p>Aliases:</p>
 <p><code class="codehilite">gq</code></p>
-<p><strong>;pride lgbt</strong></p>
-<p><strong>;pride nonbinary</strong></p>
-<p><strong>Aliases</strong></p>
+<h4 id="pride-lgbt">;pride lgbt<a class="headerlink" href="#pride-lgbt" title="Permanent link">&para;</a></h4>
+<h4 id="pride-nonbinary">;pride nonbinary<a class="headerlink" href="#pride-nonbinary" title="Permanent link">&para;</a></h4>
+<p>Aliases:</p>
 <p><code class="codehilite">nb</code>, <code class="codehilite">enby</code></p>
-<p><strong>;pride transgender</strong></p>
-<p><strong>Aliases</strong></p>
+<h4 id="pride-transgender">;pride transgender<a class="headerlink" href="#pride-transgender" title="Permanent link">&para;</a></h4>
+<p>Aliases:</p>
 <p><code class="codehilite">trans</code></p>
 <hr />
-<h3 id="join-leave">Join Leave<a class="headerlink" href="#join-leave" title="Permanent link">&para;</a></h3>
-<h4 id="goodbyes">;goodbyes<a class="headerlink" href="#goodbyes" title="Permanent link">&para;</a></h4>
+<h2 id="joinleave">JoinLeave<a class="headerlink" href="#joinleave" title="Permanent link">&para;</a></h2>
+<p>JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. </p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>This command cannot be used in private messages.</p>
+<p>This whole cog cannot be used in private messages.</p>
 </div>
-<h4 id="greets">;greets<a class="headerlink" href="#greets" title="Permanent link">&para;</a></h4>
+<h3 id="goodbyes">;goodbyes<a class="headerlink" href="#goodbyes" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This command cannot be used in private messages.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
+<p>Edits settings for the goodbye messages.</p>
+<p>Command Structure</p>
+<p><code class="codehilite">;goodbyes option [changes: optional]</code></p>
+<p>Options</p>
+<ul>
+<li><code class="codehilite">enable/disable</code> - Enable/disables goodbye messages.</li>
+<li><code class="codehilite">channel</code> - Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span># Enable goodbye messages, set the channel one called `#logs` using a channel mention.
+;goodbyes enable
+;goodbyes channel #logs
+</pre></div>
+
+<h3 id="greets">;greets<a class="headerlink" href="#greets" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
+</div>
+<p>Edits settings for the welcome messages</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;greets option [changes: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">enable/disable</code> - Enable/disables greet messages.</li>
+<li><code class="codehilite">channel</code> - Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.</li>
+<li><code class="codehilite">message</code> - Specifies a custom message for the greet messages.</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Enable greet messages, set the channel to the current one, and set a custom message to be appended.</span>
+<span class="p">;</span><span class="n">greets</span> <span class="n">enable</span>
+<span class="p">;</span><span class="n">greets</span> <span class="n">message</span> <span class="s2">&quot;Be sure to read the rules and say hi! :wave:&quot;</span>
+<span class="p">;</span><span class="n">greets</span> <span class="n">channel</span> <span class="c1"># if no channel is provided, it will default to the channel the command is executed in.</span>
+</pre></div>
+
 <hr />
-<h3 id="nsfw">NSFW<a class="headerlink" href="#nsfw" title="Permanent link">&para;</a></h3>
-<h4 id="e621">;e621<a class="headerlink" href="#e621" title="Permanent link">&para;</a></h4>
+<h2 id="nsfw">NSFW<a class="headerlink" href="#nsfw" title="Permanent link">&para;</a></h2>
+<p>The NSFW cog is a collection of commands that post images from popular NSFW sites. </p>
+<h3 id="e621">;e621<a class="headerlink" href="#e621" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<h4 id="gelbooru">;gelbooru<a class="headerlink" href="#gelbooru" title="Permanent link">&para;</a></h4>
+<p>Posts a random image from <a href="https://e621.net">e621</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;e621 [*tags: optional]</code></p>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Post a random image</span>
+<span class="p">;</span><span class="n">e621</span>
+<span class="c1"># Post a random image with the tag &quot;test&quot;</span>
+<span class="p">;</span><span class="n">e621</span> <span class="n">test</span>
+</pre></div>
+
+<h3 id="gelbooru">;gelbooru<a class="headerlink" href="#gelbooru" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<h4 id="rule34">;rule34<a class="headerlink" href="#rule34" title="Permanent link">&para;</a></h4>
+<p>Posts a random image from <a href="https://gelbooru.com">gelbooru</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;gelbooru [*tags: optional]</code></p>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Post a random image</span>
+<span class="p">;</span><span class="n">gelbooru</span>
+<span class="c1"># Post a random image with the tag &quot;test&quot;</span>
+<span class="p">;</span><span class="n">gelbooru</span> <span class="n">test</span>
+</pre></div>
+
+<h3 id="rule34">;rule34<a class="headerlink" href="#rule34" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
+<p>Posts a random image from <a href="https://rule34.xxx/">rule34.xxx</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;rule34 [*tags: optional]</code></p>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Post a random image</span>
+<span class="p">;</span><span class="n">rule34</span>
+<span class="c1"># Post a random image with the tag &quot;test&quot;</span>
+<span class="p">;</span><span class="n">rule34</span> <span class="n">test</span>
+</pre></div>
+
 <hr />
-<h4 id="nsfw_1">;nsfw<a class="headerlink" href="#nsfw_1" title="Permanent link">&para;</a></h4>
+<h3 id="nsfw_1">;nsfw<a class="headerlink" href="#nsfw_1" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission.</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
+<p>Edits settings for the nsfw cog and other nsfw commands.</p>
+<p>Options:
+    <code class="codehilite">enable/disable</code>: Enable/disables nsfw commands.
+    <code class="codehilite">addbadtag/removebadtag</code>: Add/Removes blacklisted tags so that you can avoid em with the commands.</p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Enabled NSFW commands</span>
+<span class="p">;</span><span class="n">nsfw</span> <span class="n">enable</span>
+<span class="c1"># Add &quot;test&quot; as a blacklisted tag</span>
+<span class="p">;</span><span class="n">nsfw</span> <span class="n">addbagtag</span> <span class="n">test</span>
+<span class="c1"># Remove &quot;Roxbot&quot; as a blacklisted tag</span>
+<span class="p">;</span><span class="n">nsfw</span> <span class="n">removebadtag</span> <span class="n">Roxbot</span>
+</pre></div>
+
 <hr />
-<h3 id="reddit">Reddit<a class="headerlink" href="#reddit" title="Permanent link">&para;</a></h3>
-<h4 id="subreddit">;subreddit<a class="headerlink" href="#subreddit" title="Permanent link">&para;</a></h4>
+<h2 id="reddit">Reddit<a class="headerlink" href="#reddit" title="Permanent link">&para;</a></h2>
+<p>The Reddit cog is a cog that allows users to get images and videos from their favourite subreddits.</p>
+<h3 id="subreddit">;subreddit<a class="headerlink" href="#subreddit" title="Permanent link">&para;</a></h3>
 <p>Grabs an image or video (jpg, png, gif, gifv, webm, mp4) from the subreddit inputted.</p>
-<p><strong>Command Structure</strong>
-<code class="codehilite">;subreddit name_of_subreddit</code></p>
-<p><strong>Example</strong>
-<code class="codehilite">;subreddit pics</code></p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;subreddit name_of_subreddit</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Get images from /r/pics</span>
+<span class="p">;</span><span class="n">subreddit</span> <span class="n">pics</span>
+</pre></div>
+
 <hr />
 <div class="admonition info">
 <p class="admonition-title">Info</p>
 <p>The following commands are alias-like commands that function like <code class="codehilite">;subreddit</code>, randomly selecting a subreddit in a collection of themed subreddits to get a post from.</p>
 </div>
-<h4 id="aww">;aww<a class="headerlink" href="#aww" title="Permanent link">&para;</a></h4>
+<h3 id="aww">;aww<a class="headerlink" href="#aww" title="Permanent link">&para;</a></h3>
 <p>Gives you cute pics from reddit</p>
-<p>Subreddits: <code class="codehilite">&quot;aww&quot;, &quot;redpandas&quot;, &quot;lazycats&quot;, &quot;rarepuppers&quot;, &quot;awwgifs&quot;, &quot;adorableart&quot;</code></p>
-<p><strong>Command Structure</strong></p>
+<p>Subreddits: </p>
+<p><code class="codehilite">&quot;aww&quot;, &quot;redpandas&quot;, &quot;lazycats&quot;, &quot;rarepuppers&quot;, &quot;awwgifs&quot;, &quot;adorableart&quot;</code></p>
+<p>Command Structure:</p>
 <p><code class="codehilite">;aww</code></p>
-<h4 id="feedme">;feedme<a class="headerlink" href="#feedme" title="Permanent link">&para;</a></h4>
+<h3 id="feedme">;feedme<a class="headerlink" href="#feedme" title="Permanent link">&para;</a></h3>
 <p>Feeds you with food porn.</p>
-<p>Subreddits: <code class="codehilite">&quot;foodporn&quot;, &quot;food&quot;, &quot;DessertPorn&quot;, &quot;tonightsdinner&quot;, &quot;eatsandwiches&quot;, &quot;steak&quot;, &quot;burgers&quot;, &quot;pizza&quot;, &quot;grilledcheese&quot;, &quot;PutAnEggOnIt&quot;, &quot;sushi&quot;</code></p>
-<p><strong>Command Structure</strong></p>
+<p>Subreddits: </p>
+<p><code class="codehilite">&quot;foodporn&quot;, &quot;food&quot;, &quot;DessertPorn&quot;, &quot;tonightsdinner&quot;, &quot;eatsandwiches&quot;, &quot;steak&quot;, &quot;burgers&quot;, &quot;pizza&quot;, &quot;grilledcheese&quot;, &quot;PutAnEggOnIt&quot;, &quot;sushi&quot;</code></p>
+<p>Command Structure:</p>
 <p><code class="codehilite">;feedme</code></p>
-<h4 id="feedmevegan">;feedmevegan<a class="headerlink" href="#feedmevegan" title="Permanent link">&para;</a></h4>
+<h3 id="feedmevegan">;feedmevegan<a class="headerlink" href="#feedmevegan" title="Permanent link">&para;</a></h3>
 <p>Feeds you with vegan food porn.</p>
-<p>Subreddits: <code class="codehilite">&quot;veganrecipes&quot;, &quot;vegangifrecipes&quot;, &quot;veganfoodporn&quot;</code></p>
-<p><strong>Command Structure</strong></p>
+<p>Subreddits: </p>
+<p><code class="codehilite">&quot;veganrecipes&quot;, &quot;vegangifrecipes&quot;, &quot;veganfoodporn&quot;</code></p>
+<p>Command Structure:</p>
 <p><code class="codehilite">;feedmevegan</code></p>
-<h4 id="me_irl">;me_irl<a class="headerlink" href="#me_irl" title="Permanent link">&para;</a></h4>
+<h3 id="me_irl">;me_irl<a class="headerlink" href="#me_irl" title="Permanent link">&para;</a></h3>
 <p>The full (mostly) me_irl network of subs.</p>
-<p>Subreddits: <code class="codehilite">&quot;me_irl&quot;, &quot;woof_irl&quot;, &quot;meow_irl&quot;, &quot;metal_me_irl&quot;</code></p>
-<p><strong>Command Structure</strong></p>
+<p>Subreddits: </p>
+<p><code class="codehilite">&quot;me_irl&quot;, &quot;woof_irl&quot;, &quot;meow_irl&quot;, &quot;metal_me_irl&quot;</code></p>
+<p>Command Structure:</p>
 <p><code class="codehilite">;me_irl</code></p>
-<p><strong>Aliases</strong></p>
+<p>Aliases:</p>
 <p><code class="codehilite">meirl</code></p>
-<h4 id="traa">;traa<a class="headerlink" href="#traa" title="Permanent link">&para;</a></h4>
+<h3 id="traa">;traa<a class="headerlink" href="#traa" title="Permanent link">&para;</a></h3>
 <p>Gives you the best trans memes for daysssss</p>
-<p>Subreddits: <code class="codehilite">&quot;gaysoundsshitposts&quot;, &quot;traaaaaaannnnnnnnnns&quot;</code></p>
-<p><strong>Command Structure</strong></p>
+<p>Subreddits: </p>
+<p><code class="codehilite">&quot;gaysoundsshitposts&quot;, &quot;traaaaaaannnnnnnnnns&quot;</code></p>
+<p>Command Structure:</p>
 <p><code class="codehilite">;traa</code></p>
-<p><strong>Aliases</strong></p>
+<p>Aliases:</p>
 <p><code class="codehilite">gssp</code>, <code class="codehilite">gss</code>, <code class="codehilite">trans_irl</code></p>
 <hr />
-<h3 id="self-assign">Self Assign<a class="headerlink" href="#self-assign" title="Permanent link">&para;</a></h3>
+<h2 id="selfassign">SelfAssign<a class="headerlink" href="#selfassign" title="Permanent link">&para;</a></h2>
+<p>The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This whole cog cannot be used in private messages.</p>
 </div>
-<h4 id="iam">;iam<a class="headerlink" href="#iam" title="Permanent link">&para;</a></h4>
-<h4 id="iamn">;iamn<a class="headerlink" href="#iamn" title="Permanent link">&para;</a></h4>
-<h4 id="listroles">;listroles<a class="headerlink" href="#listroles" title="Permanent link">&para;</a></h4>
+<h3 id="iam">;iam<a class="headerlink" href="#iam" title="Permanent link">&para;</a></h3>
+<p>Self-assign yourself a role. Can only be done one role at a time.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;iam role</code></p>
+<p>Example:</p>
+<p><code class="codehilite">;iam OverwatchPing</code></p>
+<h3 id="iamn">;iamn<a class="headerlink" href="#iamn" title="Permanent link">&para;</a></h3>
+<p>Remove a self-assigned role. Can only be done one role at a time.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;iamn role</code></p>
+<p>Example:</p>
+<p><code class="codehilite">;iamn OverwatchPing</code></p>
+<h3 id="listroles">;listroles<a class="headerlink" href="#listroles" title="Permanent link">&para;</a></h3>
+<p>List's all roles that can be self-assigned on this server.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;listroles</code></p>
 <hr />
-<h4 id="selfassign">;selfassign<a class="headerlink" href="#selfassign" title="Permanent link">&para;</a></h4>
-<hr />
-<h3 id="trivia">Trivia<a class="headerlink" href="#trivia" title="Permanent link">&para;</a></h3>
-<h4 id="trivia_1">;trivia<a class="headerlink" href="#trivia_1" title="Permanent link">&para;</a></h4>
+<h3 id="selfassign_1">;selfassign<a class="headerlink" href="#selfassign_1" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This command group cannot be used in private messages.</p>
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_roles</code> permission.</p>
 </div>
-<h5 id="subcommands_2">Subcommands<a class="headerlink" href="#subcommands_2" title="Permanent link">&para;</a></h5>
-<p><strong>;trivia about</strong></p>
-<p><strong>;trivia join</strong></p>
-<p><strong>;trivia leave</strong></p>
-<p><strong>;trivia start</strong></p>
-<p><strong>;trivia kick</strong></p>
+<p>Edits settings for self assign cog.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;sa option [role: optional]</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">sa</code></p>
+<p>Options:
+    enable/disable: Enable/disables the cog.
+    add/remove: adds or removes a role that can be self assigned in the server.</p>
+<p>Example:
+<div class="codehilite"><pre><span></span><span class="c1"># Turn on self assigned roles and add a role called &quot;ROLE&quot;</span>
+<span class="p">;</span><span class="n">sa</span> <span class="n">enable</span>
+<span class="p">;</span><span class="n">sa</span> <span class="n">add</span> <span class="n">ROLE</span>
+</pre></div></p>
 <hr />
-<h3 id="util">Util<a class="headerlink" href="#util" title="Permanent link">&para;</a></h3>
-<h4 id="avatar">;avatar<a class="headerlink" href="#avatar" title="Permanent link">&para;</a></h4>
-<h4 id="echo">;echo<a class="headerlink" href="#echo" title="Permanent link">&para;</a></h4>
-<h4 id="emote">;emote<a class="headerlink" href="#emote" title="Permanent link">&para;</a></h4>
-<h4 id="guild">;guild<a class="headerlink" href="#guild" title="Permanent link">&para;</a></h4>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This command cannot be used in private messages.</p>
-</div>
-<h4 id="info">;info<a class="headerlink" href="#info" title="Permanent link">&para;</a></h4>
-<h4 id="invite">;invite<a class="headerlink" href="#invite" title="Permanent link">&para;</a></h4>
-<h4 id="role">;role<a class="headerlink" href="#role" title="Permanent link">&para;</a></h4>
-<div class="admonition warning">
-<p class="admonition-title">Warning</p>
-<p>This command cannot be used in private messages.</p>
-</div>
-<hr />
-<h3 id="voice">Voice<a class="headerlink" href="#voice" title="Permanent link">&para;</a></h3>
+<h2 id="trivia">Trivia<a class="headerlink" href="#trivia" title="Permanent link">&para;</a></h2>
+<p><img alt="roxbottrivialogo" src="../assets/images/roxbottriviabanner.png" /></p>
+<p>Roxbot Trivia is a trivia game in <em>your</em> discord server. It's heavily inspired by Tower Unite's Trivia mini-game. Learn how to play Roxbot Trivia <a href="../trivia/">here</a>. More detailed documentation can be found below.</p>
+<p>This cog works better if the bot account is in the Roxbot Emoji Server. If it cannot find the emotes it needs, it will default to unicode emoji.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This whole cog cannot be used in private messages.</p>
 </div>
-<h4 id="join">;join<a class="headerlink" href="#join" title="Permanent link">&para;</a></h4>
-<h4 id="nowplaying">;nowplaying<a class="headerlink" href="#nowplaying" title="Permanent link">&para;</a></h4>
-<h4 id="pause">;pause<a class="headerlink" href="#pause" title="Permanent link">&para;</a></h4>
-<h4 id="play">;play<a class="headerlink" href="#play" title="Permanent link">&para;</a></h4>
-<h4 id="queue">;queue<a class="headerlink" href="#queue" title="Permanent link">&para;</a></h4>
-<h4 id="remove">;remove<a class="headerlink" href="#remove" title="Permanent link">&para;</a></h4>
-<h4 id="resume">;resume<a class="headerlink" href="#resume" title="Permanent link">&para;</a></h4>
-<h4 id="skip">;skip<a class="headerlink" href="#skip" title="Permanent link">&para;</a></h4>
-<h4 id="stop">;stop<a class="headerlink" href="#stop" title="Permanent link">&para;</a></h4>
-<h4 id="stream">;stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h4>
-<h4 id="volume">;volume<a class="headerlink" href="#volume" title="Permanent link">&para;</a></h4>
-<h4 id="voice_1">;voice<a class="headerlink" href="#voice_1" title="Permanent link">&para;</a></h4>
+<div class="admonition info">
+<p class="admonition-title">Disclaimer</p>
+<p>Roxbot Trivia uses the Open Trivia Database, made and maintained by Pixeltail Games LLC. The OpenTDB is licensed under the <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Find out more at <a href="https://opentdb.com/">https://opentdb.com/</a>.</p>
+</div>
+<h3 id="trivia_1">;trivia<a class="headerlink" href="#trivia_1" title="Permanent link">&para;</a></h3>
+<p>Command group for the Roxbot Trivia game. All interactions with the game are done through this command.</p>
+<p>Command Structure: </p>
+<p><code class="codehilite">;trivia subcommand</code></p>
+<p>Aliases: </p>
+<p><code class="codehilite">tr</code></p>
+<h4 id="trivia-about">;trivia about<a class="headerlink" href="#trivia-about" title="Permanent link">&para;</a></h4>
+<p>Displays help in playing Roxbot Trivia. If nothing/an incorrect subcommand is passed to the trivia command, this command is invoked instead. This outputs something similar to the <a href="../trivia/">About Roxbot Trivia page</a>.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;trivia about</code></p>
+<h4 id="trivia-join">;trivia join<a class="headerlink" href="#trivia-join" title="Permanent link">&para;</a></h4>
+<p>Joins a Trivia game in this channel. The game must be waiting for players to join after a user has executed the <code class="codehilite">;trivia start</code> command. You cannot join a game in progress.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;trivia join</code></p>
+<h4 id="trivia-leave">;trivia leave<a class="headerlink" href="#trivia-leave" title="Permanent link">&para;</a></h4>
+<p>Command to leave the game. When invoked, the user leaves the game and their score is removed from the leaderboard. This can be done at any point of the game.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;trivia leave</code></p>
+<h4 id="trivia-start">;trivia start<a class="headerlink" href="#trivia-start" title="Permanent link">&para;</a></h4>
+<p>Starts a trivia game in the channel the command was invoked in. </p>
+<p>Command Structure: </p>
+<p><code class="codehilite">;trivia start [*args: optional]</code></p>
+<p>Args: </p>
+<ul>
+<li>
+<p><code class="codehilite">--mobile</code>/<code class="codehilite">-m</code> - Launches the game in a mobile compatible mode. In case rich embeds are not readable, especially for Android users.</p>
+</li>
+<li>
+<p><code class="codehilite">--solo</code>/<code class="codehilite">-s</code> - Skips waiting for users to join and launches the game immediatly. Useful for users just wanting to play solo.</p>
+</li>
+<li>
+<p><code class="codehilite">--length</code>/<code class="codehilite">-l</code> - Takes option for the length of the game. Acceptable options are <code class="codehilite">short</code> (5 Questions), <code class="codehilite">medium</code> (10), and <code class="codehilite">long</code> (15).</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Start a standard trivia game</span>
+<span class="p">;</span><span class="n">trivia</span> <span class="n">start</span>
+
+<span class="c1"># Start a mobile compatible solo game of Roxbot Trivia</span>
+<span class="p">;</span><span class="n">tr</span> <span class="n">start</span> <span class="o">-</span><span class="n">ms</span>
+
+<span class="c1"># Start a solo short game</span>
+<span class="p">;</span><span class="n">tr</span> <span class="n">start</span> <span class="o">--</span><span class="n">solo</span> <span class="o">--</span><span class="n">length</span> <span class="n">short</span>
+</pre></div>
+
+<h4 id="trivia-kick">;trivia kick<a class="headerlink" href="#trivia-kick" title="Permanent link">&para;</a></h4>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission.</p>
+</div>
+<p>Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;trivia kick user</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">user</code> - A name, ID, or mention of a user.</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Kick user called BadTriviaPlayer</span>
+<span class="p">;</span><span class="n">tr</span> <span class="n">kick</span> <span class="nd">@BadTriviaPlayer</span>
+</pre></div>
+
+<hr />
+<h2 id="util">Util<a class="headerlink" href="#util" title="Permanent link">&para;</a></h2>
+<p>The Util cog is a cog filled with a number of utility commands to help more advanced users of Discord.</p>
+<h3 id="avatar">;avatar<a class="headerlink" href="#avatar" title="Permanent link">&para;</a></h3>
+<p>Uploads a downloadable picture of an avatar. </p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;avatar [user: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">user</code> - OPTIONAL: A name, ID, or mention of a user. If provided, the command will return the user's avatar, if not, it will provide your own.</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Get my avatar</span>
+<span class="p">;</span><span class="n">avatar</span>
+<span class="c1"># Get USER&#39;s avatar</span>
+<span class="p">;</span><span class="n">avatar</span> <span class="n">USER</span><span class="c1">#0001</span>
+</pre></div>
+
+<h3 id="emote">;emote<a class="headerlink" href="#emote" title="Permanent link">&para;</a></h3>
+<p>Displays infomation (creation date, guild, ID) and an easily downloadable version of the given custom emote.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;emote EMOTE</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">emoji</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">emote</code> - Needs to be a valid custom emoji</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Get infomation of the emoji &quot;:Kappa:&quot;</span>
+<span class="p">;</span><span class="n">emote</span> <span class="p">:</span><span class="n">Kappa</span><span class="p">:</span>
+</pre></div>
+
+<h3 id="guild">;guild<a class="headerlink" href="#guild" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This command cannot be used in private messages.</p>
+</div>
+<p>Gives information (creation date, owner, ID) on the guild this command is executed in.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;guild</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">server</code></p>
+<h3 id="info">;info<a class="headerlink" href="#info" title="Permanent link">&para;</a></h3>
+<p>Provides information (account creation date, ID, roles [if in a guild]) on your or another persons account.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;info [USER: optional]</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">user</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - OPTIONAL: A name, ID, or mention of a user.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Get account information for yourself</span>
+<span class="p">;</span><span class="n">info</span>
+<span class="c1"># Get account information for a user called USER</span>
+<span class="p">;</span><span class="n">info</span> <span class="nd">@USER</span>
+</pre></div>
+
+<h3 id="role">;role<a class="headerlink" href="#role" title="Permanent link">&para;</a></h3>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This command cannot be used in private messages.</p>
+</div>
+<p>Gives information (creation date, colour, ID) on the role given. Can only work if the role is in the guild you execute this command in.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;role ROLE</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">ROLE</code> - Name, ID, or mention of the role you want the info for. </li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Get information on the role called Admin</span>
+<span class="p">;</span><span class="n">role</span> <span class="n">Admin</span>
+</pre></div>
+
+<hr />
+<h2 id="voice">Voice<a class="headerlink" href="#voice" title="Permanent link">&para;</a></h2>
+<p>The Voice cog is a cog that adds and manages a fully-functional music bot for Roxbot.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>This whole cog cannot be used in private messages.</p>
+</div>
+<h3 id="join">;join<a class="headerlink" href="#join" title="Permanent link">&para;</a></h3>
+<h3 id="nowplaying">;nowplaying<a class="headerlink" href="#nowplaying" title="Permanent link">&para;</a></h3>
+<h3 id="pause">;pause<a class="headerlink" href="#pause" title="Permanent link">&para;</a></h3>
+<h3 id="play">;play<a class="headerlink" href="#play" title="Permanent link">&para;</a></h3>
+<h3 id="queue">;queue<a class="headerlink" href="#queue" title="Permanent link">&para;</a></h3>
+<h3 id="remove">;remove<a class="headerlink" href="#remove" title="Permanent link">&para;</a></h3>
+<h3 id="resume">;resume<a class="headerlink" href="#resume" title="Permanent link">&para;</a></h3>
+<h3 id="skip">;skip<a class="headerlink" href="#skip" title="Permanent link">&para;</a></h3>
+<h3 id="stop">;stop<a class="headerlink" href="#stop" title="Permanent link">&para;</a></h3>
+<h3 id="stream">;stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h3>
+<h3 id="volume">;volume<a class="headerlink" href="#volume" title="Permanent link">&para;</a></h3>
+<h3 id="voice_1">;voice<a class="headerlink" href="#voice_1" title="Permanent link">&para;</a></h3>
                 
                   
                 
@@ -2159,28 +2987,14 @@
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href="../config/" title="Configuring Roxbot" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
-            <div class="md-flex__cell md-flex__cell--shrink">
-              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
-            </div>
-            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
-              <span class="md-flex__ellipsis">
-                <span class="md-footer-nav__direction">
-                  Previous
-                </span>
-                Configuring Roxbot
-              </span>
-            </div>
-          </a>
         
-        
-          <a href="../creating_cogs/" title="Creating Cogs For Roxbot" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../trivia/" title="About Roxbot Trivia" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Next
                 </span>
-                Creating Cogs For Roxbot
+                About Roxbot Trivia
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
