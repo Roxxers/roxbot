@@ -24,14 +24,15 @@
 
 
 import os
-import random
+import emoji
+
 import discord
 from discord.ext import commands
 
 import roxbot
 
 
-class Util():
+class Util:
 	"""
 	The Util cog is a cog filled with a number of utility commands to help more advanced users of Discord.
 	"""
@@ -169,47 +170,8 @@ class Util():
 		embed.add_field(name="Managed", value=str(role.managed), inline=False)
 		return await ctx.send(embed=embed)
 
-	@commands.command(enabled=False, hidden=True)
-	async def upload(self, ctx):
-		"""
-		Uploads selected file to the host, thanks to the fact that
-		every pomf.se based site has pretty much the same architecture.
-		"""
-		sites = [
-			"https://comfy.moe/",
-			"https://mixtape.moe/",
-			"https://doko.moe/",
-			##"https://pomfe.co/",
-			##"https://pomf.space/",
-			"https://vidga.me/",
-			"https://pomf.pyonpyon.moe/"
-		]  # List of pomf clone sites and upload limits
-		if ctx.message.attachments:
-			# Site choice, shouldn't need an upload size check since max upload for discord atm is 50MB
-			site = random.choice(sites)
-			urls = []
-
-			print(site)
-			for attachment in ctx.message.attachments:
-				name = attachment.url.split("/")[-1]
-				# Download File
-				await roxbot.http.download_file(attachment.url, name)
-
-				response = await roxbot.http.upload_file(site+"upload.php", name)
-				file_name_1 = response["files"][0]["url"].replace("\\", "")
-				urls.append(file_name_1)
-				os.remove(name)
-			msg = "".join(urls)
-			return await ctx.send(msg)
-		else:
-			return await ctx.send("Send me stuff to upload.")
-
-	@upload.error
-	async def upload_err(self, ctx):
-		return await ctx.send("File couldn't be uploaded.")
-
 	@commands.command(aliases=["emoji"])
-	async def emote(self, ctx, emote: roxbot.converters.Emoji):
+	async def emote(self, ctx, emote):
 		"""
 		Displays infomation (creation date, guild, ID) and an easily downloadable version of the given custom emote.
 
@@ -217,25 +179,36 @@ class Util():
 			# Get infomation of the emoji ":Kappa:"
 			;emote :Kappa:
 		"""
-		try:
-			if isinstance(emote, str):
-				emote = emote.strip("<>").split(":")
-				if emote[0] == "a":
-					emoji_id = emote[2]
-				else:
-					emoji_id = emote[2]
-				url = "https://cdn.discordapp.com/emojis/{}".format(emoji_id)
-				return await ctx.send(url)
+		try:  # If emote given is custom emote
+			emote = await roxbot.converters.Emoji().convert(ctx, emote)
+			em = discord.Embed(title=emote.name, colour=roxbot.EmbedColours.blue)
+			em.add_field(name="ID", value=str(emote.id), inline=False)
+			if isinstance(emote, discord.Emoji):
+				em.add_field(name="Guild", value=str(emote.guild), inline=False)
+				em.add_field(name="Created At", value=roxbot.datetime_formatting.format(emote.created_at), inline=False)
+			em.set_image(url=emote.url)
+			return await ctx.send(embed=em)
+		except commands.errors.BadArgument:  # unicode emoji
+			title = emoji.demojize(emote)
+			if not emoji.EMOJI_UNICODE.get(title):
+				raise commands.BadArgument("Could not convert input to either unicode emoji or Discord custom emote.")
+
+			emojis = []
+			for char in emote:
+				emojis.append(hex(ord(char))[2:])
+
+			if len(emojis) > 1:
+				svg_url = "https://twemoji.maxcdn.com/2/svg/{0}-{1}.svg".format(*emojis)
+				png_url = "https://twemoji.maxcdn.com/2/72x72/{0}-{1}.png".format(*emojis)
 			else:
-				em = discord.Embed(title=emote.name, colour=roxbot.EmbedColours.blue)
-				em.add_field(name="ID", value=str(emote.id), inline=False)
-				if isinstance(emote, discord.Emoji):
-					em.add_field(name="Guild", value=str(emote.guild), inline=False)
-					em.add_field(name="Created At", value=roxbot.datetime_formatting.format(emote.created_at), inline=False)
-				em.set_image(url=emote.url)
-				return await ctx.send(embed=em)
-		except IndexError:
-			return await ctx.send("This command only supports custom emojis at the moment. Sorry.")
+				svg_url = "https://twemoji.maxcdn.com/2/svg/{0}.svg".format(*emojis)
+				png_url = "https://twemoji.maxcdn.com/2/72x72/{0}.png".format(*emojis)
+
+			em = discord.Embed(title=title, colour=roxbot.EmbedColours.blue)
+			em.description = "[SVG Link]({0})\n[PNG Link]({1})".format(svg_url, png_url)
+			em.set_image(url=png_url)
+
+			return await ctx.send(embed=em)
 
 
 def setup(bot_client):

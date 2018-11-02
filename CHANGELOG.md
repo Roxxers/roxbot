@@ -21,6 +21,7 @@ Roxbot should be easier for users to setup too with this update. I have made ful
 - Added more subreddits to the `;aww` command.
 - Changed the main name of the `;gss` command to `;traa` while adding ;gss as a alias. Also added `;trans_irl` as a alias.
 - Slowmode now uses Discord's own slowmode rather than its own system. 
+- `emote` command now has support for unicode emojis. Will show both svg and png links for twemoji.
 
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).

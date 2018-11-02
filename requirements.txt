@@ -5,3 +5,4 @@ numpy==1.14.3
 youtube_dl
 pymdown-extensions
 mkdocs-material
+emoji
