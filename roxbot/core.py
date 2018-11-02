@@ -235,7 +235,9 @@ class Core(ErrorHandling, Logging):
 	@commands.command(enabled=roxbot.backup_enabled)
 	@commands.is_owner()
 	async def backup(self, ctx):
-		"""Manually create a backup of the settings."""
+		"""Creates a backup of all server's settings manually. This will make a folder in `settings/backups/`.
+		The name of the folder will be outputted when you use the command.
+		Using only this and not the automatic backups is not recommened."""
 		time = datetime.datetime.now()
 		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
 		roxbot.guild_settings.backup(filename)
@@ -248,10 +250,15 @@ class Core(ErrorHandling, Logging):
 	@commands.command()
 	@commands.is_owner()
 	async def blacklist(self, ctx, option, users: commands.Greedy[discord.User]):
-		"""
-		Add or remove users to the blacklist. Blacklisted users are forbidden from using bot commands.
-		Usage:
-			;blacklist [add|+ OR remove|-] @user1#0000 user2
+		""" Manage the global blacklist for Roxbot. 
+		Options:
+			- `option` - This is whether to add or subtract users from the blacklist. `+` or `add` for add and `-` or `remove` for remove.
+			- `users` - A name, ID, or mention of a user. This allows multiple users to be mentioned.
+		Examples:
+			# Add three users to the blacklist
+			;blacklist add @ProblemUser1 ProblemUser2#4742 1239274620373
+			# Remove one user from the blacklist
+			;blacklist - @GoodUser
 		"""
 		blacklist_amount = 0
 
@@ -295,10 +302,14 @@ class Core(ErrorHandling, Logging):
 	@commands.is_owner()
 	async def changeavatar(self, ctx, url=None):
 		"""
-		Changes the bot's avatar. Can't be a gif.
-		Usage:
-			;changeavatar [url]
-		Attaching a file and leaving the url parameter blank also works.
+		Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.
+
+		Options:
+			- `image` -  This can either be uploaded as an attachment or linked after the command.
+
+		Example:
+			# Change avatar to linked image
+			;changeavatar https://i.imgur.com/yhRVl9e.png
 		"""
 		avaimg = 'avaimg'
 		if ctx.message.attachments:
@@ -314,20 +325,37 @@ class Core(ErrorHandling, Logging):
 
 	@commands.command(aliases=["nick", "nickname"])
 	@commands.is_owner()
+	@commands.guild_only()
 	@commands.bot_has_permissions(change_nickname=True)
 	async def changenickname(self, ctx, *, nick=None):
-		"""Changes the bot's nickname in the guild.
-		Usage:
-			;nickname [nickname]"""
+		"""Changes the nickname of Roxbot in the guild this command is executed in. 
+		
+		Options:
+			- `name` - OPTIONAL: If not given, Roxbot's nickname will be reset.
+
+		Example:
+			# Make Roxbot's nickname "Best Bot 2k18"
+			;nick Best Bot 2k18
+			# Reset Roxbot's nickname
+			;nick
+		"""
 		await ctx.guild.me.edit(nick=nick, reason=";nick command invoked.")
 		return await ctx.send(":thumbsup:")
 
 	@commands.command(aliases=["activity"])
 	@commands.is_owner()
 	async def changeactivity(self, ctx, *, game: str):
-		"""Changes the "playing" status of the bot.
-		Usage:
-			;changeactivity` [game]"""
+		"""Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.
+		
+		Options:
+			- `text` -  Either text to be added as the "game" or none to remove the activity.
+
+		Examples:
+			# Change activity to "with the command line" so that it displays "Playing with the command line"
+			;activity "with the command line"
+			# Stop displaying any activity
+			;activity none
+		"""
 		if game.lower() == "none":
 			game = None
 		else:
@@ -338,9 +366,17 @@ class Core(ErrorHandling, Logging):
 	@commands.command(aliases=["status"])
 	@commands.is_owner()
 	async def changestatus(self, ctx, status: str):
-		"""Changes the status of the bot.
-		Usage:
-			;changesatus [game]"""
+		"""Changes the status of the bot account.
+		
+		Options:
+			- `status` - There are four different options to choose. `online`, `away`, `dnd` (do not disturb), and `offline`
+
+		Examples:
+			# Set Roxbot to offline
+			;changestatus offline
+			# Set Roxbot to online
+			;changestatus online
+		"""
 		status = status.lower()
 		if status == 'offline' or status == 'invisible':
 			discord_status = discord.Status.invisible
@@ -406,7 +442,16 @@ class Core(ErrorHandling, Logging):
 	@commands.command(aliases=["printsettingsraw"])
 	@commands.has_permissions(manage_guild=True)
 	async def printsettings(self, ctx, option=None):
-		"""OWNER OR ADMIN ONLY: Prints the servers settings file."""
+		"""Prints settings for the cogs in this guild. 
+		Options:
+			- cog - OPTIONAL. If given, this will only show the setting of the cog given. This has to be the name the printsettings command gives.
+
+		Examples:
+			# Print the settings for the guild 
+			;printsettings
+			# print settings just for the Admin cog.
+			;printsettings Admin
+		"""
 		config = roxbot.guild_settings.get(ctx.guild)
 		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
 		paginator = commands.Paginator(prefix="```py")
@@ -443,7 +488,12 @@ class Core(ErrorHandling, Logging):
 	@commands.command()
 	@commands.is_owner()
 	async def echo(self, ctx, channel: discord.TextChannel, *, message: str):
-		"""Repeats after you, Roxie."""
+		"""Echos the given string to a given channel.
+		
+		Example:
+			# Post the message "Hello World" to the channel #general
+			;echo #general Hello World
+		"""
 		await channel.send(message)
 		return await ctx.send(":point_left:")
 

@@ -192,7 +192,8 @@ class Fun:
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
 		Spanks the mentioned user ;)
-		Exmaples:
+
+		Examples:
 			# Two ways to give Roxbot spanks.
 			;spank @Roxbot#4170
 			;spank Roxbot
@@ -247,7 +248,8 @@ class Fun:
 	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx, *waifu: commands.Greedy[discord.Member]):
 		"""
-		Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated.
+		Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated. This may allow multiple people to be rated at once :eyes:
+
 		Example:
 			;waifurate @user#9999
 

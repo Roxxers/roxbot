@@ -8,7 +8,7 @@ date: 2018-10-27
 
 # Command Documentaion
 
-Before reading this, it is highly recommened you read the [quick start](quickstart.md) guide that will get you upto date with how Roxbot works and how to run her. This is handy if you expect to use commands that will edit Roxbot or Roxbot's guild settings.
+If you intend to use any commands requiring permissions, it is highly recommened you read the [quick start](quickstart.md) guide that will get you upto date with how Roxbot works and how to run her.
 
 ## How to use the docs
 
@@ -25,38 +25,158 @@ These are the base commands for Roxbot that are a part of the core bot. All of t
 
 ### ;backup
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
+
+Creates a backup of all server's settings manually. This will make a folder in `settings/backups/`. The name of the folder will be outputted when you use the command. Using only this and not the automatic backups is not recommened.
+
+Command Structure:
+
+`;backup`
 
 ### ;blacklist
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
+
+Manage the global blacklist for Roxbot. 
+
+Command Structure:
+
+`;blacklist option *users`
+
+Options:
+
+- `option` - This is whether to add or subtract users from the blacklist. `+` or `add` for add and `-` or `remove` for remove.
+
+- `users` - A name, ID, or mention of a user. This allows multiple users to be mentioned.
+
+Examples:
+
+```py
+# Add three users to the blacklist
+;blacklist add @ProblemUser1 ProblemUser2#4742 1239274620373
+# Remove one user from the blacklist
+;blacklist - @GoodUser
+```
+
 
 ### ;changeactivity
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
+
+Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.
+
+Command Structure:
+
+`;changeactivity text`
+
+Aliases:
+
+`activity`
+
+Options:
+
+- `text` -  Either text to be added as the "game" or none to remove the activity.
+
+Examples:
+
+```py
+# Change activity to "with the command line" so that it displays "Playing with the command line"
+;activity "with the command line"
+# Stop displaying any activity
+;activity none
+```
 
 ### ;changeavatar
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
+
+Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.
+
+Command Structure:
+
+`;changeavatar image`
+
+Aliases:
+
+`setavatar`
+
+Options:
+
+- `image` -  This can either be uploaded as an attachment or linked after the command.
+
+Example:
+```py
+# Change avatar to linked image
+;changeavatar https://i.imgur.com/yhRVl9e.png
+```
 
 ### ;changenickname
 
 !!! warning
+    This command cannot be used in private messages.
+
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
+
+Changes the nickname of Roxbot in the guild this command is executed in. 
+
+Command Structure:
+
+`;changenickname name`
+
+Aliases:
+
+`nickname`, `nick`
+
+Options:
+
+- `name` - OPTIONAL: If not given, Roxbot's nickname will be reset.
+
+Example:
+
+```py
+# Make Roxbot's nickname "Best Bot 2k18"
+;nick Best Bot 2k18
+# Reset Roxbot's nickname
+;nick
+```
 
 ### ;changestatus
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
+
+Changes the status of the bot account.
+
+Command Structure:
+
+`;changestatus status`
+
+Aliases:
+
+`status`
+
+Options:
+
+- `status` - There are four different options to choose. `online`, `away`, `dnd` (do not disturb), and `offline`
+
+Examples:
+
+```py
+# Set Roxbot to offline
+;changestatus offline
+# Set Roxbot to online
+;changestatus online
+```
 
 
 ### ;echo
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
 
 Echos the given string to a given channel.
@@ -74,7 +194,28 @@ Example:
 
 ### ;help
 
+Displays all commands you can execute in that channel. If a command is specifed, it will show the help for that command.
 
+Command Structure:
+
+`;help [command: optional]`
+
+Options:
+
+- `command` - OPTIONAL: If a command is specifed, it will show the help for that command. If this is a command group, it will show the commands in that group and some help. If a subcommand in a group, then the help for that command.
+
+Examples:
+
+```py
+# List all commands I can execute in this current channel
+;help
+# Show help for the "subreddit" command
+;help subreddit
+# Show help for the "custom" command group
+;help custom
+# Show help for the "custom add" subcommand
+;help custom add
+```
 
 ### ;invite
 
@@ -87,18 +228,49 @@ Command Structure:
 
 ### ;printsettings
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_guild` permission.
 
 !!! warning
     This command cannot be used in private messages.
 
+Prints settings for the cogs in this guild. 
+
+Command Structure:
+
+`;printsettings [cog: optional]`
+
+Aliases:
+
+`printsettingsraw` - Using this will print the raw version of these files.
+
+Options:
+
+- cog - OPTIONAL. If given, this will only show the setting of the cog given. This has to be the name the printsettings command gives.
+
+Examples:
+
+```py
+# Print the settings for the guild 
+;printsettings
+# print settings just for the Admin cog.
+;printsettings Admin
+```
+
 ### ;shutdown
 
-!!! warning
+!!! warning "Required Permissions"
     This command can only be exectuted by the owner of the Roxbot instance.
 
+Shutdowns the bot.
+
+Command Structure:
+
+`;shutdown`
+
 ## Cog Commands
+
+Cog commands are all of the commands that aren't in the Core Roxbot code. This is anything that sits in the `cogs/` folder;
 
 ## Admin
 The Admin cog adds admin commands to Roxbot which should make moderating a Discord server easier.
@@ -108,35 +280,35 @@ The Admin cog adds admin commands to Roxbot which should make moderating a Disco
 
 ### ;ban
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `ban_users` permission.
 
 ### ;kick
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `kick_users` permission.
 
 
 ### ;purge
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_messages` permission.
 
 
 ### ;slowmode
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_channels` permission.
 
 ### ;unban
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `ban_users` permission.
 
 
 ### ;warn
 
-!!! warning
+!!! warning "Required Permissions"
     Group requires the user to have the `kick_users` permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small>
 
 __;warn add__
@@ -160,19 +332,19 @@ __;warn set_limit__
 
 #### ;custom add
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
 
 #### ;custom edit
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
 
 #### ;custom list
 
 #### ;custom remove
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
 
 
@@ -396,7 +568,7 @@ Examples:
 
 ### ;waifurate
 
-Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated.
+Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated. <small>This may allow multiple people to be rated at once :eyes:</small>
 
 Command Structure:
 
@@ -415,6 +587,10 @@ Husbando Aliases:
 Spousu Aliases: 
 
 `spousurate`, `sr`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
 
 Example:
 
@@ -572,6 +748,9 @@ JoinLeave is a cog that allows you to create custom welcome and goodbye messages
 
 ### ;goodbyes
 
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_messages` permission.
+
 Edits settings for the goodbye messages.
 
 Command Structure
@@ -593,6 +772,9 @@ Example:
 ```
 
 ### ;greets
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_messages` permission.
 
 Edits settings for the welcome messages
 
@@ -687,7 +869,7 @@ Examples:
 
 ### ;nsfw
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_channels` permission.
 
 !!! warning
@@ -852,7 +1034,7 @@ Command Structure:
 
 ### ;selfassign
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_roles` permission.
 
 Edits settings for self assign cog.
@@ -960,7 +1142,7 @@ Examples:
 
 #### ;trivia kick
 
-!!! warning
+!!! warning "Required Permissions"
     Command requires the user to have the `manage_channels` permission.
 
 Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.
