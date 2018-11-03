@@ -173,10 +173,10 @@ class Util:
 	@commands.command(aliases=["emoji"])
 	async def emote(self, ctx, emote):
 		"""
-		Displays infomation (creation date, guild, ID) and an easily downloadable version of the given custom emote.
+		Displays information (creation date, guild, ID) and an easily downloadable version of the given custom emote.
 
 		Example:
-			# Get infomation of the emoji ":Kappa:"
+			# Get information of the emoji ":Kappa:"
 			;emote :Kappa:
 		"""
 		try:  # If emote given is custom emote

@@ -300,7 +300,7 @@ class Fun:
 	@commands.command(aliases=["cf"])
 	async def coinflip(self, ctx):
 		"""
-		Filps a magical digital coin!
+		Flips a magical digital coin!
 		"""
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
@@ -395,11 +395,19 @@ class Fun:
 	@commands.bot_has_permissions(add_reactions=True)
 	async def xkcd(self, ctx, *, query=None):
 		"""
-		Grabs the image & metadata of the given xkcd comic. The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
-		Example:
-		{command_prefix}xkcd 666
-		{command_prefix}xkcd Silent Hammer
-		{command_prefix}xkcd latest
+		Grabs the image & metadata of the given xkcd comic.
+
+		The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
+
+		Examples:
+			# Get random comic
+			;xkcd
+			# Get comic number 666
+			;xkcd 666
+			# Get comic with the title "Silent Hammer"
+			;xkcd "Silent Hammer"
+			# Get latest comic
+			;xkcd latest
 		"""
 		msg = ""
 		title_query_url = "http://www.explainxkcd.com/wiki/api.php?format=json&action=query&redirects&titles={}"
@@ -496,7 +504,10 @@ class Fun:
 
 	@commands.command(aliases=["rf", "roxfacts", "roxfact"])
 	async def roxbotfact(self, ctx):
-		"""Returns a random fact about Roxbot! Roxbot has her own lore that you can discover through out these facts. Written especially for Roxbot."""
+		"""Returns a random fact about Roxbot!
+
+		Roxbot has her own lore that you can discover through out these facts. Written especially for Roxbot.
+		"""
 		# Roxbot fact cache
 		if isinstance(ctx.channel, discord.DMChannel):
 			cache_id = ctx.author.id

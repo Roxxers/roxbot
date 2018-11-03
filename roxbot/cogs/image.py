@@ -220,8 +220,7 @@ class ImageEditor:
 
 	@commands.group(case_insensitive=True)
 	async def pride(self, ctx):
-		"""A collection of filters that show simple LGBT pride flags over the image provided.
-		The filters work with either your pfp, someone elses', or an image provided either by attachment or URL."""
+		"""`;pride` is a command group for multiple pride flag filters."""
 		if ctx.invoked_subcommand is None:
 			raise commands.CommandNotFound(ctx.subcommand_passed)
 

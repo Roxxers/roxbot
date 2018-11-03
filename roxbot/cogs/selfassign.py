@@ -59,6 +59,7 @@ class SelfAssign():
 		Options:
 			enable/disable: Enable/disables the cog.
 			add/remove: adds or removes a role that can be self assigned in the server.
+
 		Example:
 			Turn on self assigned roles and add a role called "ROLE"
 			`;sa enable`
@@ -101,8 +102,6 @@ class SelfAssign():
 	async def listroles(self, ctx):
 		"""
 		List's all roles that can be self-assigned on this server.
-		Usage:
-			{command_prefix}listroles
 		"""
 		settings = gs.get(ctx.guild)
 		paginator = commands.Paginator(prefix="`", suffix="`")
@@ -125,8 +124,7 @@ class SelfAssign():
 	async def iam(self, ctx, *, role: discord.Role):
 		"""
 		Self-assign yourself a role. Can only be done one role at a time.
-		Usage:
-			{command_prefix}iam [role]
+
 		Example:
 			.iam OverwatchPing
 		"""
@@ -152,8 +150,7 @@ class SelfAssign():
 	async def iamn(self, ctx, *, role: discord.Role):
 		"""
 		Remove a self-assigned role. Can only be done one role at a time.
-		Usage:
-			{command_prefix}iamn [role]
+
 		Example:
 			.iamn OverwatchPing
 		"""

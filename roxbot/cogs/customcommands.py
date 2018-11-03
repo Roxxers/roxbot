@@ -173,7 +173,7 @@ class CustomCommands:
 			# Add an embed command called test3 with a title of "Title" and a description that is a markdown hyperlink to a youtube video, and the colour #deadbf
 			;cc add embed test3 title "Title" description "[Click here for a rad video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)" colour #deadbf
 
-    	Note: With custom commands, it is important to remember that "" is used to pass any text with spaces as one thing. If the output you want requires the use of these characters, surround your output with three speech quotes at either side instead.
+    	Note: With custom commands, it is important to remember that "" is used to pass any text with spaces as one argument. If the output you want requires the use of these characters, surround your output with three speech quotes at either side instead.
 		"""
 		if command_type in ("0", "no_prefix", "no prefix"):
 			command_type = "0"

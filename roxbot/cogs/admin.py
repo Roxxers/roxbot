@@ -130,8 +130,9 @@ class Admin:
 	@commands.command()
 	async def purge(self, ctx, limit=0, *, author: roxbot.converters.User=None):
 		"""Purges the text channel the command is execture in. You can specify a certain user to purge as well.
+
 		Options:
-			- `limit` - This the the amount of messages Roxbot will take from the chat and pruge. Note: This **does not** mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.
+			- `limit` - This the the amount of messages Roxbot will take from the chat and purge. Note: This **does not** mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.
 			- `USER` - A name, ID, or mention of a user. If the user has left the guild, this **has** to be the ID.
 
 		Examples:
@@ -154,8 +155,8 @@ class Admin:
 	@commands.group(case_insensitive=True)
 	async def warn(self, ctx):
 		"""The warn command group allows Discord moderators to warn users and log them within the bot.
-		The command group also supports setting limits to warn mods if a user has been warned over a certain threshold.
 
+		The command group also supports setting limits to warn mods if a user has been warned over a certain threshold.
 		"""
 		if ctx.invoked_subcommand is None:
 			raise commands.CommandNotFound(ctx.subcommand_passed)
@@ -273,7 +274,7 @@ class Admin:
 			- `index` - OPTIONAL. The index of the single warning you want to remove.
 
 		Examples:
-			# Remove all warmings for Roxbot
+			# Remove all warnings for Roxbot
 			;warn remove Roxbot
 			# Remove warning 2 for Roxbot
 			;warn remove Roxbot 2
@@ -349,8 +350,8 @@ class Admin:
 	async def set_limit(self, ctx, number_of_warnings: int):
 		"""
 		Sets the limit for how many warnings a user can get before mod's are notified.
-		Example: if 3 is set, on the third warning, mods will be DM'd. If this is set to 0, DM's will be disabled.
 
+		Example: if 3 is set, on the third warning, mods will be DM'd. If this is set to 0, DM's will be disabled.
 		"""
 		if number_of_warnings < 0:
 			raise commands.BadArgument(self.ERROR_WARN_SL_NEG)
@@ -371,7 +372,9 @@ class Admin:
 	@commands.command()
 	async def kick(self, ctx, member: discord.Member, *, reason=""):
 		"""Kicks the mentioned user with the ability to give a reason.
+
 		Requires the Kick Members permission.
+
 		Options:
 			- `USER` - A name, ID, or mention of a user.
 			- `reason` - OPTIONAL. A short reason for the kicking.
@@ -396,6 +399,7 @@ class Admin:
 	@commands.command()
 	async def ban(self, ctx, member: discord.Member, *, reason=""):
 		"""Bans the mentioned user with the ability to give a reason.
+
 		Requires the Ban Members permission.
 
 		Options:
@@ -422,10 +426,12 @@ class Admin:
 	@commands.command()
 	async def unban(self, ctx, member: roxbot.converters.User, *, reason=""):
 		"""Unbans the mentioned user with the ability to give a reason.
+
 		Requires the Ban Members permission.
+
 		Options:
-		- `user_id` - The ID of a banned user.
-		- `reason` - OPTIONAL. A short reason for the unbanning.
+			- `user_id` - The ID of a banned user.
+			- `reason` - OPTIONAL. A short reason for the unbanning.
 
 		Examples:
 			# Unban user with ID 478294672394

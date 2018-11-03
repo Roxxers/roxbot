@@ -1,13 +1,13 @@
 ---
-title: Command Documentaion
+title: Command Documentation
 description: Documentation for all of Roxbot's commands.
 authors:
     - Roxanne Gibson
 ---
 
-# Command Documentaion
+# Command Documentation
 
-If you intend to use any commands requiring permissions, it is highly recommened you read the [quick start](quickstart.md) guide that will get you upto date with how Roxbot works and how to run her.
+If you intend to use any commands requiring permissions, it is highly recommend you read the [quick start](quickstart.md) guide that will get you up to date with how Roxbot works and how to run her.
 
 ## How to use the docs
 
@@ -20,14 +20,14 @@ An alias is just another way of executing the command. Usually to shorten the co
 When the command wants a CHANNEL, USER, MEMBER, or ROLE. This means the ID, name, or mention of that part of Discord. Role, User, and Member mentions start with a '@' and Channel mentions start with a '#'. A Member is the same as a User except a Member is explicitly a User in a Guild.
 
 ## Core Commands
-These are the base commands for Roxbot that are a part of the core bot. All of them deal with internal management and are, for the most part, unavalible to average users.
+These are the base commands for Roxbot that are a part of the core bot. All of them deal with internal management and are, for the most part, unavailable to average users.
 
 ### ;backup
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
-Creates a backup of all server's settings manually. This will make a folder in `settings/backups/`. The name of the folder will be outputted when you use the command. Using only this and not the automatic backups is not recommened.
+Creates a backup of all server's settings manually. This will make a folder in `settings/backups/`. The name of the folder will be outputted when you use the command. Using only this and not the automatic backups is not recommend.
 
 Command Structure:
 
@@ -36,7 +36,7 @@ Command Structure:
 ### ;blacklist
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Manage the global blacklist for Roxbot. 
 
@@ -63,7 +63,7 @@ Examples:
 ### ;changeactivity
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.
 
@@ -91,7 +91,7 @@ Examples:
 ### ;changeavatar
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.
 
@@ -119,7 +119,7 @@ Example:
     This command cannot be used in private messages.
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Changes the nickname of Roxbot in the guild this command is executed in. 
 
@@ -147,7 +147,7 @@ Example:
 ### ;changestatus
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Changes the status of the bot account.
 
@@ -176,7 +176,7 @@ Examples:
 ### ;echo
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Echos the given string to a given channel.
 
@@ -193,7 +193,7 @@ Example:
 
 ### ;help
 
-Displays all commands you can execute in that channel. If a command is specifed, it will show the help for that command.
+Displays all commands you can execute in that channel. If a command is specified, it will show the help for that command.
 
 Command Structure:
 
@@ -201,7 +201,7 @@ Command Structure:
 
 Options:
 
-- `command` - OPTIONAL: If a command is specifed, it will show the help for that command. If this is a command group, it will show the commands in that group and some help. If a subcommand in a group, then the help for that command.
+- `command` - OPTIONAL: If a command is specified, it will show the help for that command. If this is a command group, it will show the commands in that group and some help. If a subcommand in a group, then the help for that command.
 
 Examples:
 
@@ -259,7 +259,7 @@ Examples:
 ### ;shutdown
 
 !!! warning "Required Permissions"
-    This command can only be exectuted by the owner of the Roxbot instance.
+    This command can only be executed by the owner of the Roxbot instance.
 
 Shutdowns the bot.
 
@@ -336,7 +336,7 @@ Examples:
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_messages` permission.
     
-Purges the text channel the command is execture in. You can specify a certain user to purge as well.
+Purges the text channel the command is executed in. You can specify a certain user to purge as well.
 
 Command Structure:
 
@@ -344,7 +344,7 @@ Command Structure:
 
 Options:
 
-- `limit` - This the the amount of messages Roxbot will take from the chat and pruge. Note: This **does not** mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.
+- `limit` - This the the amount of messages Roxbot will take from the chat and purge. Note: This **does not** mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.
 
 - `USER` - A name, ID, or mention of a user. If the user has left the guild, this **has** to be the ID.
 
@@ -495,7 +495,7 @@ Options:
 Examples:
 
 ```py
-# Remove all warmings for Roxbot
+# Remove all warnings for Roxbot
 ;warn remove Roxbot
 # Remove warning 2 for Roxbot
 ;warn remove Roxbot 2
@@ -579,7 +579,7 @@ Examples:
 ```
 
 !!! note
-    With custom commands, it is important to remember that "" is used to pass any text with spaces as one thing. If the output you want requires the use of these characters, surround your output with """this""" instead.
+    With custom commands, it is important to remember that "" is used to pass any text with spaces as one argument. If the output you want requires the use of these characters, surround your output with """this""" instead.
 
 
 #### ;custom edit
@@ -658,7 +658,7 @@ Example:
 
 ### ;coinflip
 
-Filps a magical digital coin!
+Flips a magical digital coin!
 
 Command Structure:
 
@@ -895,7 +895,7 @@ Command Structure:
 
 `;xkcd [query: optional]`
 
-Example:
+Examples:
 
 ```py
 # Get random comic
@@ -957,7 +957,7 @@ Args:
 
 ### ;pride
 
-`;pride` is a command group for multiple pride flag filters. Avalible pride filters are: LGBT, Bisexual, Asexual, Pansexual, Transgender, Non Binary, Agender, Gender Queer, Gender Fluid.
+`;pride` is a command group for multiple pride flag filters. Available pride filters are: LGBT, Bisexual, Asexual, Pansexual, Transgender, Non Binary, Agender, Gender Queer, Gender Fluid.
 
 Command structure:
 
@@ -1444,7 +1444,7 @@ Args:
 
 - `--mobile`/`-m` - Launches the game in a mobile compatible mode. In case rich embeds are not readable, especially for Android users.
 
-- `--solo`/`-s` - Skips waiting for users to join and launches the game immediatly. Useful for users just wanting to play solo.
+- `--solo`/`-s` - Skips waiting for users to join and launches the game immediately. Useful for users just wanting to play solo.
 
 - `--length`/`-l` - Takes option for the length of the game. Acceptable options are `short` (5 Questions), `medium` (10), and `long` (15).
 
@@ -1514,7 +1514,7 @@ Example:
 
 ### ;emote
 
-Displays infomation (creation date, guild, ID) and an easily downloadable version of the given custom emote.
+Displays information (creation date, guild, ID) and an easily downloadable version of the given custom emote.
 
 Command Structure:
 

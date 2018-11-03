@@ -236,8 +236,11 @@ class Core(ErrorHandling, Logging):
 	@commands.is_owner()
 	async def backup(self, ctx):
 		"""Creates a backup of all server's settings manually. This will make a folder in `settings/backups/`.
+
 		The name of the folder will be outputted when you use the command.
-		Using only this and not the automatic backups is not recommened."""
+
+		Using only this and not the automatic backups is not recommend.
+		"""
 		time = datetime.datetime.now()
 		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
 		roxbot.guild_settings.backup(filename)
@@ -250,10 +253,12 @@ class Core(ErrorHandling, Logging):
 	@commands.command()
 	@commands.is_owner()
 	async def blacklist(self, ctx, option, users: commands.Greedy[discord.User]):
-		""" Manage the global blacklist for Roxbot. 
+		""" Manage the global blacklist for Roxbot.
+
 		Options:
 			- `option` - This is whether to add or subtract users from the blacklist. `+` or `add` for add and `-` or `remove` for remove.
 			- `users` - A name, ID, or mention of a user. This allows multiple users to be mentioned.
+
 		Examples:
 			# Add three users to the blacklist
 			;blacklist add @ProblemUser1 ProblemUser2#4742 1239274620373
