@@ -1608,24 +1608,221 @@ The Voice cog is a cog that adds and manages a fully-functional music bot for Ro
 
 ### ;join
 
+Summon Roxbot to a voice channel, usually the one you are currently in. 
+
+!!! note
+    This is done automatically when you execute the `;play` or `;stream` commands.
+    
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission
+    
+Command Structure:
+
+`;join [Voice Channel: optional]`
+
+Options:
+
+- `Voice Channel` - OPTIONAL. The name of a Voice Channel
+
+Example:
+
+```py
+# Join a voice channle called General
+;join General
+```
+
 ### ;nowplaying
+
+Displays what is currently playing.
+
+Command Structure:
+
+`;nowplaying`
+
+Aliases:
+
+`;np`
 
 ### ;pause
 
+Pauses the current video, if playing.
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission if this is enabled by server admins using the needperms setting in `;voice`
+
+Command Structure:
+
+`;pause`
+
 ### ;play
+
+Plays a video over voice chat using the given URL. This URL has to be one that YoutubeDL can download from. [A list can be found here.](https://rg3.github.io/youtube-dl/supportedsites.html) 
+
+If the bot is already playing something, this will be queued up to be played later. If you want to play a livestream, use the `;stream` command.
+
+!!! info
+    The user needs to be in a voice channel for this command to work. This is ignored if the user has the `manage_channels` permission. There is also a duration limit that can be placed on videos. This is also ignored if the user has the `manage_channels` permission.
+
+Command Structure:
+
+`;play url`
+
+Options:
+
+- `url` -  A url to a video or playlist or a search term. If a playlist, it will play the first video and queue up all other videos in the playlist. If just text, Roxbot will play the first Youtube search result.
+
+Examples:
+
+```py
+# Play the quality youtube video
+;play https://www.youtube.com/watch?v=A_pIPTih5iM
+```
 
 ### ;queue
 
+Displays what videos are queued up and waiting to be played.
+
+Command Structure:
+
+`;queue`
+
 ### ;remove
+
+Removes a video from the queue. 
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission
+    
+Command Structure:
+
+`;remove index/"all"`
+
+Options:
+
+- `index/all` - A number representing an index in the queue to remove one video, or "all" to clear all videos.
+
+Examples:
+
+```py
+# Remove 2nd video
+;remove 2
+# Clear the queue
+;remove all
+```
 
 ### ;resume
 
+Resumes the bot, if paused.
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission if this is enabled by server admins using the needperms setting in `;voice`
+
+Command Structure:
+
+`;resume`
+
+
 ### ;skip
+
+Skips the current playing video. 
+
+If skipvoting is enabled, multiple people will have to use this command to go over the ratio that is also set by server moderators.
+
+Command Structure:
+
+`;skip [--force: optional]`
+
+Options:
+
+- `--force` - if skip voting is enabled, users with the `manage_channel` permission can skip this process and for the video to be skipped.
+
+Examples:
+
+
+```py
+# Vote to skip a video
+;skip
+# Force skip a video
+;skip --force
+```
 
 ### ;stop
 
+Stops Roxbot from playing music and has her leave voice chat.
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission.
+    
+Command Structure:
+
+`;stop`
+
+Aliases:
+
+`disconnect`
+
 ### ;stream
+
+A version of `;play` that should be used to stream livestreams or internet radio sources. 
+
+For more details on how this command words, please look at the documentation for the `;play` command.
+
+Command Structure:
+
+`;stream url`
 
 ### ;volume
 
+Sets the volume percentage for Roxbot's audio. 
+
+The current volume of Roxbot is displayed by her nowplaying rich embeds that are displayed when she begins to play a video or when the `;nowplaying` command is used.
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission if this is enabled by server admins using the needperms setting in `;voice`
+    
+Command Structure:
+
+`;volume percent`
+
+Options:
+
+- `percent` - A positive integer between 0-100 representing a percentage.
+
+Example:
+
+```py
+# Set volume to 20%
+;volume 20
+```
+
 ### ;voice
+
+Edits settings for the voice cog.
+
+!!! warning "Required Permissions"
+    Command requires the user to have the `manage_channels` permission
+    
+Command Structure:
+
+`;voice option [change: optional]`
+    
+Options:
+    
+- `enable/disable`: Enable/disables specified change.
+- `skipratio`: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
+- `maxlength/duration`: Specify (in seconds) the max duration of a video that can be played. 
+    
+Possible settings to enable/disable:
+
+- `needperms`: specifies whether `volume`, `pause`, or `resume` require permissions or not.
+- `skipvoting`: enables voting to skip instead of one user skipping.
+    
+Example:
+```py
+# Enable skipvoting
+;voice enable skipvoting
+# Disbale needing perms
+;voice disable needperms
+# Edit maxlength to 5 minutes
+;voice maxlength 300
+```

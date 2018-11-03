@@ -58,7 +58,7 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
-def volume_perms():
+def need_perms():
 	def predicate(ctx):
 		gs = roxbot.guild_settings.get(ctx.guild)
 		if gs["voice"]["need_perms"]:
@@ -231,7 +231,18 @@ class Voice:
 	@commands.guild_only()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
-		"""Joins the voice channel your in."""
+		"""Summon Roxbot to a voice channel, usually the one you are currently in.
+
+		This is done automatically when you execute the `;play` or `;stream` commands.
+
+		Options:
+
+			- `Voice Channel` - OPTIONAL. The name of a Voice Channel
+
+		Example:
+			# Join a voice channle called General
+			;join General
+		"""
 		# Get channel
 		if channel is None:
 			try:
@@ -259,7 +270,21 @@ class Voice:
 	@commands.cooldown(1, 0.8, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
 	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
-		"""Plays from a url or search query (almost anything youtube_dl supports)"""
+		"""Plays a video over voice chat using the given URL. This URL has to be one that YoutubeDL can download from. [A list can be found here.](https://rg3.github.io/youtube-dl/supportedsites.html)
+
+		If the bot is already playing something, this will be queued up to be played later. If you want to play a livestream, use the `;stream` command.
+
+		The user needs to be in a voice channel for this command to work. This is ignored if the user has the `manage_channels` permission. There is also a duration limit that can be placed on videos. This is also ignored if the user has the `manage_channels` permission.
+
+
+		Options:
+
+			- `url` -  A url to a video or playlist or a search term. If a playlist, it will play the first video and queue up all other videos in the playlist. If just text, Roxbot will play the first Youtube search result.
+
+		Examples:
+			# Play the quality youtube video
+			;play https://www.youtube.com/watch?v=A_pIPTih5iM
+		"""
 		guild = ctx.guild
 		voice = roxbot.guild_settings.get(guild)["voice"]
 
@@ -316,27 +341,43 @@ class Voice:
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
-		"""Streams given link. Good for Twitch. (same as play, but doesn't predownload)"""
+		"""
+		A version of `;play` that should be used to stream livestreams or internet radio sources.
+
+		For more details on how this command words, please look at the documentation for the `;play` command.
+		"""
 		# Just invoke the play command with the stream argument as true. Deals with everything else anyway.
 		return await ctx.invoke(self.play, url=url, stream=True)
 
-	@volume_perms()
+	@need_perms()
 	@commands.guild_only()
 	@commands.command()
 	async def volume(self, ctx, volume: int):
-		"""Changes the player's volume. Only accepts integers representing x% between 0-100%"""
-		if 0 < volume <= 100:
+		"""
+		Sets the volume percentage for Roxbot's audio.
+
+		The current volume of Roxbot is displayed by her nowplaying rich embeds that are displayed when she begins to play a video or when the `;nowplaying` command is used.
+
+		Options:
+
+			- `percent` - A positive integer between 0-100 representing a percentage.
+
+		Example:
+			# Set volume to 20%
+			;volume 20
+		"""
+		if 0 <= volume <= 100:
 			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 			self._volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 		else:
 			raise commands.CommandError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
 
+	@need_perms()
 	@commands.guild_only()
 	@commands.cooldown(1, 2)
 	@commands.command()
 	async def pause(self, ctx):
-		# TODO: Add some timeouts on pause and resumes
 		"""Pauses the current video, if playing."""
 		if ctx.voice_client.is_paused():
 			return await ctx.send("I already am paused!")
@@ -344,11 +385,12 @@ class Voice:
 			ctx.voice_client.pause()
 			return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
 
+	@need_perms()
 	@commands.guild_only()
 	@commands.cooldown(1, 2)
 	@commands.command()
 	async def resume(self, ctx):
-		"""Resumes the bot if paused.."""
+		"""Resumes the bot, if paused."""
 		if ctx.voice_client.is_paused():
 			ctx.voice_client.resume()
 			return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
@@ -361,7 +403,19 @@ class Voice:
 	@commands.guild_only()
 	@commands.command()
 	async def skip(self, ctx, option=""):
-		"""Skips or votes to skip the current video. Can use option "--force" if you have manage_channels permission. """
+		"""Skips the current playing video.
+
+		If skipvoting is enabled, multiple people will have to use this command to go over the ratio that is also set by server moderators.
+
+		Options:
+			- `--force` - if skip voting is enabled, users with the `manage_channel` permission can skip this process and for the video to be skipped.
+
+		Examples:
+			# Vote to skip a video
+			;skip
+			# Force skip a video
+			;skip --force
+		"""
 		voice = roxbot.guild_settings.get(ctx.guild)["voice"]
 		if voice["skip_voting"] and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
 			if ctx.author in self.skip_votes[ctx.guild.id]:
@@ -389,7 +443,7 @@ class Voice:
 	@commands.guild_only()
 	@commands.command(aliases=["np"])
 	async def nowplaying(self, ctx):
-		"""Displays the video now playing."""
+		"""Displays what is currently playing."""
 		if self.now_playing[ctx.guild.id] is None:
 			return await ctx.send("Nothing is playing.")
 		else:
@@ -428,7 +482,17 @@ class Voice:
 	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def remove(self, ctx, index):
-		"""Removes a item from the queue with the given index. Can also input all to delete all queued items. Requires the Manage Channels permission"""
+		"""Removes a item from the queue with the given index.
+
+		Options:
+			- `index/all` - A number representing an index in the queue to remove one video, or "all" to clear all videos.
+
+		Examples:
+			# Remove 2nd video
+			;remove 2
+			# Clear the queue
+			;remove all
+		"""
 		# Try and convert index into an into. If not possible, just move forward
 		try:
 			index = int(index)
@@ -455,7 +519,7 @@ class Voice:
 	@commands.has_permissions(manage_channels=True)
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):
-		"""Stops and disconnects the bot from voice. Requires the Manage Channels permission"""
+		"""Stops Roxbot from playing music and has her leave voice chat."""
 		# Clear up variables before stopping.
 		self.playlist[ctx.guild.id] = []
 		self.now_playing[ctx.guild.id] = None
@@ -495,16 +559,24 @@ class Voice:
 	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def voice(self, ctx, setting=None, change=None):
-		"""Edits settings for the voice cog. Requires the Manage Channels permission
+		"""Edits settings for the voice cog.
+
 		Options:
-			enable/disable: Enable/disables specified change.
-			skipratio: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
-			maxlength/duration: Specify (in seconds) the max duration of a video that can be played. Ignored if staff of the server/bot owner.
+			- `enable/disable`: Enable/disables specified change.
+			- `skipratio`: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
+			- `maxlength/duration`: Specify (in seconds) the max duration of a video that can be played.
+
 		Possible settings to enable/disable:
-			needperms: specifies whether volume controls and other bot functions need mod/admin perms.
-			skipvoting: specifies whether skipping should need over half of voice users to vote to skip. Bypassed by mods.
+			- `needperms`: specifies whether `volume`, `pause`, or `resume` require permissions or not.
+			- `skipvoting`: enables voting to skip instead of one user skipping.
+
 		Example:
-			;settings voice enable skipvoting
+			# Enable skipvoting
+			;voice enable skipvoting
+			# Disbale needing perms
+			;voice disable needperms
+			# Edit maxlength to 5 minutes
+			;voice maxlength 300
 		"""
 		setting = setting.lower()
 		change = change.lower()
