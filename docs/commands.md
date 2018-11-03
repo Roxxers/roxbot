@@ -530,28 +530,106 @@ Examples:
 
 ## Custom Commands
 
+The Custom Commands cog allows moderators to add custom commands for their Discord server to Roxbot. Allowing custom outputs predefined by the moderators. 
+
+For example, we can set a command to require a prefix and call it "roxbot" and configure an output. Then if a user does `;roxbot` roxbot will output the configured output.
+
 ### ;custom
+
+This command group handle settings for the custom commands. 
 
 !!! warning
     This command group cannot be used in private messages.
 
 #### ;custom add
 
+Add a custom command.
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
+    
+Command Structure:
+
+`;custom add type name *output`
+
+Aliases:
+
+`cc`
+
+Options:
+
+- `type` - There are three types of custom commands.
+    - `no_prefix`/`0` - These are custom commands that will trigger without a prefix. Example: a command named `test` will trigger when a user says `test` in chat.
+    - `prefix`/`1` - These are custom commands that will trigger with a prefix. Example: a command named `test` will trigger when a user says `;test` in chat.
+    - `embed`/`2` - These are prefix commands that will output a rich embed. [You can find out more about rich embeds from Discord's API documentation.](https://discordapp.com/developers/docs/resources/channel#embed-object) Embed types currently support these fields: `title, description, colour, color, url, footer, image, thumbnail`
+- `name` - The name of the command. No commands can have the same name.
+- `output` - The output of the command. The way you input this is determined by the type.
+
+`no_prefix` and `prefix` types support single outputs and also listing multiple outputs. When the latter is chosen, the output will be a random choice of the multiple outputs.
+
+Examples:
+
+```py
+# Add a no_prefix command called "test" with the output "hello world"
+;cc add no_prefix test "hello world"
+# Add a prefix command called test2 with a randomised output between "the person above me is annoying" and "the person above me is cool :sunglasses:"
+;cc add prefix test2 "the person above me is annoying" "the person above me is cool :sunglasses:
+# Add an embed command called test3 with a title of "Title" and a description that is a markdown hyperlink to a youtube video, and the colour #deadbf
+;cc add embed test3 title "Title" description "[Click here for a rad video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)" colour #deadbf
+```
+
+!!! note
+    With custom commands, it is important to remember that "" is used to pass any text with spaces as one thing. If the output you want requires the use of these characters, surround your output with """this""" instead.
+
 
 #### ;custom edit
 
+Edits an already existing custom command. 
+
+!!! note
+    You cannot change the type of a command. If you want to change the type, remove the command and re-add it.
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
+    
+Command Structure:
+
+`;custom edit command_name new_output`
+
+Example:
+
+For more examples of how to setup a custom command, look at the help for the ;custom add command. 
+
+```py
+# edit a command called test to output "new output"
+;cc edit test "new output"
+```
 
 #### ;custom list
 
+Lists all custom commands for this guild.
+
+Command Structure:
+
+`;custom list`
+
 #### ;custom remove
+
+Removed the named custom command.
 
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
 
+Command Structure:
+
+`;custom remove command`
+
+Example:
+
+```py
+# Remove custom command called "test"
+;cc remove test
+```
 
 ---
 
