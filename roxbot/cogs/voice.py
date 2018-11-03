@@ -160,6 +160,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 
 class Voice:
 	"""The Voice cog is a cog that adds and manages a fully-functional music bot for Roxbot."""
+	# TODO: Add voting to many of the commands.
 	def __init__(self, bot):
 		# Auto Cleanup cache files on boot
 		self._clear_cache()
@@ -175,6 +176,7 @@ class Voice:
 				"max_length": 600
 			}
 		}
+		# TODO: Make this into a on roxbot joining voice thing instead of generating this for all servers on boot.
 		self.refresh_rate = 1/60  # 60hz
 		self._volume = {}
 		self.playlist = {}  # All audio to be played

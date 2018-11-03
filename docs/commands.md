@@ -1,9 +1,8 @@
 ---
 title: Command Documentaion
-summary: Documentation for all of Roxbot's commands.
+description: Documentation for all of Roxbot's commands.
 authors:
-    - Roxanne Gibsin
-date: 2018-10-27
+    - Roxanne Gibson
 ---
 
 # Command Documentaion
@@ -275,6 +274,7 @@ Cog commands are all of the commands that aren't in the Core Roxbot code. This i
 ## Admin
 The Admin cog adds admin commands to Roxbot which should make moderating a Discord server easier.
 
+
 !!! warning
     This whole cog cannot be used in private messages.
 
@@ -282,28 +282,130 @@ The Admin cog adds admin commands to Roxbot which should make moderating a Disco
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `ban_users` permission.
+    
+Bans the mentioned user with the ability to give a reason.
+
+Command Structure:
+
+`;ban USER [reason: optional]`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+- `reason` - OPTIONAL. A short reason for the banning.
+
+Examples:
+
+```py
+# Ban user BadUser
+;ban @BadUser
+# Ban user Roxbot for being a meanie
+;ban Roxbot "for being a meanie"
+```
 
 ### ;kick
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `kick_users` permission.
+    
+Kicks the mentioned user with the ability to give a reason.
+
+Command Structure:
+
+`;kick USER [reason: optional]`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+- `reason` - OPTIONAL. A short reason for the kicking.
+
+Examples:
+
+```py
+# Kick user BadUser
+;kick @BadUser
+# Kick user Roxbot for being a meanie
+;kick Roxbot "for being a meanie"
+```
 
 
 ### ;purge
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_messages` permission.
+    
+Purges the text channel the command is execture in. You can specify a certain user to purge as well.
+
+Command Structure:
+
+`;purge limit [USER: optional]`
+
+Options:
+
+- `limit` - This the the amount of messages Roxbot will take from the chat and pruge. Note: This **does not** mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.
+
+- `USER` - A name, ID, or mention of a user. If the user has left the guild, this **has** to be the ID.
+
+
+Examples:
+
+```py
+# Delete 20 messages from the chat
+;purge 20
+# Take 20 messages, and delete any message in it by user @Spammer
+;purge 20 @Spammer
+```
 
 
 ### ;slowmode
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_channels` permission.
+    
+Puts the channel in slowmode. Users with `manage_channel` or `manage_messages` permissions will not be effected.
+
+Command Structure:
+
+`;slowmode seconds`
+
+Options:
+
+- `seconds` - Has to be between 0 - 120. This will set the timeout a user receives once they send a message in this channel. If 0, Roxbot will disable slowmode.
+
+Examples:
+
+```py
+# Set slowmode to 30 seconds
+;slowmode 30
+# Turn slowmode off
+;slowmode 0
+```
 
 ### ;unban
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `ban_users` permission.
+    
+Unbans the mentioned user with the ability to give a reason.
+
+Command Structure:
+
+`;unban user_id [reason: optional]`
+
+Options:
+
+- `user_id` - The ID of a banned user.
+
+- `reason` - OPTIONAL. A short reason for the unbanning.
+
+Examples:
+
+```py
+# Unban user with ID 478294672394
+;unban 478294672394
+```
 
 
 ### ;warn
@@ -311,15 +413,118 @@ The Admin cog adds admin commands to Roxbot which should make moderating a Disco
 !!! warning "Required Permissions"
     Group requires the user to have the `kick_users` permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small>
 
-__;warn add__
+The warn command group allows Discord moderators to warn users and log them within the bot. The command group also supports setting limits to warn mods if a user has been warned over a certain threshold.
 
-__;warn list__
+#### ;warn add
 
-__;warn prune__
+Adds a warning to a user.
 
-__;warn remove__
+Command Structure:
 
-__;warn set_limit__
+`;warn add USER [warning: optional]`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+- `warning` - OPTIONAL. A reason for the warning. This supports markdown formatting.
+
+Example:
+
+```py
+# Add warning to user @Roxbot for being a meanie
+;warn add @Roxbot "for being a meanie"
+```
+
+#### ;warn list
+
+Lists all warning in this guild or all the warnings for one user.
+
+Command Structure:
+
+`;warn list [USER: optional]`
+
+Options:
+
+- `USER` - OPTIONAL. A name, ID, or mention of a user.
+
+Examples:
+
+```py
+# List all warnings in the guild
+;warn list
+# List all warnings for @Roxbot
+;warn list @Roxbot
+```
+
+#### ;warn prune
+
+Prunes the warnings of any banned users. You can add a 1 at the end to dryrun the command. This will show you how many would be deleted without deleting them.
+
+Command Structure:
+
+`;warn prune [dryrun: optional]`
+
+Options:
+
+- `dryrun` - Add `1` to the end of the command to do a dryrun of the prune command.
+
+Examples:
+
+```py
+# Prune the warnings of banned users in this guild
+;warn prune
+# Dryrun the prune command to see how many warnings would be removed
+;warn prune 1
+```
+
+#### ;warn remove
+
+Removes one or all of the warnings for a user.
+
+Command Structure:
+
+`;warn remove USER [index: optional]`
+
+Options:
+
+- `USER` - A name, ID, or mention of a user.
+
+- `index` - OPTIONAL. The index of the single warning you want to remove.
+
+Examples:
+
+```py
+# Remove all warmings for Roxbot
+;warn remove Roxbot
+# Remove warning 2 for Roxbot
+;warn remove Roxbot 2
+```
+
+#### ;warn set_limit
+
+Sets the limit for how many warnings a user can get before mod's are notified. If 3 is set, on the third warning, mods will be DM'd. If this is set to 0, DM's will be disabled.
+
+Command Structure:
+
+`;warn set_limit number`
+
+Aliases:
+
+`sl`, `setlimit`
+
+Options:
+
+- `number` - A positive integer. Once this number is equal to the number of warnings a user has, the mod who did the latest warning will be dm'd about it. If it is set to 0, this is disabled.
+
+Examples:
+
+```py
+# Set the warning limit to 3
+;warn sl 3
+# Disable warnings
+;warn set_limit 0
+```
 
 ---
 
@@ -520,10 +725,11 @@ Aliases:
 
 ### ;spank
 
+Spanks the mentioned user :wink:
+
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-Spanks the mentioned user :wink:
 
 Command Structure:
 
@@ -542,10 +748,11 @@ Examples:
 
 ### ;suck
 
+Sucks the mentioned user :wink:
+
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-Sucks the mentioned user :wink:
 
 Command Structure:
 
@@ -696,8 +903,16 @@ Args:
 
 #### ;pride agender
 
+Command structure:
+
+`;pride agender image`
+
 
 #### ;pride asexual
+
+Command structure:
+
+`;pride asexual image`
 
 Aliases:
 
@@ -705,11 +920,19 @@ Aliases:
 
 #### ;pride bisexual
 
+Command structure:
+
+`;pride bisexual image`
+
 Aliases:
 
 `bi`
 
 #### ;pride genderfluid
+
+Command structure:
+
+`;pride genderfluid image`
 
 Aliases:
 
@@ -717,21 +940,36 @@ Aliases:
 
 #### ;pride genderqueer
 
+Command structure:
+
+`;pride genderqueer image`
+
 Aliases:
 
 `gq`
 
 #### ;pride lgbt
 
+Command structure:
+
+`;pride lgbt image`
+
 
 #### ;pride nonbinary
 
+Command structure:
+
+`;pride nonbinary image`
 
 Aliases:
 
 `nb`, `enby`
 
 #### ;pride transgender
+
+Command structure:
+
+`;pride transgender image`
 
 Aliases:
 
@@ -748,10 +986,11 @@ JoinLeave is a cog that allows you to create custom welcome and goodbye messages
 
 ### ;goodbyes
 
+Edits settings for the goodbye messages.
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
 
-Edits settings for the goodbye messages.
 
 Command Structure
 
@@ -773,10 +1012,11 @@ Example:
 
 ### ;greets
 
+Edits settings for the welcome messages
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_messages` permission.
 
-Edits settings for the welcome messages
 
 Command Structure:
 
@@ -806,10 +1046,11 @@ The NSFW cog is a collection of commands that post images from popular NSFW site
 
 ### ;e621
 
+Posts a random image from [e621](https://e621.net) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-Posts a random image from [e621](https://e621.net) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
 
 Command Structure:
 
@@ -826,10 +1067,11 @@ Examples:
 
 ### ;gelbooru
 
+Posts a random image from [gelbooru](https://gelbooru.com) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+
 !!! warning
     This command will only work in channels marked NSFW or DMs.
 
-Posts a random image from [gelbooru](https://gelbooru.com) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
 
 Command Structure:
 
@@ -846,11 +1088,10 @@ Examples:
 
 ### ;rule34
 
+Posts a random image from [rule34.xxx](https://rule34.xxx/) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
-
-Posts a random image from [rule34.xxx](https://rule34.xxx/) using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
 
 Command Structure:
 
@@ -869,13 +1110,14 @@ Examples:
 
 ### ;nsfw
 
+Edits settings for the nsfw cog and other nsfw commands.
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_channels` permission.
 
 !!! warning
     This command cannot be used in private messages.
 
-Edits settings for the nsfw cog and other nsfw commands.
 
 Options:
 	`enable/disable`: Enable/disables nsfw commands.
@@ -1034,10 +1276,11 @@ Command Structure:
 
 ### ;selfassign
 
+Edits settings for self assign cog.
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_roles` permission.
 
-Edits settings for self assign cog.
 
 Command Structure:
 
@@ -1142,10 +1385,11 @@ Examples:
 
 #### ;trivia kick
 
+Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_channels` permission.
 
-Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.
 
 Command Structure:
 
@@ -1215,10 +1459,10 @@ Example:
 
 ### ;guild
 
+Gives information (creation date, owner, ID) on the guild this command is executed in.
+
 !!! warning
     This command cannot be used in private messages.
-
-Gives information (creation date, owner, ID) on the guild this command is executed in.
 
 Command Structure:
 
@@ -1255,10 +1499,10 @@ Examples:
 
 ### ;role
 
+Gives information (creation date, colour, ID) on the role given. Can only work if the role is in the guild you execute this command in.
+
 !!! warning
     This command cannot be used in private messages.
-
-Gives information (creation date, colour, ID) on the role given. Can only work if the role is in the guild you execute this command in.
 
 Command Structure:
 

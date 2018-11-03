@@ -95,12 +95,17 @@ class Admin:
 	@commands.bot_has_permissions(manage_messages=True)
 	@commands.command()
 	async def slowmode(self, ctx, seconds: int):
-		"""Puts the current channel in slowmode. Requires the Manage Messages permission.
-		Users with manage_channel or manage_messages permissions will not be effected.
-		Usage:
-			;slowmode [time]
-			seconds =  number of seconds for the cooldown between messages a user has.
-			0 turns off slowmode for this channel"""
+		"""Puts the channel in slowmode. Users with manage_channel or manage_messages permissions will not be effected.
+
+		Options:
+			- `seconds` - Has to be between 0 - 120. This will set the timeout a user receives once they send a message in this channel. If 0, Roxbot will disable slowmode.
+
+		Examples:
+			# Set slowmode to 30 seconds
+			;slowmode 30
+			# Turn slowmode off
+			;slowmode 0
+		"""
 		if seconds == 0:  # Turn Slow Mode off
 			await ctx.channel.edit(slowmode_delay=seconds, reason="{} requested to turn off slowmode.".format(ctx.author))
 			embed = discord.Embed(description=self.OK_SLOWMODE_OFF, colour=roxbot.EmbedColours.pink)
@@ -124,9 +129,17 @@ class Admin:
 	@commands.cooldown(1, 5)
 	@commands.command()
 	async def purge(self, ctx, limit=0, *, author: roxbot.converters.User=None):
-		"""Purges messages from the text channel. Requires the Manage Messages permission.
-		Limit = Limit of messages to be deleted
-		Author (optional) =  If given, roxbot will selectively only delete this user's messages."""
+		"""Purges the text channel the command is execture in. You can specify a certain user to purge as well.
+		Options:
+			- `limit` - This the the amount of messages Roxbot will take from the chat and pruge. Note: This **does not** mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.
+			- `USER` - A name, ID, or mention of a user. If the user has left the guild, this **has** to be the ID.
+
+		Examples:
+			# Delete 20 messages from the chat
+			;purge 20
+			# Take 20 messages, and delete any message in it by user @Spammer
+			;purge 20 @Spammer
+		"""
 		# TODO: To sort out the limit == how many to delete for the author, and not just a limit.
 		if author:
 			predicate = lambda message: message.author.id == author.id and message.id != ctx.message.id
@@ -140,13 +153,26 @@ class Admin:
 	@commands.has_permissions(kick_members=True)
 	@commands.group(case_insensitive=True)
 	async def warn(self, ctx):
-		"""Group of commands handling . Requires the Kick Members permission."""
+		"""The warn command group allows Discord moderators to warn users and log them within the bot.
+		The command group also supports setting limits to warn mods if a user has been warned over a certain threshold.
+
+		"""
 		if ctx.invoked_subcommand is None:
 			raise commands.CommandNotFound(ctx.subcommand_passed)
 
 	@warn.command()
 	async def add(self, ctx, user: discord.User=None, *, warning=""):
-		"""Adds a warning to a user."""
+		"""Adds a warning to a user.
+
+		Options:
+			- `USER` - A name, ID, or mention of a user.
+			- `warning` - OPTIONAL. A reason for the warning. This supports markdown formatting.
+
+		Example:
+			# Add warning to user @Roxbot for being a meanie
+			;warn add @Roxbot "for being a meanie"
+		"""
+
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		settings = gs.get(ctx.guild)
 		warnings = settings["admin"]["warnings"]
@@ -164,7 +190,7 @@ class Admin:
 		warn_limit = 10
 		if len(warnings[user_id]) > warn_limit:
 			embed = discord.Embed(description=self.WARN_WARN_ADD_LIMIT_REACHED.format(warn_limit), colour=roxbot.EmbedColours.red)
-			return await ctx.send()
+			return await ctx.send(embed=embed)
 
 		warnings[user_id].append(warning_dict)
 		settings["admin"]["warnings"] = warnings
@@ -179,7 +205,17 @@ class Admin:
 
 	@warn.command()
 	async def list(self, ctx, *, user: roxbot.converters.User=None):
-		"""Lists all or just the warnings for one user."""
+		"""Lists all warning in this guild or all the warnings for one user.
+
+		Options:
+		-	 `USER` - OPTIONAL. A name, ID, or mention of a user.
+
+		Examples:
+			# List all warnings in the guild
+			;warn list
+			# List all warnings for @Roxbot
+			;warn list @Roxbot
+		"""
 		settings = gs.get(ctx.guild)
 		warnings = settings["admin"]["warnings"]
 
@@ -230,7 +266,18 @@ class Admin:
 
 	@warn.command()
 	async def remove(self, ctx, user: roxbot.converters.User=None, index=None):
-		"""Removes one or all of the warnings for a user."""
+		"""Removes one or all of the warnings for a user.
+
+		Options:=
+			- `USER` - A name, ID, or mention of a user.
+			- `index` - OPTIONAL. The index of the single warning you want to remove.
+
+		Examples:
+			# Remove all warmings for Roxbot
+			;warn remove Roxbot
+			# Remove warning 2 for Roxbot
+			;warn remove Roxbot 2
+		"""
 		user_id = str(user.id)
 		settings = gs.get(ctx.guild)
 		warnings = settings["admin"]["warnings"]
@@ -273,7 +320,18 @@ class Admin:
 	@commands.bot_has_permissions(ban_members=True)
 	@warn.command()
 	async def prune(self, ctx, dry_run=0):
-		"""Purges banned users from the warn list. Add a 1 at the end to do a dry run."""
+		"""Prunes the warnings of any banned users.
+		You can add a 1 at the end to dryrun the command. This will show you how many would be deleted without deleting them.
+
+		Options:
+			- `dryrun` - Add `1` to the end of the command to do a dryrun of the prune command.
+
+		Examples:
+			# Prune the warnings of banned users in this guild
+			;warn prune
+			# Dryrun the prune command to see how many warnings would be removed
+			;warn prune 1
+		"""
 		settings = gs.get(ctx.guild)
 		warnings = settings["admin"]["warnings"].copy()
 		count = 0
@@ -287,14 +345,12 @@ class Admin:
 		embed = discord.Embed(description=self.OK_WARN_PRUNE_PRUNED.format(count), colour=roxbot.EmbedColours.pink)
 		return await ctx.send(embed=embed)
 
-	@warn.command(aliases=["set_limits", "sl", "setlimit", "setlimits"])
+	@warn.command(aliases=["sl", "setlimit"])
 	async def set_limit(self, ctx, number_of_warnings: int):
 		"""
 		Sets the limit for how many warnings a user can get before mod's are notified.
 		Example: if 3 is set, on the third warning, mods will be DM'd. If this is set to 0, DM's will be disabled.
-		:param ctx:
-		:param number_of_warnings: A positive integer.
-		:return:
+
 		"""
 		if number_of_warnings < 0:
 			raise commands.BadArgument(self.ERROR_WARN_SL_NEG)
@@ -314,7 +370,18 @@ class Admin:
 	@commands.bot_has_permissions(kick_members=True)
 	@commands.command()
 	async def kick(self, ctx, member: discord.Member, *, reason=""):
-		"""Kicks mentioned user. Allows you to give a reason. Requires the Kick Members permission."""
+		"""Kicks the mentioned user with the ability to give a reason.
+		Requires the Kick Members permission.
+		Options:
+			- `USER` - A name, ID, or mention of a user.
+			- `reason` - OPTIONAL. A short reason for the kicking.
+
+		Examples:
+			# Kick user BadUser
+			;kick @BadUser
+			# Kick user Roxbot for being a meanie
+			;kick Roxbot "for being a meanie"
+		"""
 		try:
 			await member.kick(reason=reason)
 			embed = discord.Embed(description=self.OK_MOD_ACTION.format("Kicked", member, reason), colour=roxbot.EmbedColours.pink)
@@ -328,7 +395,19 @@ class Admin:
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()
 	async def ban(self, ctx, member: discord.Member, *, reason=""):
-		"""Bans mentioned user. Allows you to give a reason. Requires the Ban Members permission."""
+		"""Bans the mentioned user with the ability to give a reason.
+		Requires the Ban Members permission.
+
+		Options:
+			- `USER` - A name, ID, or mention of a user.
+			- `reason` - OPTIONAL. A short reason for the banning.
+
+		Examples:
+			# Ban user BadUser
+			;ban @BadUser
+			# Ban user Roxbot for being a meanie
+			;ban Roxbot "for being a meanie"
+		"""
 		try:
 			await member.ban(reason=reason, delete_message_days=0)
 			embed = discord.Embed(description=self.OK_MOD_ACTION.format("Banned", member, reason), colour=roxbot.EmbedColours.pink)
@@ -342,7 +421,16 @@ class Admin:
 	@commands.bot_has_permissions(ban_members=True)
 	@commands.command()
 	async def unban(self, ctx, member: roxbot.converters.User, *, reason=""):
-		"""Unbans user with given ID. Allows you to give a reason. Requires the Ban Members permission."""
+		"""Unbans the mentioned user with the ability to give a reason.
+		Requires the Ban Members permission.
+		Options:
+		- `user_id` - The ID of a banned user.
+		- `reason` - OPTIONAL. A short reason for the unbanning.
+
+		Examples:
+			# Unban user with ID 478294672394
+			;unban 478294672394
+		"""
 		ban = await ctx.guild.get_ban(member)
 		mem = ban.user
 		if mem is None:
