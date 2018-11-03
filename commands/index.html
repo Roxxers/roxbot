@@ -10,6 +10,8 @@
       <meta name="viewport" content="width=device-width,initial-scale=1">
       <meta http-equiv="x-ua-compatible" content="ie=edge">
       
+        <meta name="description" content="Documentation for all of Roxbot's commands.">
+      
       
       
         <meta name="author" content="Roxanne Gibson">
@@ -461,6 +463,47 @@
   <a href="#warn" title=";warn" class="md-nav__link">
     ;warn
   </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#warn-add" title=";warn add" class="md-nav__link">
+    ;warn add
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-list" title=";warn list" class="md-nav__link">
+    ;warn list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-prune" title=";warn prune" class="md-nav__link">
+    ;warn prune
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-remove" title=";warn remove" class="md-nav__link">
+    ;warn remove
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-set_limit" title=";warn set_limit" class="md-nav__link">
+    ;warn set_limit
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1421,6 +1464,47 @@
     ;warn
   </a>
   
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#warn-add" title=";warn add" class="md-nav__link">
+    ;warn add
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-list" title=";warn list" class="md-nav__link">
+    ;warn list
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-prune" title=";warn prune" class="md-nav__link">
+    ;warn prune
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-remove" title=";warn remove" class="md-nav__link">
+    ;warn remove
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#warn-set_limit" title=";warn set_limit" class="md-nav__link">
+    ;warn set_limit
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -2279,59 +2363,285 @@
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">ban_users</code> permission.</p>
 </div>
+<p>Bans the mentioned user with the ability to give a reason.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;ban USER [reason: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">USER</code> - A name, ID, or mention of a user.</p>
+</li>
+<li>
+<p><code class="codehilite">reason</code> - OPTIONAL. A short reason for the banning.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Ban user BadUser</span>
+<span class="p">;</span><span class="n">ban</span> <span class="nd">@BadUser</span>
+<span class="c1"># Ban user Roxbot for being a meanie</span>
+<span class="p">;</span><span class="n">ban</span> <span class="n">Roxbot</span> <span class="s2">&quot;for being a meanie&quot;</span>
+</pre></div>
+
 <h3 id="kick">;kick<a class="headerlink" href="#kick" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">kick_users</code> permission.</p>
 </div>
+<p>Kicks the mentioned user with the ability to give a reason.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;kick USER [reason: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">USER</code> - A name, ID, or mention of a user.</p>
+</li>
+<li>
+<p><code class="codehilite">reason</code> - OPTIONAL. A short reason for the kicking.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Kick user BadUser</span>
+<span class="p">;</span><span class="n">kick</span> <span class="nd">@BadUser</span>
+<span class="c1"># Kick user Roxbot for being a meanie</span>
+<span class="p">;</span><span class="n">kick</span> <span class="n">Roxbot</span> <span class="s2">&quot;for being a meanie&quot;</span>
+</pre></div>
+
 <h3 id="purge">;purge<a class="headerlink" href="#purge" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
+<p>Purges the text channel the command is execture in. You can specify a certain user to purge as well.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;purge limit [USER: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">limit</code> - This the the amount of messages Roxbot will take from the chat and pruge. Note: This <strong>does not</strong> mean the amount that will be purged. Limit is the amount of messages Roxbot will look at. If a user is given, it will only delete messages from that user in that list of messages.</p>
+</li>
+<li>
+<p><code class="codehilite">USER</code> - A name, ID, or mention of a user. If the user has left the guild, this <strong>has</strong> to be the ID.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Delete 20 messages from the chat</span>
+<span class="p">;</span><span class="n">purge</span> <span class="mi">20</span>
+<span class="c1"># Take 20 messages, and delete any message in it by user @Spammer</span>
+<span class="p">;</span><span class="n">purge</span> <span class="mi">20</span> <span class="nd">@Spammer</span>
+</pre></div>
+
 <h3 id="slowmode">;slowmode<a class="headerlink" href="#slowmode" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">manage_channels</code> permission.</p>
 </div>
+<p>Puts the channel in slowmode. Users with <code class="codehilite">manage_channel</code> or <code class="codehilite">manage_messages</code> permissions will not be effected.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;slowmode seconds</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">seconds</code> - Has to be between 0 - 120. This will set the timeout a user receives once they send a message in this channel. If 0, Roxbot will disable slowmode.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Set slowmode to 30 seconds</span>
+<span class="p">;</span><span class="n">slowmode</span> <span class="mi">30</span>
+<span class="c1"># Turn slowmode off</span>
+<span class="p">;</span><span class="n">slowmode</span> <span class="mi">0</span>
+</pre></div>
+
 <h3 id="unban">;unban<a class="headerlink" href="#unban" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">ban_users</code> permission.</p>
 </div>
+<p>Unbans the mentioned user with the ability to give a reason.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;unban user_id [reason: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">user_id</code> - The ID of a banned user.</p>
+</li>
+<li>
+<p><code class="codehilite">reason</code> - OPTIONAL. A short reason for the unbanning.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Unban user with ID 478294672394</span>
+<span class="p">;</span><span class="n">unban</span> <span class="mi">478294672394</span>
+</pre></div>
+
 <h3 id="warn">;warn<a class="headerlink" href="#warn" title="Permanent link">&para;</a></h3>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Group requires the user to have the <code class="codehilite">kick_users</code> permission. <small>The logic here is that if a mod can kick a user, they can warn a user too as they are similar in function.</small></p>
 </div>
-<p><strong>;warn add</strong></p>
-<p><strong>;warn list</strong></p>
-<p><strong>;warn prune</strong></p>
-<p><strong>;warn remove</strong></p>
-<p><strong>;warn set_limit</strong></p>
+<p>The warn command group allows Discord moderators to warn users and log them within the bot. The command group also supports setting limits to warn mods if a user has been warned over a certain threshold.</p>
+<h4 id="warn-add">;warn add<a class="headerlink" href="#warn-add" title="Permanent link">&para;</a></h4>
+<p>Adds a warning to a user.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;warn add USER [warning: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">USER</code> - A name, ID, or mention of a user.</p>
+</li>
+<li>
+<p><code class="codehilite">warning</code> - OPTIONAL. A reason for the warning. This supports markdown formatting.</p>
+</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Add warning to user @Roxbot for being a meanie</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">add</span> <span class="nd">@Roxbot</span> <span class="s2">&quot;for being a meanie&quot;</span>
+</pre></div>
+
+<h4 id="warn-list">;warn list<a class="headerlink" href="#warn-list" title="Permanent link">&para;</a></h4>
+<p>Lists all warning in this guild or all the warnings for one user.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;warn list [USER: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">USER</code> - OPTIONAL. A name, ID, or mention of a user.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># List all warnings in the guild</span>
+<span class="p">;</span><span class="n">warn</span> <span class="nb">list</span>
+<span class="c1"># List all warnings for @Roxbot</span>
+<span class="p">;</span><span class="n">warn</span> <span class="nb">list</span> <span class="nd">@Roxbot</span>
+</pre></div>
+
+<h4 id="warn-prune">;warn prune<a class="headerlink" href="#warn-prune" title="Permanent link">&para;</a></h4>
+<p>Prunes the warnings of any banned users. You can add a 1 at the end to dryrun the command. This will show you how many would be deleted without deleting them.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;warn prune [dryrun: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">dryrun</code> - Add <code class="codehilite">1</code> to the end of the command to do a dryrun of the prune command.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Prune the warnings of banned users in this guild</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">prune</span>
+<span class="c1"># Dryrun the prune command to see how many warnings would be removed</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">prune</span> <span class="mi">1</span>
+</pre></div>
+
+<h4 id="warn-remove">;warn remove<a class="headerlink" href="#warn-remove" title="Permanent link">&para;</a></h4>
+<p>Removes one or all of the warnings for a user.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;warn remove USER [index: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li>
+<p><code class="codehilite">USER</code> - A name, ID, or mention of a user.</p>
+</li>
+<li>
+<p><code class="codehilite">index</code> - OPTIONAL. The index of the single warning you want to remove.</p>
+</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Remove all warmings for Roxbot</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">remove</span> <span class="n">Roxbot</span>
+<span class="c1"># Remove warning 2 for Roxbot</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">remove</span> <span class="n">Roxbot</span> <span class="mi">2</span>
+</pre></div>
+
+<h4 id="warn-set_limit">;warn set_limit<a class="headerlink" href="#warn-set_limit" title="Permanent link">&para;</a></h4>
+<p>Sets the limit for how many warnings a user can get before mod's are notified. If 3 is set, on the third warning, mods will be DM'd. If this is set to 0, DM's will be disabled.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;warn set_limit number</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">sl</code>, <code class="codehilite">setlimit</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">number</code> - A positive integer. Once this number is equal to the number of warnings a user has, the mod who did the latest warning will be dm'd about it. If it is set to 0, this is disabled.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Set the warning limit to 3</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">sl</span> <span class="mi">3</span>
+<span class="c1"># Disable warnings</span>
+<span class="p">;</span><span class="n">warn</span> <span class="n">set_limit</span> <span class="mi">0</span>
+</pre></div>
+
 <hr />
 <h2 id="custom-commands">Custom Commands<a class="headerlink" href="#custom-commands" title="Permanent link">&para;</a></h2>
+<p>The Custom Commands cog allows moderators to add custom commands for their Discord server to Roxbot. Allowing custom outputs predefined by the moderators. </p>
+<p>For example, we can set a command to require a prefix and call it "roxbot" and configure an output. Then if a user does <code class="codehilite">;roxbot</code> roxbot will output the configured output.</p>
 <h3 id="custom">;custom<a class="headerlink" href="#custom" title="Permanent link">&para;</a></h3>
+<p>This command group handle settings for the custom commands. </p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command group cannot be used in private messages.</p>
 </div>
 <h4 id="custom-add">;custom add<a class="headerlink" href="#custom-add" title="Permanent link">&para;</a></h4>
+<p>Add a custom command.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;custom add type name *output</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">cc</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">type</code> - There are three types of custom commands.<ul>
+<li><code class="codehilite">no_prefix</code>/<code class="codehilite">0</code> - These are custom commands that will trigger without a prefix. Example: a command named <code class="codehilite">test</code> will trigger when a user says <code class="codehilite">test</code> in chat.</li>
+<li><code class="codehilite">prefix</code>/<code class="codehilite">1</code> - These are custom commands that will trigger with a prefix. Example: a command named <code class="codehilite">test</code> will trigger when a user says <code class="codehilite">;test</code> in chat.</li>
+<li><code class="codehilite">embed</code>/<code class="codehilite">2</code> - These are prefix commands that will output a rich embed. <a href="https://discordapp.com/developers/docs/resources/channel#embed-object">You can find out more about rich embeds from Discord's API documentation.</a> Embed types currently support these fields: <code class="codehilite">title, description, colour, color, url, footer, image, thumbnail</code></li>
+</ul>
+</li>
+<li><code class="codehilite">name</code> - The name of the command. No commands can have the same name.</li>
+<li><code class="codehilite">output</code> - The output of the command. The way you input this is determined by the type.</li>
+</ul>
+<p><code class="codehilite">no_prefix</code> and <code class="codehilite">prefix</code> types support single outputs and also listing multiple outputs. When the latter is chosen, the output will be a random choice of the multiple outputs.</p>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Add a no_prefix command called &quot;test&quot; with the output &quot;hello world&quot;</span>
+<span class="p">;</span><span class="n">cc</span> <span class="n">add</span> <span class="n">no_prefix</span> <span class="n">test</span> <span class="s2">&quot;hello world&quot;</span>
+<span class="c1"># Add a prefix command called test2 with a randomised output between &quot;the person above me is annoying&quot; and &quot;the person above me is cool :sunglasses:&quot;</span>
+<span class="p">;</span><span class="n">cc</span> <span class="n">add</span> <span class="n">prefix</span> <span class="n">test2</span> <span class="s2">&quot;the person above me is annoying&quot;</span> <span class="s2">&quot;the person above me is cool :sunglasses:</span>
+<span class="c1"># Add an embed command called test3 with a title of &quot;Title&quot; and a description that is a markdown hyperlink to a youtube video, and the colour #deadbf</span>
+<span class="p">;</span><span class="n">cc</span> <span class="n">add</span> <span class="n">embed</span> <span class="n">test3</span> <span class="n">title</span> <span class="s2">&quot;Title&quot;</span> <span class="n">description</span> <span class="s2">&quot;[Click here for a rad video](https://www.youtube.com/watch?v=dQw4w9WgXcQ)&quot;</span> <span class="n">colour</span> <span class="c1">#deadbf</span>
+</pre></div>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>With custom commands, it is important to remember that "" is used to pass any text with spaces as one thing. If the output you want requires the use of these characters, surround your output with """this""" instead.</p>
 </div>
 <h4 id="custom-edit">;custom edit<a class="headerlink" href="#custom-edit" title="Permanent link">&para;</a></h4>
+<p>Edits an already existing custom command. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>You cannot change the type of a command. If you want to change the type, remove the command and re-add it.</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;custom edit command_name new_output</code></p>
+<p>Example:</p>
+<p>For more examples of how to setup a custom command, look at the help for the ;custom add command. </p>
+<div class="codehilite"><pre><span></span><span class="c1"># edit a command called test to output &quot;new output&quot;</span>
+<span class="p">;</span><span class="n">cc</span> <span class="n">edit</span> <span class="n">test</span> <span class="s2">&quot;new output&quot;</span>
+</pre></div>
+
 <h4 id="custom-list">;custom list<a class="headerlink" href="#custom-list" title="Permanent link">&para;</a></h4>
+<p>Lists all custom commands for this guild.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;custom list</code></p>
 <h4 id="custom-remove">;custom remove<a class="headerlink" href="#custom-remove" title="Permanent link">&para;</a></h4>
+<p>Removed the named custom command.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;custom remove command</code></p>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Remove custom command called &quot;test&quot;</span>
+<span class="p">;</span><span class="n">cc</span> <span class="n">remove</span> <span class="n">test</span>
+</pre></div>
+
 <hr />
 <h2 id="fun">Fun<a class="headerlink" href="#fun" title="Permanent link">&para;</a></h2>
 <p>The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining.</p>
@@ -2437,11 +2747,11 @@
 <p>Aliases:</p>
 <p><code class="codehilite">rf</code>, <code class="codehilite">roxfact</code></p>
 <h3 id="spank">;spank<a class="headerlink" href="#spank" title="Permanent link">&para;</a></h3>
+<p>Spanks the mentioned user <img alt="😉" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f609.svg" title=":wink:" /></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<p>Spanks the mentioned user <img alt="😉" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f609.svg" title=":wink:" /></p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;spank USER</code></p>
 <p>Options:</p>
@@ -2454,11 +2764,11 @@
 <span class="p">;</span><span class="n">spank</span> <span class="n">Roxbot</span>
 </pre></div></p>
 <h3 id="suck">;suck<a class="headerlink" href="#suck" title="Permanent link">&para;</a></h3>
+<p>Sucks the mentioned user <img alt="😉" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f609.svg" title=":wink:" /></p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<p>Sucks the mentioned user <img alt="😉" class="emojione" src="https://cdn.jsdelivr.net/emojione/assets/svg/1f609.svg" title=":wink:" /></p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;suck USER</code></p>
 <p>Aliases:</p>
@@ -2566,23 +2876,39 @@
 <p>If you want there to be more pride flag filters or feel there are some missing, don't be afraid to <a href="https://github.com/Roxxers/roxbot/issues/new">submit an issue to the Github repo!</a></p>
 </div>
 <h4 id="pride-agender">;pride agender<a class="headerlink" href="#pride-agender" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride agender image</code></p>
 <h4 id="pride-asexual">;pride asexual<a class="headerlink" href="#pride-asexual" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride asexual image</code></p>
 <p>Aliases:</p>
 <p><code class="codehilite">ace</code></p>
 <h4 id="pride-bisexual">;pride bisexual<a class="headerlink" href="#pride-bisexual" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride bisexual image</code></p>
 <p>Aliases:</p>
 <p><code class="codehilite">bi</code></p>
 <h4 id="pride-genderfluid">;pride genderfluid<a class="headerlink" href="#pride-genderfluid" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride genderfluid image</code></p>
 <p>Aliases:</p>
 <p><code class="codehilite">gf</code></p>
 <h4 id="pride-genderqueer">;pride genderqueer<a class="headerlink" href="#pride-genderqueer" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride genderqueer image</code></p>
 <p>Aliases:</p>
 <p><code class="codehilite">gq</code></p>
 <h4 id="pride-lgbt">;pride lgbt<a class="headerlink" href="#pride-lgbt" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride lgbt image</code></p>
 <h4 id="pride-nonbinary">;pride nonbinary<a class="headerlink" href="#pride-nonbinary" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride nonbinary image</code></p>
 <p>Aliases:</p>
 <p><code class="codehilite">nb</code>, <code class="codehilite">enby</code></p>
 <h4 id="pride-transgender">;pride transgender<a class="headerlink" href="#pride-transgender" title="Permanent link">&para;</a></h4>
+<p>Command structure:</p>
+<p><code class="codehilite">;pride transgender image</code></p>
 <p>Aliases:</p>
 <p><code class="codehilite">trans</code></p>
 <hr />
@@ -2593,11 +2919,11 @@
 <p>This whole cog cannot be used in private messages.</p>
 </div>
 <h3 id="goodbyes">;goodbyes<a class="headerlink" href="#goodbyes" title="Permanent link">&para;</a></h3>
+<p>Edits settings for the goodbye messages.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
-<p>Edits settings for the goodbye messages.</p>
 <p>Command Structure</p>
 <p><code class="codehilite">;goodbyes option [changes: optional]</code></p>
 <p>Options</p>
@@ -2612,11 +2938,11 @@
 </pre></div>
 
 <h3 id="greets">;greets<a class="headerlink" href="#greets" title="Permanent link">&para;</a></h3>
+<p>Edits settings for the welcome messages</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
-<p>Edits settings for the welcome messages</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;greets option [changes: optional]</code></p>
 <p>Options:</p>
@@ -2636,11 +2962,11 @@
 <h2 id="nsfw">NSFW<a class="headerlink" href="#nsfw" title="Permanent link">&para;</a></h2>
 <p>The NSFW cog is a collection of commands that post images from popular NSFW sites. </p>
 <h3 id="e621">;e621<a class="headerlink" href="#e621" title="Permanent link">&para;</a></h3>
+<p>Posts a random image from <a href="https://e621.net">e621</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<p>Posts a random image from <a href="https://e621.net">e621</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;e621 [*tags: optional]</code></p>
 <p>Examples:</p>
@@ -2651,11 +2977,11 @@
 </pre></div>
 
 <h3 id="gelbooru">;gelbooru<a class="headerlink" href="#gelbooru" title="Permanent link">&para;</a></h3>
+<p>Posts a random image from <a href="https://gelbooru.com">gelbooru</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<p>Posts a random image from <a href="https://gelbooru.com">gelbooru</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;gelbooru [*tags: optional]</code></p>
 <p>Examples:</p>
@@ -2666,11 +2992,11 @@
 </pre></div>
 
 <h3 id="rule34">;rule34<a class="headerlink" href="#rule34" title="Permanent link">&para;</a></h3>
+<p>Posts a random image from <a href="https://rule34.xxx/">rule34.xxx</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
-<p>Posts a random image from <a href="https://rule34.xxx/">rule34.xxx</a> using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;rule34 [*tags: optional]</code></p>
 <p>Examples:</p>
@@ -2682,6 +3008,7 @@
 
 <hr />
 <h3 id="nsfw_1">;nsfw<a class="headerlink" href="#nsfw_1" title="Permanent link">&para;</a></h3>
+<p>Edits settings for the nsfw cog and other nsfw commands.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission.</p>
@@ -2690,7 +3017,6 @@
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
-<p>Edits settings for the nsfw cog and other nsfw commands.</p>
 <p>Options:
     <code class="codehilite">enable/disable</code>: Enable/disables nsfw commands.
     <code class="codehilite">addbadtag/removebadtag</code>: Add/Removes blacklisted tags so that you can avoid em with the commands.</p>
@@ -2779,11 +3105,11 @@
 <p><code class="codehilite">;listroles</code></p>
 <hr />
 <h3 id="selfassign_1">;selfassign<a class="headerlink" href="#selfassign_1" title="Permanent link">&para;</a></h3>
+<p>Edits settings for self assign cog.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_roles</code> permission.</p>
 </div>
-<p>Edits settings for self assign cog.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;sa option [role: optional]</code></p>
 <p>Aliases:</p>
@@ -2855,11 +3181,11 @@
 </pre></div>
 
 <h4 id="trivia-kick">;trivia kick<a class="headerlink" href="#trivia-kick" title="Permanent link">&para;</a></h4>
+<p>Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission.</p>
 </div>
-<p>Mod command to kick users out of the game. Useful if a user is AFK because of the timer on answering questions.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;trivia kick user</code></p>
 <p>Options:</p>
@@ -2905,11 +3231,11 @@
 </pre></div>
 
 <h3 id="guild">;guild<a class="headerlink" href="#guild" title="Permanent link">&para;</a></h3>
+<p>Gives information (creation date, owner, ID) on the guild this command is executed in.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
-<p>Gives information (creation date, owner, ID) on the guild this command is executed in.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;guild</code></p>
 <p>Aliases:</p>
@@ -2932,11 +3258,11 @@
 </pre></div>
 
 <h3 id="role">;role<a class="headerlink" href="#role" title="Permanent link">&para;</a></h3>
+<p>Gives information (creation date, colour, ID) on the role given. Can only work if the role is in the guild you execute this command in.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
-<p>Gives information (creation date, colour, ID) on the role given. Can only work if the role is in the guild you execute this command in.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;role ROLE</code></p>
 <p>Options:</p>
