@@ -3282,17 +3282,165 @@
 <p>This whole cog cannot be used in private messages.</p>
 </div>
 <h3 id="join">;join<a class="headerlink" href="#join" title="Permanent link">&para;</a></h3>
+<p>Summon Roxbot to a voice channel, usually the one you are currently in. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is done automatically when you execute the <code class="codehilite">;play</code> or <code class="codehilite">;stream</code> commands.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission</p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite"><span class="p">;</span><span class="n">join</span> <span class="p">[</span><span class="n">Voice</span> <span class="nl">Channel</span><span class="p">:</span> <span class="n">optional</span><span class="p">]</span></code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">Voice Channel</code> - OPTIONAL. The name of a Voice Channel</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Join a voice channle called General</span>
+<span class="p">;</span><span class="n">join</span> <span class="n">General</span>
+</pre></div>
+
 <h3 id="nowplaying">;nowplaying<a class="headerlink" href="#nowplaying" title="Permanent link">&para;</a></h3>
+<p>Displays what is currently playing.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;nowplaying</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">;np</code></p>
 <h3 id="pause">;pause<a class="headerlink" href="#pause" title="Permanent link">&para;</a></h3>
+<p>Pauses the current video, if playing.</p>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission if this is enabled by server admins using the needperms setting in <code class="codehilite">;voice</code></p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;pause</code></p>
 <h3 id="play">;play<a class="headerlink" href="#play" title="Permanent link">&para;</a></h3>
+<p>Plays a video over voice chat using the given URL. This URL has to be one that YoutubeDL can download from. <a href="https://rg3.github.io/youtube-dl/supportedsites.html">A list can be found here.</a> </p>
+<p>If the bot is already playing something, this will be queued up to be played later. If you want to play a livestream, use the <code class="codehilite">;stream</code> command.</p>
+<div class="admonition info">
+<p class="admonition-title">Info</p>
+<p>The user needs to be in a voice channel for this command to work. This is ignored if the user has the <code class="codehilite">manage_channels</code> permission. There is also a duration limit that can be placed on videos. This is also ignored if the user has the <code class="codehilite">manage_channels</code> permission.</p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;play url</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">url</code> -  A url to a video or playlist or a search term. If a playlist, it will play the first video and queue up all other videos in the playlist. If just text, Roxbot will play the first Youtube search result.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Play the quality youtube video</span>
+<span class="p">;</span><span class="n">play</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">www</span><span class="o">.</span><span class="n">youtube</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">watch</span><span class="err">?</span><span class="n">v</span><span class="o">=</span><span class="n">A_pIPTih5iM</span>
+</pre></div>
+
 <h3 id="queue">;queue<a class="headerlink" href="#queue" title="Permanent link">&para;</a></h3>
+<p>Displays what videos are queued up and waiting to be played.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;queue</code></p>
 <h3 id="remove">;remove<a class="headerlink" href="#remove" title="Permanent link">&para;</a></h3>
+<p>Removes a video from the queue. </p>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission</p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;remove index/&quot;all&quot;</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">index/all</code> - A number representing an index in the queue to remove one video, or "all" to clear all videos.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Remove 2nd video</span>
+<span class="p">;</span><span class="n">remove</span> <span class="mi">2</span>
+<span class="c1"># Clear the queue</span>
+<span class="p">;</span><span class="n">remove</span> <span class="nb">all</span>
+</pre></div>
+
 <h3 id="resume">;resume<a class="headerlink" href="#resume" title="Permanent link">&para;</a></h3>
+<p>Resumes the bot, if paused.</p>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission if this is enabled by server admins using the needperms setting in <code class="codehilite">;voice</code></p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;resume</code></p>
 <h3 id="skip">;skip<a class="headerlink" href="#skip" title="Permanent link">&para;</a></h3>
+<p>Skips the current playing video. </p>
+<p>If skipvoting is enabled, multiple people will have to use this command to go over the ratio that is also set by server moderators.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;skip [--force: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">--force</code> - if skip voting is enabled, users with the <code class="codehilite">manage_channel</code> permission can skip this process and for the video to be skipped.</li>
+</ul>
+<p>Examples:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Vote to skip a video</span>
+<span class="p">;</span><span class="n">skip</span>
+<span class="c1"># Force skip a video</span>
+<span class="p">;</span><span class="n">skip</span> <span class="o">--</span><span class="n">force</span>
+</pre></div>
+
 <h3 id="stop">;stop<a class="headerlink" href="#stop" title="Permanent link">&para;</a></h3>
+<p>Stops Roxbot from playing music and has her leave voice chat.</p>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission.</p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;stop</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">disconnect</code></p>
 <h3 id="stream">;stream<a class="headerlink" href="#stream" title="Permanent link">&para;</a></h3>
+<p>A version of <code class="codehilite">;play</code> that should be used to stream livestreams or internet radio sources. </p>
+<p>For more details on how this command words, please look at the documentation for the <code class="codehilite">;play</code> command.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;stream url</code></p>
 <h3 id="volume">;volume<a class="headerlink" href="#volume" title="Permanent link">&para;</a></h3>
+<p>Sets the volume percentage for Roxbot's audio. </p>
+<p>The current volume of Roxbot is displayed by her nowplaying rich embeds that are displayed when she begins to play a video or when the <code class="codehilite">;nowplaying</code> command is used.</p>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission if this is enabled by server admins using the needperms setting in <code class="codehilite">;voice</code></p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;volume percent</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">percent</code> - A positive integer between 0-100 representing a percentage.</li>
+</ul>
+<p>Example:</p>
+<div class="codehilite"><pre><span></span><span class="c1"># Set volume to 20%</span>
+<span class="p">;</span><span class="n">volume</span> <span class="mi">20</span>
+</pre></div>
+
 <h3 id="voice_1">;voice<a class="headerlink" href="#voice_1" title="Permanent link">&para;</a></h3>
+<p>Edits settings for the voice cog.</p>
+<div class="admonition warning">
+<p class="admonition-title">Required Permissions</p>
+<p>Command requires the user to have the <code class="codehilite">manage_channels</code> permission</p>
+</div>
+<p>Command Structure:</p>
+<p><code class="codehilite">;voice option [change: optional]</code></p>
+<p>Options:</p>
+<ul>
+<li><code class="codehilite">enable/disable</code>: Enable/disables specified change.</li>
+<li><code class="codehilite">skipratio</code>: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%</li>
+<li><code class="codehilite">maxlength/duration</code>: Specify (in seconds) the max duration of a video that can be played. </li>
+</ul>
+<p>Possible settings to enable/disable:</p>
+<ul>
+<li><code class="codehilite">needperms</code>: specifies whether <code class="codehilite">volume</code>, <code class="codehilite">pause</code>, or <code class="codehilite">resume</code> require permissions or not.</li>
+<li><code class="codehilite">skipvoting</code>: enables voting to skip instead of one user skipping.</li>
+</ul>
+<p>Example:
+<div class="codehilite"><pre><span></span><span class="c1"># Enable skipvoting</span>
+<span class="p">;</span><span class="n">voice</span> <span class="n">enable</span> <span class="n">skipvoting</span>
+<span class="c1"># Disbale needing perms</span>
+<span class="p">;</span><span class="n">voice</span> <span class="n">disable</span> <span class="n">needperms</span>
+<span class="c1"># Edit maxlength to 5 minutes</span>
+<span class="p">;</span><span class="n">voice</span> <span class="n">maxlength</span> <span class="mi">300</span>
+</pre></div></p>
                 
                   
                 
