@@ -12,18 +12,18 @@ class Colours:
 	UNDERLINE = '\033[4m'
 
 
-INFO = "[{} INFO {}]".format(Colours.OKBLUE, Colours.ENDC)
-OK = "[{}  OK  {}]".format(Colours.OKGREEN, Colours.ENDC)
-WARN = "[{} WARN {}]".format(Colours.WARNING, Colours.ENDC)
-ERROR = "[{} ERROR {}]".format(Colours.FAIL, Colours.ENDC)
-INPUT = "[{} .... {}]".format(Colours.OKBLUE, Colours.ENDC)
+INFO = "[{} INFO {}] ".format(Colours.OKBLUE, Colours.ENDC)
+OK = "[{}  OK  {}] ".format(Colours.OKGREEN, Colours.ENDC)
+WARN = "[{} WARN {}] ".format(Colours.WARNING, Colours.ENDC)
+ERROR = "[{} ERROR {}] ".format(Colours.FAIL, Colours.ENDC)
+INPUT = "[{} .... {}] ".format(Colours.OKBLUE, Colours.ENDC)
 
 
 # Version Checking
 # Basically reject anything not 3.5 or 3.6 as those are the only versions that work.
 
-if not (sys.version_info[:2] == (3, 5) or sys.version_info[:2] == (3, 6) or sys.version_info[:2] == (3, 7)):
-	print("{0} Roxbot does not support Python {1}.{2}. Roxbot only works on 3.5 - 2.7".format(ERROR, sys.version_info[0], sys.version_info[1]))
+if sys.version_info < (3,5):
+	print("{0} Roxbot does not support Python {1}.{2}. Roxbot only works on 3.5 - 3.7".format(ERROR, sys.version_info[0], sys.version_info[1]))
 	exit(0)
 else:
 	import configparser
@@ -32,7 +32,7 @@ else:
 # Install Requirements
 def requirements():
 	print("{} Installing requirements".format(INFO))
-	args = ["install", "-U", "-r", "requirements.txt", "--user"]
+	args = ["install", "-U", "-r", "requirements.txt"]
 	if '-v' not in sys.argv:
 		args.append("-q")
 	try:
