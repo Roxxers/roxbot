@@ -7,7 +7,7 @@ authors:
 
 # Command Documentation
 
-If you intend to use any commands requiring permissions, it is highly recommend you read the [quick start](quickstart.md) guide that will get you up to date with how Roxbot works and how to run her.
+If you intend to use any commands requiring permissions, it is highly recommend you read the [Configuring Roxbot](config.md) guide that will get you up to date with how Roxbot works and how to run her.
 
 ## How to use the docs
 

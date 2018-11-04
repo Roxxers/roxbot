@@ -39,12 +39,11 @@ nav:
         - 'About Roxbot Trivia': 'trivia.md'
     
     - Setup Roxbot:
-        - 'Quick Start': 'quickstart.md'
         - 'Configuring Roxbot': 'config.md'
         - 'Creating Cogs For Roxbot': 'creating_cogs.md'
     - About:
         - 'Contributing': 'contributing.md'
-        - 'License': 'license.md'
+        - 'License': 'LICENSE.md'
 
 
 # Customisation
