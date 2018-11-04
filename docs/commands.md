@@ -1511,7 +1511,6 @@ Example:
 ;avatar USER#0001
 ```
 
-
 ### ;emote
 
 Displays information (creation date, guild, ID) and an easily downloadable version of the given custom emote.
@@ -1721,7 +1720,6 @@ Command Structure:
 
 `;resume`
 
-
 ### ;skip
 
 Skips the current playing video. 
@@ -1737,7 +1735,6 @@ Options:
 - `--force` - if skip voting is enabled, users with the `manage_channel` permission can skip this process and for the video to be skipped.
 
 Examples:
-
 
 ```py
 # Vote to skip a video
@@ -1818,6 +1815,7 @@ Possible settings to enable/disable:
 - `skipvoting`: enables voting to skip instead of one user skipping.
     
 Example:
+
 ```py
 # Enable skipvoting
 ;voice enable skipvoting
