@@ -35,10 +35,11 @@ Command Structure:
 
 ### ;blacklist
 
+Manage the global blacklist for Roxbot. 
+
 !!! warning "Required Permissions"
     This command can only be executed by the owner of the Roxbot instance.
 
-Manage the global blacklist for Roxbot. 
 
 Command Structure:
 
@@ -62,10 +63,11 @@ Examples:
 
 ### ;changeactivity
 
+Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.
+
 !!! warning "Required Permissions"
     This command can only be executed by the owner of the Roxbot instance.
 
-Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.
 
 Command Structure:
 
@@ -90,10 +92,10 @@ Examples:
 
 ### ;changeavatar
 
+Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.
+
 !!! warning "Required Permissions"
     This command can only be executed by the owner of the Roxbot instance.
-
-Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.
 
 Command Structure:
 
@@ -115,13 +117,14 @@ Example:
 
 ### ;changenickname
 
+Changes the nickname of Roxbot in the guild this command is executed in. 
+
 !!! warning
     This command cannot be used in private messages.
 
 !!! warning "Required Permissions"
     This command can only be executed by the owner of the Roxbot instance.
 
-Changes the nickname of Roxbot in the guild this command is executed in. 
 
 Command Structure:
 
@@ -175,10 +178,10 @@ Examples:
 
 ### ;echo
 
+Echos the given string to a given channel.
+
 !!! warning "Required Permissions"
     This command can only be executed by the owner of the Roxbot instance.
-
-Echos the given string to a given channel.
 
 Command Structure:
 
@@ -227,13 +230,14 @@ Command Structure:
 
 ### ;printsettings
 
+Prints settings for the cogs in this guild. 
+
 !!! warning "Required Permissions"
     Command requires the user to have the `manage_guild` permission.
 
 !!! warning
     This command cannot be used in private messages.
 
-Prints settings for the cogs in this guild. 
 
 Command Structure:
 
@@ -279,11 +283,11 @@ The Admin cog adds admin commands to Roxbot which should make moderating a Disco
     This whole cog cannot be used in private messages.
 
 ### ;ban
+    
+Bans the mentioned user with the ability to give a reason.
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `ban_users` permission.
-    
-Bans the mentioned user with the ability to give a reason.
 
 Command Structure:
 
@@ -305,11 +309,11 @@ Examples:
 ```
 
 ### ;kick
+    
+Kicks the mentioned user with the ability to give a reason.
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `kick_users` permission.
-    
-Kicks the mentioned user with the ability to give a reason.
 
 Command Structure:
 
@@ -333,10 +337,11 @@ Examples:
 
 ### ;purge
 
+Purges the text channel the command is executed in. You can specify a certain user to purge as well.
+
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_messages` permission.
     
-Purges the text channel the command is executed in. You can specify a certain user to purge as well.
 
 Command Structure:
 
@@ -360,11 +365,11 @@ Examples:
 
 
 ### ;slowmode
+    
+Puts the channel in slowmode. Users with `manage_channel` or `manage_messages` permissions will not be effected.
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `manage_channels` permission.
-    
-Puts the channel in slowmode. Users with `manage_channel` or `manage_messages` permissions will not be effected.
 
 Command Structure:
 
@@ -384,11 +389,11 @@ Examples:
 ```
 
 ### ;unban
+    
+Unbans the mentioned user with the ability to give a reason.
 
 !!! warning "Required Permissions"
     Command requires the user **and** Roxbot to have the `ban_users` permission.
-    
-Unbans the mentioned user with the ability to give a reason.
 
 Command Structure:
 
