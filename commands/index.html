@@ -2173,11 +2173,11 @@
 <p>Command Structure:</p>
 <p><code class="codehilite">;backup</code></p>
 <h3 id="blacklist">;blacklist<a class="headerlink" href="#blacklist" title="Permanent link">&para;</a></h3>
+<p>Manage the global blacklist for Roxbot. </p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>This command can only be executed by the owner of the Roxbot instance.</p>
 </div>
-<p>Manage the global blacklist for Roxbot. </p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;blacklist option *users</code></p>
 <p>Options:</p>
@@ -2197,11 +2197,11 @@
 </pre></div>
 
 <h3 id="changeactivity">;changeactivity<a class="headerlink" href="#changeactivity" title="Permanent link">&para;</a></h3>
+<p>Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>This command can only be executed by the owner of the Roxbot instance.</p>
 </div>
-<p>Changes the activity that Roxbot is doing. This will be added as a game. "none" can be passed to remove an activity from Roxbot.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;changeactivity text</code></p>
 <p>Aliases:</p>
@@ -2218,11 +2218,11 @@
 </pre></div>
 
 <h3 id="changeavatar">;changeavatar<a class="headerlink" href="#changeavatar" title="Permanent link">&para;</a></h3>
+<p>Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>This command can only be executed by the owner of the Roxbot instance.</p>
 </div>
-<p>Changes the avatar of the bot account. This cannot be a gif due to Discord limitations.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;changeavatar image</code></p>
 <p>Aliases:</p>
@@ -2236,6 +2236,7 @@
 <span class="p">;</span><span class="n">changeavatar</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">i</span><span class="o">.</span><span class="n">imgur</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">yhRVl9e</span><span class="o">.</span><span class="n">png</span>
 </pre></div></p>
 <h3 id="changenickname">;changenickname<a class="headerlink" href="#changenickname" title="Permanent link">&para;</a></h3>
+<p>Changes the nickname of Roxbot in the guild this command is executed in. </p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
@@ -2244,7 +2245,6 @@
 <p class="admonition-title">Required Permissions</p>
 <p>This command can only be executed by the owner of the Roxbot instance.</p>
 </div>
-<p>Changes the nickname of Roxbot in the guild this command is executed in. </p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;changenickname name</code></p>
 <p>Aliases:</p>
@@ -2282,11 +2282,11 @@
 </pre></div>
 
 <h3 id="echo">;echo<a class="headerlink" href="#echo" title="Permanent link">&para;</a></h3>
+<p>Echos the given string to a given channel.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>This command can only be executed by the owner of the Roxbot instance.</p>
 </div>
-<p>Echos the given string to a given channel.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;echo channel message</code></p>
 <p>Example:</p>
@@ -2318,6 +2318,7 @@
 <p>Command Structure:</p>
 <p><code class="codehilite">;invite</code></p>
 <h3 id="printsettings">;printsettings<a class="headerlink" href="#printsettings" title="Permanent link">&para;</a></h3>
+<p>Prints settings for the cogs in this guild. </p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user to have the <code class="codehilite">manage_guild</code> permission.</p>
@@ -2326,7 +2327,6 @@
 <p class="admonition-title">Warning</p>
 <p>This command cannot be used in private messages.</p>
 </div>
-<p>Prints settings for the cogs in this guild. </p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;printsettings [cog: optional]</code></p>
 <p>Aliases:</p>
@@ -2359,11 +2359,11 @@
 <p>This whole cog cannot be used in private messages.</p>
 </div>
 <h3 id="ban">;ban<a class="headerlink" href="#ban" title="Permanent link">&para;</a></h3>
+<p>Bans the mentioned user with the ability to give a reason.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">ban_users</code> permission.</p>
 </div>
-<p>Bans the mentioned user with the ability to give a reason.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;ban USER [reason: optional]</code></p>
 <p>Options:</p>
@@ -2383,11 +2383,11 @@
 </pre></div>
 
 <h3 id="kick">;kick<a class="headerlink" href="#kick" title="Permanent link">&para;</a></h3>
+<p>Kicks the mentioned user with the ability to give a reason.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">kick_users</code> permission.</p>
 </div>
-<p>Kicks the mentioned user with the ability to give a reason.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;kick USER [reason: optional]</code></p>
 <p>Options:</p>
@@ -2407,11 +2407,11 @@
 </pre></div>
 
 <h3 id="purge">;purge<a class="headerlink" href="#purge" title="Permanent link">&para;</a></h3>
+<p>Purges the text channel the command is executed in. You can specify a certain user to purge as well.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">manage_messages</code> permission.</p>
 </div>
-<p>Purges the text channel the command is executed in. You can specify a certain user to purge as well.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;purge limit [USER: optional]</code></p>
 <p>Options:</p>
@@ -2431,11 +2431,11 @@
 </pre></div>
 
 <h3 id="slowmode">;slowmode<a class="headerlink" href="#slowmode" title="Permanent link">&para;</a></h3>
+<p>Puts the channel in slowmode. Users with <code class="codehilite">manage_channel</code> or <code class="codehilite">manage_messages</code> permissions will not be effected.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">manage_channels</code> permission.</p>
 </div>
-<p>Puts the channel in slowmode. Users with <code class="codehilite">manage_channel</code> or <code class="codehilite">manage_messages</code> permissions will not be effected.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;slowmode seconds</code></p>
 <p>Options:</p>
@@ -2450,11 +2450,11 @@
 </pre></div>
 
 <h3 id="unban">;unban<a class="headerlink" href="#unban" title="Permanent link">&para;</a></h3>
+<p>Unbans the mentioned user with the ability to give a reason.</p>
 <div class="admonition warning">
 <p class="admonition-title">Required Permissions</p>
 <p>Command requires the user <strong>and</strong> Roxbot to have the <code class="codehilite">ban_users</code> permission.</p>
 </div>
-<p>Unbans the mentioned user with the ability to give a reason.</p>
 <p>Command Structure:</p>
 <p><code class="codehilite">;unban user_id [reason: optional]</code></p>
 <p>Options:</p>
@@ -3433,14 +3433,14 @@
 <li><code class="codehilite">needperms</code>: specifies whether <code class="codehilite">volume</code>, <code class="codehilite">pause</code>, or <code class="codehilite">resume</code> require permissions or not.</li>
 <li><code class="codehilite">skipvoting</code>: enables voting to skip instead of one user skipping.</li>
 </ul>
-<p>Example:
+<p>Example:</p>
 <div class="codehilite"><pre><span></span><span class="c1"># Enable skipvoting</span>
 <span class="p">;</span><span class="n">voice</span> <span class="n">enable</span> <span class="n">skipvoting</span>
 <span class="c1"># Disbale needing perms</span>
 <span class="p">;</span><span class="n">voice</span> <span class="n">disable</span> <span class="n">needperms</span>
 <span class="c1"># Edit maxlength to 5 minutes</span>
 <span class="p">;</span><span class="n">voice</span> <span class="n">maxlength</span> <span class="mi">300</span>
-</pre></div></p>
+</pre></div>
                 
                   
                 
