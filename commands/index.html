@@ -2613,8 +2613,8 @@
 </ul>
 <p><code class="codehilite">no_prefix</code> and <code class="codehilite">prefix</code> types support single outputs and also listing multiple outputs. When the latter is chosen, the output will be a random choice of the multiple outputs.</p>
 <p>Examples:</p>
-<div class="codehilite"><pre><span></span><span class="c1"># Add a no_prefix command called &quot;test&quot; with the output &quot;hello world&quot;</span>
-<span class="p">;</span><span class="n">cc</span> <span class="n">add</span> <span class="n">no_prefix</span> <span class="n">test</span> <span class="s2">&quot;hello world&quot;</span>
+<div class="codehilite"><pre><span></span><span class="c1"># Add a no_prefix command called &quot;test&quot; with a URL output.</span>
+<span class="p">;</span><span class="n">cc</span> <span class="n">add</span> <span class="n">no_prefix</span> <span class="n">test</span> <span class="s2">&quot;https://www.youtube.com/watch?v=vJZp6awlL58&quot;</span>
 <span class="c1"># Add a prefix command called test2 with a randomised output between &quot;the person above me is annoying&quot; and &quot;the person above me is cool :sunglasses:&quot;</span>
 <span class="p">;</span><span class="n">cc</span> <span class="n">add</span> <span class="n">prefix</span> <span class="n">test2</span> <span class="s2">&quot;the person above me is annoying&quot;</span> <span class="s2">&quot;the person above me is cool :sunglasses:</span>
 <span class="c1"># Add an embed command called test3 with a title of &quot;Title&quot; and a description that is a markdown hyperlink to a youtube video, and the colour #deadbf</span>
