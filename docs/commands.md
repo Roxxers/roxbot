@@ -1688,7 +1688,7 @@ Examples:
 
 ```py
 # Play the quality youtube video
-;play https://www.youtube.com/watch?v=A_pIPTih5iM
+;play https://www.youtube.com/watch?v=3uOPGkEJ56Q
 ```
 
 ### ;queue

@@ -283,7 +283,7 @@ class Voice:
 
 		Examples:
 			# Play the quality youtube video
-			;play https://www.youtube.com/watch?v=A_pIPTih5iM
+			;play https://www.youtube.com/watch?v=3uOPGkEJ56Q
 		"""
 		guild = ctx.guild
 		voice = roxbot.guild_settings.get(guild)["voice"]
