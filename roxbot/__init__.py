@@ -7,19 +7,25 @@
 # | |\ \\ \_/ / /^\ \| |_/ /\ \_/ / | |
 # \_| \_|\___/\/   \/\____/  \___/  \_/
 
-# Roxbot, an inclusive Discord bot
+# Roxbot: An inclusive modular multi-purpose Discord bot.
 
 __title__ = "roxbot"
 __author__ = "Roxanne Gibson"
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2017 Roxanne Gibson"
 __version__ = "2.0.0"
-__description__ = """Roxbot, an inclusive Discord bot. Built with love (and discord.py) by Roxxers#7443.
+__description__ = """Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
+
+Roxbot is designed to be provide many different services for users and modertors alike with a focus on customisability. 
+
+Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
+
 
 [Github link](https://github.com/roxxers/roxbot)
 [Changelog](https://github.com/roxxers/roxbot/blob/master/CHANGELOG.md)
+[Docs](https://roxxers.github.io/roxbot/)
 [Found a bug or need to report an issue? Report it here](https://github.com/roxxers/roxbot/issues/new)
-[Say Thanks](https://saythanks.io/to/Roxxers)"""
+"""
 
 from roxbot import checks, http, guild_settings, converters, utils, roxbotfacts
 from roxbot.exceptions import *
@@ -31,7 +37,7 @@ import configparser
 dev_mode = False
 
 config = configparser.ConfigParser()
-config.read("roxbot/settings/preferences.ini")
+config.read("roxbot/settings/roxbot.conf")
 
 command_prefix = config["Roxbot"]["Command_Prefix"]
 owner = int(config["Roxbot"]["OwnerID"])

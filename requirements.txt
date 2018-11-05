@@ -3,6 +3,4 @@ beautifulsoup4==4.6.0
 pillow==5.1.0
 numpy==1.14.3
 youtube_dl
-pymdown-extensions
-mkdocs-material
-emoji
+emoji==0.5.1

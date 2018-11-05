@@ -139,8 +139,8 @@ async def settings():
 
 if __name__ == "__main__":
 	# Pre-Boot checks
-	if not os.path.isfile("roxbot/settings/preferences.ini"):
-		print("PREFERENCE FILE MISSING. Please make sure there is a file called 'preferences.ini' in the settings folder")
+	if not os.path.isfile("roxbot/settings/roxbot.conf"):
+		print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
 		exit(0)
 
 	start_time = time.time()

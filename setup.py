@@ -57,10 +57,10 @@ def requirements():
 
 def create_preferences_file():
 	time.sleep(.5)
-	print("{} Creating preferences.ini file...".format(INFO))
-	with open("roxbot/settings/preferences_example.ini", "r") as orig:
+	print("{} Creating roxbot.conf file...".format(INFO))
+	with open("roxbot/settings/roxbot_example.conf", "r") as orig:
 		fp = orig.read()
-		with open("roxbot/settings/preferences.ini", "w") as new:
+		with open("roxbot/settings/roxbot.conf", "w") as new:
 			new.write(fp)
 	time.sleep(.5)
 	print("{} Preferences file created".format(OK))
@@ -68,8 +68,8 @@ def create_preferences_file():
 
 
 def preferences_setup():
-	# Ask to do preferences.ini setup
-	print("{} Most of the setup is complete. All there is to do is setup the preferences.ini file.".format(INFO))
+	# Ask to do roxbot.conf setup
+	print("{} Most of the setup is complete. All there is to do is setup the roxbot.conf file.".format(INFO))
 	print("{} You can do the quick setup in this script, or manually setup the file yourself.".format(INFO))
 	print("")
 	while True:
@@ -78,7 +78,7 @@ def preferences_setup():
 			time.sleep(.5)
 			print("")
 			print("{} Everything asked for next is required. Please try and input every option. "
-				  "If not possible, it is required you fix this in the preferences.ini file later.".format(WARN))
+				  "If not possible, it is required you fix this in the roxbot.conf file later.".format(WARN))
 			print("")
 			break
 		elif choice.strip(" ").lower() == "n":
@@ -88,7 +88,7 @@ def preferences_setup():
 	# Preferences.ini setup
 
 	config = configparser.ConfigParser()
-	config.read("roxbot/settings/preferences.ini")
+	config.read("roxbot/settings/roxbot.conf")
 	print("{} Setting up preferences file...".format(INFO))
 
 	# OWNER ID
@@ -128,12 +128,12 @@ def preferences_setup():
 	print("")
 
 	# SAVE
-	# TODO: Add comments back in once preferences.ini has been rewritten
-	print("{} Finished preferences.ini setup.".format(OK))
-	with open("roxbot/settings/preferences.ini", 'w') as configfile:
+	# TODO: Add comments back in once roxbot.conf has been rewritten
+	print("{} Finished roxbot.conf setup.".format(OK))
+	with open("roxbot/settings/roxbot.conf", 'w') as configfile:
 		config.write(configfile)
 
-	print("{} There are more options avaliable in the file (found at ./roxbot/settings/preferences.ini) if you want to make optional tweaks to Roxbot.".format(INFO))
+	print("{} There are more options avaliable in the file (found at ./roxbot/settings/roxbot.conf) if you want to make optional tweaks to Roxbot.".format(INFO))
 	print("{} Exiting...".format(OK))
 	exit(0)
 

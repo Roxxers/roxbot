@@ -18,3 +18,5 @@ env/
 roxbot/settings/servers/*
 
 site/
+
+roxbot/settings/roxbot\.conf
