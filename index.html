@@ -100,7 +100,7 @@
     <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
     <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
     
-      <a href="#welcome-to-mkdocs" tabindex="1" class="md-skip">
+      <a href="#roxbot" tabindex="1" class="md-skip">
         Skip to content
       </a>
     
@@ -122,12 +122,7 @@
         <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             
-              <span class="md-header-nav__topic">
-                Roxbot
-              </span>
-              <span class="md-header-nav__topic">
-                Welcome to MkDocs
-              </span>
+              Roxbot
             
           
         </div>
@@ -310,18 +305,6 @@
 
 
   <li class="md-nav__item">
-    <a href="quickstart/" title="Quick Start" class="md-nav__link">
-      Quick Start
-    </a>
-  </li>
-
-        
-          
-          
-          
-
-
-  <li class="md-nav__item">
     <a href="config/" title="Configuring Roxbot" class="md-nav__link">
       Configuring Roxbot
     </a>
@@ -370,6 +353,18 @@
 
 
   <li class="md-nav__item">
+    <a href="https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md" title="Changelog" class="md-nav__link">
+      Changelog
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
     <a href="contributing/" title="Contributing" class="md-nav__link">
       Contributing
     </a>
@@ -382,7 +377,7 @@
 
 
   <li class="md-nav__item">
-    <a href="license/" title="License" class="md-nav__link">
+    <a href="https://github.com/Roxxers/roxbot/blob/master/LICENSE.md" title="License" class="md-nav__link">
       License
     </a>
   </li>
@@ -414,15 +409,22 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#commands" title="Commands" class="md-nav__link">
-    Commands
+  <a href="#quick-setup" title="Quick Setup" class="md-nav__link">
+    Quick Setup
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#project-layout" title="Project layout" class="md-nav__link">
-    Project layout
+  <a href="#need-support" title="Need Support?" class="md-nav__link">
+    Need Support?
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#support-me-if-you-wantcan" title="Support Me If you want/can" class="md-nav__link">
+    Support Me If you want/can
   </a>
   
 </li>
@@ -446,21 +448,67 @@
                   <a href="https://github.com/roxxers/roxbot/edit/master/docs/index.md" title="Edit this page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="welcome-to-mkdocs">Welcome to MkDocs<a class="headerlink" href="#welcome-to-mkdocs" title="Permanent link">&para;</a></h1>
-<p>For full documentation visit <a href="https://mkdocs.org">mkdocs.org</a>.</p>
-<h2 id="commands">Commands<a class="headerlink" href="#commands" title="Permanent link">&para;</a></h2>
+                <h1 id="roxbot">Roxbot<a class="headerlink" href="#roxbot" title="Permanent link">&para;</a></h1>
+<p><a href="https://github.com/Roxxers"><img alt="Banner" src="http://i.imgur.com/SZIVXEg.png" /></a></p>
+<p><a href="https://gitlab.roxxers.xyz/roxxers/roxbot"><img alt="Python" src="https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square" /></a>
+<a href="https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE"><img alt="MIT" src="https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square" /></a>
+<a href="http://makeapullrequest.com"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square" /></a>
+<a href="https://discord.gg/Mpz8nv7"><img src="https://discordapp.com/api/guilds/450805414024577035/widget.png?style=shield"></a></p>
+<p>Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.</p>
+<p>Roxbot is designed to be provide many different services for users and modertors alike with a focus on customisability. Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. </p>
+<p><a href="https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md">Changelog</a> - <a href="https://roxxers.github.io/roxbot/">Docs</a> - <a href="https://roxxers.github.io/roxbot/commands/">Command Docs</a></p>
+<h2 id="quick-setup">Quick Setup<a class="headerlink" href="#quick-setup" title="Permanent link">&para;</a></h2>
+<p>Roxbot has only been tested on Linux machines so far so these instructions are written for Linux users.</p>
+<p>Requirements:</p>
 <ul>
-<li><code class="codehilite">mkdocs new [dir-name]</code> - Create a new project.</li>
-<li><code class="codehilite">mkdocs serve</code> - Start the live-reloading docs server.</li>
-<li><code class="codehilite">mkdocs build</code> - Build the documentation site.</li>
-<li><code class="codehilite">mkdocs help</code> - Print this help message.</li>
+<li>Python 3.5 or higher</li>
+<li>Pip (to install dependencies)</li>
+<li>A Discord bot account (<a href="https://discordpy.readthedocs.io/en/rewrite/discord.html#creating-a-bot-account">How to make a bot account</a>)</li>
 </ul>
-<h2 id="project-layout">Project layout<a class="headerlink" href="#project-layout" title="Permanent link">&para;</a></h2>
-<div class="codehilite"><pre><span></span>mkdocs.yml    # The configuration file.
-docs/
-    index.md  # The documentation homepage.
-    ...       # Other markdown pages, images and other files.
+<p>Optional Requirements:</p>
+<ul>
+<li>Imgur API client ID (for Reddit cog. Create a application to gain access to the Imgur API <a href="https://api.imgur.com/oauth2/addclient">here</a>)</li>
+<li>ffmpeg (for Voice cog [music bot])</li>
+<li>libopus (for Voice cog [music bot])</li>
+</ul>
+<p>If you don't meet the requirements for a cog, be sure to comment out that cog in the <code class="codehilite">roxbot/__init__.py</code> file. </p>
+<ol>
+<li>
+<p>Clone Roxbot to your system</p>
+<div class="codehilite"><pre><span></span>$  git clone https://github.com/roxxers/roxbot.git
+$  <span class="nb">cd</span> roxbot/
 </pre></div>
+
+</li>
+<li>
+<p>Create a venv for Roxbot</p>
+<p><div class="codehilite"><pre><span></span>$  python3 -m venv ./env
+$  <span class="nb">source</span> env/bin/activate      <span class="c1"># For bash and zsh users</span>
+$  <span class="nb">source</span> env/bin/activate.fish <span class="c1"># For fish users</span>
+</pre></div>
+3. Install Python dependencies</p>
+<div class="codehilite"><pre><span></span>$  python3 -m pip install -r requirements.txt
+</pre></div>
+
+</li>
+<li>
+<p>Edit Roxbot's config to add your bot accounts token (and imgur api token if you plan to use the Reddit cog) to the config, and also edit some other config settings. Then rename it so that Roxbot will be able to read it.</p>
+<div class="codehilite"><pre><span></span>$  nano roxbot/settings/roxbot_example.conf
+$  mv roxbot/settings/roxbot_example.conf roxbot/settings/roxbot.conf
+</pre></div>
+
+</li>
+<li>
+<p>Run Roxbot and she should setup everything if you haven't run her before.</p>
+<div class="codehilite"><pre><span></span>$  ./roxbot
+</pre></div>
+
+</li>
+</ol>
+<h2 id="need-support">Need Support?<a class="headerlink" href="#need-support" title="Permanent link">&para;</a></h2>
+<p>If you want Roxbot support, a support Discord can be found by clicking the Discord banner at the top of the readme,</p>
+<h2 id="support-me-if-you-wantcan">Support Me <small>If you want/can</small><a class="headerlink" href="#support-me-if-you-wantcan" title="Permanent link">&para;</a></h2>
+<p><a href="https://ko-fi.com/roxxers"><img alt="KoFi" src="https://i.imgur.com/IE2Qg79.png" /></a></p>
                 
                   
                 
