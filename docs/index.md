@@ -63,7 +63,7 @@ If you don't meet the requirements for a cog, be sure to comment out that cog in
 5. Run Roxbot and she should setup everything if you haven't run her before.
 
     ```bash
-    $  ./roxbot
+    $  ./roxbot.py
     ```
     
 ## Need Support?
