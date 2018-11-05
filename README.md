@@ -1,4 +1,6 @@
-![Banner](http://i.imgur.com/SZIVXEg.png)
+# Roxbot
+
+[![Banner](http://i.imgur.com/SZIVXEg.png)](https://github.com/Roxxers)
 
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot)
 [![MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
@@ -10,10 +12,10 @@ Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and dis
 Roxbot is designed to be provide many different services for users and modertors alike with a focus on customisability. Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
 
 
-[Changelog](https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md) - [Dosc](https://roxxers.github.io/roxbot/) - [Command Docs](https://roxxers.github.io/roxbot/commands/)
+[Changelog](https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md) - [Docs](https://roxxers.github.io/roxbot/) - [Command Docs](https://roxxers.github.io/roxbot/commands/)
 
 
-# Quick Setup
+## Quick Setup
 
 Roxbot has only been tested on Linux machines so far so these instructions are written for Linux users.
 
@@ -24,6 +26,7 @@ Requirements:
 - A Discord bot account ([How to make a bot account](https://discordpy.readthedocs.io/en/rewrite/discord.html#creating-a-bot-account))
 
 Optional Requirements:
+
 - Imgur API client ID (for Reddit cog. Create a application to gain access to the Imgur API [here](https://api.imgur.com/oauth2/addclient))
 - ffmpeg (for Voice cog [music bot])
 - libopus (for Voice cog [music bot])
@@ -63,11 +66,11 @@ If you don't meet the requirements for a cog, be sure to comment out that cog in
     $  ./roxbot
     ```
     
-# Need Support?
+## Need Support?
 
 If you want Roxbot support, a support Discord can be found by clicking the Discord banner at the top of the readme,
 
-# Support Me <small>If you want/can</small>
+## Support Me <small>If you want/can</small>
 
 [![KoFi](https://i.imgur.com/IE2Qg79.png)](https://ko-fi.com/roxxers)
 
