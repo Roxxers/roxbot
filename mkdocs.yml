@@ -37,7 +37,8 @@ nav:
     - User Guide:
         - 'Command Docs': 'commands.md'
         - 'About Roxbot Trivia': 'trivia.md'
-    
+    - Installation:
+        - 'Linux Installation': 'installation/linux.md'
     - Setup Roxbot:
         - 'Configuring Roxbot': 'config.md'
         - 'Creating Cogs For Roxbot': 'creating_cogs.md'

@@ -1,3 +1,10 @@
+---
+title: Roxbot Trivia
+description: About Roxbot's trivia game, Roxbot Trivia.
+authors:
+    - Roxanne Gibson
+---
+
 # Roxbot Trivia
 
 ![roxbottrivialogo](assets/images/roxbottriviabanner.png)
