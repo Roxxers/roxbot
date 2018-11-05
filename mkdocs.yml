@@ -43,7 +43,6 @@ nav:
         - 'Creating Cogs For Roxbot': 'creating_cogs.md'
     - About:
         - 'Changelog': 'https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md'
-        - 'Contributing': 'contributing.md'
         - 'License': 'https://github.com/Roxxers/roxbot/blob/master/LICENSE.md'
 
 
