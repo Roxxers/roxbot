@@ -36,6 +36,7 @@ If you don't meet the requirements for a cog, be sure to comment out that cog in
     $  source env/bin/activate      # For bash and zsh users
     $  source env/bin/activate.fish # For fish users
     ```
+
 3. Install Python dependencies
 
     ```bash
