@@ -20,7 +20,6 @@ Roxbot is designed to be provide many different services for users and modertors
 
 Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
 
-
 [Github link](https://github.com/roxxers/roxbot)
 [Changelog](https://github.com/roxxers/roxbot/blob/master/CHANGELOG.md)
 [Docs](https://roxxers.github.io/roxbot/)
@@ -49,7 +48,7 @@ if config["Backups"]["enabled"] == "False":
 	backup_enabled = False
 else:
 	backup_enabled = True
-backup_rate = config["Backups"]["rate"] * 60  # Convert minutes to seconds
+backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
 
 
 datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"

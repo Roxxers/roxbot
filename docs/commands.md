@@ -22,6 +22,15 @@ When the command wants a CHANNEL, USER, MEMBER, or ROLE. This means the ID, name
 ## Core Commands
 These are the base commands for Roxbot that are a part of the core bot. All of them deal with internal management and are, for the most part, unavailable to average users.
 
+### ;about
+
+Outputs info about RoxBot, showing up time, how to report issues, contents of roxbot.conf and credits.
+	
+Command Structure:
+
+`;about`
+
+
 ### ;backup
 
 !!! warning "Required Permissions"

@@ -110,24 +110,28 @@ def check_blacklist(ctx):
 @bot.command()
 async def about(ctx):
 	"""
-	Outputs info about RoxBot, showing up time, how to report issues, what settings where set in prefs.ini and credits.
+	Outputs info about RoxBot, showing up time, how to report issues, contents of roxbot.conf and credits.
 	"""
 	owner = bot.get_user(roxbot.owner)
 	em = discord.Embed(title="About Roxbot", colour=roxbot.EmbedColours.pink, description=roxbot.__description__)
 	em.set_thumbnail(url=bot.user.avatar_url)
-	em.add_field(name="Command Prefix", value=roxbot.command_prefix)
+	em.add_field(name="Bot Version", value=roxbot.__version__)
+	em.add_field(name="Discord.py version", value=discord.__version__)
 	em.add_field(name="Owner", value=str(owner))
 	em.add_field(name="Owner ID", value=roxbot.owner)
-	em.add_field(name="Bot Version", value=roxbot.__version__)
+	em.add_field(name="Command Prefix", value=roxbot.command_prefix)
+	em.add_field(name="Backup Enabled", value=roxbot.backup_enabled)
+	if roxbot.backup_enabled:
+		em.add_field(name="Backup Rate", value="{} Minutes".format(int(roxbot.backup_rate/60)))
+
 	em.add_field(name="Author", value=roxbot.__author__)
-	em.add_field(name="Discord.py version", value=discord.__version__)
-	em.set_footer(text="RoxBot is licensed under the MIT License")
+
 
 	# Do time calc late in the command so that the time returned is closest to when the message is received
 	uptimeflo = time.time() - start_time
 	uptime = str(datetime.timedelta(seconds=uptimeflo))
 	em.add_field(name="Current Uptime", value=str(uptime.split(".")[0]))
-
+	em.set_footer(text="RoxBot is licensed under the MIT License")
 	return await ctx.channel.send(embed=em)
 
 
