@@ -3,7 +3,7 @@
 ## v2.0.0
 With this update, I wanted Roxbot to reach an almost finished state. The base of the program should be complete and functional. This update brings a lot of internal changes that should make development of Roxbot easier for others and myself. It also should make her a lot more stable. Still expect updates with new features, bug fixes, and UX changes. Maybe just at a slower rate.
 
-Roxbot should be easier for users to setup too with this update. I have made full documentation of how she works and how to contribute to the project to make this easier. As well as a setup script.
+Roxbot should be easier for users to setup too with this update. I have made full documentation of how she works and how to contribute to the project to make this easier. <small>People better find the easter eggs in the command documentation.</small>
 
 ### Big and Breaking Changes
 - All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independant commands. This doesn't effect custom commands or warnings.
