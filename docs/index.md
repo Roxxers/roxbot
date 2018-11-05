@@ -9,7 +9,7 @@
 
 Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
-Roxbot is designed to be provide many different services for users and modertors alike with a focus on customisability. Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
+Roxbot is designed to be provide many different services for users and moderators alike with a focus on customisability. Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
 
 
 [Changelog](https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md) - [Docs](https://roxxers.github.io/roxbot/) - [Command Docs](https://roxxers.github.io/roxbot/commands/)
@@ -53,7 +53,7 @@ If you don't meet the requirements for a cog, be sure to comment out that cog in
     $  python3 -m pip install -r requirements.txt
     ```
 
-4. Edit Roxbot's config to add your bot accounts token (and imgur api token if you plan to use the Reddit cog) to the config, and also edit some other config settings. Then rename it so that Roxbot will be able to read it.
+4. Edit Roxbot's config to add your bot accounts token (and Imgur api token if you plan to use the Reddit cog) to the config, and also edit some other config settings. Then rename it so that Roxbot will be able to read it.
 
     ```bash
     $  nano roxbot/settings/roxbot_example.conf

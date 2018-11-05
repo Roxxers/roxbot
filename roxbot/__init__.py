@@ -1,22 +1,21 @@
 # -*- coding: utf-8 -*-
 
-# ______ _______   ________  _____ _____
-# | ___ \  _  \ \ / /| ___ \|  _  |_   _|
-# | |_/ / | | |\ V / | |_/ /| | | | | |
-# |    /| | | |/   \ | ___ \| | | | | |
-# | |\ \\ \_/ / /^\ \| |_/ /\ \_/ / | |
-# \_| \_|\___/\/   \/\____/  \___/  \_/
+# ____           _           _
+# |  _ \ _____  _| |__   ___ | |_
+# | |_) / _ \ \/ / '_ \ / _ \| __|
+# |  _ < (_) >  <| |_) | (_) | |_
+# |_| \_\___/_/\_\_.__/ \___/ \__|
 
 # Roxbot: An inclusive modular multi-purpose Discord bot.
 
 __title__ = "roxbot"
 __author__ = "Roxanne Gibson"
 __license__ = "MIT"
-__copyright__ = "Copyright 2015-2017 Roxanne Gibson"
+__copyright__ = "Copyright 2015-2017 Roxanne Gibson <me@roxxers.xyz>"
 __version__ = "2.0.0"
 __description__ = """Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
-Roxbot is designed to be provide many different services for users and modertors alike with a focus on customisability. 
+Roxbot is designed to be provide many different services for users and moderators alike with a focus on customisability. 
 
 Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
 
@@ -38,17 +37,21 @@ dev_mode = False
 config = configparser.ConfigParser()
 config.read("roxbot/settings/roxbot.conf")
 
-command_prefix = config["Roxbot"]["Command_Prefix"]
-owner = int(config["Roxbot"]["OwnerID"])
+try:
+	command_prefix = config["Roxbot"]["Command_Prefix"]
+	owner = int(config["Roxbot"]["OwnerID"])
 
-token = config["Tokens"]["Discord"]
-imgur_token = config["Tokens"]["Imgur"]
+	token = config["Tokens"]["Discord"]
+	imgur_token = config["Tokens"]["Imgur"]
 
-if config["Backups"]["enabled"] == "False":
-	backup_enabled = False
-else:
-	backup_enabled = True
-backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
+	if config["Backups"]["enabled"] == "False":
+		backup_enabled = False
+	else:
+		backup_enabled = True
+	backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
+except KeyError:
+	print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
+	exit(1)
 
 
 datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"
