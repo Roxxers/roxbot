@@ -1,34 +1,32 @@
 # -*- coding: utf-8 -*-
 
-"""
-MIT License
-
-Copyright (c) 2017-2018 Roxanne Gibson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+# MIT License
+#
+# Copyright (c) 2017-2018 Roxanne Gibson
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 
 from discord.ext import commands
 
 
-class UserConverter(commands.UserConverter):
+class User(commands.UserConverter):
 	"""Overriding the discord version to add a slower global look up for when it is a requirement to return a user who has left the guild.
 
 	Converts to a :class:`User`.
@@ -55,14 +53,13 @@ class UserConverter(commands.UserConverter):
 		return result
 
 
-class EmojiConverter(commands.EmojiConverter):
-	"""The Emoji conveter from discord.py but instead it returns the argument if an error is raised
-	It's messier than using the EmojiConverter proper but the issue is you can try converters."""
+class Emoji():
+	"""discord.Emoji converter for Roxbot. Is a combo of the EmojiConverter and PartialEmojiConverter converter classes."""
 	async def convert(self, ctx, argument):
 		try:
-			return await super().convert(ctx, argument)
-		except:  # Same as above
-			return argument
+			return await commands.EmojiConverter().convert(ctx, argument)
+		except commands.errors.BadArgument:
+			return await commands.PartialEmojiConverter().convert(ctx, argument)
 
 
 class AvatarURL(commands.UserConverter):
@@ -77,7 +74,7 @@ class AvatarURL(commands.UserConverter):
 	Will do a user lookup, if that fails, then tries to parse the argument for a link
 	"""
 	async def convert(self, ctx, argument):
-		if any(x in argument.split(".")[-1] for x in ("png", "jpg", "jpeg")):
+		if any(x in argument.split(".")[-1].lower() for x in ("png", "jpg", "jpeg")):
 			return argument
 		else:
 			try:
@@ -85,6 +82,3 @@ class AvatarURL(commands.UserConverter):
 				return user.avatar_url_as(format="png")
 			except:  # Same as above
 				raise commands.BadArgument("No valid image/user given.")
-
-
-# TODO: Make functions that work like converters but aren't so they actually work in other areas too.

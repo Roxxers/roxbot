@@ -1,54 +1,80 @@
 # -*- coding: utf-8 -*-
 
+# ____           _           _
+# |  _ \ _____  _| |__   ___ | |_
+# | |_) / _ \ \/ / '_ \ / _ \| __|
+# |  _ < (_) >  <| |_) | (_) | |_
+# |_| \_\___/_/\_\_.__/ \___/ \__|
+
+# Roxbot: An inclusive modular multi-purpose Discord bot.
+
+__title__ = "roxbot"
+__author__ = "Roxanne Gibson"
+__license__ = "MIT"
+__copyright__ = "Copyright 2015-2017 Roxanne Gibson <me@roxxers.xyz>"
+__version__ = "2.0.0"
+__description__ = """Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
+
+Roxbot is designed to be provide many different services for users and moderators alike with a focus on customisability. 
+
+Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
+
+[Github link](https://github.com/roxxers/roxbot)
+[Changelog](https://github.com/roxxers/roxbot/blob/master/CHANGELOG.md)
+[Docs](https://roxxers.github.io/roxbot/)
+[Found a bug or need to report an issue? Report it here](https://github.com/roxxers/roxbot/issues/new)
 """
-MIT License
 
-Copyright (c) 2017-2018 Roxanne Gibson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
-
-
-from roxbot import checks, http, guild_settings, converters, utils
+from roxbot import checks, http, guild_settings, converters, utils, roxbotfacts
+from roxbot.exceptions import *
 from roxbot.enums import EmbedColours
-from roxbot.logging import log
-from roxbot.utils import blacklisted
+from roxbot.utils import blacklisted, log
 
 import configparser
 
+dev_mode = False
 
-settings = configparser.ConfigParser()
-settings.read("roxbot/settings/preferences.ini")
+config = configparser.ConfigParser()
+config.read("roxbot/settings/roxbot.conf")
 
-command_prefix = settings["Roxbot"]["Command_Prefix"]
-owner = int(settings["Roxbot"]["OwnerID"])
+try:
+	command_prefix = config["Roxbot"]["Command_Prefix"]
+	owner = int(config["Roxbot"]["OwnerID"])
 
-token = settings["Tokens"]["Discord"]
-tat_token = settings["Tokens"]["Tatsumaki"]
-imgur_token = settings["Tokens"]["Imgur"]
+	token = config["Tokens"]["Discord"]
+	imgur_token = config["Tokens"]["Imgur"]
+
+	if config["Backups"]["enabled"] == "False":
+		backup_enabled = False
+	else:
+		backup_enabled = True
+	backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
+except KeyError:
+	print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
+	exit(1)
 
 
-__description__ = """RoxBot, A Discord Bot made by a filthy Mercy Main. Built with love (and discord.py) by Roxxers#7443.
+datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
-[Github link](https://github.com/Roxxers/roxbot)
-[Changelog](https://github.com/Roxxers/roxbot/wiki/Changelog)
-[Found a bug or need to report an issue? Report it here](https://github.com/Roxxers/roxbot/issues/new)
-[Say Thanks](https://saythanks.io/to/Roxxers)"""
-__author__ = "Roxanne Gibson"
-__version__ = "1.8.0a"
+cogs = [
+	"roxbot.cogs.admin",
+	"roxbot.cogs.customcommands",
+	"roxbot.cogs.fun",
+	"roxbot.cogs.image",
+	"roxbot.cogs.joinleave",
+	"roxbot.cogs.nsfw",
+	"roxbot.cogs.reddit",
+	"roxbot.cogs.selfassign",
+	"roxbot.cogs.trivia",
+	#"roxbot.cogs.twitch",
+	"roxbot.cogs.util",
+	"roxbot.cogs.voice",
+	#"roxbot.cogs.ags"
+]
+
+import logging
+handler = logging.FileHandler(filename='roxbot.log', encoding='utf-8', mode='a')
+handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+logger = logging.getLogger('roxbot')
+logger.setLevel(logging.INFO)
+logger.addHandler(handler)

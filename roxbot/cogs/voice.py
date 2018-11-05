@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 
-"""
-MIT License
-
-Copyright (c) 2017-2018 Roxanne Gibson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+# MIT License
+#
+# Copyright (c) 2017-2018 Roxanne Gibson
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 
 import os
@@ -34,37 +32,10 @@ from math import ceil
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings
-
-
-def _clear_cache():
-	"""Clears the cache folder for the music bot. Ignores the ".gitignore" file to avoid deleting versioned files."""
-	for file in os.listdir("roxbot/cache"):
-		if file != ".gitignore":
-			os.remove("roxbot/cache/{}".format(file))
-
-
-def volume_perms():
-	def predicate(ctx):
-		gs = guild_settings.get(ctx.guild)
-		if gs.voice["need_perms"]:  # Had to copy the admin or mod code cause it wouldn't work ;-;
-			if ctx.message.author.id == roxbot.owner:
-				return True
-			else:
-				admin_roles = gs.perm_roles["admin"]
-				mod_roles = gs.perm_roles["mod"]
-				for role in ctx.author.roles:
-					if role.id in mod_roles or role.id in admin_roles:
-						return True
-			return False
-		else:
-			return True
-	return commands.check(predicate)
 
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
-
 
 ytdl_format_options = {
 	'format': 'bestaudio/best',
@@ -81,10 +52,73 @@ ytdl_format_options = {
 
 ffmpeg_options = {
 	'before_options': '-nostdin',
-	'options': '-vn -loglevel panic --force-ipv4'
+	'options': '-vn -loglevel panic'
 }
 
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
+
+
+def need_perms():
+	def predicate(ctx):
+		gs = roxbot.guild_settings.get(ctx.guild)
+		if gs["voice"]["need_perms"]:
+			return roxbot.checks.has_permission_or_owner(manage_channels=True)
+		else:
+			return True
+
+	return commands.check(predicate)
+
+
+class NowPlayingEmbed(discord.Embed):
+	def __init__(self, **kwargs):
+		image = kwargs.pop("image", None)
+		thumbnail = kwargs.pop("thumbnail", None)
+		footer = kwargs.pop("footer", None)
+
+		super().__init__(**kwargs)
+
+		if thumbnail:
+			super().set_thumbnail(url=thumbnail)
+		if footer:
+			super().set_footer(text=footer)
+		if image:
+			super().set_image(url=image)
+
+	@staticmethod
+	def _format_duration(duration):
+		"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
+		if not duration:
+			return duration
+		hours = duration // 3600
+		minutes = (duration % 3600) // 60
+		seconds = duration % 60
+		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
+		formatted = datetime.time(**format_me)
+		output = "{:%M:%S}".format(formatted)
+		if formatted.hour >= 1:
+			output = "{:%H:}".format(formatted) + output
+		return output
+
+	@classmethod
+	def make(cls, now_playing, playing_status):
+		np = now_playing
+		title = "{0}: '{1.title}' from {1.host}".format(playing_status, now_playing)
+		duration = cls._format_duration(np.duration)
+		time_played = cls._format_duration(np.source.timer / 1000)
+		description = """Uploaded by: [{0.uploader}]({0.uploader_url})
+		URL: [Here]({0.webpage_url})
+		Duration: {1}
+		Queued by: {0.queued_by}""".format(now_playing, duration)
+		image = np.thumbnail_url
+		footer_text = "{}/{} | Volume: {}%".format(time_played, duration, int(now_playing.volume * 100))
+		return cls(
+			title=title,
+			url=np.webpage_url,
+			description=description,
+			colour=roxbot.EmbedColours.pink,
+			image=image,
+			footer=footer_text
+		)
 
 
 class ModifiedFFmpegPMCAudio(discord.FFmpegPCMAudio):
@@ -117,22 +151,33 @@ class YTDLSource(discord.PCMVolumeTransformer):
 	async def from_url(cls, url, *, loop=None, stream=False, volume=0.2):
 		loop = loop or asyncio.get_event_loop()
 		data = await loop.run_in_executor(None, lambda: ytdl.extract_info(url, download=not stream))
-
 		if 'entries' in data:
 			# take first item from a playlist. This shouldn't need to happen but in case it does.
 			data = data['entries'][0]
-
 		filename = data['url'] if stream else ytdl.prepare_filename(data)
 		return cls(ModifiedFFmpegPMCAudio(filename, ffmpeg_options), data=data, volume=volume)
 
 
 class Voice:
+	"""The Voice cog is a cog that adds and manages a fully-functional music bot for Roxbot."""
+	# TODO: Add voting to many of the commands.
 	def __init__(self, bot):
 		# Auto Cleanup cache files on boot
-		_clear_cache()
+		self._clear_cache()
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
+		self.settings = {
+			"voice": {
+				"need_perms": 0,
+				"skip_voting": 0,
+				"skip_ratio": 0.6,
+				"convert": {"need_perms": "bool", "skip_voting": "bool"},
+				"max_length": 600
+			}
+		}
+		# TODO: Make this into a on roxbot joining voice thing instead of generating this for all servers on boot.
+		self.refresh_rate = 1/60  # 60hz
 		self._volume = {}
 		self.playlist = {}  # All audio to be played
 		self.skip_votes = {}
@@ -148,52 +193,11 @@ class Voice:
 			self.queue_logic[guild.id] = None
 
 	@staticmethod
-	def _format_duration(duration):
-		"""Static method to turn the duration of a file (in seconds) into something presentable for the user"""
-		if not duration:
-			return duration
-		hours = duration // 3600
-		minutes = (duration % 3600) // 60
-		seconds = duration % 60
-		format_me = {"second": int(seconds), "minute": int(minutes), "hour": int(hours)}
-		formatted = datetime.time(**format_me)
-		output = "{:%M:%S}".format(formatted)
-		if formatted.hour >= 1:
-			output = "{:%H:}".format(formatted) + output
-		return output
-
-	async def _queue_logic(self, ctx):
-		"""Background task designed to help the bot move on to the next video in the queue"""
-		sleep_for = 0.5
-		try:
-			while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
-				await asyncio.sleep(sleep_for)
-		except AttributeError:
-			pass  # This is to stop any errors appearing if the bot suddenly leaves voice chat.
-		self.now_playing[ctx.guild.id] = None
-		self.skip_votes[ctx.guild.id] = []
-		if self.playlist[ctx.guild.id] and ctx.voice_client:
-			player = self.playlist[ctx.guild.id].pop(0)
-			await ctx.invoke(self.play, url=player, stream=player.get("stream", False), from_queue=True)
-
-	def _queue_song(self, ctx, video, stream):
-		"""Fuction to queue up a video into the playlist."""
-		video["stream"] = stream
-		video["queued_by"] = ctx.author
-		self.playlist[ctx.guild.id].append(video)
-		return video
-
-	def _generate_np_embed(self, guild, playing_status):
-		np = self.now_playing[guild.id]
-		title = "{0}: '{1.title}' from {1.host}".format(playing_status, np)
-		duration = self._format_duration(np.duration)
-		time_played = self._format_duration(np.source.timer/1000)
-
-		embed = discord.Embed(title=title, colour=roxbot.EmbedColours.pink, url=np.webpage_url)
-		embed.description = "Uploaded by: [{0.uploader}]({0.uploader_url})\nURL: [Here]({0.webpage_url})\nDuration: {1}\nQueued by: {0.queued_by}".format(np, duration)
-		embed.set_image(url=np.thumbnail_url)
-		embed.set_footer(text="{}/{} | Volume: {}%".format(time_played, duration, int(self.now_playing[guild.id].volume*100)))
-		return embed
+	def _clear_cache():
+		"""Clears the cache folder for the music bot. Ignores the ".gitignore" file to avoid deleting versioned files."""
+		for file in os.listdir("roxbot/cache"):
+			if file != ".gitignore":
+				os.remove("roxbot/cache/{}".format(file))
 
 	async def on_guild_join(self, guild):
 		"""Makes sure that when the bot joins a guild it won't need to reboot for the music bot to work."""
@@ -203,10 +207,42 @@ class Voice:
 		self.now_playing[guild.id] = None
 		self.queue_logic[guild.id] = None
 
-	@roxbot.checks.is_admin_or_mod()
+	async def _queue_logic(self, ctx):
+		"""Background task designed to help the bot move on to the next video in the queue"""
+		try:
+			while ctx.voice_client.is_playing() or ctx.voice_client.is_paused():
+				await asyncio.sleep(self.refresh_rate)
+		except AttributeError:
+			pass  # This is to stop any errors appearing if the bot suddenly leaves voice chat.
+		self.now_playing[ctx.guild.id] = None
+		self.skip_votes[ctx.guild.id] = []
+		if self.playlist[ctx.guild.id] and ctx.voice_client:
+			player = self.playlist[ctx.guild.id].pop(0)
+			await ctx.invoke(self.play, url=player, stream=player.get("stream", False), from_queue=True, queued_by=player.get("queued_by", None))
+
+	def _queue_song(self, ctx, video, stream):
+		"""Fuction to queue up a video into the playlist."""
+		video["stream"] = stream
+		video["queued_by"] = ctx.author
+		self.playlist[ctx.guild.id].append(video)
+		return video
+
+	@roxbot.checks.has_permission_or_owner(manage_channels=True)
+	@commands.guild_only()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
-		"""Joins the voice channel your in."""
+		"""Summon Roxbot to a voice channel, usually the one you are currently in.
+
+		This is done automatically when you execute the `;play` or `;stream` commands.
+
+		Options:
+
+			- `Voice Channel` - OPTIONAL. The name of a Voice Channel
+
+		Example:
+			# Join a voice channle called General
+			;join General
+		"""
 		# Get channel
 		if channel is None:
 			try:
@@ -221,23 +257,39 @@ class Voice:
 			await channel.connect()
 		return await ctx.send("Joined {0.name} :ok_hand:".format(channel))
 
-	@commands.command(hidden=True, enabled=False)
-	async def play_local(self, ctx, *, query):
-		"""Plays a file from the local filesystem."""
-		source = discord.PCMVolumeTransformer(discord.FFmpegPCMAudio(query))
-		ctx.voice_client.play(source, after=lambda e: print('Player error: %s' % e) if e else None)
+	async def _play(self, ctx, url, stream, queued_by):
+		player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
+		player.stream = stream
+		player.queued_by = queued_by or ctx.author
+		self.now_playing[ctx.guild.id] = player
+		ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
+		# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
+		self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
 
-		await ctx.send('Now playing: {}'.format(query))
-
-	@commands.cooldown(1, 0.5, commands.BucketType.guild)
+	@commands.guild_only()
+	@commands.cooldown(1, 0.8, commands.BucketType.guild)
 	@commands.command(aliases=["yt"])
-	async def play(self, ctx, *, url, stream=False, from_queue=False):
-		"""Plays from a url or search query (almost anything youtube_dl supports)"""
-		voice = guild_settings.get(ctx.guild).voice
-		guild = ctx.guild
+	async def play(self, ctx, *, url, stream=False, from_queue=False, queued_by=None):
+		"""Plays a video over voice chat using the given URL. This URL has to be one that YoutubeDL can download from. [A list can be found here.](https://rg3.github.io/youtube-dl/supportedsites.html)
 
-		# Checks if invoker is in voice with the bot. Skips admins and mods and owner.
-		if not roxbot.checks._is_admin_or_mod(ctx) or from_queue:
+		If the bot is already playing something, this will be queued up to be played later. If you want to play a livestream, use the `;stream` command.
+
+		The user needs to be in a voice channel for this command to work. This is ignored if the user has the `manage_channels` permission. There is also a duration limit that can be placed on videos. This is also ignored if the user has the `manage_channels` permission.
+
+
+		Options:
+
+			- `url` -  A url to a video or playlist or a search term. If a playlist, it will play the first video and queue up all other videos in the playlist. If just text, Roxbot will play the first Youtube search result.
+
+		Examples:
+			# Play the quality youtube video
+			;play https://www.youtube.com/watch?v=3uOPGkEJ56Q
+		"""
+		guild = ctx.guild
+		voice = roxbot.guild_settings.get(guild)["voice"]
+
+		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
+		if not (roxbot.checks.has_permission_or_owner(manage_channels=True) or from_queue):
 			if not ctx.author.voice:
 				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
@@ -252,36 +304,28 @@ class Voice:
 
 		# Playlist and search handling.
 		if 'entries' in video and video.get("extractor_key") != "YoutubeSearch":
-			await ctx.send("Looks like you have given me a playlist. I will que up all {} videos in the playlist.".format(len(video.get("entries"))))
+			await ctx.send("Looks like you have given me a playlist. I will queue up all {} videos in the playlist.".format(len(video.get("entries"))))
 			data = dict(video)
 			video = data["entries"].pop(0)
 			for entry in data["entries"]:
 				self._queue_song(ctx, entry, stream)
+
 		elif 'entries' in video and video.get("extractor_key") == "YoutubeSearch":
 			video = video["entries"][0]
 
 		# Duration limiter handling
-		if video.get("duration", 1) > voice["max_length"] and not roxbot.checks._is_admin_or_mod(ctx):
+		if video.get("duration", 1) > voice["max_length"] and not roxbot.checks.has_permission_or_owner(manage_channels=True):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
 		# If not playing and not queuing, and not paused, play the song. Otherwise queue it.
 		if (not ctx.voice_client.is_playing() and self.am_queuing[guild.id] is False) and not ctx.voice_client.is_paused():
 			self.am_queuing[guild.id] = True
-
 			async with ctx.typing():
-				player = await YTDLSource.from_url(url, loop=self.bot.loop, stream=stream, volume=self._volume[ctx.guild.id])
-				player.stream = stream
-				player.queued_by = ctx.author
-				self.now_playing[guild.id] = player
-				self.am_queuing[guild.id] = False
+				await self._play(ctx, url, stream, queued_by)
+			self.am_queuing[ctx.guild.id] = False
 
-				ctx.voice_client.play(player, after=lambda e: print('Player error: %s' % e) if e else None)
-
-			# Create task to deal with what to do when the video ends or is skipped and how to handle the queue
-			self.queue_logic[ctx.guild.id] = self.bot.loop.create_task(self._queue_logic(ctx))
-
-			embed = self._generate_np_embed(ctx.guild, "Now Playing")
+			embed = NowPlayingEmbed.make(self.now_playing[ctx.guild.id], "Now Playing")
 			await ctx.send(embed=embed)
 		else:
 			# Queue the song as there is already a song playing or paused.
@@ -289,117 +333,117 @@ class Voice:
 
 			# Sleep because if not, queued up things will send first and probably freak out users or something
 			while self.am_queuing[guild.id] is True:
-				await asyncio.sleep(0.5)
+				await asyncio.sleep(self.refresh_rate)
 			embed = discord.Embed(description='Added "{}" to queue'.format(video.get("title")), colour=roxbot.EmbedColours.pink)
 			await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@commands.cooldown(1, 0.5, commands.BucketType.guild)
 	@commands.command()
 	async def stream(self, ctx, *, url):
-		"""Streams given link. Good for Twitch. (same as play, but doesn't predownload)"""
+		"""
+		A version of `;play` that should be used to stream livestreams or internet radio sources.
+
+		For more details on how this command words, please look at the documentation for the `;play` command.
+		"""
 		# Just invoke the play command with the stream argument as true. Deals with everything else anyway.
 		return await ctx.invoke(self.play, url=url, stream=True)
 
-	@play.before_invoke
-	@stream.before_invoke
-	@play_local.before_invoke
-	async def ensure_voice(self, ctx):
-		"""Ensures the bot is in a voice channel before continuing and if it cannot auto join, raise an error."""
-		if ctx.voice_client is None:
-			if ctx.author.voice:
-				await ctx.author.voice.channel.connect()
-			else:
-				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
-
-	@volume_perms()
+	@need_perms()
+	@commands.guild_only()
 	@commands.command()
-	async def volume(self, ctx, volume):
-		"""Changes the player's volume. Only accepts integers representing x% between 0-100% or "show", which will show the current volume."""
-		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+	async def volume(self, ctx, volume: int):
+		"""
+		Sets the volume percentage for Roxbot's audio.
 
-		try:
-			volume = int(volume)
-		except ValueError:
-			pass
+		The current volume of Roxbot is displayed by her nowplaying rich embeds that are displayed when she begins to play a video or when the `;nowplaying` command is used.
 
-		if volume != "show" and not isinstance(volume, int):
-			raise commands.BadArgument("Not int or 'show'")
-		elif volume == "show":
-			return await ctx.send("Volume: {}%".format(self._volume[ctx.guild.id]*100))
+		Options:
 
-		if 0 < volume <= 100:
+			- `percent` - A positive integer between 0-100 representing a percentage.
+
+		Example:
+			# Set volume to 20%
+			;volume 20
+		"""
+		if 0 <= volume <= 100:
 			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 			self._volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 		else:
 			raise commands.CommandError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
 
+	@need_perms()
+	@commands.guild_only()
+	@commands.cooldown(1, 2)
 	@commands.command()
 	async def pause(self, ctx):
 		"""Pauses the current video, if playing."""
-		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+		if ctx.voice_client.is_paused():
+			return await ctx.send("I already am paused!")
 		else:
-			if not ctx.voice_client.is_playing():
-				return await ctx.send("Nothing is playing.")
-			elif ctx.voice_client.is_paused():
-				return await ctx.send("I already am paused!")
-			else:
-				ctx.voice_client.pause()
-				return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
+			ctx.voice_client.pause()
+			return await ctx.send("Paused '{}'".format(ctx.voice_client.source.title))
 
+	@need_perms()
+	@commands.guild_only()
+	@commands.cooldown(1, 2)
 	@commands.command()
 	async def resume(self, ctx):
-		"""Resumes the bot if paused. Also will play the next thing in the queue if the bot is stuck."""
-		if ctx.voice_client is None:
-			if len(self.playlist[ctx.guild.id]) < 1:
-				raise commands.CommandError("Roxbot is not in a voice channel.")
-			else:
-				video = self.playlist[ctx.guild.id].pop(0)
-				await ctx.invoke(self.play, url=video)
+		"""Resumes the bot, if paused."""
+		if ctx.voice_client.is_paused():
+			ctx.voice_client.resume()
+			return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
 		else:
-			if ctx.voice_client.is_paused():
-				ctx.voice_client.resume()
-				return await ctx.send("Resumed '{}'".format(ctx.voice_client.source.title))
+			if ctx.voice_client.is_playing():
+				return await ctx.send("Can't resume if I'm already playing something!")
 			else:
-				if ctx.voice_client.is_playing():
-					return await ctx.send("Can't resume if I'm already playing something!")
-				else:
-					return await ctx.send("Nothing to resume.")
+				return await ctx.send("Nothing to resume.")
 
+	@commands.guild_only()
 	@commands.command()
 	async def skip(self, ctx, option=""):
-		"""Skips or votes to skip the current video. Use option "--force" if your an admin and """
-		voice = guild_settings.get(ctx.guild).voice
-		if ctx.voice_client.is_playing():
-			if voice["skip_voting"] and not (option == "--force" and roxbot.checks._is_admin_or_mod(ctx)):  # Admin force skipping
-				if ctx.author in self.skip_votes[ctx.guild.id]:
-					return await ctx.send("You have already voted to skip the current track.")
-				else:
-					self.skip_votes[ctx.guild.id].append(ctx.author)
-					# -1 due to the bot being counted in the members generator
-					ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
-					needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
-					if ratio >= voice["skip_ratio"]:
-						await ctx.send("{} voted the skip the video.".format(ctx.author))
-						await ctx.send("Votes to skip now playing has been met. Skipping video...")
-						self.skip_votes[ctx.guild.id] = []
-					else:
-						await ctx.send("{} voted the skip the song.".format(ctx.author))
-						return await ctx.send("{}/{} votes required to skip the video. To vote, use the command `{}skip`".format(len(self.skip_votes[ctx.guild.id]), needed_users, ctx.prefix))
+		"""Skips the current playing video.
+
+		If skipvoting is enabled, multiple people will have to use this command to go over the ratio that is also set by server moderators.
+
+		Options:
+			- `--force` - if skip voting is enabled, users with the `manage_channel` permission can skip this process and for the video to be skipped.
+
+		Examples:
+			# Vote to skip a video
+			;skip
+			# Force skip a video
+			;skip --force
+		"""
+		voice = roxbot.guild_settings.get(ctx.guild)["voice"]
+		if voice["skip_voting"] and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
+			if ctx.author in self.skip_votes[ctx.guild.id]:
+				return await ctx.send("You have already voted to skip the current track.")
 			else:
-				await ctx.send("Skipped video")
-
-			# This should be fine as the queue_logic function should handle moving to the next song and all that.
-			self.now_playing[ctx.guild.id] = None
-			ctx.voice_client.stop()
+				self.skip_votes[ctx.guild.id].append(ctx.author)
+				# -1 due to the bot being counted in the members generator
+				ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
+				needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
+				if ratio >= voice["skip_ratio"]:
+					await ctx.send("{} voted the skip the video.".format(ctx.author))
+					await ctx.send("Votes to skip now playing has been met. Skipping video...")
+					self.skip_votes[ctx.guild.id] = []
+				else:
+					await ctx.send("{} voted the skip the song.".format(ctx.author))
+					return await ctx.send("{}/{} votes required to skip the video. To vote, use the command `{}skip`".format(len(self.skip_votes[ctx.guild.id]), needed_users, ctx.prefix))
 		else:
-			await ctx.send("I'm not playing anything.")
+			await ctx.send("Skipped video")
 
+		# This should be fine as the queue_logic function should handle moving to the next song and all that.
+		self.now_playing[ctx.guild.id] = None
+		ctx.voice_client.stop()
+
+
+	@commands.guild_only()
 	@commands.command(aliases=["np"])
 	async def nowplaying(self, ctx):
-		"""Displays the video now playing."""
+		"""Displays what is currently playing."""
 		if self.now_playing[ctx.guild.id] is None:
 			return await ctx.send("Nothing is playing.")
 		else:
@@ -407,26 +451,48 @@ class Voice:
 				x = "Paused"
 			else:
 				x = "Now Playing"
-			embed = self._generate_np_embed(ctx.guild, x)
+			embed = NowPlayingEmbed.make(self.now_playing[ctx.guild.id], x)
 			return await ctx.send(embed=embed)
 
+	@commands.guild_only()
 	@commands.command()
 	async def queue(self, ctx):
 		"""Displays what videos are queued up and waiting to be played."""
-		output = ""
+		paginator = commands.Paginator(prefix="", suffix="")
 		index = 1
-		for video in self.playlist[ctx.guild.id]:
-			output += "{}) '{}' queued by {}\n".format(index, video["title"], video["queued_by"])
-			index += 1
-		if output == "":
-			output = "Nothing is up next. Maybe you should add something!"
-		embed = discord.Embed(title="Queue", description=output, colour=roxbot.EmbedColours.pink)
-		return await ctx.send(embed=embed)
 
-	@roxbot.checks.is_admin_or_mod()
+		if not self.playlist[ctx.guild.id]:
+			return await ctx.send("Nothing is up next. Maybe you should add something!")
+		else:
+			for video in self.playlist[ctx.guild.id]:
+				paginator.add_line("{}) '{}' queued by {}\n".format(index, video["title"], video["queued_by"]))
+				index += 1
+		if len(paginator.pages) <= 1:
+			embed = discord.Embed(title="Queue", description=paginator.pages[0], colour=roxbot.EmbedColours.pink)
+			return await ctx.send(embed=embed)
+		else:
+			pages = []
+			pages.append(discord.Embed(title="Queue", description=paginator.pages.pop(0), colour=roxbot.EmbedColours.pink))
+			for page in paginator.pages:
+				pages.append(discord.Embed(description=page, colour=roxbot.EmbedColours.pink))
+			for page in pages:
+				await ctx.send(embed=page)
+
+	@commands.guild_only()
+	@commands.has_permissions(manage_channels=True)
 	@commands.command()
 	async def remove(self, ctx, index):
-		"""Removes a item from the queue with the given index. Can also input all to delete all queued items."""
+		"""Removes a item from the queue with the given index.
+
+		Options:
+			- `index/all` - A number representing an index in the queue to remove one video, or "all" to clear all videos.
+
+		Examples:
+			# Remove 2nd video
+			;remove 2
+			# Clear the queue
+			;remove all
+		"""
 		# Try and convert index into an into. If not possible, just move forward
 		try:
 			index = int(index)
@@ -449,19 +515,112 @@ class Voice:
 			except IndexError:
 				raise commands.CommandError("Valid Index not given.")
 
-	@roxbot.checks.is_admin_or_mod()
+	@commands.guild_only()
+	@commands.has_permissions(manage_channels=True)
 	@commands.command(alaises=["disconnect"])
 	async def stop(self, ctx):
-		"""Stops and disconnects the bot from voice."""
+		"""Stops Roxbot from playing music and has her leave voice chat."""
+		# Clear up variables before stopping.
+		self.playlist[ctx.guild.id] = []
+		self.now_playing[ctx.guild.id] = None
+		self.queue_logic[ctx.guild.id].cancel()
+		await ctx.voice_client.disconnect()
+		return await ctx.send(":wave:")
+
+	@play.before_invoke
+	@stream.before_invoke
+	async def ensure_voice(self, ctx):
+		"""Ensures the bot is in a voice channel before continuing and if it cannot auto join, raise an error."""
+		if ctx.voice_client is None:
+			if ctx.author.voice:
+				await ctx.author.voice.channel.connect()
+			else:
+				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
+
+	@skip.before_invoke
+	@stop.before_invoke
+	@pause.before_invoke
+	@resume.before_invoke
+	@volume.before_invoke
+	async def check_in_voice(self, ctx):
 		if ctx.voice_client is None:
 			raise commands.CommandError("Roxbot is not in a voice channel.")
+
+	@skip.before_invoke
+	@pause.before_invoke
+	async def check_playing(self, ctx):
+		try:
+			if not ctx.voice_client.is_playing():
+				raise commands.CommandError("I'm not playing anything.")
+		except AttributeError:
+			raise commands.CommandError("I'm not playing anything.")
+
+	@commands.guild_only()
+	@commands.has_permissions(manage_channels=True)
+	@commands.command()
+	async def voice(self, ctx, setting=None, change=None):
+		"""Edits settings for the voice cog.
+
+		Options:
+			- `enable/disable`: Enable/disables specified change.
+			- `skipratio`: Specify what the ratio should be for skip voting if enabled. Example: 0.6 for 60%
+			- `maxlength/duration`: Specify (in seconds) the max duration of a video that can be played.
+
+		Possible settings to enable/disable:
+			- `needperms`: specifies whether `volume`, `pause`, or `resume` require permissions or not.
+			- `skipvoting`: enables voting to skip instead of one user skipping.
+
+		Example:
+			# Enable skipvoting
+			;voice enable skipvoting
+			# Disbale needing perms
+			;voice disable needperms
+			# Edit maxlength to 5 minutes
+			;voice maxlength 300
+		"""
+		setting = setting.lower()
+		change = change.lower()
+		settings = roxbot.guild_settings.get(ctx.guild)
+		voice = settings["voice"]
+
+		if setting == "enable":
+			if change == "needperms":
+				voice["need_perms"] = 1
+				await ctx.send("'{}' has been enabled!".format(change))
+			elif change == "skipvoting":
+				voice["skip_voting"] = 1
+				await ctx.send("'{}' has been enabled!".format(change))
+			else:
+				return await ctx.send("Not a valid change.")
+		elif setting == "disable":
+			if change == "needperms":
+				voice["need_perms"] = 1
+				await ctx.send("'{}' was disabled :cry:".format(change))
+			elif change == "skipvoting":
+				voice["skip_voting"] = 1
+				await ctx.send("'{}' was disabled :cry:".format(change))
+			else:
+				return await ctx.send("Not a valid change.")
+		elif setting == "skipratio":
+			change = float(change)
+			if 1 > change > 0:
+				voice["skip_ratio"] = change
+			elif 0 < change <= 100:
+				change = change/10
+				voice["skip_ratio"] = change
+			else:
+				return await ctx.send("Valid ratio not given.")
+			await ctx.send("Skip Ratio was set to {}".format(change))
+		elif setting == "maxlength" or setting == "maxduration":
+			change = int(change)
+			if change >= 1:
+				voice["skip_ratio"] = change
+			else:
+				return await ctx.send("Valid max duration not given.")
+			await ctx.send("Max Duration was set to {}".format(change))
 		else:
-			# Clear up variables before stopping.
-			self.playlist[ctx.guild.id] = []
-			self.now_playing[ctx.guild.id] = None
-			self.queue_logic[ctx.guild.id].cancel()
-			await ctx.voice_client.disconnect()
-			return await ctx.send(":wave:")
+			return await ctx.send("Valid option not given.")
+		return settings.update(voice, "voice")
 
 
 def setup(bot_client):

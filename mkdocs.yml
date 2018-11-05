@@ -1,0 +1,95 @@
+# MIT License
+# 
+# Copyright (c) 2017-2018 Roxanne Gibson
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
+
+
+# Project Info
+site_name: Roxbot
+site_author: "Roxanne Gibson"
+
+# Repositroy
+repo_name: "roxxers/roxbot"
+repo_url: "https://github.com/roxxers/roxbot"
+
+# Copyright
+copyright: 'Copyright &copy; 2017 - 2018 Roxanne Gibson'
+
+# Layout
+nav:
+    - User Guide:
+        - 'Command Docs': 'commands.md'
+        - 'About Roxbot Trivia': 'trivia.md'
+    - Installation:
+        - 'Linux Installation': 'installation/linux.md'
+    - Setup Roxbot:
+        - 'Configuring Roxbot': 'config.md'
+        - 'Creating Cogs For Roxbot': 'creating_cogs.md'
+    - About:
+        - 'Changelog': 'https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md'
+        - 'License': 'https://github.com/Roxxers/roxbot/blob/master/LICENSE.md'
+
+
+# Customisation
+theme: 
+  name: material
+  language: en
+  navigation-depth: 5
+  palette:
+    primary: 'deep purple'
+    accent: 'deep purple'
+  font:
+    text: 'Roboto'
+    code: 'Roboto Mono'
+  logo:
+    icon: "\uE80C"
+  feature:
+    tabs: false
+  static_templates:
+    - 404.html
+
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/roxxers'
+
+markdown_extensions:
+  - admonition
+  - codehilite
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.magiclink
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+

@@ -1,28 +1,26 @@
 # -*- coding: utf-8 -*-
 
-"""
-MIT License
-
-Copyright (c) 2017-2018 Roxanne Gibson
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-"""
+# MIT License
+#
+# Copyright (c) 2017-2018 Roxanne Gibson
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+# SOFTWARE.
 
 
 import re
@@ -32,18 +30,19 @@ import datetime
 import discord
 from discord import Embed
 from discord.ext import commands
-from discord.ext.commands import bot
 
 import roxbot
 
 
 class Fun:
+	"""The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.croak = {}
+		self.roxbot_fact_cache = {}
 
-	@bot.command()  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
-	async def roll(self, ctx, *, expression=""):
+	@commands.command(aliases=["dice", "die"])  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
+	async def roll(self, ctx, *, expression: str):
 		"""
 		Rolls a die using dice expression format.
 		Usage:
@@ -188,74 +187,85 @@ class Fun:
 				response += '\n'
 		return await ctx.send(response)
 
-	@roxbot.checks.isnt_anal()
-	@bot.command()
+	@roxbot.checks.is_nsfw()
+	@commands.command()
 	async def spank(self, ctx, *, user: discord.User = None):
 		"""
 		Spanks the mentioned user ;)
-		Usage:
-			{command_prefix}spank @roxbot#4170
-			{command_prefix}spank roxbot
+
+		Examples:
+			# Two ways to give Roxbot spanks.
+			;spank @Roxbot#4170
+			;spank Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to spank")
 		return await ctx.send(":peach: :wave: *{} spanks {}*".format(self.bot.user.name, user.name))
 
-	@roxbot.checks.isnt_anal()
-	@bot.command(aliases=["succ"])
+	@roxbot.checks.is_nsfw()
+	@commands.command(aliases=["succ"])
 	async def suck(self, ctx, *, user: discord.User = None):
 		"""
 		Sucks the mentioned user ;)
-		Usage:
-			{command_prefix}suck @roxbot#4170
-			{command_prefix}suck roxbot
+
+		Examples:
+			# Two ways to give Roxbot the succ.
+			;suck @Roxbot#4170
+			;suck Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to suck")
 		return await ctx.send(":eggplant: :sweat_drops: :tongue: *{} sucks {}*".format(self.bot.user.name, user.name))
 
-	@bot.command()
+	@commands.command()
 	async def hug(self, ctx, *, user: discord.User = None):
 		"""
 		Hugs the mentioned user :3
-		Usage:
-			{command_prefix}hug @roxbot#4170
-			{command_prefix}hug Roxbott
+
+		Examples:
+			# Two ways to give Roxbot hugs.
+			;hug @Roxbot#4170
+			;hug Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to hug")
 		return await ctx.send(":blush: *{} hugs {}*".format(self.bot.user.name, user.name))
 
-	@bot.command(aliases=["headpat", "pat"])
+	@commands.command(aliases=["headpat", "pat"])
 	async def pet(self, ctx, *, user: discord.User = None):
 		"""
 		Gives headpats to the mentioned user :3
-		Usage:
-			{command_prefix}pet @roxbot#4170
-			{command_prefix}pet roxbot
+
+		Examples:
+			# Two ways to give Roxbot headpats.
+			;pet @Roxbot#4170
+			;pet Roxbot
 		"""
 		if not user:
 			return await ctx.send("You didn't mention someone for me to headpat")
 		return await ctx.send("Nyaa! :3 *{} gives headpats to {}*".format(self.bot.user.name, user.name))
 
-	@bot.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
-	async def waifurate(self, ctx):
+	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
+	async def waifurate(self, ctx, *waifu: commands.Greedy[discord.Member]):
 		"""
-		Rates the mentioned waifu(s). husbando/spousurate also work.
-		Usage:
-			{command_prefix}waifurate @user#9999
-		This command is in dedicated to Hannah, who suggested this command to me. I hope she's out there, somewhere, getting her waifus rated in peace.
-		"""
-		mentions = ctx.message.mentions
-		if ctx.invoked_with in ["hr", "husbandorate"]:
-			waifu = "husbando"
-		elif ctx.invoked_with in ["sr", "spousurate"]:
-			waifu = "spousu"
-		else:
-			waifu = "waifu"
+		Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated. This may allow multiple people to be rated at once :eyes:
 
-		if not mentions:
+		Example:
+			;waifurate @user#9999
+
+		This command is dedicated to Hannah, who came up with the command. I hope she's out there getting her waifus rated in peace.
+		"""
+		if ctx.invoked_with in ["hr", "husbandorate"]:
+			waifu_text = "husbando"
+		elif ctx.invoked_with in ["sr", "spousurate"]:
+			waifu_text = "spousu"
+		else:
+			waifu_text = "waifu"
+
+		if not waifu:
 			return await ctx.send("You didn't mention anyone for me to rate.", delete_after=10)
+		elif len(waifu) >= 20:
+			return await ctx.send("I think you have too many {}s :thinking: I am not even gunna try and rate that.".format(waifu_text))
 
 		rating = random.randrange(1, 11)
 		if rating <= 2:
@@ -271,25 +281,43 @@ class Fun:
 		else:
 			emoji = ":heart_eyes:"
 
-		if len(mentions) > 1:
-			return await ctx.send("Oh poly {0} rating? :smirk: Your combined {0} rating is {1}/10. {2}".format(waifu, rating, emoji))
-		else:
-			return await ctx.send("Oh that's your {}? I rate them a {}/10. {}".format(waifu, rating, emoji))
+		waifu_list = []
+		for x, w in enumerate(waifu):
+			if w.name not in waifu_list:  # To remove dupes
+				waifu_list.append(w.name)
 
-	@bot.command(aliases=["cf"])
+		if len(waifu_list) > 1:
+			if len(waifu_list) == 2:
+				oxford_comma = " and {}"
+			else:
+				oxford_comma = ", and {}"
+
+			waifus = ", ".join(waifu_list[:-1]).strip(", ") + oxford_comma.format(waifu_list[-1])
+			return await ctx.send("Oh poly {0} rating? :smirk: Your combined {0} rating for {3} is {1}/10. {2}".format(waifu_text, rating, emoji, waifus))
+		else:
+			return await ctx.send("Oh that's your {}? I rate {} a {}/10. {}".format(waifu_text, waifu[0].name, rating, emoji))
+
+	@commands.command(aliases=["cf"])
 	async def coinflip(self, ctx):
-		"""Flip a coin"""
+		"""
+		Flips a magical digital coin!
+		"""
 		return await ctx.send("The coin landed on {}!".format(random.choice(["heads", "tails"])))
 
-	@bot.command()
-	async def aesthetics(self, ctx, *, convert):
-		"""Converts text to be more  a e s t h e t i c s"""
+	@commands.command(aliases=["ae", "aesthetic"])
+	async def aesthetics(self, ctx, *, text):
+		"""Converts text to be more  a e s t h e t i c
+
+		Example:
+			# Convert "Hello World" to fixed-width text.
+			;ae Hello World
+		"""
 		wide_map = dict((i, i + 0xFEE0) for i in range(0x21, 0x7F))  # Create dict with fixed width equivalents for chars
 		wide_map[0x20] = 0x3000  # replace space with 'IDEOGRAPHIC SPACE'
-		converted = str(convert).translate(wide_map)
+		converted = str(text).translate(wide_map)
 		output = await ctx.send(converted)
 
-		logging = roxbot.guild_settings.get(ctx.guild).logging
+		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
 		log_channel = self.bot.get_channel(logging["channel"])
 		await roxbot.log(
 			ctx.guild,
@@ -300,10 +328,10 @@ class Fun:
 			Output_Message_ID=output.id,
 			Channel=ctx.channel,
 			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+			Time=roxbot.datetime_formatting.format(ctx.message.created_at)
 		)
 
-	@bot.command(aliases=["ft", "frog"])
+	@commands.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
 		"""RETURNS FROG TIPS FOR HOW TO OPERATE YOUR FROG"""
 		endpoint = "https://frog.tips/api/1/tips/"
@@ -316,9 +344,9 @@ class Fun:
 		embed.set_footer(text="https://frog.tips")
 		return await ctx.send(embed=embed)
 
-	@bot.command(aliases=["otd"])
+	@commands.command(aliases=["otd"])
 	async def onthisday(self, ctx):
-		"""Returns a fact that happened on this day."""
+		"""Returns a random fact of something that happened today!"""
 		base_url = "http://numbersapi.com/"
 		day = datetime.datetime.today().day
 		month = datetime.datetime.today().month
@@ -334,9 +362,14 @@ class Fun:
 		embed.set_footer(text=base_url)
 		return await ctx.send(embed=embed)
 
-	@bot.command(aliases=["nf"])
+	@commands.command(aliases=["nf"])
 	async def numberfact(self, ctx, number=-54):
-		"""Returns a fact for the positive integer given. A random number is chosen if none is given."""
+		"""Returns a fact for the positive integer given. A random number is chosen if none is given.
+
+		Example:
+			# Random fact for the number 35
+			;nf 35
+		"""
 		base_url = "http://numbersapi.com/"
 		if number < 0:
 			endpoint = "/random/?json"
@@ -357,22 +390,30 @@ class Fun:
 		embed.set_footer(text=base_url)
 		return await ctx.send(embed=embed)
 
-	@bot.command()
+	@commands.command()
 	@commands.has_permissions(add_reactions=True)
 	@commands.bot_has_permissions(add_reactions=True)
 	async def xkcd(self, ctx, *, query=None):
 		"""
-		Grabs the image & metadata of the given xkcd comic
-		Example:
-		{command_prefix}xkcd 666
-		{command_prefix}xkcd Silent Hammer
-		{command_prefix}xkcd latest
+		Grabs the image & metadata of the given xkcd comic.
+
+		The query can be a comic number, comic title, or latest to get the latest. If not given, Roxbot will return a random comic.
+
+		Examples:
+			# Get random comic
+			;xkcd
+			# Get comic number 666
+			;xkcd 666
+			# Get comic with the title "Silent Hammer"
+			;xkcd "Silent Hammer"
+			# Get latest comic
+			;xkcd latest
 		"""
 		msg = ""
 		title_query_url = "http://www.explainxkcd.com/wiki/api.php?format=json&action=query&redirects&titles={}"
 		xkcd_site = "https://xkcd.com/{}"
 		random_url = "https://c.xkcd.com/random/comic"
-
+		
 		async def xkcd_lookup_num(num):
 			return await roxbot.http.api_request(xkcd_site.format(str(num) + "/info.0.json"))
 
@@ -427,8 +468,15 @@ class Fun:
 			
 			await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
-	@commands.command()
+	@commands.command(aliases=["za"])
 	async def zalgo(self, ctx, *, text):
+		"""
+		Sends text to the nether and returns it back to you ̭҉̭̭ͭi̭͎̭ṋ̭̀҈̭̭̋ ̭͉̭z̭̩̭a̭̭̽ḽ̦̭g̭̞̭o̭̤̭ ̭̭͑f̭̻̭o̭̭͢r̭̭̀m̭̭ͮ
+		
+		Example:
+			# Convert "Hello World" to zalgo.
+			;zalgo Hello World
+		"""
 		intensity = 10
 		zalgo_chars = [*[chr(i) for i in range(0x0300, 0x036F + 1)], *[u'\u0488', u'\u0489']]
 		zalgoised = []
@@ -440,7 +488,7 @@ class Fun:
 		response = random.choice(zalgo_chars).join(zalgoised)
 		output = await ctx.send(response)
 
-		logging = roxbot.guild_settings.get(ctx.guild).logging
+		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
 		log_channel = self.bot.get_channel(logging["channel"])
 		await roxbot.log(
 			ctx.guild,
@@ -451,8 +499,50 @@ class Fun:
 			Output_Message_ID=output.id,
 			Channel=ctx.channel,
 			Channel_Mention=ctx.channel.mention,
-			Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+			Time=roxbot.datetime_formatting.format(ctx.message.created_at)
 		)
+
+	@commands.command(aliases=["rf", "roxfacts", "roxfact"])
+	async def roxbotfact(self, ctx):
+		"""Returns a random fact about Roxbot!
+
+		Roxbot has her own lore that you can discover through out these facts. Written especially for Roxbot.
+		"""
+		# Roxbot fact cache
+		if isinstance(ctx.channel, discord.DMChannel):
+			cache_id = ctx.author.id
+		else:
+			cache_id = ctx.guild.id
+		# IF ID is not in cache, create cache for ID
+		if not self.roxbot_fact_cache.get(cache_id, False):
+			self.roxbot_fact_cache[cache_id] = []
+
+		fact = None
+		fact_index = 0
+
+		# Loop in case of duplicate facts
+		for x in range(10):
+			fact_index = random.randrange(0, len(roxbot.roxbotfacts.facts))
+			if fact_index not in self.roxbot_fact_cache:
+				self.roxbot_fact_cache[cache_id].append(fact_index)
+				fact = roxbot.roxbotfacts.facts[fact_index]
+				if len(self.roxbot_fact_cache[cache_id]) >= 10:
+					self.roxbot_fact_cache[cache_id].pop(0)
+				break
+
+		# This should never happen
+		if fact is None:
+			raise commands.CommandError("Cache Failure. Unable to post fact.")
+
+		if fact[1] in roxbot.roxbotfacts.contributors:
+			author = self.bot.get_user(roxbot.roxbotfacts.contributors[fact[1]])
+		else:
+			author = fact[1]
+		if author is None:  # Just in case Roxbot doesnt share a server with the author of the fact.
+			author = fact[1]
+		embed = discord.Embed(title="Roxbot Fact #{}!".format(fact_index+1), description=fact[0], colour=roxbot.EmbedColours.pink)
+		embed.set_footer(text="Credit: {}".format(author))
+		return await ctx.send(embed=embed)
 
 
 def setup(bot_client):

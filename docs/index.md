@@ -1,3 +1,10 @@
+---
+title: Roxbot
+description: Roxbot's Documentation.
+authors:
+    - Roxanne Gibson
+---
+
 [![Banner](http://i.imgur.com/SZIVXEg.png)](https://github.com/Roxxers)
 
 [![MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
@@ -28,4 +35,3 @@ If you want Roxbot support, a support Discord can be found by clicking the Disco
 ## Support Me <small>If you want/can</small>
 
 [![KoFi](https://i.imgur.com/IE2Qg79.png)](https://ko-fi.com/roxxers)
-

@@ -12,3 +12,11 @@ bot-env/
 roxbot/settings/servers\.json
 
 roxbot/settings/preferences.ini
+
+env/
+
+roxbot/settings/servers/*
+
+site/
+
+roxbot/settings/roxbot\.conf
