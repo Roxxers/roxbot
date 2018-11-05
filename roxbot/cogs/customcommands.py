@@ -166,8 +166,8 @@ class CustomCommands:
 			`no_prefix` and `prefix` types support single outputs and also listing multiple outputs. When the latter is chosen, the output will be a random choice of the multiple outputs.
 
 		Examples:
-			# Add a no_prefix command called "test" with the output "hello world"
-			;cc add no_prefix test "hello world"
+			# Add a no_prefix command called "test" with a URL output.
+			;cc add no_prefix test "https://www.youtube.com/watch?v=vJZp6awlL58"
 			# Add a prefix command called test2 with a randomised output between "the person above me is annoying" and "the person above me is cool :sunglasses:"
 			;cc add prefix test2 "the person above me is annoying" "the person above me is cool :sunglasses:
 			# Add an embed command called test3 with a title of "Title" and a description that is a markdown hyperlink to a youtube video, and the colour #deadbf
