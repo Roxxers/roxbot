@@ -10,6 +10,7 @@ authors:
 [![MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot)
 [![GitHub tag (latest SemVer)](https://img.shields.io/github/tag/roxxers/roxbot.svg?style=for-the-badge)](https://github.com/Roxxers/roxbot/releases)
+[![CodeFactor](https://www.codefactor.io/repository/github/roxxers/roxbot/badge?style=for-the-badge)](https://www.codefactor.io/repository/github/roxxers/roxbot)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=for-the-badge&maxAge=300)](http://makeapullrequest.com)
 [![Roxbot Discord Server](https://img.shields.io/discord/450805414024577035.svg?logo=discord&style=for-the-badge&maxAge=300)](https://discord.gg/Mpz8nv7)
 
