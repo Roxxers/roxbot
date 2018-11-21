@@ -485,8 +485,8 @@ class Core(ErrorHandling):
 	@commands.command()
 	async def invite(self, ctx):
 		"""Returns an invite link to invite the bot to your server."""
-		link = discord.utils.oauth_url(self.bot.user.id, discord.Permissions.all_channel())
-		return await ctx.send("Invite me to your server! <{}>".format(link))
+		link = discord.utils.oauth_url(self.bot.user.id, discord.Permissions(1983245558))
+		return await ctx.send("Invite me to your server! <{}>\n\n Disclaimer: {} requests all permissions it requires to run all commands. Some of these can be disabled but some commands may lose functionality.".format(link, self.bot.user.name))
 
 	@commands.command()
 	@commands.is_owner()
