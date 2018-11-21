@@ -23,7 +23,7 @@ Roxbot is designed to be provide many different services for users and moderator
 
 ## Don't want to run Roxbot yourself?
 
-A version of Roxbot hosted by me can be invited to your server now via [this link.](https://discordapp.com/oauth2/authorize?client_id=259869304369971200&scope=bot&permissions=871890001)
+A version of Roxbot hosted by me can be invited to your server now via [this link.](https://discordapp.com/oauth2/authorize?client_id=259869304369971200&scope=bot&permissions=1983245558)
 
 ## Want to run Roxbot yourself?
 
