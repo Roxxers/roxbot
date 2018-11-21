@@ -98,7 +98,7 @@ class AsortedGenderSounds:
 
 		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
 			await member.add_roles(role, reason="Requested {0.name}".format(role))
-			await ctx.send("You have now have the {0.name} role".format(role))
+			await ctx.send("You now have the {0.name} role".format(role))
 		else:
 			return await ctx.send(
 				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
