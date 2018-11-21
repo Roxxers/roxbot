@@ -38,7 +38,6 @@ from discord.ext import commands
 
 class ErrorHandling:
 
-	COMMANDNOTFOUND = "Command '{}' does not exist."
 	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
 	CHECKFAILURE = "You do not have permission to do this. Back off, thot!"
 	TOOMANYARGS = "Too many arguments given."
@@ -86,10 +85,10 @@ class ErrorHandling:
 					if is_custom_command or is_emoticon_face or is_too_short:
 						embed = None
 					else:
-						embed.description = self.COMMANDNOTFOUND.format(error.args[0])
+						embed.description = error.args[0]
 				except (KeyError, AttributeError):
 					# KeyError for cog missing, AttributeError if a command invoked via DM
-					embed.description = self.COMMANDNOTFOUND.format(error.args[0])
+					embed.description = error.args[0]
 			elif isinstance(error, commands.BotMissingPermissions):
 				embed.description = "{}".format(error.args[0].replace("Bot", "Roxbot"))
 			elif isinstance(error, commands.MissingPermissions):
