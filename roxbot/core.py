@@ -125,10 +125,20 @@ class ErrorHandling:
 				await ctx.send(embed=embed)
 
 
-class Logging:
-	"""Cog that deals with internal logging with Roxbot that is posted in Discord."""
+class Core(ErrorHandling):
+	"""Core bot cog. Includes management commands, logging, error handling, and backups."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
+		super().__init__(self.bot)
+
+		# Backup setup
+		if roxbot.backup_enabled:
+			self.backup_task = self.bot.loop.create_task(self.auto_backups())
+
+		# Logging Setup
+		self.bot.add_listener(self.cleanup_logging_settings, "on_guild_channel_delete")
+		self.bot.add_listener(self.log_member_join, "on_member_join")
+		self.bot.add_listener(self.log_member_remove, "on_member_remove")
 
 		self.settings = {
 			"logging": {
@@ -138,9 +148,9 @@ class Logging:
 			}
 		}
 
-		self.bot.add_listener(self.cleanup_logging_settings, "on_guild_channel_delete")
-		self.bot.add_listener(self.log_member_join, "on_member_join")
-		self.bot.add_listener(self.log_member_remove, "on_member_remove")
+	#############
+	#  Logging  #
+	#############
 
 	@staticmethod
 	async def cleanup_logging_settings(channel):
@@ -199,17 +209,6 @@ class Logging:
 		else:
 			return await ctx.send("No valid option given.")
 		return settings.update(settings["logging"], "logging")
-
-
-class Core(ErrorHandling, Logging):
-	"""Core bot cog. Includes management commands, logging, error handling, and backups."""
-	def __init__(self, bot_client):
-		self.bot = bot_client
-		super().__init__(self.bot)
-
-		# Backup setup
-		if roxbot.backup_enabled:
-			self.backup_task = self.bot.loop.create_task(self.auto_backups())
 
 	#############
 	#  Backups  #
