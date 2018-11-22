@@ -23,9 +23,9 @@
 # SOFTWARE.
 
 
-import re
-import random
 import datetime
+import random
+import re
 
 import discord
 from discord import Embed

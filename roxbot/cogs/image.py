@@ -23,15 +23,16 @@
 # SOFTWARE.
 
 
-import os
 import math
+import os
 import random
+
+import discord
 import numpy as np
 from PIL import Image, ImageEnhance
+from discord.ext import commands
 
 import roxbot
-import discord
-from discord.ext import commands
 
 
 class PrideFlags:
