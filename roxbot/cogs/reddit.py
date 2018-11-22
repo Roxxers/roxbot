@@ -23,12 +23,12 @@
 # SOFTWARE.
 
 
-import random
 import fnmatch
+import random
 from html import unescape
-from bs4 import BeautifulSoup
 
 import discord
+from bs4 import BeautifulSoup
 from discord.ext import commands
 
 import roxbot

@@ -23,16 +23,16 @@
 # SOFTWARE.
 
 
-import os
 import asyncio
-import discord
 import datetime
-import youtube_dl
+import os
 from math import ceil
+
+import discord
+import youtube_dl
 from discord.ext import commands
 
 import roxbot
-
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''

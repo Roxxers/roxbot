@@ -27,7 +27,6 @@
 # NEEDS A LOT MORE WORK TO BE WORTH ANYTHING.
 
 
-import typing
 import discord
 from discord.ext import commands
 
