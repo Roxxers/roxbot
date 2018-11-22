@@ -23,17 +23,17 @@
 # SOFTWARE.
 
 
+import asyncio
+import datetime
 import os
 import string
 import typing
-import asyncio
-import datetime
-import youtube_dl
-
-import roxbot
 
 import discord
+import youtube_dl
 from discord.ext import commands
+
+import roxbot
 
 
 class ErrorHandling:
@@ -51,53 +51,59 @@ class ErrorHandling:
 		self.bot = bot_client
 		self.dev = roxbot.dev_mode
 
+	@staticmethod
+	def command_not_found_check(ctx, error):
+		try:
+			# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
+			cc = roxbot.guild_settings.get(ctx.guild)["custom_commands"]
+			is_custom_command = bool(ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"])
+			is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
+			is_too_short = bool(len(ctx.message.content) <= 2)
+			if is_custom_command or is_emoticon_face or is_too_short:
+				return None
+			else:
+				return error.args[0]
+		except (KeyError, AttributeError):
+			# KeyError for cog missing, AttributeError if a command invoked via DM
+			return error.args[0]
+
+	def command_cooldown_output(self, error):
+		try:
+			return self.COMMANDONCOOLDOWN.format(error.retry_after)
+		except AttributeError:
+			return ""
+
 	async def on_command_error(self, ctx, error):
 		if self.dev:
 			raise error
 		else:
-			# UserError warning section
-			user_errors = (commands.MissingRequiredArgument, commands.BadArgument,
-						   commands.TooManyArguments, roxbot.UserError)
-
-			if isinstance(error, user_errors):
-				embed = discord.Embed(colour=roxbot.EmbedColours.orange)
-				if isinstance(error, (commands.MissingRequiredArgument, commands.BadArgument, roxbot.UserError)):
-					embed.description = error.args[0]
-				elif isinstance(error, commands.TooManyArguments):
-					embed.description = self.TOOMANYARGS
-				return await ctx.send(embed=embed)
+			user_error_cases = {
+				commands.MissingRequiredArgument: error.args[0],
+				commands.BadArgument: error.args[0],
+				commands.TooManyArguments: self.TOOMANYARGS,
+				roxbot.UserError: error.args[0],
+			}
+			cases = {
+				commands.NoPrivateMessage: self.NODMS,
+				commands.DisabledCommand: self.DISABLEDCOMMAND,
+				roxbot.CogSettingDisabled: self.COGSETTINGDISABLED.format(error.args[0]),
+				commands.CommandNotFound: self.command_not_found_check(ctx, error),
+				commands.BotMissingPermissions: "{}".format(error.args[0].replace("Bot", "Roxbot")),
+				commands.MissingPermissions: "{}".format(error.args[0]),
+				commands.CommandOnCooldown: self.command_cooldown_output(error),
+				commands.CheckFailure: self.CHECKFAILURE,
+				commands.NotOwner: self.CHECKFAILURE,
+			}
+			user_error_case = user_error_cases.get(type(error), None)
+			case = cases.get(type(error), None)
 
 			# ActualErrorHandling
-			embed = discord.Embed()
-			if isinstance(error, commands.NoPrivateMessage):
-				embed.description = self.NODMS
-			elif isinstance(error, commands.DisabledCommand):
-				embed.description = self.DISABLEDCOMMAND
-			elif isinstance(error, roxbot.CogSettingDisabled):
-				embed.description = self.COGSETTINGDISABLED.format(error.args[0])
-			elif isinstance(error, commands.CommandNotFound):
-				try:
-					# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
-					cc = roxbot.guild_settings.get(ctx.guild)["custom_commands"]
-					is_custom_command = bool(ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"])
-					is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
-					is_too_short = bool(len(ctx.message.content) <= 2)
-					if is_custom_command or is_emoticon_face or is_too_short:
-						embed = None
-					else:
-						embed.description = error.args[0]
-				except (KeyError, AttributeError):
-					# KeyError for cog missing, AttributeError if a command invoked via DM
-					embed.description = error.args[0]
-			elif isinstance(error, commands.BotMissingPermissions):
-				embed.description = "{}".format(error.args[0].replace("Bot", "Roxbot"))
-			elif isinstance(error, commands.MissingPermissions):
-				embed.description = "{}".format(error.args[0])
-			elif isinstance(error, commands.CommandOnCooldown):
-				embed.description = self.COMMANDONCOOLDOWN.format(error.retry_after)
-			elif isinstance(error, (commands.CheckFailure, commands.NotOwner)):
-				embed.description = self.CHECKFAILURE
-
+			embed = discord.Embed(colour=roxbot.EmbedColours.red)
+			if case:
+				embed.description = case
+			elif user_error_case:
+				embed.description = user_error_case
+				embed.colour = roxbot.EmbedColours.orange
 			elif isinstance(error, commands.CommandInvokeError):
 				# YOUTUBE_DL ERROR HANDLING
 				if isinstance(error.original, youtube_dl.utils.GeoRestrictedError):
