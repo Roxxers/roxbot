@@ -23,14 +23,13 @@
 # SOFTWARE.
 
 
-import typing
 import datetime
+import typing
 
 import discord
 from discord.ext import commands
 
 import roxbot
-
 
 ags_id = 393764974444675073
 selfieperms = 394939389823811584

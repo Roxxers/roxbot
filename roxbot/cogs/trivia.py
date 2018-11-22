@@ -23,12 +23,13 @@
 # SOFTWARE.
 
 
-import discord
 import asyncio
 import datetime
+from collections import OrderedDict
 from html import unescape
 from random import shuffle
-from collections import OrderedDict
+
+import discord
 from discord.ext import commands
 
 import roxbot
