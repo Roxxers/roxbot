@@ -23,8 +23,6 @@
 # SOFTWARE.
 
 
-import random
-
 import discord
 from discord.ext import commands
 
@@ -39,7 +37,7 @@ def tag_blacklist(guild):
 	return blacklist
 
 
-class NFSW():
+class NFSW:
 	"""The NSFW cog is a collection of commands that post images from popular NSFW sites. """
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -52,43 +50,25 @@ class NFSW():
 			}
 		}
 
-	@roxbot.checks.is_nsfw()
-	@commands.command(hidden=True)
-	async def gelbooru_clone(self, ctx, base_url, post_url, tags):
-		limit = 150
+	async def gelbooru_clone(self, ctx, base_url, endpoint_url, tags):
 		if isinstance(ctx.channel, discord.TextChannel):
-			tags = tags + tag_blacklist(ctx.guild)
-		page = random.randrange(20)
-		url = base_url + tags + '&limit=' + str(limit) + '%pid=' + str(page)
-		if isinstance(ctx.channel, discord.DMChannel):
-			cache_id = ctx.author.id
+			banned_tags = tag_blacklist(ctx.guild)
 		else:
-			cache_id = ctx.guild.id
-		# IF ID is not in cache, create cache for ID
-		if not self.cache.get(cache_id, False):
-			self.cache[cache_id] = []
+			banned_tags = ""
 
-		posts = await roxbot.http.api_request(url)
+		post = await roxbot.utils.danbooru_clone_api_req(
+			ctx.channel,
+			base_url,
+			endpoint_url,
+			tags=tags,
+			banned_tags=banned_tags,
+			cache=self.cache
+		)
 
-		if posts is None:
+		if not post:
 			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
-
-		post = None
-		counter = 0
-		while counter < 20:
-			post = random.choice(posts)
-			md5 = post.get("md5") or post.get("hash")
-			if md5 not in self.cache[cache_id]:
-				self.cache[cache_id].append(md5)
-				if len(self.cache[cache_id]) > 10:
-					self.cache[cache_id].pop(0)
-				break
-			counter += 1
-
-		url = post.get("file_url")
-		if not url:
-			url = post_url + "{0[directory]}/{0[image]}".format(post)
-		output = await ctx.send(url)
+		else:
+			output = await ctx.send(post)
 		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
 	@roxbot.checks.is_nsfw()
@@ -102,7 +82,7 @@ class NFSW():
 			;e621 test
 		"""
 		base_url = "https://e621.net/post/index.json?tags="
-		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url="", tags=tags)
+		return await self.gelbooru_clone(ctx, base_url, "", tags)
 
 	@roxbot.checks.is_nsfw()
 	@commands.command()
@@ -115,8 +95,8 @@ class NFSW():
 			;rule34 test
 		"""
 		base_url = "https://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="
-		post_url = "https://img.rule34.xxx/images/"
-		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
+		endpoint_url = "https://img.rule34.xxx/images/"
+		return await self.gelbooru_clone(ctx, base_url, endpoint_url, tags)
 
 	@roxbot.checks.is_nsfw()
 	@commands.command()
@@ -129,8 +109,8 @@ class NFSW():
 			;gelbooru test
 		"""
 		base_url = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="
-		post_url = "https://simg3.gelbooru.com/images/"
-		return await ctx.invoke(self.gelbooru_clone, base_url=base_url, post_url=post_url, tags=tags)
+		endpoint_url = "https://simg3.gelbooru.com/images/"
+		return await self.gelbooru_clone(ctx, base_url, endpoint_url, tags)
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
@@ -175,6 +155,7 @@ class NFSW():
 		else:
 			return await ctx.send("No valid option given.")
 		return settings.update(nsfw, "nsfw")
+
 
 def setup(bot_client):
 	bot_client.add_cog(NFSW(bot_client))
