@@ -36,3 +36,4 @@ class EmbedColours(IntEnum):
 	frog_green = 0x4C943D  # Used for FROGTIPS
 	triv_green = 0x1fb600  # Used for the correct answer in trivia
 	gold       = 0xd4af3a  # Used for displaying the winner in trivia
+	magic_8    = 0x3b0072  # Used for magic 8 ball command (dark blue/violet)
