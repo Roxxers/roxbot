@@ -651,6 +651,25 @@ Example:
 
 The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining.
 
+### ;8ball
+
+Asks a magic 8 ball to tell the future via the means of yes and no questions.
+
+Command Structure:
+
+`;8ball question`
+
+Aliases:
+
+`magicball`, `8b`
+
+Arguments:
+
+- `question` - a yes or no question to ask and Roxbot will enquire with the Magic 8-Ball to look into the future!
+
+Examples:
+    ;8ball Will this command take off as a good idea?
+
 ### ;aesthetics
 
 Converts text to be more ａｅｓｔｈｅｔｉｃ <small>fix-width text</small>

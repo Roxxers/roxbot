@@ -38,7 +38,29 @@ class Fun:
 	"""The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.croak = {}
+		self._8ball_responses = (
+			"It is certain.",
+			"It is decidedly so.",
+			"Without a doubt.",
+			"Yes - definitely.",
+			"You may rely on it.",
+			"As I see it, yes.",
+			"Most likely.",
+			"Outlook good.",
+			"Yes.",
+			"Signs point to yes.",
+			"Reply hazy, try again.",
+			"Ask again later.",
+			"Better not tell you now.",
+			"Cannot predict now.",
+			"Concentrate and ask again.",
+			"Don't count on it.",
+			"My reply is no.",
+			"My sources say no.",
+			"Outlook not so good.",
+			"Very doubtful."
+		)
+		self.croak = {}  # Frogtips cache
 		self.roxbot_fact_cache = {}
 
 	@commands.command(aliases=["dice", "die"])  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
@@ -248,7 +270,9 @@ class Fun:
 	@commands.command(aliases=["wf", "wr", "husbandorate", "hr", "spousurate", "sr"])
 	async def waifurate(self, ctx, *waifu: commands.Greedy[discord.Member]):
 		"""
-		Rates the mentioned waifu(s). By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated. This may allow multiple people to be rated at once :eyes:
+		Rates the mentioned waifu(s).
+		By using the aliases husbandorate or spousurate, it will change how Roxbot addresses those who she has rated.
+		This may allow multiple people to be rated at once :eyes:
 
 		Example:
 			;waifurate @user#9999
@@ -542,6 +566,19 @@ class Fun:
 			author = fact[1]
 		embed = discord.Embed(title="Roxbot Fact #{}!".format(fact_index+1), description=fact[0], colour=roxbot.EmbedColours.pink)
 		embed.set_footer(text="Credit: {}".format(author))
+		return await ctx.send(embed=embed)
+
+	@commands.command(name="8ball", aliases=["magic8ball", "8b"])
+	async def _8ball(self, ctx, *, question):
+		"""
+		Asks a magic 8 ball to tell the future via the means of yes and no questions.
+
+		Examples:
+			;8ball Will this command take off as a good idea?
+		"""
+		answer = random.choice(self._8ball_responses)
+		embed = discord.Embed(description=answer, colour=roxbot.EmbedColours.magic_8)
+		embed.set_author(name="Magic 8-Ball", icon_url="https://twemoji.maxcdn.com/2/72x72/1f3b1.png")
 		return await ctx.send(embed=embed)
 
 
