@@ -75,7 +75,7 @@ facts = [
 	["Roxbot is not bothered by not requiring sleep. She loves spending time with all her friends in discord, and wants to do so as often as possible.", "summer"],
 	["""Roxbot’s favorite animals are dogs. “Dog girls are the best form of girls with animal traits, of course!”""", "summer"],
 	["Roxbot merely tolorates pineapple on pizza; though she personally doesn't like it.", "roxie"],
-
+	["Roxbot owns a Magic 8-Ball. Every time the 8-Ball command is used, she shakes it in her bedroom.", "roxie"],
 ]
 
 contributors = {
