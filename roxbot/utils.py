@@ -23,10 +23,12 @@
 # SOFTWARE.
 
 
+import random
 import asyncio
 import discord
 import argparse
 
+from roxbot import http
 from roxbot import guild_settings
 from roxbot.enums import EmbedColours
 
@@ -167,3 +169,60 @@ async def log(guild, command_name, **kwargs):
 			for key, value in kwargs.items():
 				embed.add_field(name=key, value=value)
 			return await channel.send(embed=embed)
+
+
+async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, tags="", banned_tags=""):
+	"""Utility function that deals with danbooru clone api interaction.
+	It also deals with cache management for these interactions.
+
+	Params
+	=======
+	channel: discord.Channel
+		Channel command has been invoked in
+	base_url: str
+		Base url of the site
+	endpoint_url: str
+		Endpoint of images in the API. This is used if the API does not give this in its response.
+	cache: dict (optional)
+		Post cache. Were channel ID's are keys with values that are lists of identifiable info.
+		Cache is handled in this function and will be updated so that other functions can access it.
+	tags: str (optional)
+		tags to use in the search. Separated by spaces.
+	banned_tags: str (optional)
+		banned tags to append to the search. Separated by spaces with a - in front to remove them from search results.
+	"""
+	limit = "150"
+	tags = tags + banned_tags
+	page_number = str(random.randrange(20))
+	url = base_url + tags + '&limit=' + limit + '%pid=' + page_number
+
+	if isinstance(channel, discord.DMChannel):
+		cache_id = channel.id
+	else:
+		cache_id = channel.guild.id
+
+	# IF ID is not in cache, create cache for ID
+	if not cache.get(cache_id, False):
+		cache[cache_id] = []
+
+	posts = await http.api_request(url)
+
+	if posts is None:
+		return None
+
+	post = None
+	counter = 0
+	while counter < 20:
+		post = random.choice(posts)
+		md5 = post.get("md5") or post.get("hash")
+		if md5 not in cache[cache_id]:
+			cache[cache_id].append(md5)
+			if len(cache[cache_id]) > 10:
+				cache[cache_id].pop(0)
+			break
+		counter += 1
+
+	url = post.get("file_url")
+	if not url:
+		url = endpoint_url + "{0[directory]}/{0[image]}".format(post)
+	return url
