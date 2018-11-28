@@ -82,9 +82,6 @@ class Admin:
 		self.settings = {
 			"admin": {
 				"convert": {"warnings": "hide"},
-				"admin_roles": [],
-				"mod_roles": [],
-				"is_anal": 0,
 				"warning_limit": 0,
 				"warnings": {},
 			}

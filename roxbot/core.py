@@ -426,7 +426,7 @@ class Core(ErrorHandling):
 							new_entries = []
 							for entry in setting[x]:
 								try:
-									new_entries.append(converter(entry))
+									new_entries.append(str(converter(entry)))
 								except AttributeError:
 									new_entries.append(entry)
 							setting[x] = new_entries

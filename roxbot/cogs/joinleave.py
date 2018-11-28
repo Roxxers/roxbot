@@ -43,7 +43,7 @@ class JoinLeave():
 					"custom-message": "",
 					"default-message": "Be sure to read the rules."
 					},
-				"goodbyes": {
+			"goodbyes": {
 					"enabled": 0,
 					"convert": {"enabled": "bool", "goodbye-channel": "channel"},
 					"goodbye-channel": 0,
