@@ -1,31 +1,31 @@
 **WARNING** It is not recommended to use any release before v2.0.0. All previous versions are logged and released as pre-releases and are only here as a historical record for myself. All post-v2.0.0 releases are finished products that are stable.
 
 ## v2.0.0
-With this update, I wanted Roxbot to reach an almost finished state. The base of the program should be complete and functional. This update brings a lot of internal changes that should make development of Roxbot easier for others and myself. It also should make her a lot more stable. Still expect updates with new features, bug fixes, and UX changes. Maybe just at a slower rate.
+With this update, I wanted Roxbot to reach an almost finished state. The base of the program should be complete and functional. This update brings a lot of internal changes that should make the development of Roxbot easier for others and myself. It also should make her a lot more stable. Still expect updates with new features, bug fixes, and UX changes. Maybe just at a slower rate.
 
-Roxbot should be easier for users to setup too with this update. I have made full documentation of how she works and how to contribute to the project to make this easier. <small>People better find the easter eggs in the command documentation.</small>
+Roxbot should be easier for users to set up too with this update. I have made full documentation of how she works and how to contribute to the project to make this easier. <small>People better find the easter eggs in the command documentation.</small>
 
 ### Big and Breaking Changes
-- All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independant commands. This doesn't effect custom commands or warnings.
-- Many commands have had overhalls in how they work. Parameters have changed on a number of commands. Please check documentation on all the commands to familarise yourself with the new way to input params.
-- `is_anal` setting is now depreciated.`;suck` and `;spank` now only work in channels marked NSFW. 
-- `perm_roles` setting is now depreciated. All commands will work of Discord's permission system.
-- Roxbot will now check for a channel being marked NSFW in Discord rather than her own internal system. Roxbot's NSFW channels have been depreciated.
+- All settings have been decentralised between servers and cogs. All changes to the settings have been moved to independent commands. This doesn't affect custom commands or warnings.
+- Many commands have had overhauls to how they work. Parameters have changed on a number of commands. Please check the documentation on all the commands to familiarise yourself with the new way to input params.
+- `is_anal` setting is now obsolete. `;suck` and `;spank` now only work in channels marked NSFW. 
+- `perm_roles` setting is now obsolete. All commands will work off Discord's permission system.
+- Roxbot will now check for a channel being marked NSFW in Discord rather than using her own internal system. Roxbot's NSFW channels have been depreciated.
 
 ### Regular Updates
 #### New Features
 - Roxbot Facts! Only the deepest of lore for our dear Roxbot. 
-- Custom commands now have two new options. Multiple options can be passed for both prefixed and non-prefixed cc's to allow for custom commands to have random outputs. A new type of prefixed cc has been added, embed, that allows the creation of custom rich embeds.
-- `;warn set_limit` will allow guilds to set the number of warnings before Roxbot will DM a mod about it. This is set to zero (disabled) by default.
+- Custom commands now have two new options. Multiple options can be passed for both prefixed and non-prefixed cc's to allow for custom commands to have random outputs. A new type of prefixed cc has been added, embed, which allows the creation of custom rich embeds.
+- `;warn set_limit` will allow guilds to set the number of warnings before Roxbot will DM a mod about them. This is set to zero (disabled) by default.
 - Added `;me_irl` subreddit command that outputs images from the me_irl network of subreddits.
 - Added more subreddits to the `;aww` command.
-- Changed the main name of the `;gss` command to `;traa` while adding ;gss as a alias. Also added `;trans_irl` as a alias.
-- Slowmode now uses Discord's own slowmode rather than its own system. 
-- `emote` command now has support for unicode emojis. Will show both svg and png links for twemoji.
+- Changed the main name of the `;gss` command to `;traa` while adding ;gss as an alias. Also added `;trans_irl` as an alias.
+- `;slowmode` now uses Discord's own slowmode rather than its own system. 
+- `;emote` command now has support for Unicode emojis. Will show both svg and png links for twemoji.
 
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
-- Cogs have a message if they fail to load instead of breaking entire bot.
+- Cogs have a message if they fail to load instead of breaking the entire bot.
 - Twitch cog disabled and depreciated. This is a minor change because no one uses it anyway. 
 - NSFW commands should have even less chance of dupes with better caching.
 - All datetime formatting is now standardised.
@@ -36,12 +36,12 @@ Roxbot should be easier for users to setup too with this update. I have made ful
 - Pride filter filenames fixed.
 - As many spelling mistakes as possible.
 - Music bot in Roxbot has had a majority of its bugginess fixed. Queuing now works all of the time for example.
-- If music bot can't find a thumbnail for the now playing embed, it will just not have one; Instead of breaking. 
+- If music bot can't find a thumbnail for the nowplaying embed, it will just not have one instead of breaking. 
 - Fixed bug where nowplaying embeds would have the wrong queued_by value. 
 - NSFW commands fixed.
-- Roxbot can now fully function in DMs. Before, she would break. DM's have less commands that can be invoked.
+- Roxbot can now fully function in DM's. Before, she would break. DM's have fewer commands that can be invoked.
 - `;subreddit`'s "subscriptable" error has been fixed.
-- Common commands that would go over 2000 characters have been paginated to avoid this error.
+- Common commands that would go over 2000 characters have been paginated to avoid an error with Discord's character limit.
 
 ## v1.8.0
 #### New Features
