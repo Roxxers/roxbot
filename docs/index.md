@@ -5,7 +5,7 @@ authors:
     - Roxanne Gibson
 ---
 
-[![Banner](http://i.imgur.com/SZIVXEg.png)](https://github.com/Roxxers)
+[![Banner](https://i.imgur.com/TltWlJN.png)](https://github.com/Roxxers)
 
 [![MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.5%2B-blue.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot)
@@ -16,7 +16,7 @@ authors:
 
 An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
-Roxbot is designed to be provide many different services for users and moderators alike with a focus on customisability. Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
+Roxbot is designed be a multi-purpose bot and provide many different services for users and moderators alike with a focus on customisability. Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
 
 
 [Changelog](https://github.com/Roxxers/roxbot/blob/master/CHANGELOG.md) - [Docs](https://roxxers.github.io/roxbot/) - [Command Docs](https://roxxers.github.io/roxbot/commands/)
@@ -36,3 +36,4 @@ If you want Roxbot support, a support Discord can be found by clicking the Disco
 ## Support Me <small>If you want/can</small>
 
 [![KoFi](https://i.imgur.com/IE2Qg79.png)](https://ko-fi.com/roxxers)
+
