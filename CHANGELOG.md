@@ -24,7 +24,7 @@ Roxbot should be easier for users to set up too with this update. I have made fu
 #### Minor Changes
 - Roxbot will remove all redundant settings (removed roles from self assign, etc.).
 - Cogs have a message if they fail to load instead of breaking the entire bot.
-- Twitch cog disabled and depreciated. This is a minor change because no one uses it anyway. 
+- Twitch cog disabled and deprecated. This is a minor change because no one uses it anyway. 
 - NSFW commands should have even less chance of dupes with better caching.
 - All datetime formatting is now standardised.
 - Error messages don't timeout anymore.
