@@ -10,7 +10,7 @@ Roxbot should be easier for users to set up too with this update. I have made fu
 - Many commands have had overhauls to how they work. Parameters have changed on a number of commands. Please check the documentation on all the commands to familiarise yourself with the new way to input params.
 - `is_anal` setting is now obsolete. `;suck` and `;spank` now only work in channels marked NSFW. 
 - `perm_roles` setting is now obsolete. All commands will work off Discord's permission system.
-- Roxbot will now check for a channel being marked NSFW in Discord rather than using her own internal system. Roxbot's NSFW channels have been depreciated.
+- Roxbot will now check for a channel being marked NSFW in Discord rather than using her own internal system. Roxbot's NSFW channels have been made obsolete.
 
 ### Regular Updates
 #### New Features
