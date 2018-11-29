@@ -1,5 +1,3 @@
-**WARNING** It is not recommended to use any release before v2.0.0. All previous versions are logged and released as pre-releases and are only here as a historical record for myself. All post-v2.0.0 releases are finished products that are stable.
-
 ## v2.0.0
 With this update, I wanted Roxbot to reach an almost finished state. The base of the program should be complete and functional. This update brings a lot of internal changes that should make the development of Roxbot easier for others and myself. It also should make her a lot more stable. Still expect updates with new features, bug fixes, and UX changes. Maybe just at a slower rate.
 
@@ -42,6 +40,10 @@ Roxbot should be easier for users to set up too with this update. I have made fu
 - Roxbot can now fully function in DM's. Before, she would break. DM's have fewer commands that can be invoked.
 - `;subreddit`'s "subscriptable" error has been fixed.
 - Common commands that would go over 2000 characters have been paginated to avoid an error with Discord's character limit.
+
+## WARNING 
+
+It is not recommended to use any release before v2.0.0. All previous versions are logged and released as pre-releases and are only here as a historical record for myself. All post-v2.0.0 releases are finished products that are stable.
 
 ## v1.8.0
 #### New Features
