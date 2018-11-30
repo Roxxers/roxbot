@@ -1,3 +1,11 @@
+## v2.0.1
+
+Quickfix time
+
+- Fixed Roxbot init of variables in Voice cog
+- Fixed Roxbot being silly and thinking `;greets` not only required text as a variable but also not replying and having incorrect options according to the docs.
+- Fixed Roxbot assuming you always want NSFW commands on and accidentally removing the ability to disable them. Lewd.
+
 ## v2.0.0
 With this update, I wanted Roxbot to reach a mature state. The base of the program should be complete and functional. This update brings a lot of internal changes that should make the development of Roxbot easier for others and myself. It also should make her a lot more stable. Still expect updates with new features, bug fixes, and UX changes. Roxbot is planned to have a 3rd breaking update (v3.0.0) which will be at her Adult state. 2.0 being her Adolescence state, and 1.0 being her Child state. (Guess that makes 0.x her Baby state.)
 
