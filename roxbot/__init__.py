@@ -15,7 +15,7 @@ __copyright__ = "Copyright 2015-2017 Roxanne Gibson <me@roxxers.xyz>"
 __version__ = "2.0.1"
 __description__ = """Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
-Roxbot is designed to be provide many different services for users and moderators alike with a focus on customisability. 
+Roxbot is designed be a multi-purpose bot and provide many different services for users and moderators alike with a focus on customisability. 
 
 Roxbot also has a focus on being inclusive and being fun for all kinds of people. Roxbot is a bot written by a queer woman with the lgbt community in mind. 
 
