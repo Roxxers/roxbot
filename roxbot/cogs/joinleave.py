@@ -99,7 +99,7 @@ class JoinLeave():
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
 	@commands.command()
-	async def greets(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, text: str):
+	async def greets(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, text = ""):
 		"""Edits settings for the Welcome Messages
 
 		Options:
@@ -113,6 +113,8 @@ class JoinLeave():
 			`;greets message "Be sure to read the rules and say hi! :wave:"`
 			`;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
 		"""
+		if (not channel and not text):
+			raise commands.MissingRequiredArgument("Missing at least one of: `channel` or `text`")
 		setting = setting.lower()
 		settings = guild_settings.get(ctx.guild)
 		greets = settings["greets"]
@@ -126,7 +128,7 @@ class JoinLeave():
 			if channel is None:
 				channel = ctx.channel
 			greets["welcome-channel"] = channel.id
-		elif setting == "custommessage":
+		elif setting == "message":
 			greets["custom-message"] = text
 			await ctx.send("Custom message set to '{}'".format(text))
 		else:
