@@ -128,6 +128,7 @@ class JoinLeave():
 			if channel is None:
 				channel = ctx.channel
 			greets["welcome-channel"] = channel.id
+			await ctx.send("Set greets channel to {}".format(channel.mention))
 		elif setting == "message":
 			greets["custom-message"] = text
 			await ctx.send("Custom message set to '{}'".format(text))
@@ -163,6 +164,7 @@ class JoinLeave():
 			if channel is None:
 				channel = ctx.channel
 			goodbyes["goodbye-channel"] = channel.id
+			await ctx.send("Set goodbye channel to {}".format(channel.mention))
 		else:
 			return await ctx.send("No valid option given.")
 		return settings.update(goodbyes, "goodbyes")
