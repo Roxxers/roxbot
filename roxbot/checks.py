@@ -42,5 +42,9 @@ def is_nsfw():
 	def pred(ctx):
 		is_dm_channel = bool(isinstance(ctx.channel, discord.DMChannel))
 		is_nsfw_guild_channel = bool(isinstance(ctx.channel, discord.TextChannel) and ctx.channel.is_nsfw())
-		return bool(is_nsfw_guild_channel or is_dm_channel)
+		if is_nsfw_guild_channel:
+			nsfw_enabled = bool(roxbot.guild_settings.get(ctx.guild)["nsfw"]["enabled"])
+			return nsfw_enabled
+		else:
+			return is_dm_channel
 	return commands.check(pred)
