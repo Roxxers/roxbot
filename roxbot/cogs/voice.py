@@ -184,7 +184,11 @@ class Voice:
 		self.am_queuing = {}
 		self.now_playing = {}  # Currently playing audio
 		self.queue_logic = {}
-		for guild in bot.guilds:
+		self.bot.add_listener(self._create_dicts, "on_ready")
+
+	async def _create_dicts(self):
+		# TODO: Probably still move this to be dynamic but that might be weird with discord connection issues.
+		for guild in self.bot.guilds:
 			self._volume[guild.id] = 0.2
 			self.playlist[guild.id] = []
 			self.skip_votes[guild.id] = []
