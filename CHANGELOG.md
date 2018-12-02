@@ -1,3 +1,7 @@
+## v2.0.3
+
+- Fixed subreddit command not working with the new log function.
+
 ## v2.0.2
 
 - Fixed documentation errors between command and backend settings for ags cog
