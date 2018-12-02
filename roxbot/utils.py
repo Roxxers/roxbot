@@ -143,7 +143,7 @@ def blacklisted(user):
 	return False
 
 
-async def log(guild, channel, command_name, **kwargs):
+async def log(guild, command_name, **kwargs):
 	"""Logs activity internally for Roxbot. Will only do anything if the server enables internal logging.
 
 	This is mostly used for logging when certain commands are used that can be an issue for admins. Esp when Roxbot outputs
@@ -159,9 +159,11 @@ async def log(guild, channel, command_name, **kwargs):
 		All kwargs and two other params will be added to the logging embed as fields, allowing you to customise the output
 
 	"""
-	logging = guild_settings.get(guild)["logging"]
-	if logging["enabled"]:
-		embed = discord.Embed(title="{} command logging".format(command_name), colour=EmbedColours.pink)
-		for key, value in kwargs.items():
-			embed.add_field(name=key, value=value)
-		return await channel.send(embed=embed)
+	if guild:
+		logging = guild_settings.get(guild)["logging"]
+		channel = discord.utils.get(guild.channels, id=logging["channel"])
+		if logging["enabled"]:
+			embed = discord.Embed(title="{} command logging".format(command_name), colour=EmbedColours.pink)
+			for key, value in kwargs.items():
+				embed.add_field(name=key, value=value)
+			return await channel.send(embed=embed)
