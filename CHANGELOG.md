@@ -1,3 +1,12 @@
+## v2.0.2
+
+- Fixed documentation errors between command and backend settings for ags cog
+- Fixed subcommandnotfound errors for command groups in Roxbot
+- Fixed internal command logging to not be invoked in DM's
+- Fixed some typos in documentation
+- Fixed input validating in embed creator for customcommands
+- Fixed case issues with section names for printsettings. Should now allow any case and find the correct value.
+
 ## v2.0.1
 
 Quickfix time
