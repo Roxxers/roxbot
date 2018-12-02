@@ -156,7 +156,7 @@ class Admin:
 		The command group also supports setting limits to warn mods if a user has been warned over a certain threshold.
 		"""
 		if ctx.invoked_subcommand is None:
-			raise commands.CommandNotFound(ctx.subcommand_passed)
+			raise commands.CommandNotFound("Subcommand '{}' does not exist.".format(ctx.subcommand_passed))
 
 	@warn.command()
 	async def add(self, ctx, user: discord.User=None, *, warning=""):

@@ -148,7 +148,7 @@ class CustomCommands:
 		Requires the Manage Messages permission.
 		"""
 		if ctx.invoked_subcommand is None:
-			raise commands.CommandNotFound(ctx.subcommand_passed)
+			raise commands.CommandNotFound("Subcommand '{}' does not exist.".format(ctx.subcommand_passed))
 
 	@commands.has_permissions(manage_messages=True)
 	@custom.command()

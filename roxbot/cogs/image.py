@@ -204,11 +204,8 @@ class ImageEditor:
 	async def image_logging(self, ctx, output):
 		"""Logging function for all image commands to avoid shit loads or repeating code.
 		Required because image has outputs that are user decided and therefore could need logging for."""
-		logging = roxbot.guild_settings.get(ctx.guild)["logging"]
-		log_channel = self.bot.get_channel(logging["channel"])
 		return await roxbot.log(
 			ctx.guild,
-			log_channel,
 			"image",
 			User=ctx.author,
 			User_ID=ctx.author.id,
@@ -222,7 +219,7 @@ class ImageEditor:
 	async def pride(self, ctx):
 		"""`;pride` is a command group for multiple pride flag filters."""
 		if ctx.invoked_subcommand is None:
-			raise commands.CommandNotFound(ctx.subcommand_passed)
+			raise commands.CommandNotFound("Subcommand '{}' does not exist.".format(ctx.subcommand_passed))
 
 	@pride.command()
 	async def lgbt(self, ctx, image: roxbot.converters.AvatarURL=None):
