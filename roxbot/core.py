@@ -455,6 +455,7 @@ class Core(ErrorHandling):
 			# print settings just for the Admin cog.
 			;printsettings Admin
 		"""
+		option = option.lower()
 		config = roxbot.guild_settings.get(ctx.guild)
 		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
 		paginator = commands.Paginator(prefix="```py")
