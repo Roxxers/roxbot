@@ -49,7 +49,8 @@ async def tatsumaki_api_call(member, guild):
 	return await roxbot.http.api_request(url, headers={"Authorization": tat_token})
 
 
-class AsortedGenderSounds:
+class AssortedGenderSounds:
+	"""Custom Cog for the AssortedGenderSounds Discord Server."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.acceptable_roles = (nsfwimageperms, selfieperms)
@@ -131,12 +132,11 @@ class AsortedGenderSounds:
 
 	@commands.command()
 	async def ags(self, ctx, selection, amount: typing.Optional[int], *, channel: typing.Optional[discord.TextChannel] = None):
-		"""Custom Cog for the GaySoundsShitposts Discord Server."""
 		selection = selection.lower()
 		settings = roxbot.guild_settings.get(ctx.guild)
 		ags = settings["ags"]
 
-		if selection == "loggingchannel":
+		if selection == "log_channel":
 			if not channel:
 				channel = ctx.channel
 			elif ctx.message.channel_mentions:
@@ -145,10 +145,10 @@ class AsortedGenderSounds:
 				channel = ctx.guild.get_channel(channel)
 			ags["log_channel"] = channel.id
 			await ctx.send("Logging Channel set to '{}'".format(channel.name))
-		elif selection == "requireddays":
+		elif selection == "required_days":
 			ags["required_days"] = amount
 			await ctx.send("Required days set to '{}'".format(str(amount)))
-		elif selection == "requiredscore":
+		elif selection == "required_score":
 			ags["required_score"] = amount
 			await ctx.send("Required score set to '{}'".format(str(amount)))
 		else:
@@ -157,4 +157,4 @@ class AsortedGenderSounds:
 
 
 def setup(bot_client):
-	bot_client.add_cog(AsortedGenderSounds(bot_client))
+	bot_client.add_cog(AssortedGenderSounds(bot_client))
