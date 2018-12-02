@@ -97,9 +97,9 @@ class CustomCommands:
 				output.pop(key)
 		# Check for errors in inputs that would stop embed from being posted.
 		title = output.get("title", "")
-		desc = output.get("description", "")
-		if len(title) > 256 or len(desc) > 256:
-			raise ValueError
+		footer = output.get("footer", "")
+		if len(title) > 256 or len(footer) > 256:
+			raise ValueError("Title or Footer must be smaller than 256 characters.")
 
 		# We only need one so purge the inferior spelling
 		if "colour" in output and "color" in output:
