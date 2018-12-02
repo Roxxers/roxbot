@@ -146,7 +146,7 @@ class NFSW():
 			# Enabled NSFW commands
 			;nsfw enable
 			# Add "test" as a blacklisted tag
-			;nsfw addbagtag test
+			;nsfw addbadtag test
 			# Remove "Roxbot" as a blacklisted tag
 			;nsfw removebadtag Roxbot
 		"""
