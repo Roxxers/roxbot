@@ -35,7 +35,7 @@ from roxbot import guild_settings as gs
 def tag_blacklist(guild):
 	blacklist = ""
 	for tag in gs.get(guild)["nsfw"]["blacklist"]:
-		blacklist += "-{} ".format(tag)
+		blacklist += " -{}".format(tag)
 	return blacklist
 
 
