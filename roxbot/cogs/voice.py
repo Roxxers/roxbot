@@ -618,7 +618,7 @@ class Voice:
 		elif setting == "maxlength" or setting == "maxduration":
 			change = int(change)
 			if change >= 1:
-				voice["skip_ratio"] = change
+				voice["max_length"] = change
 			else:
 				return await ctx.send("Valid max duration not given.")
 			await ctx.send("Max Duration was set to {}".format(change))
