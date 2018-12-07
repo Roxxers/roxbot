@@ -65,9 +65,9 @@ class term:
 
 
 # Sets up Logging
-discord_logger = logging.getLogger('discord')
-discord_logger.setLevel(logging.INFO)
-discord_logger.addHandler(roxbot.handler)
+#discord_logger = logging.getLogger('discord')
+#discord_logger.setLevel(logging.INFO)
+#discord_logger.addHandler(roxbot.handler)
 
 
 bot = commands.Bot(
