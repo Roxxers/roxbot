@@ -207,7 +207,7 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 
 	posts = await http.api_request(url)
 
-	if posts is None:
+	if not posts:
 		return None
 
 	post = None
