@@ -55,6 +55,7 @@ class NFSW:
 			banned_tags = tag_blacklist(ctx.guild)
 		else:
 			banned_tags = ""
+		banned_tags += " -loli -shota -shotacon -lolicon -cub"  # Removes TOS breaking content from the search
 
 		post = await roxbot.utils.danbooru_clone_api_req(
 			ctx.channel,
