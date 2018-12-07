@@ -1851,9 +1851,9 @@ Example:
 
 ```py
 # Enable skipvoting
-;voice enable skipvoting
-# Disbale needing perms
-;voice disable needperms
-# Edit maxlength to 5 minutes
-;voice maxlength 300
+;voice enable skip_voting
+# Disbale needing perms for volume, pause, etc.
+;voice disable need_perms
+# Edit max_length to 5 minutes
+;voice max_length 300
 ```

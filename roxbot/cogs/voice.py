@@ -576,11 +576,11 @@ class Voice:
 
 		Example:
 			# Enable skipvoting
-			;voice enable skipvoting
-			# Disbale needing perms
-			;voice disable needperms
-			# Edit maxlength to 5 minutes
-			;voice maxlength 300
+			;voice enable skip_voting
+			# Disbale needing perms for volume, pause, etc.
+			;voice disable need_perms
+			# Edit max_length to 5 minutes
+			;voice max_length 300
 		"""
 		setting = setting.lower()
 		change = change.lower()
@@ -588,10 +588,10 @@ class Voice:
 		voice = settings["voice"]
 
 		if setting == "enable":
-			if change == "needperms":
+			if change in ("needperms", "need_perms"):
 				voice["need_perms"] = 1
 				await ctx.send("'{}' has been enabled!".format(change))
-			elif change == "skipvoting":
+			elif change in ("skipvoting", "skip_voting"):
 				voice["skip_voting"] = 1
 				await ctx.send("'{}' has been enabled!".format(change))
 			else:
@@ -605,7 +605,7 @@ class Voice:
 				await ctx.send("'{}' was disabled :cry:".format(change))
 			else:
 				return await ctx.send("Not a valid change.")
-		elif setting == "skipratio":
+		elif setting in ("skipratio", "skip_ratio") :
 			change = float(change)
 			if 1 > change > 0:
 				voice["skip_ratio"] = change
@@ -615,7 +615,7 @@ class Voice:
 			else:
 				return await ctx.send("Valid ratio not given.")
 			await ctx.send("Skip Ratio was set to {}".format(change))
-		elif setting == "maxlength" or setting == "maxduration":
+		elif setting in ("maxlength", "max_length"):
 			change = int(change)
 			if change >= 1:
 				voice["max_length"] = change

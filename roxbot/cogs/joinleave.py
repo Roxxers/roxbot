@@ -125,12 +125,12 @@ class JoinLeave():
 		elif setting == "disable":
 			greets["enabled"] = 0
 			await ctx.send("'greets' was disabled :cry:")
-		elif setting == "channel":
+		elif setting in ("channel", "welcome-channel", "greet-channel"):
 			if channel is None:
 				channel = ctx.channel
 			greets["welcome-channel"] = channel.id
 			await ctx.send("Set greets channel to {}".format(channel.mention))
-		elif setting == "message":
+		elif setting in ("message", "custom-message"):
 			greets["custom-message"] = text
 			await ctx.send("Custom message set to '{}'".format(text))
 		else:
@@ -161,7 +161,7 @@ class JoinLeave():
 		elif setting == "disable":
 			goodbyes["enabled"] = 0
 			await ctx.send("'goodbyes' was disabled :cry:")
-		elif setting == "channel":
+		elif setting in ("channel", "goodbye-channel"):
 			if channel is None:
 				channel = ctx.channel
 			goodbyes["goodbye-channel"] = channel.id
