@@ -1,3 +1,13 @@
+## v2.1.0
+
+#### New features
+- New 8-ball command due to Roxbot's new found vision of the future. She requested this.
+
+
+#### Bug fixes and changes
+- Fixed some settings commands editing the wrong setting the backend
+
+
 ## v2.0.3
 
 - Fixed subreddit command not working with the new log function.
