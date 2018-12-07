@@ -6,7 +6,8 @@
 
 #### Bug fixes and changes
 - Fixed some settings commands editing the wrong setting the backend
-
+- Fixed NSFW commands not handling errors properly
+- Twitch cog has been made obsolete and removed from the repo
 
 ## v2.0.3
 
