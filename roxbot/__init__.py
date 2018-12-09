@@ -25,10 +25,10 @@ Roxbot also has a focus on being inclusive and being fun for all kinds of people
 [Found a bug or need to report an issue? Report it here](https://github.com/roxxers/roxbot/issues/new)
 """
 
-from roxbot import checks, http, guild_settings, converters, utils, roxbotfacts
-from roxbot.exceptions import *
-from roxbot.enums import EmbedColours
-from roxbot.utils import blacklisted, log
+from . import checks, http, guild_settings, converters, utils, roxbotfacts, exceptions
+from .exceptions import RoxbotException, UserError, CogSettingDisabled
+from .enums import EmbedColours
+from .utils import blacklisted, log
 
 import configparser
 
