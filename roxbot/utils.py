@@ -227,9 +227,9 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 		return None
 
 	post = None
-	counter = 0
-	while counter < 50:
-		post = random.choice(posts)
+	while posts:
+		index = random.randint(0, len(posts)-1)
+		post = posts.pop(index)
 		if sfw:
 			if post["rating"] == "e" or post["rating"] == "q":
 				continue
@@ -239,7 +239,8 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 			if len(cache[cache_id]) > 10:
 				cache[cache_id].pop(0)
 			break
-		counter += 1
+		if not posts:
+			return None
 
 	url = post.get("file_url")
 	if not url:
