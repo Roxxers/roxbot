@@ -25,10 +25,12 @@
 
 import random
 import asyncio
-import discord
 import argparse
 
-from roxbot import http
+import discord
+from discord.ext import commands
+
+from roxbot import http, config
 from roxbot import guild_settings
 from roxbot.enums import EmbedColours
 
@@ -226,3 +228,22 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 	if not url:
 		url = endpoint_url + "{0[directory]}/{0[image]}".format(post)
 	return url
+
+
+def has_permissions(ctx, **perms):
+	"""Copy of code from discord.py to work outside of wrappers"""
+	ch = ctx.channel
+	permissions = ch.permissions_for(ctx.author)
+
+	missing = [perm for perm, value in perms.items() if getattr(permissions, perm, None) != value]
+
+	if not missing:
+		return True
+
+	raise commands.MissingPermissions(missing)
+
+
+def has_permissions_or_owner(ctx, **perms):
+	if ctx.author.id == config.config["Roxbot"]["OwnerID"]:
+		return True
+	return has_permissions(ctx, **perms)

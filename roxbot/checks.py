@@ -29,12 +29,10 @@ import discord
 from discord.ext import commands
 
 
-def has_permission_or_owner(**perms):
-	def predicate(ctx):
-		if ctx.author.id == roxbot.owner:
-			return True
-		return commands.has_permissions(**perms)
-	return commands.check(predicate)
+def has_permissions_or_owner(**perms):
+	def pred(ctx):
+		return roxbot.utils.has_permissions_or_owner(ctx, **perms)
+	return commands.check(pred)
 
 
 def is_nsfw():

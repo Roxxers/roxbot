@@ -62,7 +62,7 @@ def need_perms():
 	def predicate(ctx):
 		gs = roxbot.guild_settings.get(ctx.guild)
 		if gs["voice"]["need_perms"]:
-			return roxbot.checks.has_permission_or_owner(manage_channels=True)
+			return roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True)
 		else:
 			return True
 
@@ -231,7 +231,7 @@ class Voice:
 		self.playlist[ctx.guild.id].append(video)
 		return video
 
-	@roxbot.checks.has_permission_or_owner(manage_channels=True)
+	@roxbot.checks.has_permissions_or_owner(manage_channels=True)
 	@commands.guild_only()
 	@commands.command()
 	async def join(self, ctx, *, channel: discord.VoiceChannel = None):
@@ -293,7 +293,7 @@ class Voice:
 		voice = roxbot.guild_settings.get(guild)["voice"]
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
-		if not (roxbot.checks.has_permission_or_owner(manage_channels=True) or from_queue):
+		if not (roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True) or from_queue):
 			if not ctx.author.voice:
 				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
@@ -318,7 +318,7 @@ class Voice:
 			video = video["entries"][0]
 
 		# Duration limiter handling
-		if video.get("duration", 1) > voice["max_length"] and not roxbot.checks.has_permission_or_owner(manage_channels=True):
+		if video.get("duration", 1) > voice["max_length"] and not roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
