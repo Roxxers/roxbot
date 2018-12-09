@@ -54,7 +54,7 @@ except KeyError:
 	exit(1)
 
 
-datetime_formatting = "{:%a %Y/%m/%d %H:%M:%S} UTC"
+datetime = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
 cogs = [
 	"roxbot.cogs.admin",

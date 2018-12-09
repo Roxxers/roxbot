@@ -349,7 +349,7 @@ class Fun:
 			Output_Message_ID=output.id,
 			Channel=ctx.channel,
 			Channel_Mention=ctx.channel.mention,
-			Time=roxbot.datetime_formatting.format(ctx.message.created_at)
+			Time=roxbot.datetime.format(ctx.message.created_at)
 		)
 
 	@commands.command(aliases=["ft", "frog"])
@@ -517,7 +517,7 @@ class Fun:
 			Output_Message_ID=output.id,
 			Channel=ctx.channel,
 			Channel_Mention=ctx.channel.mention,
-			Time=roxbot.datetime_formatting.format(ctx.message.created_at)
+			Time=roxbot.datetime.format(ctx.message.created_at)
 		)
 
 	@commands.command(aliases=["rf", "roxfacts", "roxfact"])

@@ -233,7 +233,7 @@ class Reddit:
 				Returned="<{}>".format(url),
 				Channel=ctx.channel,
 				Channel_Mention=ctx.channel.mention,
-				Time=roxbot.datetime_formatting.format(ctx.message.created_at)
+				Time=roxbot.datetime.format(ctx.message.created_at)
 			)
 
 	@commands.command()

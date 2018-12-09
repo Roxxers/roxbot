@@ -185,7 +185,7 @@ class Util:
 			em.add_field(name="ID", value=str(emote.id), inline=False)
 			if isinstance(emote, discord.Emoji):
 				em.add_field(name="Guild", value=str(emote.guild), inline=False)
-				em.add_field(name="Created At", value=roxbot.datetime_formatting.format(emote.created_at), inline=False)
+				em.add_field(name="Created At", value=roxbot.datetime.format(emote.created_at), inline=False)
 			em.set_image(url=emote.url)
 			return await ctx.send(embed=em)
 		except commands.errors.BadArgument:  # unicode emoji

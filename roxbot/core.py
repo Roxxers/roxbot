@@ -173,8 +173,8 @@ class Core(ErrorHandling):
 			embed = discord.Embed(title="{} joined the server".format(member), colour=roxbot.EmbedColours.pink)
 			embed.add_field(name="ID", value=member.id)
 			embed.add_field(name="Mention", value=member.mention)
-			embed.add_field(name="Date Account Created", value=roxbot.datetime_formatting.format(member.created_at))
-			embed.add_field(name="Date Joined", value=roxbot.datetime_formatting.format(member.joined_at))
+			embed.add_field(name="Date Account Created", value=roxbot.datetime.format(member.created_at))
+			embed.add_field(name="Date Joined", value=roxbot.datetime.format(member.joined_at))
 			embed.set_thumbnail(url=member.avatar_url)
 			return await channel.send(embed=embed)
 
