@@ -62,6 +62,7 @@ class Fun:
 		)
 		self.croak = {}  # Frogtips cache
 		self.roxbot_fact_cache = {}
+		self.kona_cache = {}
 
 	@commands.command(aliases=["dice", "die"])  # Terra made this and it just work's but im too scared to clean it up so i hope it doesn't break
 	async def roll(self, ctx, *, expression: str):
@@ -574,6 +575,33 @@ class Fun:
 		embed = discord.Embed(description=answer, colour=roxbot.EmbedColours.magic_8)
 		embed.set_author(name="Magic 8-Ball", icon_url="https://twemoji.maxcdn.com/2/72x72/1f3b1.png")
 		return await ctx.send(embed=embed)
+
+	@commands.command(aliases=["konasfw", "konansfw"], hidden=True, enabled=False)
+	async def konachan(self, ctx, *, tags=""):
+		# TODO: Add documentation
+		sfw = bool(ctx.invoked_with == "konasfw" or not ctx.channel.nsfw)
+		nsfw = bool((ctx.invoked_with == "konansfw" and ctx.channel.nsfw) or ctx.channel.nsfw)
+		if nsfw:
+			base_url = "https://konachan.com/post.json/?tags="
+		else:
+			base_url = "https://konachan.net/post.json/?tags="
+
+		# No banned tags cause konachan bans anything that would break discord tos and hopefully we are good
+		# its all basically ecchi anyway.
+		post = await roxbot.utils.danbooru_clone_api_req(
+			ctx.channel,
+			base_url,
+			"",
+			tags=tags,
+			cache=self.kona_cache,
+			sfw=sfw
+		)
+
+		if not post:
+			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
+		else:
+			output = await ctx.send(post)
+		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
 
 
 def setup(bot_client):
