@@ -55,7 +55,6 @@ class NFSW:
 			banned_tags = tag_blacklist(ctx.guild)
 		else:
 			banned_tags = ""
-		banned_tags += " -loli -shota -shotacon -lolicon -cub"  # Removes TOS breaking content from the search
 
 		post = await roxbot.utils.danbooru_clone_api_req(
 			ctx.channel,
@@ -76,6 +75,7 @@ class NFSW:
 	@commands.command()
 	async def e621(self, ctx, *, tags=""):
 		"""Posts a random image from https://e621.net using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+		https://e621.net limits searches to 6 tags via the API. Blacklisting a lot of tags may break this command.
 		Examples:
 			# Post a random image
 			;e621

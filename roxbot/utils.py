@@ -30,8 +30,7 @@ import argparse
 import discord
 from discord.ext import commands
 
-from roxbot import http, config
-from roxbot import guild_settings
+from roxbot import http, config, exceptions, guild_settings
 from roxbot.enums import EmbedColours
 
 
@@ -194,9 +193,20 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 		banned tags to append to the search. Separated by spaces with a - in front to remove them from search results.
 	"""
 	limit = "150"
-	tags = tags + banned_tags
+	is_e621_site = bool("e621" in base_url or "e926" in base_url)
+
+	if is_e621_site:
+		banned_tags += " -cub"  # Removes TOS breaking content from the search
+		tags = tags + banned_tags
+		if len(tags.split()) > 6:
+			raise exceptions.UserError("Too many tags given for this site.")
+	else:
+		banned_tags += " -loli -shota -shotacon -lolicon -cub"  # Removes TOS breaking content from the search
+		tags = tags + banned_tags
+
 	page_number = str(random.randrange(20))
-	if "konachan" in base_url or "e621" in base_url or "e926" in base_url:
+
+	if "konachan" in base_url or is_e621_site:
 		page = "&page="
 	else:
 		page = "&pid="

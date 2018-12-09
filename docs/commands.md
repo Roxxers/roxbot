@@ -1161,6 +1161,9 @@ Posts a random image from [e621](https://e621.net) using the tags you provide. T
 
 !!! warning
     This command will only work in channels marked NSFW or DMs.
+    
+!!! warning
+    [e621](https://e621.net) limits searches to 6 tags via the API. Blacklisting a lot of tags may break this command. 
 
 
 Command Structure:
