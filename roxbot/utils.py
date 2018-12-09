@@ -196,7 +196,11 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 	limit = "150"
 	tags = tags + banned_tags
 	page_number = str(random.randrange(20))
-	url = base_url + tags + '&limit=' + limit + '%pid=' + page_number
+	if "konachan" in base_url or "e621" in base_url or "e926" in base_url:
+		page = "&page="
+	else:
+		page = "&pid="
+	url = base_url + tags + '&limit=' + limit + page + page_number
 
 	if isinstance(channel, discord.DMChannel):
 		cache_id = channel.id
@@ -214,7 +218,7 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 
 	post = None
 	counter = 0
-	while counter < 20:
+	while counter < 50:
 		post = random.choice(posts)
 		if sfw:
 			if post["rating"] == "e" or post["rating"] == "q":
