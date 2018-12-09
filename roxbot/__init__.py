@@ -25,35 +25,26 @@ Roxbot also has a focus on being inclusive and being fun for all kinds of people
 [Found a bug or need to report an issue? Report it here](https://github.com/roxxers/roxbot/issues/new)
 """
 
-from . import checks, http, guild_settings, converters, utils, roxbotfacts, exceptions
-from .exceptions import RoxbotException, UserError, CogSettingDisabled
 from .enums import EmbedColours
 from .utils import blacklisted, log
+from .config import config
+from .exceptions import UserError, CogSettingDisabled
 
-import configparser
+from . import checks, http, guild_settings, converters, utils, roxbotfacts, exceptions
+
+
+command_prefix = config["Roxbot"]["Command_Prefix"]
+owner = int(config["Roxbot"]["OwnerID"])
+token = config["Tokens"]["Discord"]
+imgur_token = config["Tokens"]["Imgur"]
+
+if config["Backups"]["enabled"] == "False":
+	backup_enabled = False
+else:
+	backup_enabled = True
+backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
 
 dev_mode = False
-
-config = configparser.ConfigParser()
-config.read("roxbot/settings/roxbot.conf")
-
-try:
-	command_prefix = config["Roxbot"]["Command_Prefix"]
-	owner = int(config["Roxbot"]["OwnerID"])
-
-	token = config["Tokens"]["Discord"]
-	imgur_token = config["Tokens"]["Imgur"]
-
-	if config["Backups"]["enabled"] == "False":
-		backup_enabled = False
-	else:
-		backup_enabled = True
-	backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
-except KeyError:
-	print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
-	exit(1)
-
-
 datetime = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
 cogs = [
