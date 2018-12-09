@@ -173,7 +173,7 @@ async def log(guild, command_name, **kwargs):
 			return await channel.send(embed=embed)
 
 
-async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, tags="", banned_tags=""):
+async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, tags="", banned_tags="", sfw=False):
 	"""Utility function that deals with danbooru clone api interaction.
 	It also deals with cache management for these interactions.
 
@@ -216,6 +216,9 @@ async def danbooru_clone_api_req(channel, base_url, endpoint_url, cache=None, ta
 	counter = 0
 	while counter < 20:
 		post = random.choice(posts)
+		if sfw:
+			if post["rating"] == "e" or post["rating"] == "q":
+				continue
 		md5 = post.get("md5") or post.get("hash")
 		if md5 not in cache[cache_id]:
 			cache[cache_id].append(md5)
