@@ -342,7 +342,7 @@ class Fun:
 		converted = str(text).translate(wide_map)
 		output = await ctx.send(converted)
 
-		await roxbot.log(
+		await self.bot.log(
 			ctx.guild,
 			"aesthetics",
 			User=ctx.author,
@@ -487,8 +487,8 @@ class Fun:
 			embed.set_footer(text=comic["alt"])
 			embed.url = xkcd_site.format(comic["num"])
 			output = await ctx.send(msg, embed=embed)
-			
-			await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
+
+			await self.bot.delete_option(output, self.bot.get_emoji(444410658101002261))
 
 	@commands.command(aliases=["za"])
 	async def zalgo(self, ctx, *, text):
@@ -510,7 +510,7 @@ class Fun:
 		response = random.choice(zalgo_chars).join(zalgoised)
 		output = await ctx.send(response)
 
-		await roxbot.log(
+		await self.bot.log(
 			ctx.guild,
 			"zalgo",
 			User=ctx.author,
@@ -601,7 +601,7 @@ class Fun:
 			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 		else:
 			output = await ctx.send(post)
-		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
+			await self.bot.delete_option(output, self.bot.get_emoji(444410658101002261))
 
 
 def setup(bot_client):

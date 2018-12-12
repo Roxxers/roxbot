@@ -119,7 +119,7 @@ class CustomCommands:
 			return
 
 		# Emulate Roxbot's blacklist system
-		if roxbot.blacklisted(message.author):
+		if self.bot.blacklisted(message.author):
 			raise commands.CheckFailure()
 
 		settings = roxbot.guild_settings.get(message.guild)

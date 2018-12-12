@@ -32,7 +32,6 @@ from bs4 import BeautifulSoup
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings
 
 
 class Scrapper:
@@ -221,11 +220,11 @@ class Reddit:
 
 		# Not using a embed here because we can't use video in rich embeds but they work in embeds now :/
 		output = await ctx.send(title + text + url)
-		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
+		await self.bot.delete_option(output, self.bot.get_emoji(444410658101002261))
 
 		if ctx.invoked_with == "subreddit" and isinstance(ctx.channel, discord.TextChannel):
 			# Only log the command when it is this command being used. Not the inbuilt commands.
-			await roxbot.log(
+			await self.bot.log(
 				ctx.guild,
 				"subreddit",
 				User=ctx.author,

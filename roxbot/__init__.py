@@ -26,7 +26,6 @@ Roxbot also has a focus on being inclusive and being fun for all kinds of people
 """
 
 from .enums import EmbedColours
-from .utils import blacklisted, log
 from .config import config
 from .exceptions import UserError, CogSettingDisabled
 

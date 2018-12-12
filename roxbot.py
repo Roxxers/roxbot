@@ -34,6 +34,7 @@ from discord.ext import commands
 
 import roxbot
 from roxbot import guild_settings as gs
+from roxbot import core
 
 
 class term:
@@ -70,7 +71,7 @@ class term:
 #discord_logger.addHandler(roxbot.handler)
 
 
-bot = commands.Bot(
+bot = core.Roxbot(
 	command_prefix=roxbot.command_prefix,
 	description=roxbot.__description__,
 	owner_id=roxbot.owner,
@@ -112,7 +113,7 @@ async def on_error(event, *args, **kwargs):
 @bot.check
 def check_blacklist(ctx):
 	"""Adds global check to the bot to check for a user being blacklisted."""
-	return not roxbot.blacklisted(ctx.author)
+	return not bot.blacklisted(ctx.author)
 
 
 @bot.command()

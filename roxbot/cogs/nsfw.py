@@ -69,7 +69,7 @@ class NFSW:
 			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
 		else:
 			output = await ctx.send(post)
-		await roxbot.utils.delete_option(self.bot, ctx, output, self.bot.get_emoji(444410658101002261) or "❌")
+			await self.bot.delete_option(output, self.bot.get_emoji(444410658101002261))
 
 	@roxbot.checks.is_nsfw()
 	@commands.command()

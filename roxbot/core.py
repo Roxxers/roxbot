@@ -36,6 +36,86 @@ from discord.ext import commands
 import roxbot
 
 
+class Roxbot(commands.Bot):
+	"""Modified client for Roxbot"""
+	def __init__(self, **kwargs):
+		super().__init__(**kwargs)
+
+	@staticmethod
+	def blacklisted(user):
+		"""Checks if given user is blacklisted from the bot.
+		Params
+		=======
+		user: discord.User
+
+		Returns
+		=======
+		If the user is blacklisted: bool"""
+		with open("roxbot/settings/blacklist.txt", "r") as fp:
+			for line in fp.readlines():
+				if str(user.id) + "\n" == line:
+					return True
+		return False
+
+	async def delete_option(self, message, delete_emoji=None, timeout=20):
+		"""Utility function that allows for you to add a delete option to the end of a command.
+		This makes it easier for users to control the output of commands, esp handy for random output ones.
+
+		Params
+		=======
+		message: discord.Message
+			Output message from Roxbot
+		delete_emoji: discord.Emoji or str if unicode emoji
+			Used as the reaction for the user to click on.
+		timeout: int (Optional)
+			Amount of time in seconds for the bot to wait for the reaction. Deletes itself after the timer runes out.
+			Set to 20 by default
+		"""
+		if not delete_emoji:
+			delete_emoji = "❌"
+		await message.add_reaction(delete_emoji)
+
+		def check(r, u):
+			return str(r) == str(delete_emoji) and u == message.author and r.message.id == message.id
+
+		try:
+			await self.wait_for("reaction_add", timeout=timeout, check=check)
+			await message.remove_reaction(delete_emoji, self.user)
+			try:
+				await message.remove_reaction(delete_emoji, message.author)
+			except discord.Forbidden:
+				pass
+			await message.edit(content="{} requested output be deleted.".format(message.author), embed=None)
+		except asyncio.TimeoutError:
+			await message.remove_reaction(delete_emoji, self.user)
+
+	async def log(self, guild, command_name, **kwargs):
+		"""Logs activity internally for Roxbot. Will only do anything if the server enables internal logging.
+
+		This is mostly used for logging when certain commands are used that can be an issue for admins. Esp when Roxbot outputs
+		something that could break the rules, then deletes their message.
+
+		Params
+		=======
+		guild: discord.Guild
+			Used to check if the guild has logging enabled
+		channel: discord.TextChannel
+		command_name: str
+		kwargs: dict
+			All kwargs and two other params will be added to the logging embed as fields, allowing you to customise the output
+
+		"""
+		if guild:
+			logging = roxbot.guild_settings.get(guild)["logging"]
+			channel = discord.utils.get(guild.channels, id=logging["channel"])
+			if logging["enabled"]:
+				embed = discord.Embed(title="{} command logging".format(command_name), colour=roxbot.EmbedColours.pink)
+				for key, value in kwargs.items():
+					embed.add_field(name=key, value=value)
+				return await channel.send(embed=embed)
+
+
+
 class ErrorHandling:
 
 	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
