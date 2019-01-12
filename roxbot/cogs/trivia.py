@@ -49,6 +49,12 @@ class Trivia:
 		# Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
 		self.bot = bot_client
 		self.lengths = {"short": 5, "medium": 10, "long": 15}
+		self.games = {}
+		self.error_colour = roxbot.EmbedColours.dark_red
+		self.trivia_colour = roxbot.EmbedColours.blue
+		self.bot.add_listener(self._emoji_vars, "on_ready")
+
+	def _emoji_vars(self):
 		a_emoji = self.bot.get_emoji(419572828854026252) or "🇦"
 		b_emoji = self.bot.get_emoji(419572828925329429)  or "🇧"
 		c_emoji = self.bot.get_emoji(419572829231775755) or "🇨"
@@ -56,9 +62,6 @@ class Trivia:
 		self.correct_emoji = self.bot.get_emoji(421526796392202240) or "✅"
 		self.incorrect_emoji = self.bot.get_emoji(421526796379488256) or "❌"
 		self.emojis = [a_emoji, b_emoji, c_emoji, d_emoji]
-		self.games = {}
-		self.error_colour = roxbot.EmbedColours.dark_red
-		self.trivia_colour = roxbot.EmbedColours.blue
 
 	# Game Functions
 

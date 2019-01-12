@@ -8,6 +8,8 @@
 - Fixed some settings commands editing the wrong setting the backend
 - Fixed NSFW commands not handling errors properly
 - Twitch cog has been made obsolete and removed from the repo
+- Permission checking was really broken. Phew no one noticed :sweat:
+- Fixed dumb issue with trivia not picking loading custom emojis.
 
 ## v2.0.3
 
