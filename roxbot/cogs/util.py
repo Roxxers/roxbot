@@ -54,7 +54,7 @@ class Util:
 			user = ctx.author
 
 		url = user.avatar_url_as(static_format="png")
-		if url.split(".")[-1] == "gif":
+		if ".gif in url":
 			avaimg = '{0.name}.gif'.format(user)
 		else:
 			avaimg = '{0.name}.png'.format(user)
