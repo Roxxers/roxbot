@@ -54,7 +54,7 @@ class Trivia:
 		self.trivia_colour = roxbot.EmbedColours.blue
 		self.bot.add_listener(self._emoji_vars, "on_ready")
 
-	def _emoji_vars(self):
+	async def _emoji_vars(self):
 		a_emoji = self.bot.get_emoji(419572828854026252) or "🇦"
 		b_emoji = self.bot.get_emoji(419572828925329429)  or "🇧"
 		c_emoji = self.bot.get_emoji(419572829231775755) or "🇨"
