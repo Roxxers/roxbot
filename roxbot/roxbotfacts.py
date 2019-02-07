@@ -70,7 +70,7 @@ facts = [
 	["Roxbot was very apprehensive of her new friend, AGSE, but she gets along with her nowadays. AGSE’s “agile development” caught her off-guard at first.", "summer"],
 	["Roxbot used to hate surreal memes. “They don’t make any damn sense!” she’d say. After explaining to her that that’s the entire point, she’s kind of gone off the deep end with it. Loves to “deep fry” things now and can be heard laughing from down the hall.", "summer"],
 	["Roxbot shares her mother’s interest in Vexillology, or the study of flags, their use, and design. Roxbot hopes to make a flag that she thinks is worth showing her mom one day; until then she designs in secret.", "summer"],
-	["Roxbot can get annoyed when people ask her to do too much at once.", "Summer"],
+	["Roxbot can get annoyed when people ask her to do too much at once.", "summer"],
 	["""Roxbot hates printing settings, especially in large, complex servers. “Ask me all these most intimate details will you? Hmph.”""", "summer"],
 	["Roxbot is not bothered by not requiring sleep. She loves spending time with all her friends in discord, and wants to do so as often as possible.", "summer"],
 	["""Roxbot’s favorite animals are dogs. “Dog girls are the best form of girls with animal traits, of course!”""", "summer"],
