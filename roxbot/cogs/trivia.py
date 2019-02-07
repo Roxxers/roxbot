@@ -291,7 +291,7 @@ class Trivia:
 		message = reaction.message
 
 		if channel.id in self.games:
-			if user.id in self.games[channel.id]["players"] and message.id == self.games[channel.id]["current_question"].id:
+			if user.id in self.games[channel.id]["players"] and message.id == self.games[channel.id]["current_question"]:
 				if reaction.emoji in self.emojis and user.id not in self.games[channel.id]["players_answered"]:
 					self.games[channel.id]["players_answered"].append(user.id)
 					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
