@@ -105,7 +105,7 @@ class Trivia:
 
 	def parse_question(self, question, counter, mobile_comp):
 		if mobile_comp:
-			embed = "Question {}) **{}**\n\nDifficulty: {} | Category: {} | Time Left: ".format(counter, unescape(question["question"]), question["category"], question["difficulty"].title())
+			embed = "Question {}) **{}**\n\nDifficulty: {} | Category: {} | Time Left: ".format(counter, unescape(question["question"]), question["difficulty"].title(), question["category"])
 		else:
 			embed = discord.Embed(
 				title=unescape(question["question"]),
@@ -113,7 +113,7 @@ class Trivia:
 				description="")
 
 			embed.set_author(name="Question {}".format(counter))
-			embed.set_footer(text="Difficulty: {} | Category: {} | Time Left: ".format(question["category"], question["difficulty"].title()))
+			embed.set_footer(text="Difficulty: {} | Category: {} | Time Left: ".format(question["difficulty"].title(), question["category"]))
 
 		if question["type"] == "boolean":
 			# List of possible answers
@@ -289,9 +289,18 @@ class Trivia:
 
 		channel = reaction.message.channel
 		message = reaction.message
+		user_in_game = bool(user.id in self.games[channel.id]["players"])
+		try:
+			reaction_is_on_question = bool(message.id == self.games[channel.id]["current_question"].id)
+		except AttributeError:
+			if reaction.emoji in self.emojis:
+				# This means the question isn't ready
+				reaction_is_on_question = False
+			else:
+				reaction_is_on_question = None
 
 		if channel.id in self.games:
-			if user.id in self.games[channel.id]["players"] and message.id == self.games[channel.id]["current_question"].id:
+			if user_in_game and reaction_is_on_question:
 				if reaction.emoji in self.emojis and user.id not in self.games[channel.id]["players_answered"]:
 					self.games[channel.id]["players_answered"].append(user.id)
 					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
@@ -300,6 +309,8 @@ class Trivia:
 				else:
 					return await message.remove_reaction(reaction, user)
 			else:
+				if reaction_is_on_question is None:
+					return
 				return await message.remove_reaction(reaction, user)
 		else:
 			return
@@ -400,7 +411,7 @@ class Trivia:
 				final_scores.append(score)
 
 			winner = ctx.guild.get_member(final_scores[0][0])
-			winning_score = ctx.guild.get_member(final_scores[0][1])
+			winning_score = final_scores[0][1]
 			winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
 			if len(final_scores) > 1:
 				results_text = "\n\nResults:\n:first_place: {}:  \n:second_place: {}:{}"
