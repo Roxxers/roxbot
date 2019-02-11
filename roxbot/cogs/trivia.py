@@ -291,7 +291,7 @@ class Trivia:
 		message = reaction.message
 
 		if channel.id in self.games:
-			if user.id in self.games[channel.id]["players"] and message.id == self.games[channel.id]["current_question"]:
+			if user.id in self.games[channel.id]["players"] and message.id == self.games[channel.id]["current_question"].id:
 				if reaction.emoji in self.emojis and user.id not in self.games[channel.id]["players_answered"]:
 					self.games[channel.id]["players_answered"].append(user.id)
 					if reaction.emoji == self.emojis[self.games[channel.id]["correct_answer"]]:
@@ -395,10 +395,22 @@ class Trivia:
 		# Game Ends
 		# Some stuff here displaying score
 		if self.games[channel.id]["players"]:
-			final_scores = self.sort_leaderboard(self.games[channel.id]["players"])
-			winner = self.bot.get_user(list(final_scores.keys())[0])
-			winning_score = list(final_scores.values())[0]
-			embed = discord.Embed(description="{} won with a score of {}".format(winner.mention, winning_score), colour=roxbot.EmbedColours.gold)
+			final_scores = []
+			for score in self.sort_leaderboard(self.games[channel.id]["players"]).items():
+				final_scores.append(score)
+
+			winner = ctx.guild.get_member(final_scores[0][0])
+			winning_score = ctx.guild.get_member(final_scores[0][1])
+			winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
+			if len(final_scores) > 1:
+				results_text = "\n\nResults:\n:first_place: {}:  \n:second_place: {}:{}"
+				if len(final_scores) > 2:
+					results_text +=  "\n:third_place: {}:{}"
+			else:
+				results_text = ""
+
+			ending_leaderboard = winner_text + results_text
+			embed = discord.Embed(description=ending_leaderboard, colour=roxbot.EmbedColours.gold)
 			await ctx.send(embed=embed)
 		self.games.pop(channel.id)
 
