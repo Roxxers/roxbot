@@ -359,8 +359,7 @@ class Fun:
 		endpoint = "https://frog.tips/api/1/tips/"
 		if not self.croak.get("tips"):
 			self.croak = await roxbot.http.api_request(endpoint)
-		index = random.randint(0, len(self.croak["tips"]))
-		tip = self.croak["tips"].pop(index)
+		tip = self.croak["tips"].pop(0)
 		embed = discord.Embed(title="Frog Tip #{}".format(tip["number"]), description=tip["tip"], colour=roxbot.EmbedColours.frog_green)
 		embed.set_author(name="HOW TO OPERATE YOUR FROG")
 		embed.set_footer(text="https://frog.tips")
