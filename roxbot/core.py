@@ -139,7 +139,9 @@ class ErrorHandling:
 			is_custom_command = bool(ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"])
 			is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
 			is_too_short = bool(len(ctx.message.content) <= 2)
-			if is_custom_command or is_emoticon_face or is_too_short:
+			if is_emoticon_face:
+				return None
+			if is_custom_command or is_too_short:
 				return None
 			else:
 				return error.args[0]
@@ -199,13 +201,13 @@ class ErrorHandling:
 					embed.add_field(name='User', value=ctx.author)
 					embed.add_field(name='Message', value=ctx.message.content)
 					embed.timestamp = datetime.datetime.utcnow()
-			elif isinstance(error, commands.CommandError):
+			elif isinstance(error, commands.CommandError) and not bool(case is None and user_error_case is None):
 				embed.description = "Error: {}".format(error.args[0])
 				roxbot.logger.error(embed.description)
 			else:
 				roxbot.logger.error(str(error))
 
-			if embed:
+			if embed.description:
 				embed.colour = roxbot.EmbedColours.dark_red
 				await ctx.send(embed=embed)
 

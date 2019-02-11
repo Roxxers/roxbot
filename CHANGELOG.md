@@ -3,7 +3,6 @@
 #### New features
 - New 8-ball command due to Roxbot's new found vision of the future. She requested this.
 
-
 #### Bug fixes and changes
 - Fixed some settings commands editing the wrong setting the backend
 - Fixed NSFW commands not handling errors properly
@@ -11,6 +10,8 @@
 - Permission checking was really broken. Phew no one noticed :sweat:
 - Fixed dumb issue with trivia not picking loading custom emojis
 - Fixed bug where `;avatar` didn't return animated pfp correctly
+- Fixed reintroduced bug that made emoticons trigger Roxbot's `CommandNotFound` response
+- Frogtips' Croaks should not longer return error at end of lifespan
 
 ## v2.0.3
 
