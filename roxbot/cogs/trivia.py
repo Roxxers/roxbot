@@ -290,7 +290,6 @@ class Trivia:
 
 		channel = reaction.message.channel
 		message = reaction.message
-		user_in_game = bool(user.id in self.games[channel.id]["players"])
 		try:
 			reaction_is_on_question = bool(message.id == self.games[channel.id]["current_question"].id)
 		except AttributeError:
@@ -301,6 +300,7 @@ class Trivia:
 				reaction_is_on_question = None
 
 		if channel.id in self.games:
+			user_in_game = bool(user.id in self.games[channel.id]["players"])
 			if user_in_game and reaction_is_on_question:
 				if reaction.emoji in self.emojis and user.id not in self.games[channel.id]["players_answered"]:
 					self.games[channel.id]["players_answered"].append(user.id)
