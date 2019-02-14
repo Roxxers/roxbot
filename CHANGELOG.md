@@ -2,6 +2,7 @@
 
 #### New features
 - New 8-ball command due to Roxbot's new found vision of the future. She requested this.
+- Trivia has gotten some minor UX and UI changes, mostly to the end leaderboard. This is a precursor to a refactor and rework of the game.
 
 #### Bug fixes and changes
 - Fixed some settings commands editing the wrong setting the backend
