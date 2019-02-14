@@ -23,6 +23,7 @@
 # SOFTWARE.
 
 
+import copy
 import asyncio
 import datetime
 from collections import OrderedDict
@@ -193,7 +194,7 @@ class Trivia:
 
 			# Send a message, add the emoji reactions, then edit in the question to avoid issues with answering before reactions are done.
 			if mobile_comp:
-				orig = {"content": output}
+				orig = {"content": copy.copy(output)}
 				sections = output.split("\n")
 				sections[1] = answers
 				footer = sections[-1]
@@ -201,7 +202,7 @@ class Trivia:
 				output = "\n".join(sections)
 				edit = {"content": output}
 			else:
-				orig = {"embed": output}
+				orig = {"embed": copy.copy(output)}
 				output.description = answers
 				footer = str(output.footer.text)
 				output.set_footer(text=output.footer.text+str(20))
