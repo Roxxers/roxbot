@@ -413,10 +413,22 @@ class Trivia:
 			winner = ctx.guild.get_member(final_scores[0][0])
 			winning_score = final_scores[0][1]
 			winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
+
 			if len(final_scores) > 1:
-				results_text = "\n\nResults:\n:first_place: {}:  \n:second_place: {}:{}"
-				if len(final_scores) > 2:
-					results_text +=  "\n:third_place: {}:{}"
+				x = 0
+				results_text = "\n\nResults:\n"
+				for player in final_scores:
+					user = ctx.guild.get_member(player[0])
+					if x == 0:
+						emoji = "`1st)` 🥇"
+					elif x == 1:
+						emoji = "`2nd)` 🥈"
+					elif x == 2:
+						emoji = "`3rd)` 🥉"
+					else:
+						emoji = "`{}th)` 🎀".format(x+1)
+					results_text += "\n {0} {1} - {2}".format(emoji, user.mention, player[1])
+					x += 1
 			else:
 				results_text = ""
 
