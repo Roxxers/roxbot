@@ -124,8 +124,9 @@ def has_permissions(ctx, **perms):
 
 	if not missing:
 		return True
+	return False
 
-	raise commands.MissingPermissions(missing)
+	#raise commands.MissingPermissions(missing)
 
 
 def has_permissions_or_owner(ctx, **perms):
