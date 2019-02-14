@@ -129,6 +129,6 @@ def has_permissions(ctx, **perms):
 
 
 def has_permissions_or_owner(ctx, **perms):
-	if ctx.author.id == config.config["Roxbot"]["OwnerID"]:
+	if ctx.author.id == config["Roxbot"]["OwnerID"]:
 		return True
 	return has_permissions(ctx, **perms)
