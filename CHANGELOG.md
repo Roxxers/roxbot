@@ -1,3 +1,8 @@
+## v2.1.1
+
+#### Bug Fixes
+- Fixed error that spammed the log but was harmless
+
 ## v2.1.0
 
 #### New features

@@ -12,7 +12,7 @@ __title__ = "roxbot"
 __author__ = "Roxanne Gibson"
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2017 Roxanne Gibson <me@roxxers.xyz>"
-__version__ = "2.1.0"
+__version__ = "2.1.1"
 __description__ = """Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
 Roxbot is designed be a multi-purpose bot and provide many different services for users and moderators alike with a focus on customisability. 
