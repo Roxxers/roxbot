@@ -583,6 +583,13 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#8ball" title=";8ball" class="md-nav__link">
+    ;8ball
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#aesthetics" title=";aesthetics" class="md-nav__link">
     ;aesthetics
   </a>
@@ -1612,6 +1619,13 @@
   
     <nav class="md-nav">
       <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#8ball" title=";8ball" class="md-nav__link">
+    ;8ball
+  </a>
+  
+</li>
         
           <li class="md-nav__item">
   <a href="#aesthetics" title=";aesthetics" class="md-nav__link">
@@ -2688,6 +2702,18 @@
 <hr />
 <h2 id="fun">Fun<a class="headerlink" href="#fun" title="Permanent link">&para;</a></h2>
 <p>The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining.</p>
+<h3 id="8ball">;8ball<a class="headerlink" href="#8ball" title="Permanent link">&para;</a></h3>
+<p>Asks a magic 8 ball to tell the future via the means of yes and no questions.</p>
+<p>Command Structure:</p>
+<p><code class="codehilite">;8ball question</code></p>
+<p>Aliases:</p>
+<p><code class="codehilite">magicball</code>, <code class="codehilite">8b</code></p>
+<p>Arguments:</p>
+<ul>
+<li><code class="codehilite">question</code> - a yes or no question to ask and Roxbot will enquire with the Magic 8-Ball to look into the future!</li>
+</ul>
+<p>Examples:
+    ;8ball Will this command take off as a good idea?</p>
 <h3 id="aesthetics">;aesthetics<a class="headerlink" href="#aesthetics" title="Permanent link">&para;</a></h3>
 <p>Converts text to be more ａｅｓｔｈｅｔｉｃ <small>fix-width text</small></p>
 <p>Command Structure:</p>
@@ -3010,6 +3036,10 @@
 <p class="admonition-title">Warning</p>
 <p>This command will only work in channels marked NSFW or DMs.</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a href="https://e621.net">e621</a> limits searches to 6 tags via the API. Blacklisting a lot of tags may break this command. </p>
+</div>
 <p>Command Structure:</p>
 <p><code class="codehilite">;e621 [*tags: optional]</code></p>
 <p>Examples:</p>
@@ -3067,7 +3097,7 @@
 <div class="codehilite"><pre><span></span><span class="c1"># Enabled NSFW commands</span>
 <span class="p">;</span><span class="n">nsfw</span> <span class="n">enable</span>
 <span class="c1"># Add &quot;test&quot; as a blacklisted tag</span>
-<span class="p">;</span><span class="n">nsfw</span> <span class="n">addbagtag</span> <span class="n">test</span>
+<span class="p">;</span><span class="n">nsfw</span> <span class="n">addbadtag</span> <span class="n">test</span>
 <span class="c1"># Remove &quot;Roxbot&quot; as a blacklisted tag</span>
 <span class="p">;</span><span class="n">nsfw</span> <span class="n">removebadtag</span> <span class="n">Roxbot</span>
 </pre></div>
@@ -3478,11 +3508,11 @@
 </ul>
 <p>Example:</p>
 <div class="codehilite"><pre><span></span><span class="c1"># Enable skipvoting</span>
-<span class="p">;</span><span class="n">voice</span> <span class="n">enable</span> <span class="n">skipvoting</span>
-<span class="c1"># Disbale needing perms</span>
-<span class="p">;</span><span class="n">voice</span> <span class="n">disable</span> <span class="n">needperms</span>
-<span class="c1"># Edit maxlength to 5 minutes</span>
-<span class="p">;</span><span class="n">voice</span> <span class="n">maxlength</span> <span class="mi">300</span>
+<span class="p">;</span><span class="n">voice</span> <span class="n">enable</span> <span class="n">skip_voting</span>
+<span class="c1"># Disbale needing perms for volume, pause, etc.</span>
+<span class="p">;</span><span class="n">voice</span> <span class="n">disable</span> <span class="n">need_perms</span>
+<span class="c1"># Edit max_length to 5 minutes</span>
+<span class="p">;</span><span class="n">voice</span> <span class="n">max_length</span> <span class="mi">300</span>
 </pre></div>
                 
                   
