@@ -27,14 +27,13 @@ import discord
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings as gs
+from roxbot.db import *
 
 
-def tag_blacklist(guild):
-	blacklist = ""
-	for tag in gs.get(guild)["nsfw"]["blacklist"]:
-		blacklist += " -{}".format(tag)
-	return blacklist
+class NSFWSingle(db.Entity):
+	enabled = Required(bool, default=False)
+	blacklisted_tags = Optional(StrArray)
+	guild_id = Required(int, unique=True, size=64)
 
 
 class NFSW:
@@ -42,17 +41,19 @@ class NFSW:
 	def __init__(self, bot_client):
 		self.bot = bot_client
 		self.cache = {}
-		self.settings = {
-			"nsfw": {
-				"enabled": 0,
-				"convert": {"enabled": "bool"},
-				"blacklist": []
-			}
-		}
+		self.autogen_db = NSFWSingle
+
+	@db_session
+	def tag_blacklist(self, guild):
+		blacklist = ""
+		blacklist_db = NSFWSingle.get(guild_id=guild.id).blacklisted_tags
+		for tag in blacklist_db:
+			blacklist += " -{}".format(tag)
+		return blacklist
 
 	async def gelbooru_clone(self, ctx, base_url, endpoint_url, tags):
 		if isinstance(ctx.channel, discord.TextChannel):
-			banned_tags = tag_blacklist(ctx.guild)
+			banned_tags = self.tag_blacklist(ctx.guild)
 		else:
 			banned_tags = ""
 
@@ -131,31 +132,28 @@ class NFSW:
 			# Remove "Roxbot" as a blacklisted tag
 			;nsfw removebadtag Roxbot
 		"""
-		setting = setting.lower()
-		settings = roxbot.guild_settings.get(ctx.guild)
-		nsfw = settings["nsfw"]
-
-		if setting == "enable":
-			nsfw["enabled"] = 1
-			await ctx.send("'nsfw' was enabled!")
-		elif setting == "disable":
-			nsfw["enabled"] = 0
-			await ctx.send("'nsfw' was disabled :cry:")
-		elif setting == "addbadtag":
-			if changes not in nsfw["blacklist"]:
-				nsfw["blacklist"].append(changes)
-				await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
+		with db_session:
+			nsfw_settings = NSFWSingle.get(guild_id=ctx.guild.id)
+			if setting == "enable":
+				nsfw_settings.enabled = True
+				await ctx.send("'nsfw' was enabled!")
+			elif setting == "disable":
+				nsfw_settings.enabled = False
+				await ctx.send("'nsfw' was disabled :cry:")
+			elif setting == "addbadtag":
+				if changes not in nsfw_settings.blacklisted_tags:
+					nsfw_settings.blacklisted_tags.append(changes)
+					await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
+				else:
+					return await ctx.send("'{}' is already in the list.".format(changes))
+			elif setting == "removebadtag":
+				try:
+					nsfw_settings.blacklisted_tags.remove(changes)
+					await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
+				except ValueError:
+					return await ctx.send("That tag was not in the blacklisted tag list.")
 			else:
-				return await ctx.send("'{}' is already in the list.".format(changes))
-		elif setting == "removebadtag":
-			try:
-				nsfw["blacklist"].remove(changes)
-				await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
-			except ValueError:
-				return await ctx.send("That tag was not in the blacklisted tag list.")
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(nsfw, "nsfw")
+				return await ctx.send("No valid option given.")
 
 
 def setup(bot_client):
