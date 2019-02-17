@@ -54,6 +54,7 @@ class Trivia:
 		self.error_colour = roxbot.EmbedColours.dark_red
 		self.trivia_colour = roxbot.EmbedColours.blue
 		self.bot.add_listener(self._emoji_vars, "on_ready")
+		self.bot.add_listener(self.game_reation, "on_reaction_add")
 
 	async def _emoji_vars(self):
 		a_emoji = self.bot.get_emoji(419572828854026252) or "🇦"
@@ -282,7 +283,7 @@ class Trivia:
 
 	# Discord Events
 
-	async def on_reaction_add(self, reaction, user):
+	async def game_reation(self, reaction, user):
 		"""Logic for answering a question"""
 		time = datetime.datetime.now()
 		if user == self.bot.user:
@@ -292,7 +293,7 @@ class Trivia:
 		message = reaction.message
 		try:
 			reaction_is_on_question = bool(message.id == self.games[channel.id]["current_question"].id)
-		except AttributeError:
+		except (AttributeError, KeyError):
 			if reaction.emoji in self.emojis:
 				# This means the question isn't ready
 				reaction_is_on_question = False

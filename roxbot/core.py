@@ -73,10 +73,11 @@ class Roxbot(commands.Bot):
 		"""
 		if not delete_emoji:
 			delete_emoji = "❌"
-		await message.add_reaction(delete_emoji)
 
 		def check(r, u):
-			return str(r) == str(delete_emoji) and u == message.author and r.message.id == message.id
+			return str(r) == str(delete_emoji) and u != message.author and r.message.id == message.id
+
+		await message.add_reaction(delete_emoji)
 
 		try:
 			await self.wait_for("reaction_add", timeout=timeout, check=check)

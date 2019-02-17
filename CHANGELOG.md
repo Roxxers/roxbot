@@ -1,3 +1,7 @@
+## v2.1.2
+ - Fixed bug where Roxbot's delete function would delete itself.
+ - Fixed more trivia error handling
+
 ## v2.1.1
 
 #### Bug Fixes
