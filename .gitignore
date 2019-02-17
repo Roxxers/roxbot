@@ -22,3 +22,5 @@ site/
 roxbot/settings/roxbot\.conf
 
 roxbot/settings/db\.sqlite
+
+roxbot/settings/db.sqlite

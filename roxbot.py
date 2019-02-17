@@ -35,7 +35,6 @@ from discord.ext import commands
 import roxbot
 from roxbot import guild_settings as gs
 from roxbot import core
-from roxbot import db
 
 
 class term:
@@ -177,7 +176,7 @@ if __name__ == "__main__":
 			print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
 
 	# This commits all the entities defined by the cogs. These are loaded above. Do Not Remove.
-	db.db.generate_mapping(create_tables=True)
+	bot.loop.create_task(roxbot.db.populate_db(bot))
 
 	print(term.seperator)
 	print("Client logging in...", end="\r")

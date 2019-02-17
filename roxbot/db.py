@@ -34,3 +34,16 @@ class Guilds(db.Entity):
 
 class Blacklist(db.Entity):
 	user_id = Required(int, size=64)
+
+
+async def populate_db(bot):
+	db.generate_mapping(create_tables=True)
+	await bot.wait_for("ready")
+	for name, cog in bot.cogs.items():
+		try:
+			if cog.autogen_db:
+				for guild in bot.guilds:
+					with db_session:
+						cog.autogen_db(guild_id=guild.id)
+		except (AttributeError, TransactionIntegrityError):
+			pass  # No DB settings or already in place

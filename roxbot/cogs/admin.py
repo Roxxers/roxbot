@@ -34,7 +34,7 @@ from roxbot.db import *
 
 class AdminSingle(db.Entity):
 	warning_limit = Required(int, default=0)
-	guild = Required(int, unique=True, size=64)
+	guild_id = Required(int, unique=True, size=64)
 
 
 class AdminWarnings(db.Entity):
@@ -82,13 +82,7 @@ class Admin:
 
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.settings = {
-			"admin": {
-				"convert": {"warnings": "hide"},
-				"warning_limit": 0,
-				"warnings": {},
-			}
-		}
+		self.autogen_db = AdminSingle
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
@@ -176,7 +170,7 @@ class Admin:
 
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
 		with db_session:
-			warning_limit = AdminSingle.get(guild=ctx.guild.id).warning_limit
+			warning_limit = AdminSingle.get(guild_id=ctx.guild.id).warning_limit
 			user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)[:]
 		amount_warnings = len(user_warnings)
 
@@ -233,7 +227,7 @@ class Admin:
 				return await ctx.send(page)
 		else:
 			with db_session:
-				user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)[:]
+				user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id).order_by(AdminWarnings.date)[:]
 
 			if not user_warnings:
 				embed = discord.Embed(description=self.OK_WARN_LIST_USER_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
@@ -341,7 +335,7 @@ class Admin:
 			raise commands.BadArgument(self.ERROR_WARN_SL_NEG)
 
 		with db_session:
-			guild_settings = AdminSingle.get(guild=ctx.guild.id)
+			guild_settings = AdminSingle.get(guild_id=ctx.guild.id)
 			guild_settings.warning_limit = number_of_warnings
 		if number_of_warnings == 0:
 			embed = discord.Embed(description=self.OK_WARN_SL_SET_ZERO, colour=roxbot.EmbedColours.pink)
