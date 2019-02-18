@@ -28,14 +28,6 @@ db.bind("sqlite", getcwd() + "/roxbot/settings/db.sqlite", create_db=True)
 
 # Entities are committed to the db in the main file during boot up
 
-class Guilds(db.Entity):
-	name = Required(str)
-
-
-class Blacklist(db.Entity):
-	user_id = Required(int, size=64)
-
-
 async def populate_db(bot):
 	db.generate_mapping(create_tables=True)
 	await bot.wait_for("ready")

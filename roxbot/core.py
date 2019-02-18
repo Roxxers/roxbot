@@ -28,12 +28,24 @@ import datetime
 import os
 import string
 import typing
+import sqlite3
 
 import discord
 import youtube_dl
 from discord.ext import commands
 
 import roxbot
+from roxbot.db import *
+
+
+class LoggingSingle(db.Entity):
+	enabled = Required(bool, default=False)
+	logging_channel_id = Optional(int, nullable=True, size=64)
+	guild_id = Required(int, unique=True, size=64)
+
+
+class Blacklist(db.Entity):
+	user_id = Required(int, unique=True, size=64)
 
 
 class Roxbot(commands.Bot):
@@ -51,11 +63,8 @@ class Roxbot(commands.Bot):
 		Returns
 		=======
 		If the user is blacklisted: bool"""
-		with open("roxbot/settings/blacklist.txt", "r") as fp:
-			for line in fp.readlines():
-				if str(user.id) + "\n" == line:
-					return True
-		return False
+		with db_session:
+			return select(u for u in Blacklist if u.user_id == user.id).exists()
 
 	async def delete_option(self, message, delete_emoji=None, timeout=20):
 		"""Utility function that allows for you to add a delete option to the end of a command.
@@ -114,7 +123,6 @@ class Roxbot(commands.Bot):
 				for key, value in kwargs.items():
 					embed.add_field(name=key, value=value)
 				return await channel.send(embed=embed)
-
 
 
 class ErrorHandling:
@@ -228,13 +236,7 @@ class Core(ErrorHandling):
 		self.bot.add_listener(self.log_member_join, "on_member_join")
 		self.bot.add_listener(self.log_member_remove, "on_member_remove")
 
-		self.settings = {
-			"logging": {
-				"enabled": 0,
-				"convert": {"enabled": "bool", "channel": "channel"},
-				"channel": 0
-			}
-		}
+		self.autogen = LoggingSingle
 
 	#############
 	#  Logging  #
@@ -243,31 +245,38 @@ class Core(ErrorHandling):
 	@staticmethod
 	async def cleanup_logging_settings(channel):
 		"""Cleans up settings on removal of stored IDs."""
-		settings = roxbot.guild_settings.get(channel.guild)
-		r_logging = settings["logging"]
-		if channel.id == r_logging["channel"]:
-			r_logging["channel"] = 0
-			settings.update(r_logging, "logging")
+		with db_session:
+			settings = LoggingSingle.get(guild_id=channel.guild.id)
+			if settings.logging_channel_id == channel.id:
+				settings.logging_channel_id = None
 
 	async def log_member_join(self, member):
-		r_logging = roxbot.guild_settings.get(member.guild)["logging"]
-		if r_logging["enabled"]:
-			channel = self.bot.get_channel(r_logging["channel"])
+		with db_session:
+			settings = LoggingSingle.get(guild_id=member.guild.id)
+		if settings.enabled:
+			channel = member.guild.get_channel(settings.logging_channel_id)
 			embed = discord.Embed(title="{} joined the server".format(member), colour=roxbot.EmbedColours.pink)
 			embed.add_field(name="ID", value=member.id)
 			embed.add_field(name="Mention", value=member.mention)
 			embed.add_field(name="Date Account Created", value=roxbot.datetime.format(member.created_at))
 			embed.add_field(name="Date Joined", value=roxbot.datetime.format(member.joined_at))
 			embed.set_thumbnail(url=member.avatar_url)
-			return await channel.send(embed=embed)
+			try:
+				return await channel.send(embed=embed)
+			except AttributeError:
+				pass
 
 	async def log_member_remove(self, member):
 		# TODO: Add some way of detecting whether a user left/was kicked or was banned.
-		r_logging = roxbot.guild_settings.get(member.guild)["logging"]
-		if r_logging["enabled"]:
-			channel = self.bot.get_channel(r_logging["channel"])
+		with db_session:
+			settings = LoggingSingle.get(guild_id=member.guild.id)
+		if settings.enabled:
+			channel = member.guild.get_channel(settings.logging_channel_id)
 			embed = discord.Embed(description="{} left the server".format(member), colour=roxbot.EmbedColours.pink)
-			return await channel.send(embed=embed)
+			try:
+				return await channel.send(embed=embed)
+			except AttributeError:
+				pass
 
 	@commands.has_permissions(manage_channels=True)
 	@commands.guild_only()
@@ -281,22 +290,22 @@ class Core(ErrorHandling):
 		"""
 
 		setting = setting.lower()
-		settings = roxbot.guild_settings.get(ctx.guild)
+		with db_session:
+			settings = LoggingSingle.get(guild_id=ctx.guild.id)
 
-		if setting == "enable":
-			settings["logging"]["enabled"] = 1
-			await ctx.send("'logging' was enabled!")
-		elif setting == "disable":
-			settings["logging"]["enabled"] = 0
-			await ctx.send("'logging' was disabled :cry:")
-		elif setting == "channel":
-			if not channel:
-				channel = ctx.channel
-			settings["logging"]["channel"] = channel.id
-			await ctx.send("{} has been set as the logging channel!".format(channel.mention))
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(settings["logging"], "logging")
+			if setting == "enable":
+				settings.enabled = 1
+				return await ctx.send("'logging' was enabled!")
+			elif setting == "disable":
+				settings.enabled = 0
+				return await ctx.send("'logging' was disabled :cry:")
+			elif setting == "channel":
+				if not channel:
+					channel = ctx.channel
+				settings.enabled = channel.id
+				return await ctx.send("{} has been set as the logging channel!".format(channel.mention))
+			else:
+				return await ctx.send("No valid option given.")
 
 	#############
 	#  Backups  #
@@ -304,19 +313,14 @@ class Core(ErrorHandling):
 
 	async def auto_backups(self):
 		await self.bot.wait_until_ready()
-		raw_settings = {}
-		for guild in self.bot.guilds:
-			directory = os.listdir('roxbot/settings/servers/{}'.format(guild.id))
-			raw_settings = {**raw_settings, **roxbot.guild_settings._open_config(guild, directory)}
 		while not self.bot.is_closed():
-			current_settings = {}
-			for guild in self.bot.guilds:
-				directory = os.listdir('roxbot/settings/servers/{}'.format(guild.id))
-				current_settings = {**current_settings, **roxbot.guild_settings._open_config(guild, directory)}
-			if raw_settings != current_settings:
-				raw_settings = current_settings
-				time = datetime.datetime.now()
-				roxbot.guild_settings.backup("{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
+			time = datetime.datetime.now()
+			filename = "{}/roxbot/settings/backups/{:%Y.%m.%d %H:%M:%S} Auto Backup.sql".format(os.getcwd(), time)
+			con = sqlite3.connect(os.getcwd() + "/roxbot/settings/db.sqlite")
+			with open(filename, 'w') as f:
+				for line in con.iterdump():
+					f.write('%s\n' % line)
+			con.close()
 			await asyncio.sleep(roxbot.backup_rate)
 
 	@commands.command(enabled=roxbot.backup_enabled)
@@ -329,9 +333,13 @@ class Core(ErrorHandling):
 		Using only this and not the automatic backups is not recommend.
 		"""
 		time = datetime.datetime.now()
-		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
-		roxbot.guild_settings.backup(filename)
-		return await ctx.send("Settings file backed up as a folder named '{}".format(filename))
+		filename = "{}/roxbot/settings/backups/{:%Y.%m.%d %H:%M:%S} Auto Backup.sql".format(os.getcwd(), time)
+		con = sqlite3.connect(os.getcwd() + "/roxbot/settings/db.sqlite")
+		with open(filename, 'w') as f:
+			for line in con.iterdump():
+				f.write('%s\n' % line)
+		con.close()
+		return await ctx.send("Settings file backed up as a folder named '{}".format(filename.split("/")[-1]))
 
 	############################
 	#  Bot Managment Commands  #
@@ -362,32 +370,24 @@ class Core(ErrorHandling):
 				await ctx.send("The owner cannot be blacklisted.")
 				users.remove(user)
 
-		if option in ['+', 'add']:
-			with open("roxbot/settings/blacklist.txt", "r") as fp:
+		with db_session:
+			if option in ['+', 'add']:
 				for user in users:
-					for line in fp.readlines():
-						if user.id + "\n" in line:
-							users.remove(user)
-
-			with open("roxbot/settings/blacklist.txt", "a+") as fp:
-				lines = fp.readlines()
-				for user in users:
-					if user.id not in lines:
-						fp.write("{}\n".format(user.id))
+					try:
+						Blacklist(user_id=user.id)
 						blacklist_amount += 1
-			return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
+					except TransactionIntegrityError:
+						await ctx.send("{} is already in the blacklist.".format(user))
+				return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
 
-		elif option in ['-', 'remove']:
-			with open("roxbot/settings/blacklist.txt", "r") as fp:
-				lines = fp.readlines()
-			with open("roxbot/settings/blacklist.txt", "w") as fp:
+			elif option in ['-', 'remove']:
 				for user in users:
-					for line in lines:
-						if str(user.id) + "\n" != line:
-							fp.write(line)
-						else:
-							fp.write("")
-							blacklist_amount += 1
+					u = Blacklist.get(user_id=user.id)
+					if u:
+						u.delete()
+						blacklist_amount += 1
+					else:
+						await ctx.send("{} isn't in the blacklist".format(user))
 				return await ctx.send('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
 	@commands.command(aliases=["setavatar"])
