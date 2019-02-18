@@ -136,8 +136,8 @@ class ErrorHandling:
 	def command_not_found_check(ctx, error):
 		try:
 			# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
-			cc = roxbot.guild_settings.get(ctx.guild)["custom_commands"]
-			is_custom_command = bool(ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"])
+			with roxbot.db.db_session:
+				is_custom_command = roxbot.db.db.exists('SELECT * FROM CCCommands WHERE name = "{}" AND type IN (1, 2) AND guild_id = {}'.format(ctx.invoked_with, ctx.guild.id))
 			is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
 			is_too_short = bool(len(ctx.message.content) <= 2)
 			if is_emoticon_face:
