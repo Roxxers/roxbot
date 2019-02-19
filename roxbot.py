@@ -83,8 +83,6 @@ bot = core.Roxbot(
 async def on_ready():
 	print("Logged in as: {}".format(term.fOKGREEN.format(str(bot.user))), end="\n\n")
 
-	await db.populate_db(bot)
-
 	print("Guilds in: [{}]".format(len(bot.guilds)))
 	for guild in bot.guilds:
 		print(guild)
@@ -165,6 +163,8 @@ if __name__ == "__main__":
 			print(cog.split(".")[2])
 		except ImportError:
 			print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
+
+	bot.loop.create_task(db.populate_db(bot))
 
 	print(term.seperator)
 	print("Client logging in...", end="\r")
