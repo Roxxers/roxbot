@@ -31,6 +31,10 @@ db.bind("sqlite", getcwd() + "/roxbot/settings/db.sqlite", create_db=True)
 async def populate_db(bot):
 	db.generate_mapping(create_tables=True)
 	await bot.wait_for("ready")
+	populate_single_settings(bot)
+
+
+def populate_single_settings(bot):
 	for name, cog in bot.cogs.items():
 		try:
 			if cog.autogen_db:
