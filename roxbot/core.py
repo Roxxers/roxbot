@@ -116,9 +116,10 @@ class Roxbot(commands.Bot):
 
 		"""
 		if guild:
-			logging = roxbot.guild_settings.get(guild)["logging"]
-			channel = discord.utils.get(guild.channels, id=logging["channel"])
-			if logging["enabled"]:
+			with db_session:
+				logging = LoggingSingle.get(guild_id=guild.id)
+			if logging.enabled and logging.logging_channel_id:
+				channel = self.get_channel(logging.logging_channel_id)
 				embed = discord.Embed(title="{} command logging".format(command_name), colour=roxbot.EmbedColours.pink)
 				for key, value in kwargs.items():
 					embed.add_field(name=key, value=value)
@@ -126,7 +127,6 @@ class Roxbot(commands.Bot):
 
 
 class ErrorHandling:
-
 	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
 	CHECKFAILURE = "You do not have permission to do this. Back off, thot!"
 	TOOMANYARGS = "Too many arguments given."
