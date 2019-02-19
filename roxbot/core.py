@@ -28,7 +28,6 @@ import datetime
 import os
 import string
 import typing
-import sqlite3
 
 import discord
 import youtube_dl
@@ -236,7 +235,7 @@ class Core(ErrorHandling):
 		self.bot.add_listener(self.log_member_join, "on_member_join")
 		self.bot.add_listener(self.log_member_remove, "on_member_remove")
 
-		self.autogen = LoggingSingle
+		self.autogen_db = LoggingSingle
 
 	#############
 	#  Logging  #
@@ -268,6 +267,8 @@ class Core(ErrorHandling):
 
 	async def log_member_remove(self, member):
 		# TODO: Add some way of detecting whether a user left/was kicked or was banned.
+		if member == self.bot.user:
+			return
 		with db_session:
 			settings = LoggingSingle.get(guild_id=member.guild.id)
 		if settings.enabled:

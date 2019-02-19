@@ -95,7 +95,7 @@ async def on_guild_join(guild):
 
 @bot.event
 async def on_guild_remove(guild):
-	db.populate_single_settings(bot)
+	db.delete_single_settings(guild)
 
 
 @bot.event
