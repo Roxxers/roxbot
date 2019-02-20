@@ -24,6 +24,7 @@
 
 
 import roxbot
+from roxbot.db import *
 
 import discord
 from discord.ext import commands
@@ -41,8 +42,8 @@ def is_nsfw():
 		is_dm_channel = bool(isinstance(ctx.channel, discord.DMChannel))
 		is_nsfw_guild_channel = bool(isinstance(ctx.channel, discord.TextChannel) and ctx.channel.is_nsfw())
 		if is_nsfw_guild_channel:
-			nsfw_enabled = bool(roxbot.guild_settings.get(ctx.guild)["nsfw"]["enabled"])
-			return nsfw_enabled
+			with db_session:
+				return bool(db.get("SELECT `enabled` FROM `NSFWSingle` WHERE `guild_id` = '{}'".format(ctx.guild.id)))
 		else:
 			return is_dm_channel
 	return commands.check(pred)
