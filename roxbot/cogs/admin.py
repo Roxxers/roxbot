@@ -205,7 +205,7 @@ class Admin:
 			paginator = commands.Paginator()
 			warnings = {}
 			with db_session:
-				for warning in select(warn for warn in AdminWarnings if warn.guild_id == 393764974444675073)[:]:
+				for warning in select(warn for warn in AdminWarnings if warn.guild_id == ctx.guild.id)[:]:
 					if warning.user_id not in warnings:
 						warnings[warning.user_id] = []
 					else:
@@ -227,7 +227,7 @@ class Admin:
 				return await ctx.send(page)
 		else:
 			with db_session:
-				user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == 393764974444675073).order_by(AdminWarnings.date)[:]
+				user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id).order_by(AdminWarnings.date)[:]
 
 			if not user_warnings:
 				embed = discord.Embed(description=self.OK_WARN_LIST_USER_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
