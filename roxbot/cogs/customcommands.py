@@ -138,10 +138,13 @@ class CustomCommands:
 				except AttributeError:
 					pass
 			else:
-				command = CCCommands.get(name=msg, guild_id=message.guild.id, type=0)
-				if command:
-					output = self._get_output(command.output)
-					return await channel.send(output)
+				try:
+					command = CCCommands.get(name=msg, guild_id=message.guild.id, type=0)
+					if command:
+						output = self._get_output(command.output)
+						return await channel.send(output)
+				except:
+					pass
 
 	@commands.guild_only()
 	@commands.group(aliases=["cc"])
