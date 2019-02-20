@@ -34,6 +34,7 @@ import discord
 import roxbot
 from roxbot import db
 from roxbot import core
+from roxbot.scripts import JSONtoDB
 
 
 class term:
@@ -86,6 +87,8 @@ async def on_ready():
 	print("Guilds in: [{}]".format(len(bot.guilds)))
 	for guild in bot.guilds:
 		print(guild)
+
+	roxbot.scripts.JSONtoDB.check_convert(bot.guilds)
 
 
 @bot.event
@@ -157,7 +160,7 @@ if __name__ == "__main__":
 
 	# Load Extension Cogs
 	print("Cogs Loaded:")
-	for cog in roxbot.cogs:
+	for cog in roxbot.cog_list:
 		try:
 			bot.load_extension(cog)
 			print(cog.split(".")[2])

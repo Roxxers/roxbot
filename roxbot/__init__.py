@@ -46,7 +46,7 @@ backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
 dev_mode = False
 datetime = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
-cogs = [
+cog_list = [
 	"roxbot.cogs.admin",
 	"roxbot.cogs.customcommands",
 	"roxbot.cogs.fun",
