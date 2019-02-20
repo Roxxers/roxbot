@@ -213,7 +213,7 @@ class CustomCommands:
 			elif len(command.split(" ")) > 1 and command_type == "1":
 				raise roxbot.UserError(self.ERROR_PREFIX_SPACE)
 
-			com_hash = hashlib.md5(command.encode() + str(ctx.guild.id).encode + str(command_type).encode).hexdigest()
+			com_hash = hashlib.md5(command.encode() + str(ctx.guild.id).encode() + str(command_type).encode()).hexdigest()
 
 			CCCommands(name=command, guild_id=ctx.guild.id, output=output, type=command_type, hash=com_hash)
 		return await ctx.send(self.OUTPUT_ADD.format(command, output if len(output) > 1 else output[0]))
