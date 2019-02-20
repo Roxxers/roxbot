@@ -36,7 +36,7 @@ class NSFWSingle(db.Entity):
 	guild_id = Required(int, unique=True, size=64)
 
 
-class NFSW:
+class NSFW:
 	"""The NSFW cog is a collection of commands that post images from popular NSFW sites. """
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -157,4 +157,4 @@ class NFSW:
 
 
 def setup(bot_client):
-	bot_client.add_cog(NFSW(bot_client))
+	bot_client.add_cog(NSFW(bot_client))
