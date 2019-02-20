@@ -33,6 +33,7 @@ import youtube_dl
 from discord.ext import commands
 
 import roxbot
+from roxbot.db import *
 
 # Suppress noise about console usage from errors
 youtube_dl.utils.bug_reports_message = lambda: ''
@@ -58,14 +59,22 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
+class VoiceSingle(db.Entity):
+	need_perms = Required(bool, default=False)
+	skip_voting = Required(bool, default=False)
+	skip_ratio = Required(float, default=0.6, py_check=lambda v: 0 <= v <= 1)
+	max_length = Required(int, default=600)
+	guild_id = Required(int, size=64, unique=True)
+
+
 def need_perms():
 	def predicate(ctx):
-		gs = roxbot.guild_settings.get(ctx.guild)
-		if gs["voice"]["need_perms"]:
+		with db_session:
+			settings = VoiceSingle.get(guild_id=ctx.guild.id)
+		if settings.need_perms:
 			return roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True)
 		else:
 			return True
-
 	return commands.check(predicate)
 
 
@@ -167,15 +176,7 @@ class Voice:
 
 		# Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
 		self.bot = bot
-		self.settings = {
-			"voice": {
-				"need_perms": 0,
-				"skip_voting": 0,
-				"skip_ratio": 0.6,
-				"convert": {"need_perms": "bool", "skip_voting": "bool"},
-				"max_length": 600
-			}
-		}
+		self.autogen_db = VoiceSingle
 		# TODO: Make this into a on roxbot joining voice thing instead of generating this for all servers on boot.
 		self.refresh_rate = 1/60  # 60hz
 		self._volume = {}
@@ -290,7 +291,8 @@ class Voice:
 			;play https://www.youtube.com/watch?v=3uOPGkEJ56Q
 		"""
 		guild = ctx.guild
-		voice = roxbot.guild_settings.get(guild)["voice"]
+		with db_session:
+			max_duration = VoiceSingle.get(guild_id=guild.id).max_length
 
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
 		if not (roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True) or from_queue):
@@ -318,7 +320,7 @@ class Voice:
 			video = video["entries"][0]
 
 		# Duration limiter handling
-		if video.get("duration", 1) > voice["max_length"] and not roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True):
+		if video.get("duration", 1) > max_duration and not roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True):
 			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
@@ -420,8 +422,9 @@ class Voice:
 			# Force skip a video
 			;skip --force
 		"""
-		voice = roxbot.guild_settings.get(ctx.guild)["voice"]
-		if voice["skip_voting"] and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
+		with db_session:
+			voice = VoiceSingle.get(guild_id=ctx.guild.id)
+		if voice.skip_voting and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
 			if ctx.author in self.skip_votes[ctx.guild.id]:
 				return await ctx.send("You have already voted to skip the current track.")
 			else:
@@ -429,7 +432,7 @@ class Voice:
 				# -1 due to the bot being counted in the members generator
 				ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
 				needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
-				if ratio >= voice["skip_ratio"]:
+				if ratio >= voice.skip_ratio:
 					await ctx.send("{} voted the skip the video.".format(ctx.author))
 					await ctx.send("Votes to skip now playing has been met. Skipping video...")
 					self.skip_votes[ctx.guild.id] = []
@@ -584,47 +587,46 @@ class Voice:
 		"""
 		setting = setting.lower()
 		change = change.lower()
-		settings = roxbot.guild_settings.get(ctx.guild)
-		voice = settings["voice"]
 
-		if setting == "enable":
-			if change in ("needperms", "need_perms"):
-				voice["need_perms"] = 1
-				await ctx.send("'{}' has been enabled!".format(change))
-			elif change in ("skipvoting", "skip_voting"):
-				voice["skip_voting"] = 1
-				await ctx.send("'{}' has been enabled!".format(change))
+		with db_session:
+			voice = VoiceSingle.get(guild_id=ctx.guild.id)
+			if setting == "enable":
+				if change in ("needperms", "need_perms"):
+					voice.need_perms = True
+					await ctx.send("'{}' has been enabled!".format(change))
+				elif change in ("skipvoting", "skip_voting"):
+					voice.skip_voting = True
+					await ctx.send("'{}' has been enabled!".format(change))
+				else:
+					return await ctx.send("Not a valid change.")
+			elif setting == "disable":
+				if change in ("skipvoting", "skip_voting"):
+					voice.need_perms = False
+					await ctx.send("'{}' was disabled :cry:".format(change))
+				elif change in ("skipvoting", "skip_voting"):
+					voice.skip_voting = False
+					await ctx.send("'{}' was disabled :cry:".format(change))
+				else:
+					return await ctx.send("Not a valid change.")
+			elif setting in ("skipratio", "skip_ratio"):
+				change = float(change)
+				if 1 > change > 0:
+					voice.skip_ratio = change
+				elif 0 < change <= 100:
+					change = change/10
+					voice.skip_ratio = change
+				else:
+					return await ctx.send("Valid ratio not given.")
+				await ctx.send("Skip Ratio was set to {}".format(change))
+			elif setting in ("maxlength", "max_length"):
+				change = int(change)
+				if change >= 1:
+					voice.max_length = change
+				else:
+					return await ctx.send("Valid max duration not given.")
+				await ctx.send("Max Duration was set to {}".format(change))
 			else:
-				return await ctx.send("Not a valid change.")
-		elif setting == "disable":
-			if change == "needperms":
-				voice["need_perms"] = 1
-				await ctx.send("'{}' was disabled :cry:".format(change))
-			elif change == "skipvoting":
-				voice["skip_voting"] = 1
-				await ctx.send("'{}' was disabled :cry:".format(change))
-			else:
-				return await ctx.send("Not a valid change.")
-		elif setting in ("skipratio", "skip_ratio") :
-			change = float(change)
-			if 1 > change > 0:
-				voice["skip_ratio"] = change
-			elif 0 < change <= 100:
-				change = change/10
-				voice["skip_ratio"] = change
-			else:
-				return await ctx.send("Valid ratio not given.")
-			await ctx.send("Skip Ratio was set to {}".format(change))
-		elif setting in ("maxlength", "max_length"):
-			change = int(change)
-			if change >= 1:
-				voice["max_length"] = change
-			else:
-				return await ctx.send("Valid max duration not given.")
-			await ctx.send("Max Duration was set to {}".format(change))
-		else:
-			return await ctx.send("Valid option not given.")
-		return settings.update(voice, "voice")
+				return await ctx.send("Valid option not given.")
 
 
 def setup(bot_client):
