@@ -24,6 +24,7 @@
 
 
 import random
+import hashlib
 
 import discord
 from discord.ext import commands
@@ -38,6 +39,7 @@ class CCCommands(db.Entity):
 	output = Required(Json)
 	type = Required(int, py_check=lambda val: 0 <= val <= 2)
 	guild_id = Required(int, size=64)
+	hash = Required(str, unique=True)
 
 
 class CustomCommands:
@@ -211,7 +213,9 @@ class CustomCommands:
 			elif len(command.split(" ")) > 1 and command_type == "1":
 				raise roxbot.UserError(self.ERROR_PREFIX_SPACE)
 
-			CCCommands(name=command, guild_id=ctx.guild.id, output=output, type=command_type)
+			com_hash = hashlib.md5(command.encode() + str(ctx.guild.id).encode + str(command_type).encode).hexdigest()
+
+			CCCommands(name=command, guild_id=ctx.guild.id, output=output, type=command_type, hash=com_hash)
 		return await ctx.send(self.OUTPUT_ADD.format(command, output if len(output) > 1 else output[0]))
 
 	@commands.has_permissions(manage_messages=True)
