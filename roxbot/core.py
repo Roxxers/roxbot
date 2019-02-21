@@ -482,55 +482,6 @@ class Core(ErrorHandling):
 		await self.bot.change_presence(status=discord_status)
 		await ctx.send("**:ok:** Status set to {}".format(discord_status))
 
-	@staticmethod
-	def _parse_setting(ctx, settings_to_copy, raw=False):
-		settingcontent = ""
-		setting = settings_to_copy.copy()
-		convert = setting.get("convert", None)
-
-		if convert is not None and not raw:
-			for x in convert.keys():
-				converter = None
-				if convert[x] == "bool":
-					if setting[x] == 0:
-						setting[x] = False
-					else:
-						setting[x] = True
-				elif convert[x] == "channel":
-					converter = ctx.guild.get_channel
-				elif convert[x] == "role":
-					converter = ctx.guild.get_role
-				elif convert[x] in ("user", "member"):
-					converter = ctx.guild.get_member
-				elif convert[x] == "hide":
-					converter = None
-					setting[x] = "This is hidden. Please use other commands to get this data."
-				else:
-					converter = None
-
-				if converter:
-					if isinstance(setting[x], list):
-						if len(setting[x]) >= 60:
-							setting[x] = "There is too many {}s to display. Please use other commands to get this data.".format(convert[x])
-						else:
-							new_entries = []
-							for entry in setting[x]:
-								try:
-									new_entries.append(str(converter(entry)))
-								except AttributeError:
-									new_entries.append(entry)
-							setting[x] = new_entries
-					else:
-						try:
-							setting[x] = converter(setting[x])
-						except AttributeError:
-							pass
-
-		for x in setting.items():
-			if x[0] != "convert":
-				settingcontent += str(x).strip("()") + "\n"
-		return settingcontent
-
 	@commands.guild_only()
 	@commands.command(aliases=["printsettingsraw"])
 	@commands.has_permissions(manage_guild=True)
@@ -545,26 +496,38 @@ class Core(ErrorHandling):
 			# print settings just for the Admin cog.
 			;printsettings Admin
 		"""
-		option = option.lower()
-		config = roxbot.guild_settings.get(ctx.guild)
-		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
+		if option:
+			option = option.lower()
+
+		entities = {}
+		for name, cog in self.bot.cogs.items():
+			try:
+				entities[name.lower()] = cog.autogen_db
+			except AttributeError:
+				pass
+
 		paginator = commands.Paginator(prefix="```py")
 		paginator.add_line("{} settings for {}.\n".format(self.bot.user.name, ctx.message.guild.name))
-		if option in settings:
-			raw = bool(ctx.invoked_with == "printsettingsraw")
-			settingcontent = self._parse_setting(ctx, settings[option], raw=raw)
+		if option in entities:
+			#raw = bool(ctx.invoked_with == "printsettingsraw")
+			settings = entities[option].get(guild_id=ctx.guild.id).to_dict()
+			settings.pop("id")
+			settings.pop("guild_id")
 			paginator.add_line("@{}".format(option))
-			paginator.add_line(settingcontent)
+			paginator.add_line(str(settings))
 			for page in paginator.pages:
 				await ctx.send(page)
 		else:
-			for setting in settings:
-				raw = bool(ctx.invoked_with == "printsettingsraw")
-				settingcontent = self._parse_setting(ctx, settings[setting], raw=raw)
-				paginator.add_line("@{}".format(setting))
-				paginator.add_line(settingcontent)
-			for page in paginator.pages:
-				await ctx.send(page)
+			with db_session:
+				for name, entity in entities.items():
+					settings = entity.get(guild_id=ctx.guild.id).to_dict()
+					settings.pop("id")
+					settings.pop("guild_id")
+					#raw = bool(ctx.invoked_with == "printsettingsraw")
+					paginator.add_line("@{}".format(name))
+					paginator.add_line(str(settings))
+				for page in paginator.pages:
+					await ctx.send(page)
 
 	@commands.command()
 	@commands.is_owner()
