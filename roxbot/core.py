@@ -510,7 +510,8 @@ class Core(ErrorHandling):
 		paginator.add_line("{} settings for {}.\n".format(self.bot.user.name, ctx.message.guild.name))
 		if option in entities:
 			#raw = bool(ctx.invoked_with == "printsettingsraw")
-			settings = entities[option].get(guild_id=ctx.guild.id).to_dict()
+			with db_session:
+				settings = entities[option].get(guild_id=ctx.guild.id).to_dict()
 			settings.pop("id")
 			settings.pop("guild_id")
 			paginator.add_line("@{}".format(option))
