@@ -11,6 +11,8 @@ bot-env/
 
 roxbot/settings/servers\.json
 
+roxbot/settings/servers\.json
+
 roxbot/settings/preferences.ini
 
 env/
@@ -24,3 +26,5 @@ roxbot/settings/roxbot\.conf
 roxbot/settings/db\.sqlite
 
 roxbot/settings/db.sqlite
+
+roxbot/settings/servers\.old/
