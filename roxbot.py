@@ -101,14 +101,6 @@ async def on_guild_remove(guild):
 	db.delete_single_settings(guild)
 
 
-@bot.event
-async def on_error(event, *args, **kwargs):
-	if roxbot.dev_mode:
-		traceback.print_exc()
-	else:
-		logging.exception(event)
-
-
 @bot.check
 def check_blacklist(ctx):
 	"""Adds global check to the bot to check for a user being blacklisted."""
