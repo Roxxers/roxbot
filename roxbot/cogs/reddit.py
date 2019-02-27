@@ -167,7 +167,7 @@ class Scrapper:
 		return choice["data"]
 
 
-class Reddit:
+class Reddit(commands.Cog):
 	"""The Reddit cog is a cog that allows users to get images and videos from their favourite subreddits."""
 
 	SUB_NOT_FOUND = "Error ;-; That subreddit probably doesn't exist. Please check your spelling"

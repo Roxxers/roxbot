@@ -30,7 +30,7 @@ import roxbot
 from roxbot import guild_settings as gs
 
 
-class SelfAssign():
+class SelfAssign(commands.Cog):
 	"""The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'."""
 	def __init__(self, Bot):
 		self.bot = Bot
@@ -42,6 +42,7 @@ class SelfAssign():
 			}
 		}
 
+	@commands.Cog.listener()
 	async def on_guild_role_delete(self, role):
 		"""Cleans up settings on removal of stored IDs."""
 		settings = gs.get(role.guild)

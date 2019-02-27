@@ -32,7 +32,7 @@ import roxbot
 from roxbot import guild_settings
 
 
-class JoinLeave():
+class JoinLeave(commands.Cog):
 	"""JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. """
 	def __init__(self, Bot):
 		self.bot = Bot
@@ -51,6 +51,7 @@ class JoinLeave():
 					}
 			}
 
+	@commands.Cog.listener()
 	async def on_member_join(self, member):
 		"""
 		Greets users when they join a server.
@@ -72,6 +73,7 @@ class JoinLeave():
 		channel = member.guild.get_channel(settings["greets"]["welcome-channel"])
 		return await channel.send(embed=em)
 
+	@commands.Cog.listener()
 	async def on_member_remove(self, member):
 		"""
 		The same but the opposite
@@ -85,6 +87,7 @@ class JoinLeave():
 			return await channel.send(embed=discord.Embed(
 				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=roxbot.EmbedColours.pink))
 
+	@commands.Cog.listener()
 	async def on_guild_channel_delete(self, channel):
 		"""Cleans up settings on removal of stored IDs."""
 		settings = guild_settings.get(channel.guild)

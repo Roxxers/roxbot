@@ -32,7 +32,7 @@ from discord.ext import commands
 import roxbot
 
 
-class Util:
+class Util(commands.Cog):
 	"""
 	The Util cog is a cog filled with a number of utility commands to help more advanced users of Discord.
 	"""

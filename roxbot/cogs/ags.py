@@ -48,7 +48,7 @@ async def tatsumaki_api_call(member, guild):
 	return await roxbot.http.api_request(url, headers={"Authorization": tat_token})
 
 
-class AssortedGenderSounds:
+class AssortedGenderSounds(commands.Cog):
 	"""Custom Cog for the AssortedGenderSounds Discord Server."""
 	def __init__(self, bot_client):
 		self.bot = bot_client
@@ -62,6 +62,7 @@ class AssortedGenderSounds:
 			}
 		}
 
+	@commands.Cog.listener()
 	async def on_member_join(self, member):
 		if member.guild.id == ags_id:
 			role = member.guild.get_role(newbie)

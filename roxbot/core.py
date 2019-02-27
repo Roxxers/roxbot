@@ -116,8 +116,8 @@ class Roxbot(commands.Bot):
 				return await channel.send(embed=embed)
 
 
-
-class ErrorHandling:
+class Core(commands.Cog):
+	"""Core bot cog. Includes management commands, logging, error handling, and backups."""
 
 	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
 	CHECKFAILURE = "You do not have permission to do this. Back off, thot!"
@@ -130,7 +130,28 @@ class ErrorHandling:
 
 	def __init__(self, bot_client):
 		self.bot = bot_client
+
+		# Error Handling
+		#self.bot.add_listener(self.error_handle, "command_error")
 		self.dev = roxbot.dev_mode
+
+		# Backup setup
+		if roxbot.backup_enabled:
+			self.backup_task = self.bot.loop.create_task(self.auto_backups())
+
+		# Logging Setup
+		self.bot.add_listener(self.cleanup_logging_settings, "on_guild_channel_delete")
+		self.bot.add_listener(self.log_member_join, "on_member_join")
+		self.bot.add_listener(self.log_member_remove, "on_member_remove")
+
+		self.settings = {
+			"logging": {
+				"enabled": 0,
+				"convert": {"enabled": "bool", "channel": "channel"},
+				"channel": 0
+			}
+		}
+
 
 	@staticmethod
 	def command_not_found_check(ctx, error):
@@ -156,13 +177,23 @@ class ErrorHandling:
 		except AttributeError:
 			return ""
 
+	@staticmethod
+	def role_case_check(error):
+		if "Role" in error.args[0]:
+			out = error.args[0]
+			out += " Roles are case-sensitive, please make sure it was typed correctly."
+			return out
+		else:
+			return error.args[0]
+
+	@commands.Cog.listener()
 	async def on_command_error(self, ctx, error):
 		if self.dev:
 			raise error
 		else:
 			user_error_cases = {
 				commands.MissingRequiredArgument: error.args[0],
-				commands.BadArgument: error.args[0],
+				commands.BadArgument: self.role_case_check(error),
 				commands.TooManyArguments: self.TOOMANYARGS,
 				roxbot.UserError: error.args[0],
 			}
@@ -211,30 +242,6 @@ class ErrorHandling:
 			if embed.description:
 				embed.colour = roxbot.EmbedColours.dark_red
 				await ctx.send(embed=embed)
-
-
-class Core(ErrorHandling):
-	"""Core bot cog. Includes management commands, logging, error handling, and backups."""
-	def __init__(self, bot_client):
-		self.bot = bot_client
-		super().__init__(self.bot)
-
-		# Backup setup
-		if roxbot.backup_enabled:
-			self.backup_task = self.bot.loop.create_task(self.auto_backups())
-
-		# Logging Setup
-		self.bot.add_listener(self.cleanup_logging_settings, "on_guild_channel_delete")
-		self.bot.add_listener(self.log_member_join, "on_member_join")
-		self.bot.add_listener(self.log_member_remove, "on_member_remove")
-
-		self.settings = {
-			"logging": {
-				"enabled": 0,
-				"convert": {"enabled": "bool", "channel": "channel"},
-				"channel": 0
-			}
-		}
 
 	#############
 	#  Logging  #
