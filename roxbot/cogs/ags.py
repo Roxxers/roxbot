@@ -68,7 +68,6 @@ class AssortedGenderSounds(commands.Cog):
 
 	@commands.command()
 	async def agree(self, ctx):
-		print("belg")
 		try:
 			return await ctx.author.remove_roles(self.newbie_role, reason="User has agreed the rules and has been given access to the server.")
 		except discord.HTTPException:
