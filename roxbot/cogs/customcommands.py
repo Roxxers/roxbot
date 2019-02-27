@@ -282,7 +282,7 @@ class CustomCommands(commands.Cog):
 		with db_session:
 			no_prefix_commands = select(c for c in CCCommands if c.type == 0 and c.guild_id == ctx.guild.id)[:]
 			prefix_commands = select(c for c in CCCommands if c.type == 1 and c.guild_id == ctx.guild.id)[:]
-			embed_commands = select(c for c in CCCommands if c.type == 3and c.guild_id == ctx.guild.id)[:]
+			embed_commands = select(c for c in CCCommands if c.type == 2 and c.guild_id == ctx.guild.id)[:]
 
 		def add_commands(commands, paginator):
 			if not commands:
