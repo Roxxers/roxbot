@@ -42,7 +42,7 @@ class CCCommands(db.Entity):
 	hash = Required(str, unique=True)
 
 
-class CustomCommands:
+class CustomCommands(commands.Cog):
 	"""The Custom Commands cog allows moderators to add custom commands for their Discord server to Roxbot. Allowing custom outputs predefined by the moderators.
 
 	For example, we can set a command to require a prefix and call it "roxbot" and configure an output. Then if a user does `;roxbot` roxbot will output the configured output.
@@ -108,6 +108,7 @@ class CustomCommands:
 			output.pop("color")
 		return output
 
+	@commands.Cog.listener()
 	async def on_message(self, message):
 		"""
 		"""

@@ -40,7 +40,7 @@ import roxbot
 # Then I can refactor the game into its own lib and then make a cli version.
 
 
-class Trivia:
+class Trivia(commands.Cog):
 	"""
 	Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's Trivia mini-game. Uses the [Open Trivia Database](https://opentdb.com) made by PixelTail Games.
 

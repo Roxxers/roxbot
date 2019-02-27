@@ -45,7 +45,7 @@ class AdminWarnings(db.Entity):
 	guild_id = Required(int, size=64)
 
 
-class Admin:
+class Admin(commands.Cog):
 	"""
 	Admin Commands for those admins
 	"""

@@ -41,7 +41,7 @@ class JoinLeaveSingle(db.Entity):
 	guild_id = Required(int, size=64, unique=True)
 
 
-class JoinLeave:
+class JoinLeave(commands.Cog):
 	"""JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. """
 
 	DEFAULT_MESSAGE = "Be sure to read the rules."
@@ -50,6 +50,7 @@ class JoinLeave:
 		self.bot = bot_client
 		self.autogen_db = JoinLeaveSingle
 
+	@commands.Cog.listener()
 	async def on_member_join(self, member):
 		"""
 		Greets users when they join a server.
@@ -73,6 +74,7 @@ class JoinLeave:
 		channel = member.guild.get_channel(settings.greets_channel_id)
 		return await channel.send(embed=em)
 
+	@commands.Cog.listener()
 	async def on_member_remove(self, member):
 		"""
 		The same but the opposite
@@ -89,6 +91,7 @@ class JoinLeave:
 			except AttributeError:
 				pass
 
+	@commands.Cog.listener()
 	async def on_guild_channel_delete(self, channel):
 		"""Cleans up settings on removal of stored IDs."""
 		with db_session:

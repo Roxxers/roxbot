@@ -125,7 +125,9 @@ class Roxbot(commands.Bot):
 				return await channel.send(embed=embed)
 
 
-class ErrorHandling:
+
+class ErrorHandling(commands.Cog):
+
 	COMMANDONCOOLDOWN = "This command is on cooldown, please wait {:.2f} seconds before trying again."
 	CHECKFAILURE = "You do not have permission to do this. Back off, thot!"
 	TOOMANYARGS = "Too many arguments given."
@@ -163,6 +165,7 @@ class ErrorHandling:
 		except AttributeError:
 			return ""
 
+	@commands.Cog.listener()
 	async def on_command_error(self, ctx, error):
 		if self.dev:
 			raise error
