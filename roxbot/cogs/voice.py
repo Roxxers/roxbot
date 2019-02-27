@@ -158,7 +158,7 @@ class YTDLSource(discord.PCMVolumeTransformer):
 		return cls(ModifiedFFmpegPMCAudio(filename, ffmpeg_options), data=data, volume=volume)
 
 
-class Voice:
+class Voice(commands.Cog):
 	"""The Voice cog is a cog that adds and manages a fully-functional music bot for Roxbot."""
 	# TODO: Add voting to many of the commands.
 	def __init__(self, bot):

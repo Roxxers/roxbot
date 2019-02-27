@@ -34,7 +34,7 @@ from discord.ext import commands
 import roxbot
 
 
-class Fun:
+class Fun(commands.Cog):
 	"""The Fun cog provides many commands just meant to be fun. Full of a lot of misc commands as well that might provide a few laughs or be entertaining."""
 	def __init__(self, bot_client):
 		self.bot = bot_client

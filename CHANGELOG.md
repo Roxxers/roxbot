@@ -1,3 +1,8 @@
+## v2.1.3
+ **BEFORE UPDATING, UPDATE ALL DEPENDANCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
+ - Moved over cogs to use new method introduced in the rewrite of discord.py
+ - Changed wording of the role not found errors.
+
 ## v2.1.2
  - Fixed bug where Roxbot's delete function would delete itself.
  - Fixed more trivia error handling

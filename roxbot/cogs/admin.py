@@ -43,7 +43,7 @@ def _is_admin_or_mod(message):
 	return False
 
 
-class Admin:
+class Admin(commands.Cog):
 	"""
 	Admin Commands for those admins
 	"""
