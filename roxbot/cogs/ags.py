@@ -58,6 +58,7 @@ class AssortedGenderSounds(commands.Cog):
 
 	@commands.Cog.listener()
 	async def on_member_join(self, member):
+		if member.guild == self.ags:
 			await member.add_roles(self.newbie_role, reason="Auto-add role on join")
 			await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
 
@@ -75,9 +76,7 @@ class AssortedGenderSounds(commands.Cog):
 
 	@commands.command(name="selfieperms")
 	async def selfie_perms(self, ctx):
-		"""Shell command to do the perm assigning. Only should be invoked by another command."""
-		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
-
+		"""Requests the selfie perm role."""
 		member = ctx.author
 
 		data = await self.tatsumaki_api_call(member, ctx.guild)
