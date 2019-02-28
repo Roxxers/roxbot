@@ -30,11 +30,11 @@ import time
 import traceback
 
 import discord
-from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings as gs
+from roxbot import db
 from roxbot import core
+from roxbot.scripts import JSONtoDB
 
 
 class term:
@@ -84,22 +84,21 @@ bot = core.Roxbot(
 async def on_ready():
 	print("Logged in as: {}".format(term.fOKGREEN.format(str(bot.user))), end="\n\n")
 
-	# this is so if we're added to a server while we're offline we deal with it
-	roxbot.guild_settings.error_check(bot.guilds, bot.cogs)
-
 	print("Guilds in: [{}]".format(len(bot.guilds)))
 	for guild in bot.guilds:
 		print(guild)
 
+	roxbot.scripts.JSONtoDB.check_convert(bot.guilds)
+
 
 @bot.event
 async def on_guild_join(guild):
-	gs.add_guild(guild, bot.cogs)
+	db.populate_single_settings(bot)
 
 
 @bot.event
 async def on_guild_remove(guild):
-	gs.remove_guild(guild)
+	db.delete_single_settings(guild)
 
 
 @bot.check
@@ -136,13 +135,6 @@ async def about(ctx):
 	return await ctx.channel.send(embed=em)
 
 
-@commands.command(pass_context=False, hidden=True)
-async def settings():
-	# This is to block any customcommand or command from being made with the same name.
-	# This is to avoid conflicts with the internal settings system.
-	raise commands.CommandNotFound("settings")
-
-
 if __name__ == "__main__":
 	start_time = time.time()
 	print(term.fHEADER.format(term.fBOLD.format(term.title)))
@@ -160,12 +152,14 @@ if __name__ == "__main__":
 
 	# Load Extension Cogs
 	print("Cogs Loaded:")
-	for cog in roxbot.cogs:
+	for cog in roxbot.cog_list:
 		try:
 			bot.load_extension(cog)
 			print(cog.split(".")[2])
 		except ImportError:
 			print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
+
+	bot.loop.create_task(db.populate_db(bot))
 
 	print(term.seperator)
 	print("Client logging in...", end="\r")

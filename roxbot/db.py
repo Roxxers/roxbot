@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-
-# MIT License
 #
 # Copyright (c) 2017-2018 Roxanne Gibson
 #
@@ -22,28 +19,44 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
-import roxbot
-from roxbot.db import *
-
-import discord
-from discord.ext import commands
+import sqlite3
+from os import getcwd
+from pony.orm import *
 
 
-def has_permissions_or_owner(**perms):
-	def pred(ctx):
-		return roxbot.utils.has_permissions_or_owner(ctx, **perms)
-	return commands.check(pred)
+db_dir = getcwd() + "/roxbot/settings/db.sqlite"
+db = Database()
+db.bind("sqlite", db_dir, create_db=True)
 
 
-def is_nsfw():
-	"""A :func:`.check` that checks if the channel is a NSFW channel or a DM channel."""
-	def pred(ctx):
-		is_dm_channel = bool(isinstance(ctx.channel, discord.DMChannel))
-		is_nsfw_guild_channel = bool(isinstance(ctx.channel, discord.TextChannel) and ctx.channel.is_nsfw())
-		if is_nsfw_guild_channel:
-			with db_session:
-				return bool(db.get("SELECT `enabled` FROM `NSFWSingle` WHERE `guild_id` = '{}'".format(ctx.guild.id)))
-		else:
-			return is_dm_channel
-	return commands.check(pred)
+# Entities are committed to the db in the main file during boot up
+
+async def populate_db(bot):
+	db.generate_mapping(create_tables=True)
+	await bot.wait_for("ready")
+	populate_single_settings(bot)
+
+
+def populate_single_settings(bot):
+	for guild in bot.guilds:
+		for name, cog in bot.cogs.items():
+			try:
+				if cog.autogen_db:
+					with db_session:
+						cog.autogen_db(guild_id=guild.id)
+			except (AttributeError, TransactionIntegrityError):
+				pass  # No DB settings or already in place
+
+
+def delete_single_settings(guild):
+	database = sqlite3.connect(db_dir)
+	cursor = database.cursor()
+	cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
+	for t in cursor.fetchall():
+		table = t[0]
+		try:
+			cursor.execute("DELETE FROM {} WHERE guild_id={}".format(table, guild.id))
+		except sqlite3.OperationalError:
+			pass  # Table doesn't store guild_id
+	database.commit()
+	database.close()

@@ -29,7 +29,7 @@ from .enums import EmbedColours
 from .config import config
 from .exceptions import UserError, CogSettingDisabled
 
-from . import checks, http, guild_settings, converters, utils, roxbotfacts, exceptions
+from . import checks, http, converters, utils, roxbotfacts, exceptions, db
 
 
 command_prefix = config["Roxbot"]["Command_Prefix"]
@@ -46,7 +46,7 @@ backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
 dev_mode = False
 datetime = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
-cogs = [
+cog_list = [
 	"roxbot.cogs.admin",
 	"roxbot.cogs.customcommands",
 	"roxbot.cogs.fun",

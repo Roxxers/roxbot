@@ -24,23 +24,25 @@
 
 
 import datetime
-import time
 
 import discord
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings as gs
+from roxbot.db import *
 
 
-def _is_admin_or_mod(message):
-	if message.author.id == roxbot.owner:
-		return True
-	perm_roles = gs.get(message.channel.guild).perm_roles
-	for role in message.author.roles:
-		if role.id in perm_roles.get("admin") or role.id in perm_roles.get("mod"):
-			return True
-	return False
+class AdminSingle(db.Entity):
+	warning_limit = Required(int, default=0)
+	guild_id = Required(int, unique=True, size=64)
+
+
+class AdminWarnings(db.Entity):
+	user_id = Required(int, size=64)
+	warned_by = Required(int, size=64)
+	warning = Optional(str)
+	date = Required(datetime.datetime, unique=True)
+	guild_id = Required(int, size=64)
 
 
 class Admin(commands.Cog):
@@ -80,13 +82,7 @@ class Admin(commands.Cog):
 
 	def __init__(self, bot_client):
 		self.bot = bot_client
-		self.settings = {
-			"admin": {
-				"convert": {"warnings": "hide"},
-				"warning_limit": 0,
-				"warnings": {},
-			}
-		}
+		self.autogen_db = AdminSingle
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_messages=True)
@@ -126,7 +122,7 @@ class Admin(commands.Cog):
 	@commands.bot_has_permissions(manage_messages=True, read_message_history=True)
 	@commands.cooldown(1, 5)
 	@commands.command()
-	async def purge(self, ctx, limit=0, *, author: roxbot.converters.User=None):
+	async def purge(self, ctx, limit=0, *, author: roxbot.converters.User = None):
 		"""Purges the text channel the command is execture in. You can specify a certain user to purge as well.
 
 		Options:
@@ -160,7 +156,7 @@ class Admin(commands.Cog):
 			raise commands.CommandNotFound("Subcommand '{}' does not exist.".format(ctx.subcommand_passed))
 
 	@warn.command()
-	async def add(self, ctx, user: discord.User=None, *, warning=""):
+	async def add(self, ctx, user: discord.User = None, *, warning=""):
 		"""Adds a warning to a user.
 
 		Options:
@@ -173,29 +169,19 @@ class Admin(commands.Cog):
 		"""
 
 		# Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
-		settings = gs.get(ctx.guild)
-		warnings = settings["admin"]["warnings"]
-		warning_limit = settings["admin"]["warning_limit"]
-		warning_dict = {
-			"warned-by": ctx.author.id,
-			"date": time.time(),
-			"warning": warning
-		}
-		user_id = str(user.id)
-
-		if user_id not in warnings:
-			warnings[user_id] = []
+		with db_session:
+			warning_limit = AdminSingle.get(guild_id=ctx.guild.id).warning_limit
+			user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)[:]
+		amount_warnings = len(user_warnings)
 
 		warn_limit = 10
-		if len(warnings[user_id]) > warn_limit:
+		if amount_warnings > warn_limit:
 			embed = discord.Embed(description=self.WARN_WARN_ADD_LIMIT_REACHED.format(warn_limit), colour=roxbot.EmbedColours.red)
 			return await ctx.send(embed=embed)
 
-		warnings[user_id].append(warning_dict)
-		settings["admin"]["warnings"] = warnings
-		settings.update(settings["admin"], "admin")
+		with db_session:
+			AdminWarnings(user_id=user.id, warned_by=ctx.author.id, date=datetime.datetime.utcnow(), warning=warning, guild_id=ctx.guild.id)
 
-		amount_warnings = len(warnings[user_id])
 		if amount_warnings >= warning_limit > 0:
 			await ctx.author.send(self.OK_WARN_ADD_USER_LIMIT_DM.format(str(user), amount_warnings, warning_limit))
 
@@ -203,7 +189,7 @@ class Admin(commands.Cog):
 		return await ctx.send(embed=embed)
 
 	@warn.command()
-	async def list(self, ctx, *, user: roxbot.converters.User=None):
+	async def list(self, ctx, *, user: roxbot.converters.User = None):
 		"""Lists all warning in this guild or all the warnings for one user.
 
 		Options:
@@ -215,35 +201,35 @@ class Admin(commands.Cog):
 			# List all warnings for @Roxbot
 			;warn list @Roxbot
 		"""
-		settings = gs.get(ctx.guild)
-		warnings = settings["admin"]["warnings"]
-
 		if user is None:
 			paginator = commands.Paginator()
-			for member in warnings:
-				# Remove users with no warning here instead of remove cause im lazy
-				if not warnings[member]:
-					warnings.pop(member)
-				else:
-					member_obj = discord.utils.get(ctx.guild.members, id=int(member))
-					if member_obj:
-						paginator.add_line("{}: {} Warning(s)".format(str(member_obj), len(warnings[member])))
+			warnings = {}
+			with db_session:
+				for warning in select(warn for warn in AdminWarnings if warn.guild_id == ctx.guild.id)[:]:
+					if warning.user_id not in warnings:
+						warnings[warning.user_id] = []
 					else:
-						paginator.add_line("{}: {} Warning(s)".format(member, len(warnings[member])))
+						warnings[warning.user_id].append(warning)
+
+			for u, warning in warnings.items():
+				member_obj = discord.utils.get(ctx.guild.members, id=u)
+				if member_obj:
+					paginator.add_line("{}: {} Warning(s)".format(str(member_obj), len(warnings[u])))
+				else:
+					paginator.add_line("{}: {} Warning(s)".format(u, len(warnings[u])))
 			# This is in case we have removed some users from the list.
-			settings["admin"]["warnings"] = warnings
-			settings.update(settings["admin"], "admin")
 
 			if not paginator.pages:
 				embed = discord.Embed(description=self.OK_WARN_LIST_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
 				return await ctx.send(embed=embed)
 
 			for page in paginator.pages:
-				return await ctx.send(embed=discord.Embed(description=page, colour=roxbot.EmbedColours.pink))
+				return await ctx.send(page)
 		else:
-			user_id = str(user.id)
+			with db_session:
+				user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id).order_by(AdminWarnings.date)[:]
 
-			if not warnings.get(user_id):
+			if not user_warnings:
 				embed = discord.Embed(description=self.OK_WARN_LIST_USER_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
 				return await ctx.send(embed=embed)
 
@@ -251,20 +237,20 @@ class Admin(commands.Cog):
 			em.set_thumbnail(url=user.avatar_url)
 
 			x = 1
-			userlist = warnings[user_id]
-			for warning in userlist:
+			for warning in user_warnings:
 				try:
-					warned_by = str(await self.bot.get_user_info(warning["warned-by"]))
+					warned_by = str(ctx.guild.get_member(warning.warned_by))
+					if warned_by is None:
+						warned_by = str(await self.bot.get_user_info(warning.warned_by))
 				except discord.ext.commands.CommandInvokeError:
-					warned_by = warning["warned-by"]
-				date = roxbot.datetime.format(datetime.datetime.fromtimestamp(warning["date"]))
-				warn_reason = warning["warning"]
-				em.add_field(name="Warning %s" % x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warn_reason))
+					warned_by = warning.warned_by
+				date = datetime.datetime.strftime(warning.date, roxbot.datetime.strip("{:} UTC")+" UTC")
+				em.add_field(name="Warning %s" % x, value="Warned by: {}\nTime: {}\nReason: {}".format(warned_by, date, warning.warning))
 				x += 1
 			return await ctx.send(embed=em)
 
 	@warn.command()
-	async def remove(self, ctx, user: roxbot.converters.User=None, index=None):
+	async def remove(self, ctx, user: roxbot.converters.User, index=None):
 		"""Removes one or all of the warnings for a user.
 
 		Options:=
@@ -277,44 +263,40 @@ class Admin(commands.Cog):
 			# Remove warning 2 for Roxbot
 			;warn remove Roxbot 2
 		"""
-		user_id = str(user.id)
-		settings = gs.get(ctx.guild)
-		warnings = settings["admin"]["warnings"]
+		with db_session:
+			if index:
+				try:
+					index = int(index) - 1
+					query = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
+					if query:
+						user_warnings = query[:]
+					else:
+						raise KeyError
+					user_warnings[index].delete()
 
-		if index:
-			try:
-				index = int(index)
-				index -= 1
-				warnings[user_id].pop(index)
-				if not warnings[user_id]:
-					warnings.pop(user_id)
+					embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNING.format(index+1, str(user)), colour=roxbot.EmbedColours.pink)
+					return await ctx.send(embed=embed)
 
-				settings["admin"]["warnings"] = warnings
-				settings.update(settings["admin"], "admin")
-				embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNING.format(index+1, str(user)), colour=roxbot.EmbedColours.pink)
-				return await ctx.send(embed=embed)
-
-			except Exception as e:
-				embed = discord.Embed(colour=roxbot.EmbedColours.red)
-				if isinstance(e, IndexError):
-					embed.description = self.ERROR_WARN_REMOVE_INDEXERROR.format(len(settings["warnings"][user_id]))
-				elif isinstance(e, KeyError):
-					embed.description = self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user))
-				elif isinstance(e, ValueError):
-					embed.description = self.ERROR_WARN_REMOVE_VALUEERROR
+				except Exception as e:
+					embed = discord.Embed(colour=roxbot.EmbedColours.red)
+					if isinstance(e, IndexError):
+						embed.description = self.ERROR_WARN_REMOVE_INDEXERROR.format(len(user_warnings))
+					elif isinstance(e, KeyError):
+						embed.description = self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user))
+					elif isinstance(e, ValueError):
+						embed.description = self.ERROR_WARN_REMOVE_VALUEERROR
+					else:
+						raise e
+					return await ctx.send(embed=embed)
+			else:
+				query = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
+				if query.exists():
+					delete(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
+					embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)), colour=roxbot.EmbedColours.pink)
+					return await ctx.send(embed=embed)
 				else:
-					raise e
-				return ctx.send(embed=embed)
-		else:
-			try:
-				warnings.pop(user_id)
-				settings["admin"]["warnings"] = warnings
-				settings.update(settings["admin"], "admin")
-				embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)), colour=roxbot.EmbedColours.pink)
-				return await ctx.send(embed=embed)
-			except KeyError:
-				embed = discord.Embed(description=self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)), colour=roxbot.EmbedColours.orange)
-				return await ctx.send(embed=embed)
+					embed = discord.Embed(description=self.WARN_WARN_REMOVE_USER_NOT_FOUND.format(str(user)), colour=roxbot.EmbedColours.red)
+					return await ctx.send(embed=embed)
 
 	@commands.bot_has_permissions(ban_members=True)
 	@warn.command()
@@ -331,17 +313,15 @@ class Admin(commands.Cog):
 			# Dryrun the prune command to see how many warnings would be removed
 			;warn prune 1
 		"""
-		settings = gs.get(ctx.guild)
-		warnings = settings["admin"]["warnings"].copy()
-		count = 0
+		x = 0
 		for ban in await ctx.guild.bans():
-			for user in warnings:
-				if int(user) == ban.user.id:
+			with db_session:
+				query = select(w for w in AdminWarnings if w.user_id == ban.user.id and w.guild_id == ctx.guild.id)
+				if query.exists():
 					if dry_run == 0:
-						settings["admin"]["warnings"].pop(user)
-					count += 1
-		settings.update(settings["admin"], "admin")
-		embed = discord.Embed(description=self.OK_WARN_PRUNE_PRUNED.format(count), colour=roxbot.EmbedColours.pink)
+						query.delete()
+					x += 1
+		embed = discord.Embed(description=self.OK_WARN_PRUNE_PRUNED.format(x), colour=roxbot.EmbedColours.pink)
 		return await ctx.send(embed=embed)
 
 	@warn.command(aliases=["sl", "setlimit"])
@@ -353,10 +333,10 @@ class Admin(commands.Cog):
 		"""
 		if number_of_warnings < 0:
 			raise commands.BadArgument(self.ERROR_WARN_SL_NEG)
-		settings = gs.get(ctx.guild)
-		admin = settings["admin"]
-		admin["warning_limit"] = number_of_warnings
-		settings.update(admin, "admin")
+
+		with db_session:
+			guild_settings = AdminSingle.get(guild_id=ctx.guild.id)
+			guild_settings.warning_limit = number_of_warnings
 		if number_of_warnings == 0:
 			embed = discord.Embed(description=self.OK_WARN_SL_SET_ZERO, colour=roxbot.EmbedColours.pink)
 			return await ctx.send(embed=embed)

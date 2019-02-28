@@ -34,6 +34,17 @@ import youtube_dl
 from discord.ext import commands
 
 import roxbot
+from roxbot.db import *
+
+
+class LoggingSingle(db.Entity):
+	enabled = Required(bool, default=False)
+	logging_channel_id = Optional(int, nullable=True, size=64)
+	guild_id = Required(int, unique=True, size=64)
+
+
+class Blacklist(db.Entity):
+	user_id = Required(int, unique=True, size=64)
 
 
 class Roxbot(commands.Bot):
@@ -51,11 +62,8 @@ class Roxbot(commands.Bot):
 		Returns
 		=======
 		If the user is blacklisted: bool"""
-		with open("roxbot/settings/blacklist.txt", "r") as fp:
-			for line in fp.readlines():
-				if str(user.id) + "\n" == line:
-					return True
-		return False
+		with db_session:
+			return select(u for u in Blacklist if u.user_id == user.id).exists()
 
 	async def delete_option(self, message, delete_emoji=None, timeout=20):
 		"""Utility function that allows for you to add a delete option to the end of a command.
@@ -107,9 +115,10 @@ class Roxbot(commands.Bot):
 
 		"""
 		if guild:
-			logging = roxbot.guild_settings.get(guild)["logging"]
-			channel = discord.utils.get(guild.channels, id=logging["channel"])
-			if logging["enabled"]:
+			with db_session:
+				logging = LoggingSingle.get(guild_id=guild.id)
+			if logging.enabled and logging.logging_channel_id:
+				channel = self.get_channel(logging.logging_channel_id)
 				embed = discord.Embed(title="{} command logging".format(command_name), colour=roxbot.EmbedColours.pink)
 				for key, value in kwargs.items():
 					embed.add_field(name=key, value=value)
@@ -144,21 +153,15 @@ class Core(commands.Cog):
 		self.bot.add_listener(self.log_member_join, "on_member_join")
 		self.bot.add_listener(self.log_member_remove, "on_member_remove")
 
-		self.settings = {
-			"logging": {
-				"enabled": 0,
-				"convert": {"enabled": "bool", "channel": "channel"},
-				"channel": 0
-			}
-		}
+		self.autogen_db = LoggingSingle
 
 
 	@staticmethod
 	def command_not_found_check(ctx, error):
 		try:
 			# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
-			cc = roxbot.guild_settings.get(ctx.guild)["custom_commands"]
-			is_custom_command = bool(ctx.invoked_with in cc["1"] or ctx.invoked_with in cc["2"])
+			with roxbot.db.db_session:
+				is_custom_command = roxbot.db.db.exists('SELECT * FROM CCCommands WHERE name = "{}" AND type IN (1, 2) AND guild_id = {}'.format(ctx.invoked_with, ctx.guild.id))
 			is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
 			is_too_short = bool(len(ctx.message.content) <= 2)
 			if is_emoticon_face:
@@ -250,31 +253,40 @@ class Core(commands.Cog):
 	@staticmethod
 	async def cleanup_logging_settings(channel):
 		"""Cleans up settings on removal of stored IDs."""
-		settings = roxbot.guild_settings.get(channel.guild)
-		r_logging = settings["logging"]
-		if channel.id == r_logging["channel"]:
-			r_logging["channel"] = 0
-			settings.update(r_logging, "logging")
+		with db_session:
+			settings = LoggingSingle.get(guild_id=channel.guild.id)
+			if settings.logging_channel_id == channel.id:
+				settings.logging_channel_id = None
 
 	async def log_member_join(self, member):
-		r_logging = roxbot.guild_settings.get(member.guild)["logging"]
-		if r_logging["enabled"]:
-			channel = self.bot.get_channel(r_logging["channel"])
+		with db_session:
+			settings = LoggingSingle.get(guild_id=member.guild.id)
+		if settings.enabled:
+			channel = member.guild.get_channel(settings.logging_channel_id)
 			embed = discord.Embed(title="{} joined the server".format(member), colour=roxbot.EmbedColours.pink)
 			embed.add_field(name="ID", value=member.id)
 			embed.add_field(name="Mention", value=member.mention)
 			embed.add_field(name="Date Account Created", value=roxbot.datetime.format(member.created_at))
 			embed.add_field(name="Date Joined", value=roxbot.datetime.format(member.joined_at))
 			embed.set_thumbnail(url=member.avatar_url)
-			return await channel.send(embed=embed)
+			try:
+				return await channel.send(embed=embed)
+			except AttributeError:
+				pass
 
 	async def log_member_remove(self, member):
 		# TODO: Add some way of detecting whether a user left/was kicked or was banned.
-		r_logging = roxbot.guild_settings.get(member.guild)["logging"]
-		if r_logging["enabled"]:
-			channel = self.bot.get_channel(r_logging["channel"])
+		if member == self.bot.user:
+			return
+		with db_session:
+			settings = LoggingSingle.get(guild_id=member.guild.id)
+		if settings.enabled:
+			channel = member.guild.get_channel(settings.logging_channel_id)
 			embed = discord.Embed(description="{} left the server".format(member), colour=roxbot.EmbedColours.pink)
-			return await channel.send(embed=embed)
+			try:
+				return await channel.send(embed=embed)
+			except AttributeError:
+				pass
 
 	@commands.has_permissions(manage_channels=True)
 	@commands.guild_only()
@@ -288,22 +300,22 @@ class Core(commands.Cog):
 		"""
 
 		setting = setting.lower()
-		settings = roxbot.guild_settings.get(ctx.guild)
+		with db_session:
+			settings = LoggingSingle.get(guild_id=ctx.guild.id)
 
-		if setting == "enable":
-			settings["logging"]["enabled"] = 1
-			await ctx.send("'logging' was enabled!")
-		elif setting == "disable":
-			settings["logging"]["enabled"] = 0
-			await ctx.send("'logging' was disabled :cry:")
-		elif setting == "channel":
-			if not channel:
-				channel = ctx.channel
-			settings["logging"]["channel"] = channel.id
-			await ctx.send("{} has been set as the logging channel!".format(channel.mention))
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(settings["logging"], "logging")
+			if setting == "enable":
+				settings.enabled = 1
+				return await ctx.send("'logging' was enabled!")
+			elif setting == "disable":
+				settings.enabled = 0
+				return await ctx.send("'logging' was disabled :cry:")
+			elif setting == "channel":
+				if not channel:
+					channel = ctx.channel
+				settings.enabled = channel.id
+				return await ctx.send("{} has been set as the logging channel!".format(channel.mention))
+			else:
+				return await ctx.send("No valid option given.")
 
 	#############
 	#  Backups  #
@@ -311,19 +323,14 @@ class Core(commands.Cog):
 
 	async def auto_backups(self):
 		await self.bot.wait_until_ready()
-		raw_settings = {}
-		for guild in self.bot.guilds:
-			directory = os.listdir('roxbot/settings/servers/{}'.format(guild.id))
-			raw_settings = {**raw_settings, **roxbot.guild_settings._open_config(guild, directory)}
 		while not self.bot.is_closed():
-			current_settings = {}
-			for guild in self.bot.guilds:
-				directory = os.listdir('roxbot/settings/servers/{}'.format(guild.id))
-				current_settings = {**current_settings, **roxbot.guild_settings._open_config(guild, directory)}
-			if raw_settings != current_settings:
-				raw_settings = current_settings
-				time = datetime.datetime.now()
-				roxbot.guild_settings.backup("{:%Y.%m.%d %H:%M:%S} Auto Backup".format(time))
+			time = datetime.datetime.now()
+			filename = "{}/roxbot/settings/backups/{:%Y.%m.%d %H:%M:%S} Auto Backup.sql".format(os.getcwd(), time)
+			con = sqlite3.connect(os.getcwd() + "/roxbot/settings/db.sqlite")
+			with open(filename, 'w') as f:
+				for line in con.iterdump():
+					f.write('%s\n' % line)
+			con.close()
 			await asyncio.sleep(roxbot.backup_rate)
 
 	@commands.command(enabled=roxbot.backup_enabled)
@@ -336,9 +343,13 @@ class Core(commands.Cog):
 		Using only this and not the automatic backups is not recommend.
 		"""
 		time = datetime.datetime.now()
-		filename = "{:%Y.%m.%d %H:%M:%S} Manual Backup".format(time)
-		roxbot.guild_settings.backup(filename)
-		return await ctx.send("Settings file backed up as a folder named '{}".format(filename))
+		filename = "{}/roxbot/settings/backups/{:%Y.%m.%d %H:%M:%S} Auto Backup.sql".format(os.getcwd(), time)
+		con = sqlite3.connect(os.getcwd() + "/roxbot/settings/db.sqlite")
+		with open(filename, 'w') as f:
+			for line in con.iterdump():
+				f.write('%s\n' % line)
+		con.close()
+		return await ctx.send("Settings file backed up as a folder named '{}".format(filename.split("/")[-1]))
 
 	############################
 	#  Bot Managment Commands  #
@@ -369,32 +380,24 @@ class Core(commands.Cog):
 				await ctx.send("The owner cannot be blacklisted.")
 				users.remove(user)
 
-		if option in ['+', 'add']:
-			with open("roxbot/settings/blacklist.txt", "r") as fp:
+		with db_session:
+			if option in ['+', 'add']:
 				for user in users:
-					for line in fp.readlines():
-						if user.id + "\n" in line:
-							users.remove(user)
-
-			with open("roxbot/settings/blacklist.txt", "a+") as fp:
-				lines = fp.readlines()
-				for user in users:
-					if user.id not in lines:
-						fp.write("{}\n".format(user.id))
+					try:
+						Blacklist(user_id=user.id)
 						blacklist_amount += 1
-			return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
+					except TransactionIntegrityError:
+						await ctx.send("{} is already in the blacklist.".format(user))
+				return await ctx.send('{} user(s) have been added to the blacklist'.format(blacklist_amount))
 
-		elif option in ['-', 'remove']:
-			with open("roxbot/settings/blacklist.txt", "r") as fp:
-				lines = fp.readlines()
-			with open("roxbot/settings/blacklist.txt", "w") as fp:
+			elif option in ['-', 'remove']:
 				for user in users:
-					for line in lines:
-						if str(user.id) + "\n" != line:
-							fp.write(line)
-						else:
-							fp.write("")
-							blacklist_amount += 1
+					u = Blacklist.get(user_id=user.id)
+					if u:
+						u.delete()
+						blacklist_amount += 1
+					else:
+						await ctx.send("{} isn't in the blacklist".format(user))
 				return await ctx.send('{} user(s) have been removed from the blacklist'.format(blacklist_amount))
 
 	@commands.command(aliases=["setavatar"])
@@ -488,55 +491,6 @@ class Core(commands.Cog):
 		await self.bot.change_presence(status=discord_status)
 		await ctx.send("**:ok:** Status set to {}".format(discord_status))
 
-	@staticmethod
-	def _parse_setting(ctx, settings_to_copy, raw=False):
-		settingcontent = ""
-		setting = settings_to_copy.copy()
-		convert = setting.get("convert", None)
-
-		if convert is not None and not raw:
-			for x in convert.keys():
-				converter = None
-				if convert[x] == "bool":
-					if setting[x] == 0:
-						setting[x] = False
-					else:
-						setting[x] = True
-				elif convert[x] == "channel":
-					converter = ctx.guild.get_channel
-				elif convert[x] == "role":
-					converter = ctx.guild.get_role
-				elif convert[x] in ("user", "member"):
-					converter = ctx.guild.get_member
-				elif convert[x] == "hide":
-					converter = None
-					setting[x] = "This is hidden. Please use other commands to get this data."
-				else:
-					converter = None
-
-				if converter:
-					if isinstance(setting[x], list):
-						if len(setting[x]) >= 60:
-							setting[x] = "There is too many {}s to display. Please use other commands to get this data.".format(convert[x])
-						else:
-							new_entries = []
-							for entry in setting[x]:
-								try:
-									new_entries.append(str(converter(entry)))
-								except AttributeError:
-									new_entries.append(entry)
-							setting[x] = new_entries
-					else:
-						try:
-							setting[x] = converter(setting[x])
-						except AttributeError:
-							pass
-
-		for x in setting.items():
-			if x[0] != "convert":
-				settingcontent += str(x).strip("()") + "\n"
-		return settingcontent
-
 	@commands.guild_only()
 	@commands.command(aliases=["printsettingsraw"])
 	@commands.has_permissions(manage_guild=True)
@@ -551,26 +505,39 @@ class Core(commands.Cog):
 			# print settings just for the Admin cog.
 			;printsettings Admin
 		"""
-		option = option.lower()
-		config = roxbot.guild_settings.get(ctx.guild)
-		settings = dict(config.settings.copy())  # Make a copy of settings so we don't change the actual settings.
+		if option:
+			option = option.lower()
+
+		entities = {}
+		for name, cog in self.bot.cogs.items():
+			try:
+				entities[name.lower()] = cog.autogen_db
+			except AttributeError:
+				pass
+
 		paginator = commands.Paginator(prefix="```py")
 		paginator.add_line("{} settings for {}.\n".format(self.bot.user.name, ctx.message.guild.name))
-		if option in settings:
-			raw = bool(ctx.invoked_with == "printsettingsraw")
-			settingcontent = self._parse_setting(ctx, settings[option], raw=raw)
+		if option in entities:
+			#raw = bool(ctx.invoked_with == "printsettingsraw")
+			with db_session:
+				settings = entities[option].get(guild_id=ctx.guild.id).to_dict()
+			settings.pop("id")
+			settings.pop("guild_id")
 			paginator.add_line("@{}".format(option))
-			paginator.add_line(settingcontent)
+			paginator.add_line(str(settings))
 			for page in paginator.pages:
 				await ctx.send(page)
 		else:
-			for setting in settings:
-				raw = bool(ctx.invoked_with == "printsettingsraw")
-				settingcontent = self._parse_setting(ctx, settings[setting], raw=raw)
-				paginator.add_line("@{}".format(setting))
-				paginator.add_line(settingcontent)
-			for page in paginator.pages:
-				await ctx.send(page)
+			with db_session:
+				for name, entity in entities.items():
+					settings = entity.get(guild_id=ctx.guild.id).to_dict()
+					settings.pop("id")
+					settings.pop("guild_id")
+					#raw = bool(ctx.invoked_with == "printsettingsraw")
+					paginator.add_line("@{}".format(name))
+					paginator.add_line(str(settings))
+				for page in paginator.pages:
+					await ctx.send(page)
 
 	@commands.command()
 	@commands.is_owner()
