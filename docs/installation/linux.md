@@ -10,7 +10,7 @@ authors:
 
 Requirements:
 
-- Python 3.5 or higher
+- Python 3.7 or higher
 - Pip (to install dependencies)
 - A Discord bot account ([How to make a bot account](https://discordpy.readthedocs.io/en/rewrite/discord.html#creating-a-bot-account))
 
