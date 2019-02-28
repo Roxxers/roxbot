@@ -1,3 +1,9 @@
+## 2.2.0
+
+Roxbot now uses sqlite for guild settings. This hopefully will lead the more possibilities in developing Roxbot cogs. 
+
+ - Entire guild settings system for cogs has been converted to sqlite from json. This will be done automatically for updating instances.
+
 ## v2.1.3
  **BEFORE UPDATING, UPDATE ALL DEPENDANCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
  - Moved over cogs to use new method introduced in the rewrite of discord.py
