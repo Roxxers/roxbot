@@ -24,6 +24,7 @@
 
 
 import os
+import re
 
 import discord
 import emoji
@@ -54,10 +55,12 @@ class Util(commands.Cog):
 			user = ctx.author
 
 		url = user.avatar_url_as(static_format="png")
-		if ".gif in url":
-			avaimg = '{0.name}.gif'.format(user)
+		filename = re.sub(' |\?|\.|!|/|\\|:|\"|\[|\]|;|=|\||\*|,', '', user.name+str(user.id))
+
+		if ".gif" in url:
+			avaimg = '{0}.gif'.format(filename)
 		else:
-			avaimg = '{0.name}.png'.format(user)
+			avaimg = '{0}.png'.format(filename)
 
 		await roxbot.http.download_file(url, avaimg)
 		await ctx.send(file=discord.File(avaimg))
