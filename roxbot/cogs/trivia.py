@@ -207,7 +207,6 @@ class TriviaGame:
         return {"mobile_compatible": mobile, "solo": solo, "length": length}
 
     def edit_counter(self, message, finished=False, time=0):
-        # TODO: THIS IS BUGGED/ NEEDS FIXING
         if finished:
             time_str = " Finished"
         else:
@@ -512,14 +511,12 @@ class Trivia(commands.Cog):
         await game.start()
         self.games.pop(channel.id)
 
-    @trivia.error
+    @start.error
     async def trivia_err(self, ctx, error):
-        # TODO: Better before and after invoke systems to deal with variable cleanup
         # This is here to make sure that if an error occurs, the game will be removed from the dict and will safely exit the game, then raise the error like normal.
         try:
             self.games.pop(ctx.channel.id)
             await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...", colour=self.error_colour))
-            raise error
         except KeyError:
             pass
 
@@ -563,6 +560,7 @@ class Trivia(commands.Cog):
             await self.games[channel.id].remove_player(player)
         else:
             await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
+
 
 def setup(bot):
     bot.add_cog(Trivia(bot))
