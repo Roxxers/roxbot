@@ -176,7 +176,13 @@ class TriviaGame:
 
     async def get_questions(self, amount=10):
         questions = await roxbot.http.api_request("https://opentdb.com/api.php?amount={}".format(amount))
-        return [Question(question, x+1, self.emojis, mobile_compatible=self.mobile_compatible) for x, question in enumerate(questions["results"])]
+        try:
+            if questions["response_code"] == 0:
+                return [Question(question, x+1, self.emojis, mobile_compatible=self.mobile_compatible) for x, question in enumerate(questions["results"])]
+            else:
+                raise commands.CommandError("Cannot get Trivia questions.")
+        except KeyError:
+            raise commands.CommandError("Cannot get Trivia questions.")
 
     def parse_args(self, *args):
         parser = roxbot.utils.ArgParser()
@@ -516,7 +522,7 @@ class Trivia(commands.Cog):
         # This is here to make sure that if an error occurs, the game will be removed from the dict and will safely exit the game, then raise the error like normal.
         try:
             self.games.pop(ctx.channel.id)
-            await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...", colour=self.error_colour))
+            await ctx.send(embed=discord.Embed(description="An error has occured ;-; Exiting the game...\n{}".format(error), colour=self.error_colour))
         except KeyError:
             pass
 
