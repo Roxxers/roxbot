@@ -106,7 +106,7 @@ class Question:
             await message.add_reaction(self.emojis[x])
 
 
-class Leaderboard():
+class Leaderboard:
     def __init__(self, player_id):
         self.scores = {player_id: 0}
         self.diffs = {player_id: 0}
@@ -147,7 +147,7 @@ class Leaderboard():
             self.diffs[player] = 0
 
 
-class TriviaGame():
+class TriviaGame:
     """Class to handle Roxbot Trivia."""
     def __init__(self, bot, ctx, *args):
         self.active = False
@@ -411,9 +411,9 @@ class Trivia(commands.Cog):
 
     This cog works better if the bot account is in the RoxBot Emoji Server. If it cannot find the emotes it needs, it will default to unicode emoji.
     """
-    def __init__(self, bot_client):
+    def __init__(self, bot):
         # Get emoji objects here for the reactions. Basically to speedup the reactions for the game.
-        self.bot = bot_client
+        self.bot = bot
         self.lengths = {"short": 5, "medium": 10, "long": 15}
         self.games = {}
         self.error_colour = roxbot.EmbedColours.dark_red
@@ -458,7 +458,7 @@ class Trivia(commands.Cog):
             embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
             await ctx.send(embed=embed)
         elif ctx.invoked_subcommand is None:
-            raise commands.CommandNotFound()
+            raise commands.CommandNotFound("Subcommand '{}' does not exist.".format(ctx.subcommand_passed))
 
     @trivia.command()
     async def about(self, ctx):
@@ -564,5 +564,5 @@ class Trivia(commands.Cog):
         else:
             await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
-def setup(Bot):
-    Bot.add_cog(Trivia(Bot))
+def setup(bot):
+    bot.add_cog(Trivia(bot))
