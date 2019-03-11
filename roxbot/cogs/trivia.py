@@ -80,7 +80,7 @@ class Question:
     def format_answers(self):
         formatted = ""
         for x, answer in enumerate(self.answers):
-            formatted += "{} {}\n".format(answer, self.emojis[x])
+            formatted += "{} {}\n".format(self.emojis[x], answer)
         return formatted
 
     def insert_answers(self, message):
@@ -219,7 +219,6 @@ class TriviaGame():
             output = "\n".join(sections)
             return {"content": output}
         else:
-            print(message.embeds[0].footer.text.split())
             footer = " ".join(message.embeds[0].footer.text.split()[:-1])
 
             message.embeds[0].set_footer(text=footer + " " + time_str)
