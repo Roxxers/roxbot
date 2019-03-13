@@ -212,7 +212,7 @@ class TriviaGame:
 
         return {"mobile_compatible": mobile, "solo": solo, "length": length}
 
-    def edit_counter(self, message, finished=False, time=0):
+    def edit_question_counter(self, message, finished=False, time=0):
         if finished:
             time_str = " Finished"
         else:
@@ -281,7 +281,7 @@ class TriviaGame:
 
         # End of loop, show final leaderboard and winner
 
-        for question in self.questions:
+        for x, question in enumerate(self.questions):
             self.current_question = question
             timer = 0
             message = await self.ctx.send(**question.payload)
@@ -291,9 +291,8 @@ class TriviaGame:
             self.time_asked = datetime.datetime.now()
             self.question_in_progress = True
 
-
             freq = 10
-            for x in range(20*freq):
+            for num_cycles in range(20*freq):
                 if not self.leaderboard.players:
                     await message.clear_reactions()
                     return await self.ctx.send(embed=discord.Embed(description="Game ending due to lack of players.", colour=self.error_colour))
@@ -304,12 +303,12 @@ class TriviaGame:
                     if timer % 1000 == 0:
                         # Sleep is separated from message edit because time taken to edit the message is about the time
                         # for a full sleep. Therefore this should yield a more accurate timer.
-                        await message.edit(**self.edit_counter(message, time=int(x/freq)))
+                        await message.edit(**self.edit_question_counter(message, time=int(num_cycles / freq)))
                     else:
                         await asyncio.sleep(0.1)
 
             self.question_in_progress = False
-            await message.edit(**self.edit_counter(message, finished=True))
+            await message.edit(**self.edit_question_counter(message, finished=True))
             await message.clear_reactions()
 
             # Display Correct answer and calculate and display scores.
@@ -329,7 +328,19 @@ class TriviaGame:
             self.leaderboard.flush_diffs()
             self.current_question = None
             self.current_question_message = None
-            # TODO: ADD TIMER BETWEEN QUESTIONS TO ALLOW PLAYERS TO WAIT AND BEATHE
+
+            # Wait for next question, if not last question
+            wait_time = 3
+            if (x + 1) < len(self.questions):
+                embed = discord.Embed(description="Next question in: 3", colour=roxbot.EmbedColours.blue)
+                message = await self.ctx.send(embed=embed)
+                await asyncio.sleep(0.8)
+                for x in range(wait_time-1):
+                    embed.description = " ".join(embed.description.split()[:-1]) + " " + str(wait_time-1-x)
+                    await message.edit(embed=embed)
+                    # This is to counter around the average edit times from discord server's I recorded
+                    await asyncio.sleep(0.8)
+                await message.delete()
 
     async def end_screen(self):
         if self.leaderboard.players:
