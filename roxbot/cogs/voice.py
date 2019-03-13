@@ -253,7 +253,7 @@ class Voice(commands.Cog):
 			try:
 				channel = ctx.author.voice.channel
 			except AttributeError:
-				raise commands.CommandError("Failed to join voice channel. Please specify a channel or join one for Roxbot to join.")
+				raise roxbot.UserError("Failed to join voice channel. Please specify a channel or join one for Roxbot to join.")
 
 		# Join VoiceChannel
 		if ctx.voice_client is not None:
@@ -297,9 +297,9 @@ class Voice(commands.Cog):
 		# Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
 		if not (roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True) or from_queue):
 			if not ctx.author.voice:
-				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
+				raise roxbot.UserError("You're not in the same voice channel as Roxbot.")
 			if ctx.author.voice.channel != ctx.voice_client.channel:
-				raise commands.CommandError("You're not in the same voice channel as Roxbot.")
+				raise roxbot.UserError("You're not in the same voice channel as Roxbot.")
 
 		# For internal speed. This should make the playlist management quicker when play is being invoked internally.
 		if isinstance(url, dict):
@@ -321,7 +321,7 @@ class Voice(commands.Cog):
 
 		# Duration limiter handling
 		if video.get("duration", 1) > max_duration and not roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True):
-			raise commands.CommandError("Cannot play video, duration is bigger than the max duration allowed.")
+			raise roxbot.UserError("Cannot play video, duration is bigger than the max duration allowed.")
 
 		# Actual playing stuff section.
 		# If not playing and not queuing, and not paused, play the song. Otherwise queue it.
@@ -376,7 +376,7 @@ class Voice(commands.Cog):
 			ctx.voice_client.source.volume = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 			self._volume[ctx.guild.id] = volume / 100  # Volume needs to be a float between 0 and 1... kinda
 		else:
-			raise commands.CommandError("Volume needs to be between 0-100%")
+			raise roxbot.UserError("Volume needs to be between 0-100%")
 		return await ctx.send("Changed volume to {}%".format(volume))
 
 	@need_perms()
@@ -508,7 +508,7 @@ class Voice(commands.Cog):
 
 		# If not str "all" or an int, raise error.
 		if index != "all" and not isinstance(index, int):
-			raise commands.CommandError("No valid option given.")
+			raise roxbot.UserError("No valid option given.")
 		elif index == "all":
 			# Remove all queued items
 			length = len(self.playlist[ctx.guild.id])
@@ -520,7 +520,7 @@ class Voice(commands.Cog):
 				removed = self.playlist[ctx.guild.id].pop(index-1)  # -1 because queue index shown starts from 1, not 0
 				return await ctx.send("Removed '{}' from the queue.".format(removed.get("title", index)))
 			except IndexError:
-				raise commands.CommandError("Valid Index not given.")
+				raise roxbot.UserError("Valid Index not given.")
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
@@ -542,7 +542,7 @@ class Voice(commands.Cog):
 			if ctx.author.voice:
 				await ctx.author.voice.channel.connect()
 			else:
-				raise commands.CommandError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
+				raise roxbot.UserError("Roxbot is not connected to a voice channel and couldn't auto-join a voice channel.")
 
 	@skip.before_invoke
 	@stop.before_invoke
@@ -551,16 +551,16 @@ class Voice(commands.Cog):
 	@volume.before_invoke
 	async def check_in_voice(self, ctx):
 		if ctx.voice_client is None:
-			raise commands.CommandError("Roxbot is not in a voice channel.")
+			raise roxbot.UserError("Roxbot is not in a voice channel.")
 
 	@skip.before_invoke
 	@pause.before_invoke
 	async def check_playing(self, ctx):
 		try:
 			if not ctx.voice_client.is_playing():
-				raise commands.CommandError("I'm not playing anything.")
+				raise roxbot.UserError("I'm not playing anything.")
 		except AttributeError:
-			raise commands.CommandError("I'm not playing anything.")
+			raise roxbot.UserError("I'm not playing anything.")
 
 	@commands.guild_only()
 	@commands.has_permissions(manage_channels=True)
