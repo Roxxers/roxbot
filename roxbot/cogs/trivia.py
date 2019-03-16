@@ -140,7 +140,7 @@ class Leaderboard:
         self.diffs[player_id] = score_to_add
 
     def sort_leaderboard(self):
-        return OrderedDict(sorted(self.scores.items(), key=lambda x:x[1], reverse=True))
+        return OrderedDict(sorted(self.scores.items(), key=lambda x: x[1], reverse=True))
 
     def flush_diffs(self):
         for player in self.diffs:
@@ -163,6 +163,7 @@ class TriviaGame:
         self.current_question = None
         self.current_question_message = None
         self.question_in_progress = False
+        self.start_message = None
 
         a_emoji = bot.get_emoji(419572828854026252) or "🇦"
         b_emoji = bot.get_emoji(419572828925329429)  or "🇧"
@@ -232,14 +233,20 @@ class TriviaGame:
     async def start(self):
         self.questions = await self.get_questions(self.length)
         # TODO: Add a list that shows the current players in the game, then remove messages to join the game as players join to have like a growning list
-        output = "Starting Roxbot Trivia!"
-        sleep = 0
 
-        if not self.solo:
-            output += " Starting in 20 seconds..."
+        if self.solo:
+            embed = discord.Embed(description="Starting Roxbot Trivia!", colour=self.trivia_colour)
+            sleep = 0
+        else:
+            embed = discord.Embed(description="Starting Roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour)
+            embed.description += "\nPress the {} to join, the {} to leave.".format(self.correct_emoji, self.incorrect_emoji)
             sleep = 20
-        await self.ctx.send(embed=discord.Embed(description=output, colour=self.trivia_colour))
+
+        self.start_message = await self.ctx.send(embed=embed)
+        await self.start_message.add_reaction(self.correct_emoji)
+        await self.start_message.add_reaction(self.incorrect_emoji)
         await asyncio.sleep(sleep)
+        await self.start_message.clear_reactions()
 
         # Checks if there is any players to play the game still
         if not self.leaderboard.players:
@@ -281,7 +288,7 @@ class TriviaGame:
 
         # End of loop, show final leaderboard and winner
 
-        for x, question in enumerate(self.questions):
+        for index, question in enumerate(self.questions):
             self.current_question = question
             timer = 0
             message = await self.ctx.send(**question.payload)
@@ -312,10 +319,9 @@ class TriviaGame:
             await message.clear_reactions()
 
             # Display Correct answer and calculate and display scores.
-            index = question.correct_answer_index
             embed = discord.Embed(
                 colour=roxbot.EmbedColours.triv_green,
-                description="Correct answer is {} **{}**".format(self.emojis[index], question.correct_answer)
+                description="Correct answer is {} **{}**".format(self.emojis[question.correct_answer_index], question.correct_answer)
             )
             await self.ctx.send(embed=embed)
 
@@ -331,7 +337,7 @@ class TriviaGame:
 
             # Wait for next question, if not last question
             wait_time = 3
-            if (x + 1) < len(self.questions):
+            if (index + 1) < len(self.questions):
                 embed = discord.Embed(description="Next question in: 3", colour=roxbot.EmbedColours.blue)
                 message = await self.ctx.send(embed=embed)
                 await asyncio.sleep(0.8)
@@ -408,7 +414,7 @@ class TriviaGame:
                 embed = discord.Embed(description="Player {} joined the game".format(player.mention), colour=self.trivia_colour)
                 return await self.ctx.send(embed=embed)
             else:
-                embed = discord.Embed(description="You have already joined the game. If you want to leave, do `{}trivia leave`".format(self.bot.command_prefix), colour=self.error_colour)
+                embed = discord.Embed(description="{}. you have already joined the game. If you want to leave, type `{}trivia leave`".format(player, self.bot.command_prefix), colour=self.error_colour)
                 return await self.ctx.send(embed=embed)
         else:
             return await self.ctx.send(embed=discord.Embed(description="Game is already in progress.", colour=self.error_colour))
@@ -434,15 +440,14 @@ class Trivia(commands.Cog):
         self.games = {}
         self.error_colour = roxbot.EmbedColours.dark_red
         self.trivia_colour = roxbot.EmbedColours.blue
-        self.bot.add_listener(self.game_reaction, "on_reaction_add")
 
     # Discord Events
 
-    async def game_reaction(self, reaction, user):
+    @commands.Cog.listener()
+    async def on_reaction_add(self, reaction, user):
         """Logic for answering a question"""
-        time = datetime.datetime.now()
+
         channel = reaction.message.channel
-        message = reaction.message
 
         if user == self.bot.user: return
         if channel.id not in self.games:
@@ -450,16 +455,32 @@ class Trivia(commands.Cog):
         else:
             game = self.games[channel.id]
 
-        accepting_answers = game.question_in_progress and game.current_question_message.id == message.id
+        if not game.active:
+            return await self.reaction_game_join_leave(reaction, user)
+        else:
+            return await self.reaction_to_question(reaction, user)
+
+    async def reaction_game_join_leave(self, reaction, user):
+        game = self.games[reaction.message.channel.id]
+        if reaction.emoji == game.correct_emoji:
+            await game.add_player(user)
+        elif reaction.emoji == game.incorrect_emoji:
+            await game.remove_player(user)
+        await reaction.message.remove_reaction(reaction, user)
+
+    async def reaction_to_question(self, reaction, user):
+        time = datetime.datetime.now()
+        game = self.games[reaction.message.channel.id]
+        accepting_answers = game.question_in_progress and game.current_question_message.id == reaction.message.id
         user_in_game = bool(user.id in game.leaderboard.players)
 
         if user_in_game and accepting_answers:
             if reaction.emoji in game.emojis:
                 game.player_answer(user.id, reaction.emoji, time)
             else:
-                return await message.remove_reaction(reaction, user)
+                return await reaction.message.remove_reaction(reaction, user)
         else:
-            return await message.remove_reaction(reaction, user)
+            return await reaction.message.remove_reaction(reaction, user)
 
 
     # Commands
@@ -479,6 +500,8 @@ class Trivia(commands.Cog):
     @trivia.command()
     async def about(self, ctx):
         """Displays help in playing Roxbot Trivia. If nothing/an incorrect subcommand is passed to the trivia command, this command is invoked instead."""
+        # TODO: Edit about to include info about the new method of joining
+        # TODO: Remove mobile stuff as its deprecated
         embed = discord.Embed(
             title="About Roxbot Trivia",
             description="Roxbot Trivia is a trivia game in *your* discord server. It's heavily inspired by Tower Unite's Trivia mini-game. Uses the [Open Trivia Database](https://opentdb.com) made by PixelTail Games. To start, just type `{}trivia start`.".format(self.bot.command_prefix),
@@ -545,8 +568,9 @@ class Trivia(commands.Cog):
         # Checks if game is in this channel. Then if one isn't active, then if the player has already joined.
         if channel.id in self.games:
             await self.games[channel.id].add_player(ctx.author)
+            await ctx.message.delete()
         else:
-            return await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
+            await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
     @commands.guild_only()
     @trivia.command()
@@ -558,6 +582,7 @@ class Trivia(commands.Cog):
         # CANT LEAVE: Game is not active or not in the game
         if channel.id in self.games:
             await self.games[channel.id].remove_player(player)
+            await ctx.message.delete()
         else:
             await ctx.send(embed=discord.Embed(description="Game isn't being played here.", colour=self.error_colour))
 
