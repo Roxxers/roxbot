@@ -4,5 +4,4 @@ pillow==5.1.0
 numpy==1.14.3
 youtube_dl
 emoji==0.5.1
-dataset==1.1.0
 pony==0.7.9
