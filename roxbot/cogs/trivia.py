@@ -211,6 +211,13 @@ class TriviaGame:
         except AttributeError:
             solo = False
 
+        if mobile:
+            # Deprecation warning
+            embed = discord.Embed(description="Mobile Compatibility is deprecated and will no longer be supported.",
+                                  colour=roxbot.EmbedColours.orange)
+            embed.set_footer(text="It's no longer is required as the Android app now renders embeds correctly.")
+            self.bot.loop.create_task(self.ctx.send(embed=embed))
+
         return {"mobile_compatible": mobile, "solo": solo, "length": length}
 
     def edit_question_counter(self, message, finished=False, time=0):
@@ -512,7 +519,6 @@ class Trivia(commands.Cog):
         embed.add_field(name="Can I play with friends?", value="Yes! Trivia is best with friends. How else would friendships come to their untimely demise? You can only join a game during the 20 second waiting period after a game is started. Just type `{0}trivia join` and you're in! You can leave a game at anytime (even if its just you) by doing `{0}trivia leave`. If no players are in a game, the game will end and no one will win ;-;".format(self.bot.command_prefix))
         embed.add_field(name="What if I don't want anyone to join my solo game? Waiting is boring!", value="No problem! Just put `-s or --solo` anywhere after `{}trivia start`".format(self.bot.command_prefix))
         embed.add_field(name="I can't read the questions on mobile!", value="Sadly this is an issue with Discord on mobile. To get around this, Roxbot Trivia has a mobile compatible version. Just put `-m or --mobile` anywhere after `{}trivia start`".format(self.bot.command_prefix))
-        embed.add_field(name="Can I have a mobile compatible short solo game?", value="Yes, you can use any of the three arguments at once. The Trivia command takes commands just like a cli. Example: `{0}tr start -ms` or `{0}tr start --length long --mobile`".format(self.bot.command_prefix))
         embed.set_footer(text="Roxbot Trivia uses the Open Trivia DB, made and maintained by Pixeltail Games LLC. OpenTDB is licensed under the [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) Find out more at [https://opentdb.com/](https://opentdb.com/)")
         embed.set_image(url="https://i.imgur.com/yhRVl9e.png")
         return await ctx.send(embed=embed)
@@ -524,7 +530,6 @@ class Trivia(commands.Cog):
         """Starts a trivia game in the channel the command was invoked in.
 
         Args:
-            - `--mobile`/`-m` - Launches the game in a mobile compatible mode. In case rich embeds are not readable, especially for Android users.
             - `--solo`/`-s` - Skips waiting for users to join and launches the game immediatly. Useful for users just wanting to play solo.
             - `--length`/`-l` - Takes option for the length of the game. Acceptable options are `short` (5 Questions), `medium` (10), and `long` (15).
 
@@ -532,8 +537,8 @@ class Trivia(commands.Cog):
             # Start a standard trivia game
             ;trivia start
 
-            # Start a mobile compatible solo game of Roxbot Trivia
-            ;tr start -ms
+            # Start a solo game of Roxbot Trivia
+            ;tr start -s
 
             # Start a solo short game
             ;tr start --solo --length short
