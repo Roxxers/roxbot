@@ -5,6 +5,8 @@ Trivia has seen a entire overhaul. Users won't see a big change other than an im
 
  - Better time/score calculation that should reflect the timer the user sees better
  - Timer added between each question
+ - New reaction method of joining and leaving games while not active (not asking questions)
+ - Fixed error that didn't allow new games to be made after an error in the game
 
 #### Config Storage
 Roxbot now uses sqlite for guild settings. This hopefully will lead the more possibilities in developing Roxbot cogs. 
