@@ -246,7 +246,7 @@ class TriviaGame:
             sleep = 0
         else:
             embed = discord.Embed(description="Starting Roxbot Trivia! Starting in 20 seconds...", colour=self.trivia_colour)
-            embed.description += "\nPress the {} to join, the {} to leave.".format(self.correct_emoji, self.incorrect_emoji)
+            embed.description += "\n\nPress the {} to join, the {} to leave.".format(self.correct_emoji, self.incorrect_emoji)
             sleep = 20
 
         self.start_message = await self.ctx.send(embed=embed)
