@@ -33,13 +33,9 @@ Yes! Trivia is best with friends. How else would friendships come to their untim
 
 No problem! Just put `-s or --solo` anywhere after `;trivia start`
 
-## I can't read the questions on mobile!
+## Can I have a short solo game?
 
-Sadly this is an issue with Discord on mobile. To get around this, Roxbot Trivia has a mobile compatible version. Just put `-m or --mobile` anywhere after `;trivia start`
-
-## Can I have a mobile compatible short solo game?
-
-Yes, you can use any of the three arguments at once. The Trivia command takes commands just like a cli. Example: `;tr start -ms` or `;tr start --length long --mobile`
+Yes, you can use both arguments at once. The Trivia command takes commands just like a cli. Example: `;tr start -sl short` or `;tr start --solo --length long`
 
 ## Disclaimer
 
