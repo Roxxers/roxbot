@@ -68,6 +68,7 @@ def custom_commands_convert(guild_id, settings):
 				except (TransactionIntegrityError, CacheIndexError, IntegrityError):
 					pass
 
+
 @db_session
 def joinleave_convert(guild_id, settings):
 	greet = settings["greets"]
