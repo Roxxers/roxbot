@@ -26,6 +26,7 @@ Roxbot now uses sqlite for guild settings. This hopefully will lead the more pos
 
 To update, just `git pull` inside of the working directory. Make sure to update dependencies using `python3 -m pip install -Ur requirements.txt` in your venv before you run the bot.
 
+Updating to the sqlite system should backup your json files in a new directory (servers.old). This will not be needed after the first time you run Roxbot after the update.
 
 ## v2.1.3
  **BEFORE UPDATING, UPDATE ALL DEPENDENCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
