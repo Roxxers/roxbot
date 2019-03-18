@@ -1,6 +1,10 @@
 ## 2.2.0
 
+
+### Changelog
+
 #### Trivia
+
 Trivia has seen a entire overhaul. Users will hopefully notice the improved user experience. Under the hood, Trivia is entirely refactored and is a much easier code base to maintain.
 
  - Better time/score calculation that should reflect the timer on the question better.
@@ -16,8 +20,15 @@ Roxbot now uses sqlite for guild settings. This hopefully will lead the more pos
 #### Other changes
  - Sanitation added to filenames using the `avatar` command to fix a error for users with illegal characters in their usernames.
 
+---
+
+#### Update Notes
+
+To update, just `git pull` inside of the working directory. Make sure to update dependencies using `python3 -m pip install -Ur requirements.txt` in your venv before you run the bot.
+
+
 ## v2.1.3
- **BEFORE UPDATING, UPDATE ALL DEPENDANCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
+ **BEFORE UPDATING, UPDATE ALL DEPENDENCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
  - Moved over cogs to use new method introduced in the rewrite of discord.py
  - Changed wording of the role not found errors.
 
