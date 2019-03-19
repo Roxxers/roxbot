@@ -115,6 +115,26 @@ class Leaderboard:
     def players(self):
         return list(self.scores.keys())
 
+    @property
+    def leaderboard(self):
+        return self.sort_leaderboard()
+
+    @property
+    def ranks_from_scores(self):
+        """sorted_scores: a list of tuples (player_id, score), sorted by score DESCENDING
+           return a mapping of object IDs to ranks
+        """
+        rank = 0
+        ranks = {}
+        previous_score = None
+        for index, (player_id, score) in enumerate(list(self.leaderboard.items())):
+            if score != previous_score:
+                previous_score = score
+                rank = index + 1
+            ranks[player_id] = rank
+        return ranks
+
+
     def add_player(self, player_id):
         self.scores[player_id] = 0
         self.diffs[player_id] = 0
@@ -145,6 +165,8 @@ class Leaderboard:
     def flush_diffs(self):
         for player in self.diffs:
             self.diffs[player] = 0
+
+
 
 
 class TriviaGame:
@@ -361,25 +383,41 @@ class TriviaGame:
             for score in self.leaderboard.sort_leaderboard().items():
                 final_scores.append(score)
 
-            winner = self.ctx.guild.get_member(final_scores[0][0])
-            winning_score = final_scores[0][1]
-            winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
+            ranks = self.leaderboard.ranks_from_scores
+
+            if final_scores[0][1] == final_scores[1][1]:
+                # This means there is a tie of any size for first place
+                winner_text = "It's a tie! With a score of {}...".format(final_scores[0][1])
+            else:
+                winner = self.ctx.guild.get_member(final_scores[0][0])
+                winning_score = final_scores[0][1]
+                winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
 
             if len(final_scores) > 1:
-                x = 0
                 results_text = "\n\nResults:\n"
+                prev_pos = 0
                 for player in final_scores:
                     user = self.ctx.guild.get_member(player[0])
-                    if x == 0:
-                        emoji = "`1st)` 🥇"
-                    elif x == 1:
-                        emoji = "`2nd)` 🥈"
-                    elif x == 2:
-                        emoji = "`3rd)` 🥉"
+
+                    if ranks[user.id] == 1:
+                        pos = "`1st)` "
+                        emoji = "🥇"
+                    elif ranks[user.id] == 2:
+                        pos = "`2nd)` "
+                        emoji = "🥈"
+                    elif ranks[user.id] == 3:
+                        pos = "`3rd)` "
+                        emoji = "🥉"
                     else:
-                        emoji = "`{}th)` 🎀".format(x+1)
-                    results_text += "\n {0} {1} - {2}".format(emoji, user.mention, player[1])
-                    x += 1
+                        pos = "`{}th)` ".format(ranks[user.id])
+                        emoji = "🎀"
+
+                    if ranks[user.id] == prev_pos:
+                        pos = "`---)` "
+
+                    prefix = pos + emoji
+                    prev_pos = ranks[user.id]
+                    results_text += "\n {0} {1} - {2}".format(prefix, user.mention, player[1])
             else:
                 results_text = ""
 
@@ -399,7 +437,8 @@ class TriviaGame:
 
     def generate_leaderboard(self, leaderboard):
         output_scores = ""
-        count = 1
+        ranks = self.leaderboard.ranks_from_scores
+        prev_pos = 0
         for player_id in leaderboard:
             player = self.bot.get_user(player_id)
             if not player:
@@ -408,9 +447,15 @@ class TriviaGame:
                 emoji = self.correct_emoji
             else:
                 emoji = self.incorrect_emoji
-            output_scores += "{}) {}: {} {}".format(count, player.mention, emoji, self.leaderboard.scores[player_id])
+
+            if ranks[player_id] == prev_pos:
+                pos = "-"
+            else:
+                pos = ranks[player_id]
+
+            prev_pos = ranks[player_id]
+            output_scores += "{}) {}: {} {}".format(pos, player.mention, emoji, self.leaderboard.scores[player_id])
             output_scores += "(+{})\n".format(self.leaderboard.diffs[player_id])
-            count += 1
 
         return discord.Embed(title="Leaderboard", description=output_scores, colour=discord.Colour(self.trivia_colour))
 
