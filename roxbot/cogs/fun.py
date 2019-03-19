@@ -342,16 +342,17 @@ class Fun(commands.Cog):
 		converted = str(text).translate(wide_map)
 		output = await ctx.send(converted)
 
-		await self.bot.log(
-			ctx.guild,
-			"aesthetics",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time=roxbot.datetime.format(ctx.message.created_at)
-		)
+		if isinstance(ctx.channel, discord.TextChannel):
+			await self.bot.log(
+				ctx.guild,
+				"aesthetics",
+				User=ctx.author,
+				User_ID=ctx.author.id,
+				Output_Message_ID=output.id,
+				Channel=ctx.channel,
+				Channel_Mention=ctx.channel.mention,
+				Time=roxbot.datetime.format(ctx.message.created_at)
+			)
 
 	@commands.command(aliases=["ft", "frog"])
 	async def frogtips(self, ctx):
@@ -509,16 +510,17 @@ class Fun(commands.Cog):
 		response = random.choice(zalgo_chars).join(zalgoised)
 		output = await ctx.send(response)
 
-		await self.bot.log(
-			ctx.guild,
-			"zalgo",
-			User=ctx.author,
-			User_ID=ctx.author.id,
-			Output_Message_ID=output.id,
-			Channel=ctx.channel,
-			Channel_Mention=ctx.channel.mention,
-			Time=roxbot.datetime.format(ctx.message.created_at)
-		)
+		if isinstance(ctx.channel, discord.TextChannel):
+			await self.bot.log(
+				ctx.guild,
+				"zalgo",
+				User=ctx.author,
+				User_ID=ctx.author.id,
+				Output_Message_ID=output.id,
+				Channel=ctx.channel,
+				Channel_Mention=ctx.channel.mention,
+				Time=roxbot.datetime.format(ctx.message.created_at)
+			)
 
 	@commands.command(aliases=["rf", "roxfacts", "roxfact"])
 	async def roxbotfact(self, ctx):

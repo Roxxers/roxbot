@@ -19,6 +19,7 @@ Roxbot now uses sqlite for guild settings. This hopefully will lead the more pos
  
 #### Other changes
  - Sanitation added to filenames using the `avatar` command to fix a error for users with illegal characters in their usernames.
+ - Fixed error when using `aethetics` and `zalgo` were used in dms.
 
 ---
 
