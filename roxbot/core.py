@@ -220,11 +220,13 @@ class Core(commands.Cog):
 
 			# ActualErrorHandling
 			embed = discord.Embed(colour=roxbot.EmbedColours.red)
+
 			if case:
-				embed.description = case
+				embed.description = case + "\n\n*If you are having trouble, don't be afraid to use* `{}help`".format(ctx.prefix)
 			elif user_error_case:
 				embed.description = user_error_case
 				embed.colour = roxbot.EmbedColours.orange
+				embed.description += "\n\n*If you are having trouble, don't be afraid to use* `{0}help` *or* `{0}help {1}` *if you need help with this certain command.*".format(ctx.prefix, ctx.invoked_with)
 			elif isinstance(error, commands.CommandInvokeError):
 				# YOUTUBE_DL ERROR HANDLING
 				if isinstance(error.original, youtube_dl.utils.GeoRestrictedError):
