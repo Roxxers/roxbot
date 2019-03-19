@@ -10,6 +10,7 @@ Trivia has seen a entire overhaul. Users will hopefully notice the improved user
  - Better time/score calculation that should reflect the timer on the question better.
  - Timer added between each question.
  - New reaction method of joining and leaving games while not active (not asking questions).
+ - Ties are now possible and having the same score is now handled and correctly displayed.
  - Fixed error that didn't allow new games to be made after an error in the game.
 
 #### Config Storage
