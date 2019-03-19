@@ -31,72 +31,72 @@ import roxbot
 
 
 class AssortedGenderSounds(commands.Cog):
-	"""Custom Cog for the AssortedGenderSounds Discord Server."""
-	def __init__(self, bot_client):
-		self.bot = bot_client
-		self.required_score = 2000
-		self.days = 5
-		self.logging_channel_id = 394959819796381697
-		self.newbie_role_id = 450042170112475136
-		self.selfie_role_id = 394939389823811584
-		self.ags_id = 393764974444675073
-		self.tat_token = roxbot.config["Tokens"]["Tatsumaki"]
-		self.bot.add_listener(self.grab_objects, "on_ready")
-		self.ags = None
-		self.selfie_role = None
-		self.newbie_role = None
-		self.logging_channel = None
+    """Custom Cog for the AssortedGenderSounds Discord Server."""
+    def __init__(self, bot_client):
+        self.bot = bot_client
+        self.required_score = 2000
+        self.days = 5
+        self.logging_channel_id = 394959819796381697
+        self.newbie_role_id = 450042170112475136
+        self.selfie_role_id = 394939389823811584
+        self.ags_id = 393764974444675073
+        self.tat_token = roxbot.config["Tokens"]["Tatsumaki"]
+        self.bot.add_listener(self.grab_objects, "on_ready")
+        self.ags = None
+        self.selfie_role = None
+        self.newbie_role = None
+        self.logging_channel = None
 
-	async def cog_check(self, ctx):
-		return ctx.guild.id == self.ags_id
+    async def cog_check(self, ctx):
+        return ctx.guild.id == self.ags_id
 
-	async def grab_objects(self):
-		self.ags = self.bot.get_guild(self.ags_id)
-		self.selfie_role = self.ags.get_role(self.selfie_role_id)
-		self.newbie_role = self.ags.get_role(self.newbie_role_id)
-		self.logging_channel = self.ags.get_channel(self.logging_channel_id)
+    async def grab_objects(self):
+        self.ags = self.bot.get_guild(self.ags_id)
+        self.selfie_role = self.ags.get_role(self.selfie_role_id)
+        self.newbie_role = self.ags.get_role(self.newbie_role_id)
+        self.logging_channel = self.ags.get_channel(self.logging_channel_id)
 
-	@commands.Cog.listener()
-	async def on_member_join(self, member):
-		if member.guild == self.ags:
-			await member.add_roles(self.newbie_role, reason="Auto-add role on join")
-			await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if member.guild == self.ags:
+            await member.add_roles(self.newbie_role, reason="Auto-add role on join")
+            await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
 
-	async def tatsumaki_api_call(self, member, guild):
-		base = "https://api.tatsumaki.xyz/"
-		url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
-		return await roxbot.http.api_request(url, headers={"Authorization": self.tat_token})
+    async def tatsumaki_api_call(self, member, guild):
+        base = "https://api.tatsumaki.xyz/"
+        url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
+        return await roxbot.http.api_request(url, headers={"Authorization": self.tat_token})
 
-	@commands.command()
-	async def agree(self, ctx):
-		try:
-			return await ctx.author.remove_roles(self.newbie_role, reason="User has agreed the rules and has been given access to the server.")
-		except discord.HTTPException:
-			pass
+    @commands.command()
+    async def agree(self, ctx):
+        try:
+            return await ctx.author.remove_roles(self.newbie_role, reason="User has agreed the rules and has been given access to the server.")
+        except discord.HTTPException:
+            pass
 
-	@commands.command(name="selfieperms")
-	async def selfie_perms(self, ctx):
-		"""Requests the selfie perm role."""
-		member = ctx.author
+    @commands.command(name="selfieperms")
+    async def selfie_perms(self, ctx):
+        """Requests the selfie perm role."""
+        member = ctx.author
 
-		data = await self.tatsumaki_api_call(member, ctx.guild)
-		if data is None:
-			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
+        data = await self.tatsumaki_api_call(member, ctx.guild)
+        if data is None:
+            return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
 
-		if self.selfie_role in member.roles:
-			await member.remove_roles(self.selfie_role, reason="Requested removal of {0.name}".format(self.selfie_role))
-			return await ctx.send("You already had {0.name}. It has now been removed.".format(self.selfie_role))
+        if self.selfie_role in member.roles:
+            await member.remove_roles(self.selfie_role, reason="Requested removal of {0.name}".format(self.selfie_role))
+            return await ctx.send("You already had {0.name}. It has now been removed.".format(self.selfie_role))
 
-		time = datetime.datetime.now() - ctx.author.joined_at
+        time = datetime.datetime.now() - ctx.author.joined_at
 
-		if time > datetime.timedelta(days=self.days) and int(data["score"]) >= self.required_score:
-			await member.add_roles(self.selfie_role, reason="Requested {0.name}".format(self.selfie_role))
-			await ctx.send("You now have the {0.name} role".format(self.selfie_role))
-		else:
-			return await ctx.send(
-				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(self.required_score, self.days)
-			)
+        if time > datetime.timedelta(days=self.days) and int(data["score"]) >= self.required_score:
+            await member.add_roles(self.selfie_role, reason="Requested {0.name}".format(self.selfie_role))
+            await ctx.send("You now have the {0.name} role".format(self.selfie_role))
+        else:
+            return await ctx.send(
+                "You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(self.required_score, self.days)
+            )
 
 
 def setup(bot_client):
-	bot_client.add_cog(AssortedGenderSounds(bot_client))
+    bot_client.add_cog(AssortedGenderSounds(bot_client))

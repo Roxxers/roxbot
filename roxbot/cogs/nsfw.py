@@ -31,130 +31,130 @@ from roxbot.db import *
 
 
 class NSFWSingle(db.Entity):
-	enabled = Required(bool, default=False)
-	blacklisted_tags = Optional(StrArray)
-	guild_id = Required(int, unique=True, size=64)
+    enabled = Required(bool, default=False)
+    blacklisted_tags = Optional(StrArray)
+    guild_id = Required(int, unique=True, size=64)
 
 
 class NSFW(commands.Cog):
-	"""The NSFW cog is a collection of commands that post images from popular NSFW sites. """
-	def __init__(self, bot_client):
-		self.bot = bot_client
-		self.cache = {}
-		self.autogen_db = NSFWSingle
+    """The NSFW cog is a collection of commands that post images from popular NSFW sites. """
+    def __init__(self, bot_client):
+        self.bot = bot_client
+        self.cache = {}
+        self.autogen_db = NSFWSingle
 
-	@db_session
-	def tag_blacklist(self, guild):
-		blacklist = ""
-		blacklist_db = NSFWSingle.get(guild_id=guild.id).blacklisted_tags
-		for tag in blacklist_db:
-			blacklist += " -{}".format(tag)
-		return blacklist
+    @db_session
+    def tag_blacklist(self, guild):
+        blacklist = ""
+        blacklist_db = NSFWSingle.get(guild_id=guild.id).blacklisted_tags
+        for tag in blacklist_db:
+            blacklist += " -{}".format(tag)
+        return blacklist
 
-	async def gelbooru_clone(self, ctx, base_url, endpoint_url, tags):
-		if isinstance(ctx.channel, discord.TextChannel):
-			banned_tags = self.tag_blacklist(ctx.guild)
-		else:
-			banned_tags = ""
+    async def gelbooru_clone(self, ctx, base_url, endpoint_url, tags):
+        if isinstance(ctx.channel, discord.TextChannel):
+            banned_tags = self.tag_blacklist(ctx.guild)
+        else:
+            banned_tags = ""
 
-		post = await roxbot.utils.danbooru_clone_api_req(
-			ctx.channel,
-			base_url,
-			endpoint_url,
-			tags=tags,
-			banned_tags=banned_tags,
-			cache=self.cache
-		)
+        post = await roxbot.utils.danbooru_clone_api_req(
+            ctx.channel,
+            base_url,
+            endpoint_url,
+            tags=tags,
+            banned_tags=banned_tags,
+            cache=self.cache
+        )
 
-		if not post:
-			return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
-		else:
-			output = await ctx.send(post)
-			await self.bot.delete_option(output, self.bot.get_emoji(444410658101002261))
+        if not post:
+            return await ctx.send("Nothing was found. *psst, check the tags you gave me.*")
+        else:
+            output = await ctx.send(post)
+            await self.bot.delete_option(output, self.bot.get_emoji(444410658101002261))
 
-	@roxbot.checks.is_nsfw()
-	@commands.command()
-	async def e621(self, ctx, *, tags=""):
-		"""Posts a random image from https://e621.net using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
-		https://e621.net limits searches to 6 tags via the API. Blacklisting a lot of tags may break this command.
-		Examples:
-			# Post a random image
-			;e621
-			# Post a random image with the tag "test"
-			;e621 test
-		"""
-		base_url = "https://e621.net/post/index.json?tags="
-		return await self.gelbooru_clone(ctx, base_url, "", tags)
+    @roxbot.checks.is_nsfw()
+    @commands.command()
+    async def e621(self, ctx, *, tags=""):
+        """Posts a random image from https://e621.net using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+        https://e621.net limits searches to 6 tags via the API. Blacklisting a lot of tags may break this command.
+        Examples:
+            # Post a random image
+            ;e621
+            # Post a random image with the tag "test"
+            ;e621 test
+        """
+        base_url = "https://e621.net/post/index.json?tags="
+        return await self.gelbooru_clone(ctx, base_url, "", tags)
 
-	@roxbot.checks.is_nsfw()
-	@commands.command()
-	async def rule34(self, ctx, *, tags=""):
-		"""Posts a random image from https://rule34.xxx/ using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
-		Examples:
-			# Post a random image
-			;rule34
-			# Post a random image with the tag "test"
-			;rule34 test
-		"""
-		base_url = "https://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="
-		endpoint_url = "https://img.rule34.xxx/images/"
-		return await self.gelbooru_clone(ctx, base_url, endpoint_url, tags)
+    @roxbot.checks.is_nsfw()
+    @commands.command()
+    async def rule34(self, ctx, *, tags=""):
+        """Posts a random image from https://rule34.xxx/ using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+        Examples:
+            # Post a random image
+            ;rule34
+            # Post a random image with the tag "test"
+            ;rule34 test
+        """
+        base_url = "https://rule34.xxx/index.php?page=dapi&s=post&q=index&json=1&tags="
+        endpoint_url = "https://img.rule34.xxx/images/"
+        return await self.gelbooru_clone(ctx, base_url, endpoint_url, tags)
 
-	@roxbot.checks.is_nsfw()
-	@commands.command()
-	async def gelbooru(self, ctx, *, tags=""):
-		"""Posts a random image from https://gelbooru.com using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
-		Examples:
-			# Post a random image
-			;gelbooru
-			# Post a random image with the tag "test"
-			;gelbooru test
-		"""
-		base_url = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="
-		endpoint_url = "https://simg3.gelbooru.com/images/"
-		return await self.gelbooru_clone(ctx, base_url, endpoint_url, tags)
+    @roxbot.checks.is_nsfw()
+    @commands.command()
+    async def gelbooru(self, ctx, *, tags=""):
+        """Posts a random image from https://gelbooru.com using the tags you provide. Tags can be anything you would use to search the site normally like author and ratings.
+        Examples:
+            # Post a random image
+            ;gelbooru
+            # Post a random image with the tag "test"
+            ;gelbooru test
+        """
+        base_url = "https://gelbooru.com/index.php?page=dapi&s=post&q=index&json=1&tags="
+        endpoint_url = "https://simg3.gelbooru.com/images/"
+        return await self.gelbooru_clone(ctx, base_url, endpoint_url, tags)
 
-	@commands.guild_only()
-	@commands.has_permissions(manage_channels=True)
-	@commands.command()
-	async def nsfw(self, ctx, setting, *, changes=None):
-		"""Edits settings for the nsfw cog and other nsfw commands.
+    @commands.guild_only()
+    @commands.has_permissions(manage_channels=True)
+    @commands.command()
+    async def nsfw(self, ctx, setting, *, changes=None):
+        """Edits settings for the nsfw cog and other nsfw commands.
 
-		Options:
-			enable/disable: Enable/disables nsfw commands.
-			addbadtag/removebadtag: Add/Removes blacklisted tags so that you can avoid em with the commands.
-		
-		Examples:
-			# Enabled NSFW commands
-			;nsfw enable
-			# Add "test" as a blacklisted tag
-			;nsfw addbadtag test
-			# Remove "Roxbot" as a blacklisted tag
-			;nsfw removebadtag Roxbot
-		"""
-		with db_session:
-			nsfw_settings = NSFWSingle.get(guild_id=ctx.guild.id)
-			if setting == "enable":
-				nsfw_settings.enabled = True
-				await ctx.send("'nsfw' was enabled!")
-			elif setting == "disable":
-				nsfw_settings.enabled = False
-				await ctx.send("'nsfw' was disabled :cry:")
-			elif setting == "addbadtag":
-				if changes not in nsfw_settings.blacklisted_tags:
-					nsfw_settings.blacklisted_tags.append(changes)
-					await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
-				else:
-					return await ctx.send("'{}' is already in the list.".format(changes))
-			elif setting == "removebadtag":
-				try:
-					nsfw_settings.blacklisted_tags.remove(changes)
-					await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
-				except ValueError:
-					return await ctx.send("That tag was not in the blacklisted tag list.")
-			else:
-				return await ctx.send("No valid option given.")
+        Options:
+            enable/disable: Enable/disables nsfw commands.
+            addbadtag/removebadtag: Add/Removes blacklisted tags so that you can avoid em with the commands.
+
+        Examples:
+            # Enabled NSFW commands
+            ;nsfw enable
+            # Add "test" as a blacklisted tag
+            ;nsfw addbadtag test
+            # Remove "Roxbot" as a blacklisted tag
+            ;nsfw removebadtag Roxbot
+        """
+        with db_session:
+            nsfw_settings = NSFWSingle.get(guild_id=ctx.guild.id)
+            if setting == "enable":
+                nsfw_settings.enabled = True
+                await ctx.send("'nsfw' was enabled!")
+            elif setting == "disable":
+                nsfw_settings.enabled = False
+                await ctx.send("'nsfw' was disabled :cry:")
+            elif setting == "addbadtag":
+                if changes not in nsfw_settings.blacklisted_tags:
+                    nsfw_settings.blacklisted_tags.append(changes)
+                    await ctx.send("'{}' has been added to the blacklisted tag list.".format(changes))
+                else:
+                    return await ctx.send("'{}' is already in the list.".format(changes))
+            elif setting == "removebadtag":
+                try:
+                    nsfw_settings.blacklisted_tags.remove(changes)
+                    await ctx.send("'{}' has been removed from the blacklisted tag list.".format(changes))
+                except ValueError:
+                    return await ctx.send("That tag was not in the blacklisted tag list.")
+            else:
+                return await ctx.send("No valid option given.")
 
 
 def setup(bot_client):
-	bot_client.add_cog(NSFW(bot_client))
+    bot_client.add_cog(NSFW(bot_client))

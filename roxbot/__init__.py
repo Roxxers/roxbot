@@ -38,27 +38,27 @@ token = config["Tokens"]["Discord"]
 imgur_token = config["Tokens"]["Imgur"]
 
 if config["Backups"]["enabled"] == "False":
-	backup_enabled = False
+    backup_enabled = False
 else:
-	backup_enabled = True
+    backup_enabled = True
 backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
 
 dev_mode = False
 datetime = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
 cog_list = [
-	"roxbot.cogs.admin",
-	"roxbot.cogs.customcommands",
-	"roxbot.cogs.fun",
-	"roxbot.cogs.image",
-	"roxbot.cogs.joinleave",
-	"roxbot.cogs.nsfw",
-	"roxbot.cogs.reddit",
-	"roxbot.cogs.selfassign",
-	"roxbot.cogs.trivia",
-	"roxbot.cogs.util",
-	"roxbot.cogs.voice",
-	#"roxbot.cogs.ags"
+    "roxbot.cogs.admin",
+    "roxbot.cogs.customcommands",
+    "roxbot.cogs.fun",
+    "roxbot.cogs.image",
+    "roxbot.cogs.joinleave",
+    "roxbot.cogs.nsfw",
+    "roxbot.cogs.reddit",
+    "roxbot.cogs.selfassign",
+    "roxbot.cogs.trivia",
+    "roxbot.cogs.util",
+    "roxbot.cogs.voice",
+    #"roxbot.cogs.ags"
 ]
 
 import logging

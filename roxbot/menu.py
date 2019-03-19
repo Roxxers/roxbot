@@ -25,53 +25,53 @@
 
 class Menu:
 
-	__slots__ = ["name", "params", "formatted_params", "title", "content"]
+    __slots__ = ["name", "params", "formatted_params", "title", "content"]
 
-	def __init__(self, name,  *params, settings=None):
-		self.name = name
-		self.params = list(params).append("Exit")
-		if settings:
-			self.formatted_params = self._parse_params(settings, self.name)
-		else:
-			self.formatted_params = self.params
-		self.title = "'Roxbot Settings: {}'\n".format(self.name)
-		self.content = self._format_content(self.title, self.formatted_params, "```python", "```")
+    def __init__(self, name,  *params, settings=None):
+        self.name = name
+        self.params = list(params).append("Exit")
+        if settings:
+            self.formatted_params = self._parse_params(settings, self.name)
+        else:
+            self.formatted_params = self.params
+        self.title = "'Roxbot Settings: {}'\n".format(self.name)
+        self.content = self._format_content(self.title, self.formatted_params, "```python", "```")
 
-	@staticmethod
-	def _format_content(title, params, prefix="", suffix=""):
-		separator = "—————————————————————————————"
-		choices = "\n"
-		for x, setting in enumerate(params):
-			if setting == "Exit":
-				choices += "[0] Exit\n"
-			elif setting != "convert":
-				if setting != [*params][x]:  # Just in case params is dict_keys, we make a new list.
-					choices += "[{}] {}\n".format(x + 1, setting)
-				else:
-					choices += "[{}] Edit '{}'\n".format(x+1, setting)
-		return prefix + title + separator + choices + suffix
+    @staticmethod
+    def _format_content(title, params, prefix="", suffix=""):
+        separator = "—————————————————————————————"
+        choices = "\n"
+        for x, setting in enumerate(params):
+            if setting == "Exit":
+                choices += "[0] Exit\n"
+            elif setting != "convert":
+                if setting != [*params][x]:  # Just in case params is dict_keys, we make a new list.
+                    choices += "[{}] {}\n".format(x + 1, setting)
+                else:
+                    choices += "[{}] Edit '{}'\n".format(x+1, setting)
+        return prefix + title + separator + choices + suffix
 
-	@staticmethod
-	def _parse_params(settings, name):
-		params = [*settings.keys()]
-		params_copy = settings.copy().keys()
-		for param in params_copy:
-			if settings["convert"].get(param) == "bool":
-				# Enable/Disable Parse
-				if param == "enabled":
-					options = ["Enable '{}'".format(name), "Disable '{}'".format(name)]
-				else:
-					options = ["Enable '{}'".format(param), "Disable '{}'".format(param)]
-				params.remove(param)
-				params = [*options, *params]
-			elif isinstance(settings.get(param), list):
-				# Add and Remove Parse
-				options = ["Add {}".format(param), "Remove {}".format(param)]
-				params.remove(param)
-				params = [*params, *options]
-			elif isinstance(settings.get(param), (int, str)):
-				# Set parse
-				options = "Set {}".format(param)
-				params.remove(param)
-				params = [*params, options]
-		return params
+    @staticmethod
+    def _parse_params(settings, name):
+        params = [*settings.keys()]
+        params_copy = settings.copy().keys()
+        for param in params_copy:
+            if settings["convert"].get(param) == "bool":
+                # Enable/Disable Parse
+                if param == "enabled":
+                    options = ["Enable '{}'".format(name), "Disable '{}'".format(name)]
+                else:
+                    options = ["Enable '{}'".format(param), "Disable '{}'".format(param)]
+                params.remove(param)
+                params = [*options, *params]
+            elif isinstance(settings.get(param), list):
+                # Add and Remove Parse
+                options = ["Add {}".format(param), "Remove {}".format(param)]
+                params.remove(param)
+                params = [*params, *options]
+            elif isinstance(settings.get(param), (int, str)):
+                # Set parse
+                options = "Set {}".format(param)
+                params.remove(param)
+                params = [*params, options]
+        return params
