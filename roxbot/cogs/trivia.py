@@ -43,6 +43,9 @@ class TriviaLengths(enum.IntEnum):
 
 
 class Question:
+    """
+    Question Object to aide the trivia game. Handles accessing the parts of the question.
+    """
     def __init__(self, question, index, emojis, mobile_compatible=False):
         self.question = unescape(question["question"])
         self.question_index = index
@@ -170,7 +173,13 @@ class Leaderboard:
 
 
 class TriviaGame:
-    """Class to handle Roxbot Trivia."""
+    """
+    Trivia Game Object
+    Handles all interactions and logic with the game itself. Providing a quasi api for other functions to call on.
+    bot: discord.ext.commands.Bot object
+    ctx: discord.ext.commands.Context object for the game to use
+    args: arguments given to the game to setup its variables
+    """
     def __init__(self, bot, ctx, *args):
         self.active = False
         self.ctx = ctx
@@ -198,6 +207,11 @@ class TriviaGame:
         self.trivia_colour = roxbot.EmbedColours.blue
 
     async def get_questions(self, amount=10):
+        """
+        API call to the OpenTDB
+        amount: positive int, amount of questions wanted to be returned [optional, default 10]
+        returns a list of Question objects
+        """
         questions = await roxbot.http.api_request("https://opentdb.com/api.php?amount={}".format(amount))
         try:
             if questions["response_code"] == 0:
@@ -208,6 +222,11 @@ class TriviaGame:
             raise commands.CommandError("Cannot get Trivia questions.")
 
     def parse_args(self, *args):
+        """
+        parses given arguments given to the game. Uses a modified ArgParser so this doesn't exit the program on fail.
+        :param args: list of args
+        :return: dict of the results of the parsing.
+        """
         parser = roxbot.utils.ArgParser()
         parser.add_argument("--mobile", "-m", default=False, action="store_true", dest="mobile")
         parser.add_argument("--solo", "-s", default=False, action="store_true", dest="solo")
@@ -246,6 +265,13 @@ class TriviaGame:
         return {"mobile_compatible": mobile, "solo": solo, "length": length}
 
     def edit_question_counter(self, message, finished=False, time=0):
+        """
+        helper function to edit the question message so it displays a timer.
+        :param message: discord.Message object
+        :param finished: bool if the counter has finished [optional]
+        :param time: the amount of time elapsed
+        :return:
+        """
         if finished:
             time_str = " Finished"
         else:
@@ -263,6 +289,10 @@ class TriviaGame:
             return {"embed": message.embeds[0]}
 
     async def start(self):
+        """
+        Sets up a game in the channel in self.ctx.
+        :return:
+        """
         self.questions = await self.get_questions(self.length)
         # TODO: Add a list that shows the current players in the game, then remove messages to join the game as players join to have like a growning list
 
