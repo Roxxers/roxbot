@@ -212,7 +212,10 @@ class TriviaGame:
         parser.add_argument("--mobile", "-m", default=False, action="store_true", dest="mobile")
         parser.add_argument("--solo", "-s", default=False, action="store_true", dest="solo")
         parser.add_argument("--length", "-l", default="medium", type=str, choices=["short", "medium", "long"], dest="length")
-        options, unknowns = parser.parse_known_args(args)
+        try:
+            options, unknowns = parser.parse_known_args(args)
+        except TypeError:
+            raise commands.BadArgument("Error in arguments given. Could not parse: {}".format(args))
         try:
             if options.length == "short":
                 length = TriviaLengths.short
