@@ -160,8 +160,12 @@ class Core(commands.Cog):
 	def command_not_found_check(ctx, error):
 		try:
 			# Sadly this is the only part that makes a cog not modular. I have tried my best though to make it usable without the cog.
-			with roxbot.db.db_session:
-				is_custom_command = roxbot.db.db.exists('SELECT * FROM CCCommands WHERE name = "{}" AND type IN (1, 2) AND guild_id = {}'.format(ctx.invoked_with, ctx.guild.id))
+			try:
+				with roxbot.db.db_session:
+					is_custom_command = roxbot.db.db.exists('SELECT * FROM CCCommands WHERE name = "{}" AND type IN (1, 2) AND guild_id = {}'.format(ctx.invoked_with, ctx.guild.id))
+			except OperationalError:
+				# Table doesn't exist
+				is_custom_command = False
 			is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
 			is_too_short = bool(len(ctx.message.content) <= 2)
 			if is_emoticon_face:
@@ -170,8 +174,8 @@ class Core(commands.Cog):
 				return None
 			else:
 				return error.args[0]
-		except (KeyError, AttributeError):
-			# KeyError for cog missing, AttributeError if a command invoked via DM
+		except AttributeError:
+			# AttributeError if a command invoked via DM
 			return error.args[0]
 
 	def command_cooldown_output(self, error):
