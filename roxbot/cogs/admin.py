@@ -241,7 +241,7 @@ class Admin(commands.Cog):
                 try:
                     warned_by = str(ctx.guild.get_member(warning.warned_by))
                     if warned_by is None:
-                        warned_by = str(await self.bot.get_user_info(warning.warned_by))
+                        warned_by = str(await self.bot.fetch_user(warning.warned_by))
                 except discord.ext.commands.CommandInvokeError:
                     warned_by = warning.warned_by
                 date = datetime.datetime.strftime(warning.date, roxbot.datetime.strip("{:} UTC")+" UTC")
@@ -415,7 +415,7 @@ class Admin(commands.Cog):
             # Unban user with ID 478294672394
             ;unban 478294672394
         """
-        ban = await ctx.guild.get_ban(member)
+        ban = await ctx.guild.fetch_ban(member)
         mem = ban.user
         if mem is None:
             embed = discord.Embed(description=self.WARN_UNBAN_NOTFOUND, colour=roxbot.EmbedColours.red)
