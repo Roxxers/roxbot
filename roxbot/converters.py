@@ -39,14 +39,14 @@ class User(commands.UserConverter):
     2. Lookup by mention.
     3. Lookup by name#discrim
     4. Lookup by name
-    5. Lookup by get_user_info
+    5. Lookup by fetch_user
     """
     async def convert(self, ctx, argument):
         try:
             result = await super().convert(ctx, argument)
         except commands.BadArgument as e:
             try:
-                result = await ctx.bot.get_user_info(argument)
+                result = await ctx.bot.fetch_user(argument)
             except:  # Bare except or otherwise it will raise its own BadArgument and have a pretty shitty error message that isn't useful.
                 raise e
 
