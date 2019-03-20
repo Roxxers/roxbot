@@ -57,13 +57,12 @@ def custom_commands_convert(guild_id, settings):
     for com_type, commands in settings.items():
         if com_type != "convert":
             for name, command in commands.items():
-                com_hash = hashlib.md5(name.encode() + str(guild_id).encode() + str(com_type).encode()).hexdigest()
                 if isinstance(command, str):
                     com = [command]
                 else:
                     com = command
                 try:
-                    CCCommands(name=name, hash=com_hash, output=com, type=int(com_type), guild_id=guild_id)
+                    CCCommands(name=name, output=com, type=int(com_type), guild_id=guild_id)
                     db.commit()
                 except (TransactionIntegrityError, CacheIndexError, IntegrityError):
                     pass

@@ -33,12 +33,11 @@ from roxbot.db import *
 
 
 class CCCommands(db.Entity):
-    # Sadly no way to add a custom constraint to this while we either use pony or sqlite/
     name = Required(str)
     output = Required(Json)
     type = Required(int, py_check=lambda val: 0 <= val <= 2)
     guild_id = Required(int, size=64)
-    composite_key(name, guild_id)
+    composite_key(name, guild_id, type)
 
 
 class CustomCommands(commands.Cog):
