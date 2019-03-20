@@ -30,21 +30,21 @@ __all__ = ["UserError", "CogSettingDisabled"]
 
 
 class RoxbotException(commands.CommandError):
-	"""Base Exception for Roxbot."""
-	pass
+    """Base Exception for Roxbot."""
+    pass
 
 
 class UserError(RoxbotException):
-	"""Exception for user errors (similar to BadArgument in discord.ext.commands)"""
-	def __init__(self, message=None):
-		if message is not None:
-			m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
-			super().__init__(m)
+    """Exception for user errors (similar to BadArgument in discord.ext.commands)"""
+    def __init__(self, message=None):
+        if message is not None:
+            m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
+            super().__init__(m)
 
 
 class CogSettingDisabled(RoxbotException):
-	"""Exception for cog setting being disabled"""
-	def __init__(self, message=None):
-		if message is not None:
-			m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
-			super().__init__(m)
+    """Exception for cog setting being disabled"""
+    def __init__(self, message=None):
+        if message is not None:
+            m = message.replace('@everyone', '@\u200beveryone').replace('@here', '@\u200bhere')
+            super().__init__(m)

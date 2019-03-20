@@ -12,7 +12,7 @@ __title__ = "roxbot"
 __author__ = "Roxanne Gibson"
 __license__ = "MIT"
 __copyright__ = "Copyright 2015-2017 Roxanne Gibson <me@roxxers.xyz>"
-__version__ = "2.1.3"
+__version__ = "2.2.0"
 __description__ = """Roxbot: An inclusive modular multi-purpose Discord bot. Built with love (and discord.py) by Roxxers#7443.
 
 Roxbot is designed be a multi-purpose bot and provide many different services for users and moderators alike with a focus on customisability. 
@@ -29,7 +29,7 @@ from .enums import EmbedColours
 from .config import config
 from .exceptions import UserError, CogSettingDisabled
 
-from . import checks, http, guild_settings, converters, utils, roxbotfacts, exceptions
+from . import checks, http, converters, utils, roxbotfacts, exceptions, db
 
 
 command_prefix = config["Roxbot"]["Command_Prefix"]
@@ -38,27 +38,27 @@ token = config["Tokens"]["Discord"]
 imgur_token = config["Tokens"]["Imgur"]
 
 if config["Backups"]["enabled"] == "False":
-	backup_enabled = False
+    backup_enabled = False
 else:
-	backup_enabled = True
+    backup_enabled = True
 backup_rate = int(config["Backups"]["rate"]) * 60  # Convert minutes to seconds
 
 dev_mode = False
 datetime = "{:%a %Y/%m/%d %H:%M:%S} UTC"
 
-cogs = [
-	"roxbot.cogs.admin",
-	"roxbot.cogs.customcommands",
-	"roxbot.cogs.fun",
-	"roxbot.cogs.image",
-	"roxbot.cogs.joinleave",
-	"roxbot.cogs.nsfw",
-	"roxbot.cogs.reddit",
-	"roxbot.cogs.selfassign",
-	"roxbot.cogs.trivia",
-	"roxbot.cogs.util",
-	"roxbot.cogs.voice",
-	#"roxbot.cogs.ags"
+cog_list = [
+    "roxbot.cogs.admin",
+    "roxbot.cogs.customcommands",
+    "roxbot.cogs.fun",
+    "roxbot.cogs.image",
+    "roxbot.cogs.joinleave",
+    "roxbot.cogs.nsfw",
+    "roxbot.cogs.reddit",
+    "roxbot.cogs.selfassign",
+    "roxbot.cogs.trivia",
+    "roxbot.cogs.util",
+    "roxbot.cogs.voice",
+    #"roxbot.cogs.ags"
 ]
 
 import logging

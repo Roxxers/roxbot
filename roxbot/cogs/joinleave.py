@@ -29,149 +29,148 @@ import discord
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings
+from roxbot.db import *
+
+
+class JoinLeaveSingle(db.Entity):
+    greets_enabled = Required(bool, default=False)
+    goodbyes_enabled = Required(bool, default=False)
+    greets_channel_id = Optional(int, nullable=True, size=64)
+    goodbyes_channel_id = Optional(int, nullable=True, size=64)
+    greets_custom_message = Optional(str, nullable=True)
+    guild_id = Required(int, size=64, unique=True)
 
 
 class JoinLeave(commands.Cog):
-	"""JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. """
-	def __init__(self, Bot):
-		self.bot = Bot
-		self.settings = {
-			"greets": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "welcome-channel": "channel"},
-					"welcome-channel": 0,
-					"custom-message": "",
-					"default-message": "Be sure to read the rules."
-					},
-			"goodbyes": {
-					"enabled": 0,
-					"convert": {"enabled": "bool", "goodbye-channel": "channel"},
-					"goodbye-channel": 0,
-					}
-			}
+    """JoinLeave is a cog that allows you to create custom welcome and goodbye messages for your Discord server. """
 
-	@commands.Cog.listener()
-	async def on_member_join(self, member):
-		"""
-		Greets users when they join a server.
-		"""
-		settings = guild_settings.get(member.guild)
-		if not settings["greets"]["enabled"]:
-			return
+    DEFAULT_MESSAGE = "Be sure to read the rules."
 
-		if settings["greets"]["custom-message"]:
-			message = settings["greets"]["custom-message"]
-		else:
-			message = settings["greets"]["default-message"]
-		em = discord.Embed(
-			title="Welcome to {}!".format(member.guild),
-			description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.guild, message),
-			colour=roxbot.EmbedColours.pink)
-		em.set_thumbnail(url=member.avatar_url)
+    def __init__(self, bot_client):
+        self.bot = bot_client
+        self.autogen_db = JoinLeaveSingle
 
-		channel = member.guild.get_channel(settings["greets"]["welcome-channel"])
-		return await channel.send(embed=em)
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        """
+        Greets users when they join a server.
+        """
+        if member == self.bot.user:
+            return
+        with db_session:
+            settings = JoinLeaveSingle.get(guild_id=member.guild.id)
 
-	@commands.Cog.listener()
-	async def on_member_remove(self, member):
-		"""
-		The same but the opposite
-		"""
-		settings = guild_settings.get(member.guild)
-		channel = settings["goodbyes"]["goodbye-channel"]
-		if not settings["goodbyes"]["enabled"]:
-			return
-		else:
-			channel = member.guild.get_channel(channel)
-			return await channel.send(embed=discord.Embed(
-				description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=roxbot.EmbedColours.pink))
+        if not settings.greets_enabled:
+            return
 
-	@commands.Cog.listener()
-	async def on_guild_channel_delete(self, channel):
-		"""Cleans up settings on removal of stored IDs."""
-		settings = guild_settings.get(channel.guild)
-		greets = settings["greets"]
-		goodbyes = settings["goodbyes"]
-		if channel.id == greets["welcome-channel"]:
-			greets["welcome-channel"] = 0
-			settings.update(greets, "greets")
-		if channel.id == goodbyes["goodbye-channel"]:
-			goodbyes["goodbye-channel"] = 0
-			settings.update(goodbyes, "goodbyes")
+        message = settings.greets_custom_message or self.DEFAULT_MESSAGE
 
-	@commands.guild_only()
-	@commands.has_permissions(manage_messages=True)
-	@commands.command()
-	async def greets(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, text = ""):
-		"""Edits settings for the Welcome Messages
+        em = discord.Embed(
+            title="Welcome to {}!".format(member.guild),
+            description='Hey {}! Welcome to **{}**! {}'.format(member.mention, member.guild, message),
+            colour=roxbot.EmbedColours.pink)
+        em.set_thumbnail(url=member.avatar_url)
 
-		Options:
-			enable/disable: Enable/disables greet messages.
-			channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
-			message: Specifies a custom message for the greet messages.
+        channel = member.guild.get_channel(settings.greets_channel_id)
+        return await channel.send(embed=em)
 
-		Example:
-			Enable greet messages, set the channel to the current one, and set a custom message to be appended.
-			`;greets enable`
-			`;greets message "Be sure to read the rules and say hi! :wave:"`
-			`;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
-		"""
-		if (not channel and not text):
-			raise commands.MissingRequiredArgument("Missing at least one of: `channel` or `text`")
-		setting = setting.lower()
-		settings = guild_settings.get(ctx.guild)
-		greets = settings["greets"]
-		if setting == "enable":
-			greets["enabled"] = 1
-			await ctx.send("'greets' was enabled!")
-		elif setting == "disable":
-			greets["enabled"] = 0
-			await ctx.send("'greets' was disabled :cry:")
-		elif setting in ("channel", "welcome-channel", "greet-channel"):
-			if channel is None:
-				channel = ctx.channel
-			greets["welcome-channel"] = channel.id
-			await ctx.send("Set greets channel to {}".format(channel.mention))
-		elif setting in ("message", "custom-message"):
-			greets["custom-message"] = text
-			await ctx.send("Custom message set to '{}'".format(text))
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(greets, "greets")
+    @commands.Cog.listener()
+    async def on_member_remove(self, member):
+        """
+        The same but the opposite
+        """
+        if member == self.bot.user:
+            return
+        with db_session:
+            settings = JoinLeaveSingle.get(guild_id=member.guild.id)
+        if settings.goodbyes_enabled:
+            try:
+                channel = member.guild.get_channel(settings.goodbyes_channel_id)
+                return await channel.send(embed=discord.Embed(
+                    description="{}#{} has left or been beaned.".format(member.name, member.discriminator), colour=roxbot.EmbedColours.pink))
+            except AttributeError:
+                pass
 
-	@commands.guild_only()
-	@commands.has_permissions(manage_messages=True)
-	@commands.command()
-	async def goodbyes(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):
-		"""Edits settings for the goodbye messages.
+    @commands.Cog.listener()
+    async def on_guild_channel_delete(self, channel):
+        """Cleans up settings on removal of stored IDs."""
+        with db_session:
+            settings = JoinLeaveSingle.get(guild_id=channel.guild.id)
+            if channel.id == settings.greets_channel_id:
+                settings.greets_channel_id = None
+            if channel.id == settings.goodbyes_channel_id:
+                settings.goodbyes_channel_id = None
 
-		Options:
-			enable/disable: Enable/disables goodbye messages.
-			channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    @commands.command()
+    async def greets(self, ctx, setting, channel: typing.Optional[discord.TextChannel] = None, *, text = ""):
+        """Edits settings for the Welcome Messages
 
-		Example:
-			Enable goodbye messages, set the channel one called `#logs`
-			`;goodbyes enable`
-			`;goodbyes channel #logs`
-		"""
-		setting = setting.lower()
-		settings = guild_settings.get(ctx.guild)
-		goodbyes = settings["goodbyes"]
-		if setting == "enable":
-			goodbyes["enabled"] = 1
-			await ctx.send("'goodbyes' was enabled!")
-		elif setting == "disable":
-			goodbyes["enabled"] = 0
-			await ctx.send("'goodbyes' was disabled :cry:")
-		elif setting in ("channel", "goodbye-channel"):
-			if channel is None:
-				channel = ctx.channel
-			goodbyes["goodbye-channel"] = channel.id
-			await ctx.send("Set goodbye channel to {}".format(channel.mention))
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(goodbyes, "goodbyes")
+        Options:
+            enable/disable: Enable/disables greet messages.
+            channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+            message: Specifies a custom message for the greet messages.
 
-def setup(Bot):
-	Bot.add_cog(JoinLeave(Bot))
+        Example:
+            Enable greet messages, set the channel to the current one, and set a custom message to be appended.
+            `;greets enable`
+            `;greets message "Be sure to read the rules and say hi! :wave:"`
+            `;greets channel` # if no channel is provided, it will default to the channel the command is executed in.
+        """
+        setting = setting.lower()
+        with db_session:
+            settings = JoinLeaveSingle.get(guild_id=ctx.guild.id)
+            if setting == "enable":
+                settings.greets_enabled = True
+                await ctx.send("'greets' was enabled!")
+
+            elif setting == "disable":
+                settings.greets_enabled = False
+                await ctx.send("'greets' was disabled :cry:")
+
+            elif setting in ("channel", "greet-channel"):
+                channel = channel or ctx.channel
+                settings.greets_channel_id = channel.id
+                await ctx.send("Set greets channel to {}".format(channel.mention))
+
+            elif setting in ("message", "custom-message"):
+                settings.greets_custom_message = text
+                await ctx.send("Custom message set to '{}'".format(text))
+
+            else:
+                return await ctx.send("No valid option given.")
+
+    @commands.guild_only()
+    @commands.has_permissions(manage_messages=True)
+    @commands.command()
+    async def goodbyes(self, ctx, setting, *, channel: typing.Optional[discord.TextChannel] = None):
+        """Edits settings for the goodbye messages.
+
+        Options:
+            enable/disable: Enable/disables goodbye messages.
+            channel: Sets the channel for the message to be posted in. If no channel is provided, it will default to the channel the command is executed in.
+
+        Example:
+            Enable goodbye messages, set the channel one called `#logs`
+            `;goodbyes enable`
+            `;goodbyes channel #logs`
+        """
+        setting = setting.lower()
+        with db_session:
+            settings = JoinLeaveSingle.get(guild_id=ctx.guild.id)
+            if setting == "enable":
+                settings.goodbyes_enabled = True
+                await ctx.send("'goodbyes' was enabled!")
+            elif setting == "disable":
+                settings.goodbyes_enabled = False
+                await ctx.send("'goodbyes' was disabled :cry:")
+            elif setting in ("channel", "goodbye-channel"):
+                channel = channel or ctx.channel
+                settings.goodbyes_channel_id = channel.id
+                await ctx.send("Set goodbye channel to {}".format(channel.mention))
+            else:
+                return await ctx.send("No valid option given.")
+
+def setup(bot_client):
+    bot_client.add_cog(JoinLeave(bot_client))

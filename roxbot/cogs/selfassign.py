@@ -27,151 +27,157 @@ import discord
 from discord.ext import commands
 
 import roxbot
-from roxbot import guild_settings as gs
+from roxbot.db import *
+
+
+class SelfAssignRoles(db.Entity):
+    role_id = Required(int, unique=True, size=64)
+    guild_id = Required(int, size=64)
+
+
+class SelfAssignSingle(db.Entity):
+    enabled = Required(bool, default=False)
+    guild_id = Required(int, unique=True, size=64)
 
 
 class SelfAssign(commands.Cog):
-	"""The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'."""
-	def __init__(self, Bot):
-		self.bot = Bot
-		self.settings = {
-			"self_assign": {
-				"enabled": 0,
-				"convert": {"enabled": "bool", "roles": "role"},
-				"roles": []
-			}
-		}
+    """The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'."""
+    def __init__(self, Bot):
+        self.bot = Bot
+        self.autogen_db = SelfAssignSingle
 
-	@commands.Cog.listener()
-	async def on_guild_role_delete(self, role):
-		"""Cleans up settings on removal of stored IDs."""
-		settings = gs.get(role.guild)
-		sa = settings["self_assign"]
-		for sa_role in sa["roles"]:
-			if int(sa_role) == role.id:
-				sa["roles"].remove(role.id)
-				return settings.update(sa, "self_assign")
+    @commands.Cog.listener()
+    async def on_guild_role_delete(self, role):
+        """Cleans up settings on removal of stored IDs."""
+        with db_session:
+            query = SelfAssignRoles.get(role_id=role.id)
+            if query:
+                query.delete()
 
-	@commands.guild_only()
-	@commands.has_permissions(manage_roles=True)
-	@commands.command(aliases=["sa"])
-	async def selfassign(self, ctx, setting, *, role: discord.Role = None):
-		"""Edits settings for self assign cog. Requires Manage Roles permission.
+    @commands.guild_only()
+    @commands.has_permissions(manage_roles=True)
+    @commands.command(aliases=["sa"])
+    async def selfassign(self, ctx, setting, *, role: discord.Role = None):
+        """Edits settings for self assign cog. Requires Manage Roles permission.
 
-		Options:
-			enable/disable: Enable/disables the cog.
-			add/remove: adds or removes a role that can be self assigned in the server.
+        Options:
+            enable/disable: Enable/disables the cog.
+            add/remove: adds or removes a role that can be self assigned in the server.
 
-		Example:
-			Turn on self assigned roles and add a role called "ROLE"
-			`;sa enable`
-			`;sa add ROLE`
-		"""
-		settings = roxbot.guild_settings.get(ctx.guild)
-		self_assign = settings["self_assign"]
-		setting = setting.lower()
+        Example:
+            Turn on self assigned roles and add a role called "ROLE"
+            `;sa enable`
+            `;sa add ROLE`
+        """
+        with db_session:
+            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
+            if setting == "enable":
+                self_assign.enabled = True
+                await ctx.send("'self_assign' was enabled!")
+            elif setting == "disable":
+                self_assign.enabled = False
+                await ctx.send("'self_assign' was disabled :cry:")
+            elif setting == "add":
+                try:
+                    SelfAssignRoles(role_id=role.id, guild_id=ctx.guild.id)
+                    await ctx.send('Role "{}" added'.format(str(role)))
+                except AttributeError:
+                    raise commands.BadArgument("Could not find that role.")
+                except TransactionIntegrityError:
+                    raise commands.BadArgument("{} is already a self-assignable role.".format(role.name))
+            elif setting == "remove":
+                try:
+                    query = SelfAssignRoles.get(role_id=role.id)
+                    if query:
+                        query.delete()
+                        return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
+                    else:
+                        return await ctx.send("That role was not in the list.")
+                except AttributeError:
+                    raise commands.BadArgument("Could not find that role.")
+            else:
+                return await ctx.send("No valid option given.")
 
+    @commands.guild_only()
+    @commands.command(pass_context=True)
+    async def listroles(self, ctx):
+        """
+        List's all roles that can be self-assigned on this server.
+        """
+        with db_session:
+            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
+            roles = select(r for r in SelfAssignRoles if r.guild_id == ctx.guild.id)[:]
 
-		if setting == "enable":
-			self_assign["enabled"] = 1
-			await ctx.send("'self_assign' was enabled!")
-		elif setting == "disable":
-			self_assign["enabled"] = 0
-			await ctx.send("'self_assign' was disabled :cry:")
-		elif setting == "add":
-			try:
-				if role.id in self_assign["roles"]:
-					return await ctx.send("{} is already a self-assignable role.".format(role.name))
-				self_assign["roles"].append(role.id)
-				await ctx.send('Role "{}" added'.format(str(role)))
-			except AttributeError:
-				raise commands.BadArgument("Could not find that role.")
-		elif setting == "remove":
-			try:
-				if role.id in self_assign["roles"]:
-					self_assign["roles"].remove(role.id)
-					await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-				else:
-					return await ctx.send("That role was not in the list.")
-			except AttributeError:
-				raise commands.BadArgument("Could not find that role.")
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(self_assign, "self_assign")
+        if not self_assign.enabled:
+            embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
+            return await ctx.send(embed=embed)
 
-	@commands.guild_only()
-	@commands.command(pass_context=True)
-	async def listroles(self, ctx):
-		"""
-		List's all roles that can be self-assigned on this server.
-		"""
-		settings = gs.get(ctx.guild)
-		paginator = commands.Paginator(prefix="`", suffix="`")
+        paginator = commands.Paginator(prefix="`", suffix="`")
+        paginator.add_line("The self-assignable roles for this server are: \n")
 
-		if not settings["self_assign"]["enabled"]:
-			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
-			return await ctx.send(embed=embed)
+        for role in roles:
+            r = ctx.guild.get_role(role.role_id)
+            if r:
+                paginator.add_line("- {}".format(r.name))
 
-		paginator.add_line("The self-assignable roles for this server are: \n")
-		for role in settings["self_assign"]["roles"]:
-			for serverrole in ctx.guild.roles:
-				if role == serverrole.id:
-					paginator.add_line("- {}".format(serverrole.name))
+        for page in paginator.pages:
+            await ctx.send(page)
 
-		for page in paginator.pages:
-			await ctx.send(page)
+    @commands.guild_only()
+    @commands.command(pass_context=True)
+    async def iam(self, ctx, *, role: discord.Role):
+        """
+        Self-assign yourself a role. Can only be done one role at a time.
 
-	@commands.guild_only()
-	@commands.command(pass_context=True)
-	async def iam(self, ctx, *, role: discord.Role):
-		"""
-		Self-assign yourself a role. Can only be done one role at a time.
+        Example:
+            .iam OverwatchPing
+        """
+        with db_session:
+            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
+            query = SelfAssignRoles.get(role_id=role.id)
 
-		Example:
-			.iam OverwatchPing
-		"""
-		settings = gs.get(ctx.guild)
+        if not self_assign.enabled:
+            embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
+            return await ctx.send(embed=embed)
 
-		if not settings["self_assign"]["enabled"]:
-			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
-			return await ctx.send(embed=embed)
+        member = ctx.author
 
-		member = ctx.author
+        if role in member.roles:
+            return await ctx.send("You already have that role.")
 
-		if role in member.roles:
-			return await ctx.send("You already have that role.")
+        if query:
+            await member.add_roles(role, reason="'iam' command triggered.")
+            return await ctx.send("Yay {}! You now have the {} role!".format(member.mention, role.name))
+        else:
+            return await ctx.send("That role is not self-assignable.")
 
-		if role.id in settings["self_assign"]["roles"]:
-			await member.add_roles(role, reason="'iam' command triggered.")
-			return await ctx.send("Yay {}! You now have the {} role!".format(member.mention, role.name))
-		else:
-			return await ctx.send("That role is not self-assignable.")
+    @commands.guild_only()
+    @commands.command(pass_context=True)
+    async def iamn(self, ctx, *, role: discord.Role):
+        """
+        Remove a self-assigned role. Can only be done one role at a time.
 
-	@commands.guild_only()
-	@commands.command(pass_context=True)
-	async def iamn(self, ctx, *, role: discord.Role):
-		"""
-		Remove a self-assigned role. Can only be done one role at a time.
+        Example:
+            .iamn OverwatchPing
+        """
+        with db_session:
+            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
+            query = SelfAssignRoles.get(role_id=role.id)
 
-		Example:
-			.iamn OverwatchPing
-		"""
-		settings = gs.get(ctx.guild)
+        if not self_assign.enabled:
+            embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
+            return await ctx.send(embed=embed)
 
-		if not settings["self_assign"]["enabled"]:
-			embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
-			return await ctx.send(embed=embed)
+        member = ctx.author
 
-		member = ctx.author
-
-		if role in member.roles and role.id in settings["self_assign"]["roles"]:
-			await member.remove_roles(role, reason="'iamn' command triggered.")
-			return await ctx.send("{} has been successfully removed.".format(role.name))
-		elif role not in member.roles and role.id in settings["self_assign"]["roles"]:
-			return await ctx.send("You do not have {}.".format(role.name))
-		else:
-			return await ctx.send("That role is not self-assignable.")
+        if role in member.roles and query:
+            await member.remove_roles(role, reason="'iamn' command triggered.")
+            return await ctx.send("{} has been successfully removed.".format(role.name))
+        elif role not in member.roles and query:
+            return await ctx.send("You do not have {}.".format(role.name))
+        else:
+            return await ctx.send("That role is not self-assignable.")
 
 
 def setup(Bot):
-	Bot.add_cog(SelfAssign(Bot))
+    Bot.add_cog(SelfAssign(Bot))

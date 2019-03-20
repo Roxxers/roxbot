@@ -1478,8 +1478,6 @@ Command Structure:
 
 Args: 
 
-- `--mobile`/`-m` - Launches the game in a mobile compatible mode. In case rich embeds are not readable, especially for Android users.
-
 - `--solo`/`-s` - Skips waiting for users to join and launches the game immediately. Useful for users just wanting to play solo.
 
 - `--length`/`-l` - Takes option for the length of the game. Acceptable options are `short` (5 Questions), `medium` (10), and `long` (15).
@@ -1490,8 +1488,8 @@ Examples:
 # Start a standard trivia game
 ;trivia start
 
-# Start a mobile compatible solo game of Roxbot Trivia
-;tr start -ms
+# Start a solo game of Roxbot Trivia
+;tr start -s
 
 # Start a solo short game
 ;tr start --solo --length short

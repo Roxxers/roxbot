@@ -27,13 +27,13 @@ from enum import IntEnum
 
 
 class EmbedColours(IntEnum):
-	pink       = 0xDEADBF  # Roxbot Pink
-	yellow     = 0xFDDF86  # Roxbot Yellow
-	blue       = 0x6F90F5  # Roxbot Blue
-	orange     = 0xdd8d16  # Used for warnings (not the admin cog command)
-	red        = 0xe74c3c  # Used for errors
-	dark_red   = 0x992d22  # Used for on_command_error
-	frog_green = 0x4C943D  # Used for FROGTIPS
-	triv_green = 0x1fb600  # Used for the correct answer in trivia
-	gold       = 0xd4af3a  # Used for displaying the winner in trivia
-	magic_8    = 0x3b0072  # Used for magic 8 ball command (dark blue/violet)
+    pink       = 0xDEADBF  # Roxbot Pink
+    yellow     = 0xFDDF86  # Roxbot Yellow
+    blue       = 0x6F90F5  # Roxbot Blue
+    orange     = 0xdd8d16  # Used for warnings (not the admin cog command)
+    red        = 0xe74c3c  # Used for errors
+    dark_red   = 0x992d22  # Used for on_command_error
+    frog_green = 0x4C943D  # Used for FROGTIPS
+    triv_green = 0x1fb600  # Used for the correct answer in trivia
+    gold       = 0xd4af3a  # Used for displaying the winner in trivia
+    magic_8    = 0x3b0072  # Used for magic 8 ball command (dark blue/violet)

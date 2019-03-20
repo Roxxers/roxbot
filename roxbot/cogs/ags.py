@@ -24,137 +24,79 @@
 
 
 import datetime
-import typing
-
 import discord
 from discord.ext import commands
 
 import roxbot
 
-ags_id = 393764974444675073
-selfieperms = 394939389823811584
-nsfwimageperms = 394941004043649036
-newbie = 450042170112475136
-tat_token = roxbot.config["Tokens"]["Tatsumaki"]
-
-
-def is_ags():
-	return commands.check(lambda ctx: ctx.guild.id == ags_id)
-
-
-async def tatsumaki_api_call(member, guild):
-	base = "https://api.tatsumaki.xyz/"
-	url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
-	return await roxbot.http.api_request(url, headers={"Authorization": tat_token})
-
 
 class AssortedGenderSounds(commands.Cog):
-	"""Custom Cog for the AssortedGenderSounds Discord Server."""
-	def __init__(self, bot_client):
-		self.bot = bot_client
-		self.acceptable_roles = (nsfwimageperms, selfieperms)
-		self.settings = {
-			"limited_to_guild": str(ags_id),
-			"ags": {
-				"log_channel": "",
-				"required_days": "",
-				"required_score": "",
-			}
-		}
+    """Custom Cog for the AssortedGenderSounds Discord Server."""
+    def __init__(self, bot_client):
+        self.bot = bot_client
+        self.required_score = 2000
+        self.days = 5
+        self.logging_channel_id = 394959819796381697
+        self.newbie_role_id = 450042170112475136
+        self.selfie_role_id = 394939389823811584
+        self.ags_id = 393764974444675073
+        self.tat_token = roxbot.config["Tokens"]["Tatsumaki"]
+        self.bot.add_listener(self.grab_objects, "on_ready")
+        self.ags = None
+        self.selfie_role = None
+        self.newbie_role = None
+        self.logging_channel = None
 
-	@commands.Cog.listener()
-	async def on_member_join(self, member):
-		if member.guild.id == ags_id:
-			role = member.guild.get_role(newbie)
-			await member.add_roles(role, reason="Auto-add role on join")
-			await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
+    async def cog_check(self, ctx):
+        return ctx.guild.id == self.ags_id
 
-	@commands.command()
-	async def agree(self, ctx):
-		role = ctx.guild.get_role(newbie)
-		try:
-			return await ctx.author.remove_roles(role, reason="User has agreed the rules and has been given access to the server.")
-		except discord.HTTPException:
-			pass
+    async def grab_objects(self):
+        self.ags = self.bot.get_guild(self.ags_id)
+        self.selfie_role = self.ags.get_role(self.selfie_role_id)
+        self.newbie_role = self.ags.get_role(self.newbie_role_id)
+        self.logging_channel = self.ags.get_channel(self.logging_channel_id)
 
-	@commands.command(hidden=True)
-	async def perms(self, ctx, role):
-		"""Shell command to do the perm assigning. Only should be invoked by another command."""
-		# Just in case some cunt looks at the source code and thinks they can give themselves Admin.
-		if role.id not in self.acceptable_roles:
-			return False
-		settings = roxbot.guild_settings.get(ctx.guild)
-		member = ctx.author
-		required_score = settings["ags"]["required_score"]
-		days = int(settings["ags"]["required_days"])
-		data = await tatsumaki_api_call(member, ctx.guild)
-		if data is None:
-			return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
+    @commands.Cog.listener()
+    async def on_member_join(self, member):
+        if member.guild == self.ags:
+            await member.add_roles(self.newbie_role, reason="Auto-add role on join")
+            await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
 
-		if role in member.roles:
-			await member.remove_roles(role, reason="Requested removal of {0.name}".format(role))
-			return await ctx.send("You already had {0.name}. It has now been removed.".format(role))
+    async def tatsumaki_api_call(self, member, guild):
+        base = "https://api.tatsumaki.xyz/"
+        url = base + "guilds/" + str(guild.id) + "/members/" + str(member.id) + "/stats"
+        return await roxbot.http.api_request(url, headers={"Authorization": self.tat_token})
 
-		time = datetime.datetime.now() - ctx.author.joined_at
+    @commands.command()
+    async def agree(self, ctx):
+        try:
+            return await ctx.author.remove_roles(self.newbie_role, reason="User has agreed the rules and has been given access to the server.")
+        except discord.HTTPException:
+            pass
 
-		if time > datetime.timedelta(days=days) and int(data["score"]) >= required_score:
-			await member.add_roles(role, reason="Requested {0.name}".format(role))
-			await ctx.send("You now have the {0.name} role".format(role))
-		else:
-			return await ctx.send(
-				"You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(required_score, days)
-			)
+    @commands.command(name="selfieperms")
+    async def selfie_perms(self, ctx):
+        """Requests the selfie perm role."""
+        member = ctx.author
 
-	@is_ags()
-	@commands.command()
-	async def selfieperms(self, ctx):
-		"""Requests the selfie perm role."""
-		arg = None
-		for role in ctx.guild.roles:
-			if role.id == selfieperms:
-				arg = role
-		if not arg:
-			return ctx.send("Error, message roxie thanks.")
-		return await ctx.invoke(self.perms, role=arg)
+        data = await self.tatsumaki_api_call(member, ctx.guild)
+        if data is None:
+            return await ctx.send("Tatsumaki API call returned nothing. Maybe the API is down?")
 
-	#@is_not_nsfw_disabled()
-	@is_ags()
-	@commands.command(hidden=True, enabled=False)
-	async def nsfwperms(self, ctx):
-		"""Requests the NSFW Image Perm role."""
-		arg = None
-		for role in ctx.guild.roles:
-			if role.id == nsfwimageperms:
-				arg = role
-		if not arg:
-			return ctx.send("Error, message roxie thanks.")
-		return await ctx.invoke(self.perms, role=arg)
+        if self.selfie_role in member.roles:
+            await member.remove_roles(self.selfie_role, reason="Requested removal of {0.name}".format(self.selfie_role))
+            return await ctx.send("You already had {0.name}. It has now been removed.".format(self.selfie_role))
 
-	@commands.command()
-	async def ags(self, ctx, selection, amount: typing.Optional[int], *, channel: typing.Optional[discord.TextChannel] = None):
-		selection = selection.lower()
-		settings = roxbot.guild_settings.get(ctx.guild)
-		ags = settings["ags"]
+        time = datetime.datetime.now() - ctx.author.joined_at
 
-		if selection == "log_channel":
-			if not channel:
-				channel = ctx.channel
-			elif ctx.message.channel_mentions:
-				channel = ctx.channel_mentions[0]
-			else:
-				channel = ctx.guild.get_channel(channel)
-			ags["log_channel"] = channel.id
-			await ctx.send("Logging Channel set to '{}'".format(channel.name))
-		elif selection == "required_days":
-			ags["required_days"] = amount
-			await ctx.send("Required days set to '{}'".format(str(amount)))
-		elif selection == "required_score":
-			ags["required_score"] = amount
-			await ctx.send("Required score set to '{}'".format(str(amount)))
-		else:
-			return await ctx.send("No valid option given.")
-		return settings.update(ags, "ags")
+        if time > datetime.timedelta(days=self.days) and int(data["score"]) >= self.required_score:
+            await member.add_roles(self.selfie_role, reason="Requested {0.name}".format(self.selfie_role))
+            await ctx.send("You now have the {0.name} role".format(self.selfie_role))
+        else:
+            return await ctx.send(
+                "You do not meet the requirements for this role. You need at least {} score with <@!172002275412279296> and to have been in the server for {} days.".format(self.required_score, self.days)
+            )
 
 
 def setup(bot_client):
-	bot_client.add_cog(AssortedGenderSounds(bot_client))
+    bot_client.add_cog(AssortedGenderSounds(bot_client))

@@ -28,8 +28,8 @@ import configparser
 
 
 if not os.path.isfile("roxbot/settings/roxbot.conf"):
-	print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
-	exit(1)
+    print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
+    exit(1)
 
 
 config = configparser.ConfigParser()

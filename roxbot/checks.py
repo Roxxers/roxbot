@@ -24,25 +24,26 @@
 
 
 import roxbot
+from roxbot.db import *
 
 import discord
 from discord.ext import commands
 
 
 def has_permissions_or_owner(**perms):
-	def pred(ctx):
-		return roxbot.utils.has_permissions_or_owner(ctx, **perms)
-	return commands.check(pred)
+    def pred(ctx):
+        return roxbot.utils.has_permissions_or_owner(ctx, **perms)
+    return commands.check(pred)
 
 
 def is_nsfw():
-	"""A :func:`.check` that checks if the channel is a NSFW channel or a DM channel."""
-	def pred(ctx):
-		is_dm_channel = bool(isinstance(ctx.channel, discord.DMChannel))
-		is_nsfw_guild_channel = bool(isinstance(ctx.channel, discord.TextChannel) and ctx.channel.is_nsfw())
-		if is_nsfw_guild_channel:
-			nsfw_enabled = bool(roxbot.guild_settings.get(ctx.guild)["nsfw"]["enabled"])
-			return nsfw_enabled
-		else:
-			return is_dm_channel
-	return commands.check(pred)
+    """A :func:`.check` that checks if the channel is a NSFW channel or a DM channel."""
+    def pred(ctx):
+        is_dm_channel = bool(isinstance(ctx.channel, discord.DMChannel))
+        is_nsfw_guild_channel = bool(isinstance(ctx.channel, discord.TextChannel) and ctx.channel.is_nsfw())
+        if is_nsfw_guild_channel:
+            with db_session:
+                return bool(db.get("SELECT `enabled` FROM `NSFWSingle` WHERE `guild_id` = '{}'".format(ctx.guild.id)))
+        else:
+            return is_dm_channel
+    return commands.check(pred)

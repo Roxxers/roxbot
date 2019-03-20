@@ -1,5 +1,37 @@
+## 2.2.0
+
+
+### Changelog
+
+#### Trivia
+
+Trivia has seen a entire overhaul. Users will hopefully notice the improved user experience. Under the hood, Trivia is entirely refactored and is a much easier code base to maintain.
+
+ - Better time/score calculation that should reflect the timer on the question better.
+ - Timer added between each question.
+ - New reaction method of joining and leaving games while not active (not asking questions).
+ - Ties are now possible and having the same score is now handled and correctly displayed.
+ - Fixed error that didn't allow new games to be made after an error in the game.
+
+#### Config Storage
+Roxbot now uses sqlite for guild settings. This hopefully will lead the more possibilities in developing Roxbot cogs. 
+
+ - Entire guild settings system for cogs has been converted to sqlite from json. This will be done automatically for updating instances.
+ 
+#### Other changes
+ - Sanitation added to filenames using the `avatar` command to fix a error for users with illegal characters in their usernames.
+ - Fixed error when using `aethetics` and `zalgo` were used in dms.
+
+---
+
+#### Update Notes
+
+To update, just `git pull` inside of the working directory. Make sure to update dependencies using `python3 -m pip install -Ur requirements.txt` in your venv before you run the bot.
+
+Updating to the sqlite system should backup your json files in a new directory (servers.old). This will not be needed after the first time you run Roxbot after the update.
+
 ## v2.1.3
- **BEFORE UPDATING, UPDATE ALL DEPENDANCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
+ **BEFORE UPDATING, UPDATE ALL DEPENDENCIES USING** `python3 -m pip install -Ur requirements.txt` **IN YOUR VENV**
  - Moved over cogs to use new method introduced in the rewrite of discord.py
  - Changed wording of the role not found errors.
 
