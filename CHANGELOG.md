@@ -1,5 +1,17 @@
-## 2.2.0
+## 2.2.1
 
+### Changelog
+
+- fixed bug where single player trivia games broke at the end
+
+---
+
+### Update Notes
+
+To update, just `git pull` inside of the working directory. Make sure to update dependencies using `python3 -m pip install -Ur requirements.txt` in your venv before you run the bot.
+
+
+## 2.2.0
 
 ### Changelog
 

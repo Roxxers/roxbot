@@ -170,8 +170,6 @@ class Leaderboard:
             self.diffs[player] = 0
 
 
-
-
 class TriviaGame:
     """
     Trivia Game Object
@@ -418,15 +416,14 @@ class TriviaGame:
 
             ranks = self.leaderboard.ranks_from_scores
 
-            if final_scores[0][1] == final_scores[1][1]:
-                # This means there is a tie of any size for first place
-                winner_text = "It's a tie! With a score of {}...".format(final_scores[0][1])
-            else:
-                winner = self.ctx.guild.get_member(final_scores[0][0])
-                winning_score = final_scores[0][1]
-                winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
+            winner = self.ctx.guild.get_member(final_scores[0][0])
+            winning_score = final_scores[0][1]
+            winner_text = "{0} won with a score of {1}".format(winner.mention, winning_score)
 
             if len(final_scores) > 1:
+                if final_scores[0][1] == final_scores[1][1]:
+                    # This means there is a tie of any size for first place
+                    winner_text = "It's a tie! With a score of {}...".format(final_scores[0][1])
                 results_text = "\n\nResults:\n"
                 prev_pos = 0
                 for player in final_scores:
