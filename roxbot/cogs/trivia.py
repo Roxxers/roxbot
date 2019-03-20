@@ -303,10 +303,11 @@ class TriviaGame:
             sleep = 20
 
         self.start_message = await self.ctx.send(embed=embed)
-        await self.start_message.add_reaction(self.correct_emoji)
-        await self.start_message.add_reaction(self.incorrect_emoji)
-        await asyncio.sleep(sleep)
-        await self.start_message.clear_reactions()
+        if not self.solo:
+            await self.start_message.add_reaction(self.correct_emoji)
+            await self.start_message.add_reaction(self.incorrect_emoji)
+            await asyncio.sleep(sleep)
+            await self.start_message.clear_reactions()
 
         # Checks if there is any players to play the game still
         if not self.leaderboard.players:

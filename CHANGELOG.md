@@ -3,10 +3,11 @@
 ### Changelog
 
 - fixed bug where single player trivia games broke at the end
+- fixed join leave reactions in a trivia game showing for a solo game
 
 ---
 
-### Update Notes
+#### Update Notes
 
 To update, just `git pull` inside of the working directory. Make sure to update dependencies using `python3 -m pip install -Ur requirements.txt` in your venv before you run the bot.
 
