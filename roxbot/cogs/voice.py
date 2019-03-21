@@ -431,7 +431,7 @@ class Voice(commands.Cog):
                 self.skip_votes[ctx.guild.id].append(ctx.author)
                 # -1 due to the bot being counted in the members generator
                 ratio = len(self.skip_votes[ctx.guild.id]) / (len(ctx.voice_client.channel.members) - 1)
-                needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice["skip_ratio"])
+                needed_users = ceil((len(ctx.voice_client.channel.members) - 1) * voice.skip_ratio)
                 if ratio >= voice.skip_ratio:
                     await ctx.send("{} voted the skip the video.".format(ctx.author))
                     await ctx.send("Votes to skip now playing has been met. Skipping video...")

@@ -1,3 +1,16 @@
+## 2.2.2
+
+### Changelog
+
+- fixed error that stopped users being able to vote skip a song when vote skip is enabled
+
+---
+
+#### Update Notes
+
+To update, just `git pull` inside of the working directory. Make sure to update dependencies using `python3 -m pip install -Ur requirements.txt` in your venv before you run the bot.
+
+
 ## 2.2.1
 
 ### Changelog
