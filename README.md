@@ -27,14 +27,13 @@ Find out how to install Roxbot to your Linux machine [here](https://roxxers.gith
 If you want Roxbot support, a support Discord can be found by clicking the Discord banner at the top of the readme or clicking [here](https://discord.gg/Mpz8nv7),
 
 ## Support Me and Roxbot <small>If you want/can</small>
-
 Check out my Patreon to help support Roxbot development!
 
-<a href="https://www.patreon.com/bePatron?u=18270848" data-patreon-widget-type="become-patron-button">Become a Patron!</a><script async src="https://c6.patreon.com/becomePatronButton.bundle.js"></script>
+<a href="https://patreon.com/Roxxers" target="_blank" alt="Roxxers' Patreon"><img name="Support me on Patreon!" src="https://c5.patreon.com/external/logo/become_a_patron_button@2x.png" height=36px></a>
 
 For one time payments, Ko-Fi can be used!
 
-[![KoFi](https://i.imgur.com/IE2Qg79.png)](https://ko-fi.com/roxxers)
+<a href="https://ko-fi.com/roxxers" target="_blank" alt="Roxxers' Kofi"><img name="Support me on Kofi!" src="https://i.imgur.com/IE2Qg79.png" height=36px></a>
 
 
 ## Supporters
