@@ -1,4 +1,4 @@
-[![Banner](https://i.imgur.com/TltWlJN.png)](https://github.com/Roxxers)
+[![Banner](docs/assets/images/roxbotbanner.png)](https://github.com/Roxxers)
 
 [![MIT](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot/blob/master/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.7%2B-blue.svg?style=for-the-badge&maxAge=300)](https://gitlab.roxxers.xyz/roxxers/roxbot)
