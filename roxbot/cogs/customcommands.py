@@ -128,15 +128,15 @@ class CustomCommands(commands.Cog):
         with db_session:
             if msg.startswith(self.bot.command_prefix):
                 command_name = msg.split(self.bot.command_prefix)[1]
-                command = CCCommands.get(name=command_name, guild_id=message.guild.id)
                 try:
+                    command = CCCommands.get(name=command_name, guild_id=message.guild.id)
                     if command.type == 1:
                         output = self._get_output(command.output)
                         return await channel.send(output)
                     elif command.type == 2:
                         embed = self._cc_to_embed(command.output)
                         return await channel.send(embed=embed)
-                except AttributeError:
+                except (ValueError, AttributeError):
                     pass
             else:
                 try:
