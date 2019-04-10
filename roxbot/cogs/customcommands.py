@@ -24,6 +24,7 @@
 
 
 import random
+from pony import orm
 
 import discord
 from discord.ext import commands
@@ -32,12 +33,6 @@ import roxbot
 from roxbot.db import *
 
 
-class CCCommands(db.Entity):
-    name = Required(str)
-    output = Required(Json)
-    type = Required(int, py_check=lambda val: 0 <= val <= 2)
-    guild_id = Required(int, size=64)
-    composite_key(name, guild_id, type)
 
 
 class CustomCommands(commands.Cog):
@@ -62,9 +57,17 @@ class CustomCommands(commands.Cog):
         self.bot = bot_client
         self.embed_fields = ("title", "description", "colour", "color", "footer", "image", "thumbnail", "url")
 
+    def define_tables(self, db):
+        class CCCommands(db.Entity):
+            name = orm.Required(str)
+            output = orm.Required(orm.Json)
+            type = orm.Required(int, py_check=lambda val: 0 <= val <= 2)
+            guild_id = orm.Required(int, size=64)
+            orm.composite_key(name, guild_id, type)
+
     @staticmethod
     def _get_output(command):
-        # Check for a list as the output. If so, randomly select a item from the list.
+        # Check for a list as the output. If so, randomly orm.select a item from the list.
         return random.choice(command)
 
     @staticmethod
@@ -129,7 +132,7 @@ class CustomCommands(commands.Cog):
             if msg.startswith(self.bot.command_prefix):
                 command_name = msg.split(self.bot.command_prefix)[1]
                 try:
-                    command = CCCommands.get(name=command_name, guild_id=message.guild.id)
+                    command = db.CCCommands.get(name=command_name, guild_id=message.guild.id)
                     if command.type == 1:
                         output = self._get_output(command.output)
                         return await channel.send(output)
@@ -140,7 +143,7 @@ class CustomCommands(commands.Cog):
                     pass
             else:
                 try:
-                    command = CCCommands.get(name=msg, guild_id=message.guild.id, type=0)
+                    command = db.CCCommands.get(name=msg, guild_id=message.guild.id, type=0)
                     if command:
                         output = self._get_output(command.output)
                         return await channel.send(output)
@@ -207,14 +210,13 @@ class CustomCommands(commands.Cog):
                 raise roxbot.UserError(self.ERROR_OUTPUT_TOO_LONG)
             elif command in self.bot.all_commands.keys() and command_type == 1:
                 raise roxbot.UserError(self.ERROR_COMMAND_EXISTS_INTERNAL)
-            elif select(c for c in CCCommands if c.name == command and c.guild_id == ctx.guild.id).exists():
+            elif orm.select(c for c in db.CCCommands if c.name == command and c.guild_id == ctx.guild.id).exists():
                 raise roxbot.UserError(self.ERROR_COMMAND_EXISTS)
             elif len(command.split(" ")) > 1 and command_type == "1":
                 raise roxbot.UserError(self.ERROR_PREFIX_SPACE)
 
 
-            CCCommands(name=command, guild_id=ctx.guild.id, output=output, type=command_type)
-
+            db.CCCommands(name=command, guild_id=ctx.guild.id, output=output, type=command_type)
         return await ctx.send(self.OUTPUT_ADD.format(command, output if len(output) > 1 or isinstance(output, dict) else output[0]))
 
     @commands.has_permissions(manage_messages=True)
@@ -236,7 +238,7 @@ class CustomCommands(commands.Cog):
             raise commands.BadArgument("Missing required argument: edit")
 
         with db_session:
-            query = CCCommands.get(name=command.lower(), guild_id=ctx.guild.id)
+            query = db.CCCommands.get(name=command.lower(), guild_id=ctx.guild.id)
             if query:
                 if query.type == 2:
                     if len(edit) < 2:
@@ -266,7 +268,7 @@ class CustomCommands(commands.Cog):
         command = command.lower()
 
         with db_session:
-            c = CCCommands.get(name=command, guild_id=ctx.guild.id)
+            c = db.CCCommands.get(name=command, guild_id=ctx.guild.id)
             if c:
                 c.delete()
                 return await ctx.send(self.OUTPUT_REMOVE.format(command))
@@ -280,9 +282,9 @@ class CustomCommands(commands.Cog):
             debug = "0"
 
         with db_session:
-            no_prefix_commands = select(c for c in CCCommands if c.type == 0 and c.guild_id == ctx.guild.id)[:]
-            prefix_commands = select(c for c in CCCommands if c.type == 1 and c.guild_id == ctx.guild.id)[:]
-            embed_commands = select(c for c in CCCommands if c.type == 2 and c.guild_id == ctx.guild.id)[:]
+            no_prefix_commands = orm.select(c for c in db.CCCommands if c.type == 0 and c.guild_id == ctx.guild.id)[:]
+            prefix_commands = orm.select(c for c in db.CCCommands if c.type == 1 and c.guild_id == ctx.guild.id)[:]
+            embed_commands = orm.select(c for c in db.CCCommands if c.type == 2 and c.guild_id == ctx.guild.id)[:]
 
         def add_commands(commands, paginator):
             if not commands:

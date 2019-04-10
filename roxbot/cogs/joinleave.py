@@ -24,21 +24,13 @@
 
 
 import typing
+from pony import orm
 
 import discord
 from discord.ext import commands
 
 import roxbot
 from roxbot.db import *
-
-
-class JoinLeaveSingle(db.Entity):
-    greets_enabled = Required(bool, default=False)
-    goodbyes_enabled = Required(bool, default=False)
-    greets_channel_id = Optional(int, nullable=True, size=64)
-    goodbyes_channel_id = Optional(int, nullable=True, size=64)
-    greets_custom_message = Optional(str, nullable=True)
-    guild_id = Required(int, size=64, unique=True)
 
 
 class JoinLeave(commands.Cog):
@@ -48,7 +40,17 @@ class JoinLeave(commands.Cog):
 
     def __init__(self, bot_client):
         self.bot = bot_client
-        self.autogen_db = JoinLeaveSingle
+
+    def define_tables(self, db):
+        class JoinLeaveSingle(db.Entity):
+            greets_enabled = orm.Required(bool, default=False)
+            goodbyes_enabled = orm.Required(bool, default=False)
+            greets_channel_id = orm.Optional(int, nullable=True, size=64)
+            goodbyes_channel_id = orm.Optional(int, nullable=True, size=64)
+            greets_custom_message = orm.Optional(str, nullable=True)
+            guild_id = orm.Required(int, size=64, unique=True)
+
+        self.autogen_db = db.JoinLeaveSingle
 
     @commands.Cog.listener()
     async def on_member_join(self, member):
@@ -58,7 +60,7 @@ class JoinLeave(commands.Cog):
         if member == self.bot.user:
             return
         with db_session:
-            settings = JoinLeaveSingle.get(guild_id=member.guild.id)
+            settings = db.JoinLeaveSingle.get(guild_id=member.guild.id)
 
         if not settings.greets_enabled:
             return
@@ -82,7 +84,7 @@ class JoinLeave(commands.Cog):
         if member == self.bot.user:
             return
         with db_session:
-            settings = JoinLeaveSingle.get(guild_id=member.guild.id)
+            settings = db.JoinLeaveSingle.get(guild_id=member.guild.id)
         if settings.goodbyes_enabled:
             try:
                 channel = member.guild.get_channel(settings.goodbyes_channel_id)
@@ -95,7 +97,7 @@ class JoinLeave(commands.Cog):
     async def on_guild_channel_delete(self, channel):
         """Cleans up settings on removal of stored IDs."""
         with db_session:
-            settings = JoinLeaveSingle.get(guild_id=channel.guild.id)
+            settings = db.JoinLeaveSingle.get(guild_id=channel.guild.id)
             if channel.id == settings.greets_channel_id:
                 settings.greets_channel_id = None
             if channel.id == settings.goodbyes_channel_id:
@@ -120,7 +122,7 @@ class JoinLeave(commands.Cog):
         """
         setting = setting.lower()
         with db_session:
-            settings = JoinLeaveSingle.get(guild_id=ctx.guild.id)
+            settings = db.JoinLeaveSingle.get(guild_id=ctx.guild.id)
             if setting == "enable":
                 settings.greets_enabled = True
                 await ctx.send("'greets' was enabled!")
@@ -158,7 +160,7 @@ class JoinLeave(commands.Cog):
         """
         setting = setting.lower()
         with db_session:
-            settings = JoinLeaveSingle.get(guild_id=ctx.guild.id)
+            settings = db.JoinLeaveSingle.get(guild_id=ctx.guild.id)
             if setting == "enable":
                 settings.goodbyes_enabled = True
                 await ctx.send("'goodbyes' was enabled!")

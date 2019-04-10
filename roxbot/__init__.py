@@ -29,7 +29,7 @@ from .enums import EmbedColours
 from .config import config
 from .exceptions import UserError, CogSettingDisabled
 
-from . import checks, http, converters, utils, roxbotfacts, exceptions, db
+from . import checks, http, converters, utils, roxbotfacts, exceptions, db, bot
 
 
 command_prefix = config["Roxbot"]["Command_Prefix"]

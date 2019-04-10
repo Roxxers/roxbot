@@ -23,6 +23,8 @@
 # SOFTWARE.
 
 
+from pony import orm
+
 import discord
 from discord.ext import commands
 
@@ -30,27 +32,27 @@ import roxbot
 from roxbot.db import *
 
 
-class SelfAssignRoles(db.Entity):
-    role_id = Required(int, unique=True, size=64)
-    guild_id = Required(int, size=64)
-
-
-class SelfAssignSingle(db.Entity):
-    enabled = Required(bool, default=False)
-    guild_id = Required(int, unique=True, size=64)
-
-
 class SelfAssign(commands.Cog):
     """The SelfAssign cog allows guild's to mark roles as 'self assignable'. This allows users to give themselves these roles and to see all the roles marked as 'self assignable'."""
     def __init__(self, Bot):
         self.bot = Bot
-        self.autogen_db = SelfAssignSingle
+
+    def define_tables(self, db):
+        class SelfAssignRoles(db.Entity):
+            role_id = orm.Required(int, unique=True, size=64)
+            guild_id = orm.Required(int, size=64)
+
+        class SelfAssignSingle(db.Entity):
+            enabled = orm.Required(bool, default=False)
+            guild_id = orm.Required(int, unique=True, size=64)
+
+        self.autogen_db = db.SelfAssignSingle
 
     @commands.Cog.listener()
     async def on_guild_role_delete(self, role):
         """Cleans up settings on removal of stored IDs."""
         with db_session:
-            query = SelfAssignRoles.get(role_id=role.id)
+            query = db.SelfAssignRoles.get(role_id=role.id)
             if query:
                 query.delete()
 
@@ -70,39 +72,36 @@ class SelfAssign(commands.Cog):
             `;sa add ROLE`
         """
         with db_session:
-            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
-        if setting == "enable":
-            with db_session:
+            self_assign = db.SelfAssignSingle.get(guild_id=ctx.guild.id)
+            if setting == "enable":
                 self_assign.enabled = True
+                db.commit()
             await ctx.send("'self_assign' was enabled!")
 
         elif setting == "disable":
             with db_session:
                 self_assign.enabled = False
-            await ctx.send("'self_assign' was disabled :cry:")
-
-        elif setting == "add":
-            try:
-                with db_session:
-                    SelfAssignRoles(role_id=role.id, guild_id=ctx.guild.id)
-                return await ctx.send('Role "{}" added'.format(str(role)))
-            except AttributeError:
-                raise commands.BadArgument("Could not find that role.")
-            except TransactionIntegrityError:
-                raise commands.BadArgument("{} is already a self-assignable role.".format(role.name))
-
-        elif setting == "remove":
-            try:
-                with db_session:
-                    query = SelfAssignRoles.get(role_id=role.id)
-                if query:
-                    with db_session:
+                db.commit()
+                await ctx.send("'self_assign' was disabled :cry:")
+            elif setting == "add":
+                    db.SelfAssignRoles(role_id=role.id, guild_id=ctx.guild.id)
+                    db.commit()
+                    await ctx.send('Role "{}" added'.format(str(role)))
+                except AttributeError:
+                    raise commands.BadArgument("Could not find that role.")
+                except TransactionIntegrityError:
+                    raise commands.BadArgument("{} is already a self-assignable role.".format(role.name))
+            elif setting == "remove":
+                try:
+                    query = db.SelfAssignRoles.get(role_id=role.id)
+                    if query:
                         query.delete()
-                    return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-                else:
-                    return await ctx.send("That role was not in the list.")
-            except AttributeError:
-                raise commands.BadArgument("Could not find that role.")
+                        db.commit()
+                        return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
+                    else:
+                        return await ctx.send("That role was not in the list.")
+                except AttributeError:
+                    raise commands.BadArgument("Could not find that role.")
         else:
             return await ctx.send("No valid option given.")
 
@@ -113,8 +112,8 @@ class SelfAssign(commands.Cog):
         List's all roles that can be self-assigned on this server.
         """
         with db_session:
-            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
-            roles = select(r for r in SelfAssignRoles if r.guild_id == ctx.guild.id)[:]
+            self_assign = db.SelfAssignSingle.get(guild_id=ctx.guild.id)
+            roles = orm.select(r for r in db.SelfAssignRoles if r.guild_id == ctx.guild.id)[:]
 
         if not self_assign.enabled:
             embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
@@ -141,8 +140,8 @@ class SelfAssign(commands.Cog):
             .iam OverwatchPing
         """
         with db_session:
-            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
-            query = SelfAssignRoles.get(role_id=role.id)
+            self_assign = db.SelfAssignSingle.get(guild_id=ctx.guild.id)
+            query = db.SelfAssignRoles.get(role_id=role.id)
 
         if not self_assign.enabled:
             embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")
@@ -169,8 +168,8 @@ class SelfAssign(commands.Cog):
             .iamn OverwatchPing
         """
         with db_session:
-            self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
-            query = SelfAssignRoles.get(role_id=role.id)
+            self_assign = db.SelfAssignSingle.get(guild_id=ctx.guild.id)
+            query = db.SelfAssignRoles.get(role_id=role.id)
 
         if not self_assign.enabled:
             embed = discord.Embed(colour=roxbot.EmbedColours.pink, description="SelfAssignable roles are not enabled on this server")

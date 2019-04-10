@@ -22,6 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from pony import orm
 
 import discord
 from discord.ext import commands
@@ -30,23 +31,24 @@ import roxbot
 from roxbot.db import *
 
 
-class NSFWSingle(db.Entity):
-    enabled = Required(bool, default=False)
-    blacklisted_tags = Optional(StrArray)
-    guild_id = Required(int, unique=True, size=64)
-
-
 class NSFW(commands.Cog):
     """The NSFW cog is a collection of commands that post images from popular NSFW sites. """
     def __init__(self, bot_client):
         self.bot = bot_client
         self.cache = {}
-        self.autogen_db = NSFWSingle
+
+    def define_tables(self, db):
+        class NSFWSingle(db.Entity):
+            enabled = orm.Required(bool, default=False)
+            blacklisted_tags = orm.Optional(orm.StrArray)
+            guild_id = orm.Required(int, unique=True, size=64)
+
+        self.autogen_db = db.NSFWSingle
 
     @db_session
     def tag_blacklist(self, guild):
         blacklist = ""
-        blacklist_db = NSFWSingle.get(guild_id=guild.id).blacklisted_tags
+        blacklist_db = db.NSFWSingle.get(guild_id=guild.id).blacklisted_tags
         for tag in blacklist_db:
             blacklist += " -{}".format(tag)
         return blacklist
@@ -133,7 +135,7 @@ class NSFW(commands.Cog):
             ;nsfw removebadtag Roxbot
         """
         with db_session:
-            nsfw_settings = NSFWSingle.get(guild_id=ctx.guild.id)
+            nsfw_settings = db.NSFWSingle.get(guild_id=ctx.guild.id)
             if setting == "enable":
                 nsfw_settings.enabled = True
                 await ctx.send("'nsfw' was enabled!")

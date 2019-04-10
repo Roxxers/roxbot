@@ -29,100 +29,14 @@ import os
 import string
 import typing
 
+from pony import orm
+
 import discord
 import youtube_dl
 from discord.ext import commands
 
 import roxbot
 from roxbot.db import *
-
-
-class LoggingSingle(db.Entity):
-    enabled = Required(bool, default=False)
-    logging_channel_id = Optional(int, nullable=True, size=64)
-    guild_id = Required(int, unique=True, size=64)
-
-
-class Blacklist(db.Entity):
-    user_id = Required(int, unique=True, size=64)
-
-
-class Roxbot(commands.Bot):
-    """Modified client for Roxbot"""
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    @staticmethod
-    def blacklisted(user):
-        """Checks if given user is blacklisted from the bot.
-        Params
-        =======
-        user: discord.User
-
-        Returns
-        =======
-        If the user is blacklisted: bool"""
-        with db_session:
-            return select(u for u in Blacklist if u.user_id == user.id).exists()
-
-    async def delete_option(self, message, delete_emoji=None, timeout=20):
-        """Utility function that allows for you to add a delete option to the end of a command.
-        This makes it easier for users to control the output of commands, esp handy for random output ones.
-
-        Params
-        =======
-        message: discord.Message
-            Output message from Roxbot
-        delete_emoji: discord.Emoji or str if unicode emoji
-            Used as the reaction for the user to click on.
-        timeout: int (Optional)
-            Amount of time in seconds for the bot to wait for the reaction. Deletes itself after the timer runes out.
-            Set to 20 by default
-        """
-        if not delete_emoji:
-            delete_emoji = "❌"
-
-        def check(r, u):
-            return str(r) == str(delete_emoji) and u != message.author and r.message.id == message.id
-
-        await message.add_reaction(delete_emoji)
-
-        try:
-            await self.wait_for("reaction_add", timeout=timeout, check=check)
-            await message.remove_reaction(delete_emoji, self.user)
-            try:
-                await message.remove_reaction(delete_emoji, message.author)
-            except discord.Forbidden:
-                pass
-            await message.edit(content="{} requested output be deleted.".format(message.author), embed=None)
-        except asyncio.TimeoutError:
-            await message.remove_reaction(delete_emoji, self.user)
-
-    async def log(self, guild, command_name, **kwargs):
-        """Logs activity internally for Roxbot. Will only do anything if the server enables internal logging.
-
-        This is mostly used for logging when certain commands are used that can be an issue for admins. Esp when Roxbot outputs
-        something that could break the rules, then deletes their message.
-
-        Params
-        =======
-        guild: discord.Guild
-            Used to check if the guild has logging enabled
-        channel: discord.TextChannel
-        command_name: str
-        kwargs: dict
-            All kwargs and two other params will be added to the logging embed as fields, allowing you to customise the output
-
-        """
-        if guild:
-            with db_session:
-                logging = LoggingSingle.get(guild_id=guild.id)
-            if logging.enabled and logging.logging_channel_id:
-                channel = self.get_channel(logging.logging_channel_id)
-                embed = discord.Embed(title="{} command logging".format(command_name), colour=roxbot.EmbedColours.pink)
-                for key, value in kwargs.items():
-                    embed.add_field(name=key, value=value)
-                return await channel.send(embed=embed)
 
 
 class Core(commands.Cog):
@@ -153,8 +67,16 @@ class Core(commands.Cog):
         self.bot.add_listener(self.log_member_join, "on_member_join")
         self.bot.add_listener(self.log_member_remove, "on_member_remove")
 
-        self.autogen_db = LoggingSingle
+    def define_tables(self, db):
+        class LoggingSingle(db.Entity):
+            enabled = orm.Required(bool, default=False)
+            logging_channel_id = orm.Optional(int, nullable=True, size=64)
+            guild_id = orm.Required(int, unique=True, size=64)
 
+        class Blacklist(db.Entity):
+            user_id = orm.Required(int, unique=True, size=64)
+
+        self.autogen_db = db.LoggingSingle
 
     @staticmethod
     def command_not_found_check(ctx, error):
@@ -163,7 +85,7 @@ class Core(commands.Cog):
             try:
                 with roxbot.db.db_session:
                     is_custom_command = roxbot.db.db.exists('SELECT * FROM CCCommands WHERE name = "{}" AND type IN (1, 2) AND guild_id = {}'.format(ctx.invoked_with, ctx.guild.id))
-            except OperationalError:
+            except orm.OperationalError:
                 # Table doesn't exist
                 is_custom_command = False
             is_emoticon_face = bool(any(x in string.punctuation for x in ctx.message.content.strip(ctx.prefix)[0]))
@@ -260,13 +182,13 @@ class Core(commands.Cog):
     async def cleanup_logging_settings(channel):
         """Cleans up settings on removal of stored IDs."""
         with db_session:
-            settings = LoggingSingle.get(guild_id=channel.guild.id)
+            settings = db.LoggingSingle.get(guild_id=channel.guild.id)
             if settings.logging_channel_id == channel.id:
                 settings.logging_channel_id = None
 
     async def log_member_join(self, member):
         with db_session:
-            settings = LoggingSingle.get(guild_id=member.guild.id)
+            settings = db.LoggingSingle.get(guild_id=member.guild.id)
         if settings.enabled:
             channel = member.guild.get_channel(settings.logging_channel_id)
             embed = discord.Embed(title="{} joined the server".format(member), colour=roxbot.EmbedColours.pink)
@@ -285,7 +207,7 @@ class Core(commands.Cog):
         if member == self.bot.user:
             return
         with db_session:
-            settings = LoggingSingle.get(guild_id=member.guild.id)
+            settings = db.LoggingSingle.get(guild_id=member.guild.id)
         if settings.enabled:
             channel = member.guild.get_channel(settings.logging_channel_id)
             embed = discord.Embed(description="{} left the server".format(member), colour=roxbot.EmbedColours.pink)
@@ -307,7 +229,7 @@ class Core(commands.Cog):
 
         setting = setting.lower()
         with db_session:
-            settings = LoggingSingle.get(guild_id=ctx.guild.id)
+            settings = db.LoggingSingle.get(guild_id=ctx.guild.id)
 
             if setting == "enable":
                 settings.enabled = 1
@@ -390,7 +312,7 @@ class Core(commands.Cog):
             if option in ['+', 'add']:
                 for user in users:
                     try:
-                        Blacklist(user_id=user.id)
+                        db.Blacklist(user_id=user.id)
                         blacklist_amount += 1
                     except TransactionIntegrityError:
                         await ctx.send("{} is already in the blacklist.".format(user))
@@ -398,7 +320,7 @@ class Core(commands.Cog):
 
             elif option in ['-', 'remove']:
                 for user in users:
-                    u = Blacklist.get(user_id=user.id)
+                    u = db.Blacklist.get(user_id=user.id)
                     if u:
                         u.delete()
                         blacklist_amount += 1

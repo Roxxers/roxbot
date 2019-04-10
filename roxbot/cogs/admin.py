@@ -24,25 +24,13 @@
 
 
 import datetime
+from pony import orm
 
 import discord
 from discord.ext import commands
 
 import roxbot
 from roxbot.db import *
-
-
-class AdminSingle(db.Entity):
-    warning_limit = Required(int, default=0)
-    guild_id = Required(int, unique=True, size=64)
-
-
-class AdminWarnings(db.Entity):
-    user_id = Required(int, size=64)
-    warned_by = Required(int, size=64)
-    warning = Optional(str)
-    date = Required(datetime.datetime, unique=True)
-    guild_id = Required(int, size=64)
 
 
 class Admin(commands.Cog):
@@ -82,7 +70,20 @@ class Admin(commands.Cog):
 
     def __init__(self, bot_client):
         self.bot = bot_client
-        self.autogen_db = AdminSingle
+
+    def define_tables(self, db):
+        class AdminSingle(db.Entity):
+            warning_limit = orm.Required(int, default=0)
+            guild_id = orm.Required(int, unique=True, size=64)
+
+        class AdminWarnings(db.Entity):
+            user_id = orm.Required(int, size=64)
+            warned_by = orm.Required(int, size=64)
+            warning = orm.Optional(str)
+            date = orm.Required(datetime.datetime, unique=True)
+            guild_id = orm.Required(int, size=64)
+
+        self.autogen_db = db.AdminSingle
 
     @commands.guild_only()
     @commands.has_permissions(manage_messages=True)
@@ -170,8 +171,8 @@ class Admin(commands.Cog):
 
         # Warning in the settings is a dictionary of user ids. The user ids are equal to a list of dictionaries.
         with db_session:
-            warning_limit = AdminSingle.get(guild_id=ctx.guild.id).warning_limit
-            user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)[:]
+            warning_limit = db.AdminSingle.get(guild_id=ctx.guild.id).warning_limit
+            user_warnings = orm.select(w for w in db.AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)[:]
         amount_warnings = len(user_warnings)
 
         warn_limit = 10
@@ -180,7 +181,7 @@ class Admin(commands.Cog):
             return await ctx.send(embed=embed)
 
         with db_session:
-            AdminWarnings(user_id=user.id, warned_by=ctx.author.id, date=datetime.datetime.utcnow(), warning=warning, guild_id=ctx.guild.id)
+            db.AdminWarnings(user_id=user.id, warned_by=ctx.author.id, date=datetime.datetime.utcnow(), warning=warning, guild_id=ctx.guild.id)
 
         if amount_warnings >= warning_limit > 0:
             await ctx.author.send(self.OK_WARN_ADD_USER_LIMIT_DM.format(str(user), amount_warnings, warning_limit))
@@ -205,7 +206,7 @@ class Admin(commands.Cog):
             paginator = commands.Paginator()
             warnings = {}
             with db_session:
-                for warning in select(warn for warn in AdminWarnings if warn.guild_id == ctx.guild.id)[:]:
+                for warning in orm.select(warn for warn in db.AdminWarnings if warn.guild_id == ctx.guild.id)[:]:
                     if warning.user_id not in warnings:
                         warnings[warning.user_id] = []
                     else:
@@ -227,7 +228,7 @@ class Admin(commands.Cog):
                 return await ctx.send(page)
         else:
             with db_session:
-                user_warnings = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id).order_by(AdminWarnings.date)[:]
+                user_warnings = orm.select(w for w in db.AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id).order_by(db.AdminWarnings.date)[:]
 
             if not user_warnings:
                 embed = discord.Embed(description=self.OK_WARN_LIST_USER_NO_WARNINGS, colour=roxbot.EmbedColours.orange)
@@ -267,7 +268,7 @@ class Admin(commands.Cog):
             if index:
                 try:
                     index = int(index) - 1
-                    query = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
+                    query = orm.select(w for w in db.AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
                     if query:
                         user_warnings = query[:]
                     else:
@@ -289,9 +290,9 @@ class Admin(commands.Cog):
                         raise e
                     return await ctx.send(embed=embed)
             else:
-                query = select(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
+                query = orm.select(w for w in db.AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
                 if query.exists():
-                    delete(w for w in AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
+                    orm.delete(w for w in db.AdminWarnings if w.user_id == user.id and w.guild_id == ctx.guild.id)
                     embed = discord.Embed(description=self.OK_WARN_REMOVE_REMOVED_WARNINGS.format(str(user)), colour=roxbot.EmbedColours.pink)
                     return await ctx.send(embed=embed)
                 else:
@@ -316,7 +317,7 @@ class Admin(commands.Cog):
         x = 0
         for ban in await ctx.guild.bans():
             with db_session:
-                query = select(w for w in AdminWarnings if w.user_id == ban.user.id and w.guild_id == ctx.guild.id)
+                query = orm.select(w for w in db.AdminWarnings if w.user_id == ban.user.id and w.guild_id == ctx.guild.id)
                 if query.exists():
                     if dry_run == 0:
                         query.delete()
@@ -335,7 +336,7 @@ class Admin(commands.Cog):
             raise commands.BadArgument(self.ERROR_WARN_SL_NEG)
 
         with db_session:
-            guild_settings = AdminSingle.get(guild_id=ctx.guild.id)
+            guild_settings = db.AdminSingle.get(guild_id=ctx.guild.id)
             guild_settings.warning_limit = number_of_warnings
         if number_of_warnings == 0:
             embed = discord.Embed(description=self.OK_WARN_SL_SET_ZERO, colour=roxbot.EmbedColours.pink)

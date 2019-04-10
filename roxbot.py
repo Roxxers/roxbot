@@ -33,37 +33,7 @@ import discord
 
 import roxbot
 from roxbot import db
-from roxbot import core
 from roxbot.scripts import JSONtoDB
-
-
-class term:
-    HEADER    = '\033[95m'
-    OKBLUE    = '\033[94m'
-    OKGREEN   = '\033[92m'
-    WARNING   = '\033[93m'
-    FAIL      = '\033[91m'
-    ENDC      = '\033[0m'
-    BOLD      = '\033[1m'
-    UNDERLINE = '\033[4m'
-
-    fHEADER    =  HEADER    + "{}" + ENDC
-    fOKBLUE    =  OKBLUE    + "{}" + ENDC
-    fOKGREEN   =  OKGREEN   + "{}" + ENDC
-    fWARNING   =  WARNING   + "{}" + ENDC
-    fFAIL      =  FAIL      + "{}" + ENDC
-    fBOLD      =  BOLD      + "{}" + ENDC
-    fUNDERLINE =  UNDERLINE + "{}" + ENDC
-
-    seperator = "================================"
-
-    title = """ ____           _           _   
-|  _ \ _____  _| |__   ___ | |_ 
-| |_) / _ \ \/ / '_ \ / _ \| __|
-|  _ < (_) >  <| |_) | (_) | |_ 
-|_| \_\___/_/\_\_.__/ \___/ \__|
-"""
-
 
 # Sets up Logging
 #discord_logger = logging.getLogger('discord')
@@ -71,7 +41,7 @@ class term:
 #discord_logger.addHandler(roxbot.handler)
 
 
-bot = core.Roxbot(
+bot = roxbot.bot.Roxbot(
     command_prefix=roxbot.command_prefix,
     description=roxbot.__description__,
     owner_id=roxbot.owner,
@@ -82,7 +52,7 @@ bot = core.Roxbot(
 
 @bot.event
 async def on_ready():
-    print("Logged in as: {}".format(term.fOKGREEN.format(str(bot.user))), end="\n\n")
+    print("Logged in as: {}".format(roxbot.bot.term.fOKGREEN.format(str(bot.user))), end="\n\n")
 
     print("Guilds in: [{}]".format(len(bot.guilds)))
     for guild in bot.guilds:
@@ -126,7 +96,6 @@ async def about(ctx):
 
     em.add_field(name="Author", value=roxbot.__author__)
 
-
     # Do time calc late in the command so that the time returned is closest to when the message is received
     uptimeflo = time.time() - start_time
     uptime = str(datetime.timedelta(seconds=uptimeflo))
@@ -137,31 +106,4 @@ async def about(ctx):
 
 if __name__ == "__main__":
     start_time = time.time()
-    print(term.fHEADER.format(term.fBOLD.format(term.title)))
-
-    print("Roxbot version:       " + term.fOKBLUE.format(roxbot.__version__))
-    print("Discord.py version:   " + term.fOKBLUE.format(discord.__version__))
-
-    print(term.seperator)
-
-    print("Loading core...", end="\r")
-
-    bot.load_extension("roxbot.core")
-    print("Loaded core.py")
-    print(term.seperator)
-
-    # Load Extension Cogs
-    print("Cogs Loaded:")
-    for cog in roxbot.cog_list:
-        try:
-            bot.load_extension(cog)
-            print(cog.split(".")[2])
-        except ImportError:
-            print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
-
-    bot.loop.create_task(db.populate_db(bot))
-
-    print(term.seperator)
-    print("Client logging in...", end="\r")
-
     bot.run(roxbot.token)

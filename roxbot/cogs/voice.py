@@ -27,6 +27,7 @@ import asyncio
 import datetime
 import os
 from math import ceil
+from pony import orm
 
 import discord
 import youtube_dl
@@ -59,18 +60,10 @@ ffmpeg_options = {
 ytdl = youtube_dl.YoutubeDL(ytdl_format_options)
 
 
-class VoiceSingle(db.Entity):
-    need_perms = Required(bool, default=False)
-    skip_voting = Required(bool, default=False)
-    skip_ratio = Required(float, default=0.6, py_check=lambda v: 0 <= v <= 1)
-    max_length = Required(int, default=600)
-    guild_id = Required(int, size=64, unique=True)
-
-
 def need_perms():
     def predicate(ctx):
         with db_session:
-            settings = VoiceSingle.get(guild_id=ctx.guild.id)
+            settings = db.VoiceSingle.get(guild_id=ctx.guild.id)
         if settings.need_perms:
             return roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True)
         else:
@@ -176,7 +169,6 @@ class Voice(commands.Cog):
 
         # Setup variables and then add dictionary entries for all guilds the bot can see on boot-up.
         self.bot = bot
-        self.autogen_db = VoiceSingle
         # TODO: Make this into a on roxbot joining voice thing instead of generating this for all servers on boot.
         self.refresh_rate = 1/60  # 60hz
         self._volume = {}
@@ -186,6 +178,16 @@ class Voice(commands.Cog):
         self.now_playing = {}  # Currently playing audio
         self.queue_logic = {}
         self.bot.add_listener(self._create_dicts, "on_ready")
+
+    def define_tables(self, db):
+        class VoiceSingle(db.Entity):
+            need_perms = orm.Required(bool, default=False)
+            skip_voting = orm.Required(bool, default=False)
+            skip_ratio = orm.Required(float, default=0.6, py_check=lambda v: 0 <= v <= 1)
+            max_length = orm.Required(int, default=600)
+            guild_id = orm.Required(int, size=64, unique=True)
+
+        self.autogen_db = db.VoiceSingle
 
     async def _create_dicts(self):
         # TODO: Probably still move this to be dynamic but that might be weird with discord connection issues.
@@ -292,7 +294,7 @@ class Voice(commands.Cog):
         """
         guild = ctx.guild
         with db_session:
-            max_duration = VoiceSingle.get(guild_id=guild.id).max_length
+            max_duration = db.VoiceSingle.get(guild_id=guild.id).max_length
 
         # Checks if invoker is in voice with the bot. Skips admins and mods and owner and if the song was queued previously.
         if not (roxbot.utils.has_permissions_or_owner(ctx, manage_channels=True) or from_queue):
@@ -423,7 +425,7 @@ class Voice(commands.Cog):
             ;skip --force
         """
         with db_session:
-            voice = VoiceSingle.get(guild_id=ctx.guild.id)
+            voice = db.VoiceSingle.get(guild_id=ctx.guild.id)
         if voice.skip_voting and not (option == "--force" and ctx.author.guild_permissions.manage_channels):  # Admin force skipping
             if ctx.author in self.skip_votes[ctx.guild.id]:
                 return await ctx.send("You have already voted to skip the current track.")
@@ -589,7 +591,7 @@ class Voice(commands.Cog):
         change = change.lower()
 
         with db_session:
-            voice = VoiceSingle.get(guild_id=ctx.guild.id)
+            voice = db.VoiceSingle.get(guild_id=ctx.guild.id)
             if setting == "enable":
                 if change in ("needperms", "need_perms"):
                     voice.need_perms = True

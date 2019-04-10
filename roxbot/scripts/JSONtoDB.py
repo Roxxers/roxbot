@@ -25,11 +25,9 @@
 
 import os
 import json
-import hashlib
 import datetime
 from roxbot.db import *
-
-from roxbot.cogs.customcommands import CCCommands
+from pony.orm import *
 
 
 @db_session
@@ -62,7 +60,7 @@ def custom_commands_convert(guild_id, settings):
                 else:
                     com = command
                 try:
-                    CCCommands(name=name, output=com, type=int(com_type), guild_id=guild_id)
+                    db.CCCommands(name=name, output=com, type=int(com_type), guild_id=guild_id)
                     db.commit()
                 except (TransactionIntegrityError, CacheIndexError, IntegrityError):
                     pass

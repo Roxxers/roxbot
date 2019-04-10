@@ -21,8 +21,7 @@
 
 import sqlite3
 from os import getcwd
-from pony.orm import *
-
+from pony.orm import Database, db_session, TransactionIntegrityError
 
 db_dir = getcwd() + "/roxbot/settings/db.sqlite"
 db = Database()
@@ -33,6 +32,7 @@ db.bind("sqlite", db_dir, create_db=True)
 
 async def populate_db(bot):
     db.generate_mapping(create_tables=True)
+    database = db
     await bot.wait_for("ready")
     populate_single_settings(bot)
 
