@@ -31,7 +31,7 @@ db.bind("sqlite", db_dir, create_db=True)
 # Entities are committed to the db in the main file during boot up
 
 async def populate_db(bot):
-    db.generate_mapping(create_tables=True)
+
     database = db
     await bot.wait_for("ready")
     populate_single_settings(bot)

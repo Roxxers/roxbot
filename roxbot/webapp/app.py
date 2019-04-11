@@ -2,10 +2,13 @@ import os
 from flask import Flask, session, redirect, request, url_for, jsonify, render_template, render_template_string
 from requests_oauthlib import OAuth2Session
 
-import roxbot
+from pony.flask import Pony
 
-OAUTH2_CLIENT_ID = os.environ['OAUTH2_CLIENT_ID']
-OAUTH2_CLIENT_SECRET = os.environ['OAUTH2_CLIENT_SECRET']
+import roxbot
+from roxbot.db import db
+
+OAUTH2_CLIENT_ID = roxbot.config["webapp"]['OAUTH2_CLIENT_ID']
+OAUTH2_CLIENT_SECRET = roxbot.config["webapp"]['OAUTH2_CLIENT_SECRET']
 OAUTH2_REDIRECT_URI = 'http://localhost:5000/callback'
 
 API_BASE_URL = os.environ.get('API_BASE_URL', 'https://discordapp.com/api')
@@ -13,8 +16,12 @@ AUTHORIZATION_BASE_URL = API_BASE_URL + '/oauth2/authorize'
 TOKEN_URL = API_BASE_URL + '/oauth2/token'
 
 app = Flask(__name__)
+Pony(app)
 app.debug = True
+app.use_reloader=False
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
+app.config['TEMPLATES_AUTO_RELOAD'] = False
+
 
 if 'http://' in OAUTH2_REDIRECT_URI:
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = 'true'
@@ -84,7 +91,7 @@ def me():
     discord = make_session(token=session.get('oauth2_token'))
     user = discord.get(API_BASE_URL + '/users/@me').json()
     guilds = discord.get(API_BASE_URL + '/users/@me/guilds').json()
-    return jsonify(user=user, guilds=guilds)
+    return db.Users.get(id=user["id"]).pronouns
 
 
 if __name__ == '__main__':

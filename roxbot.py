@@ -41,6 +41,8 @@ from roxbot.scripts import JSONtoDB
 #discord_logger.addHandler(roxbot.handler)
 
 
+
+
 bot = roxbot.bot.Roxbot(
     command_prefix=roxbot.command_prefix,
     description=roxbot.__description__,
@@ -59,6 +61,8 @@ async def on_ready():
         print(guild)
 
     roxbot.scripts.JSONtoDB.check_convert(bot.guilds)
+
+
 
 
 @bot.event
@@ -106,4 +110,9 @@ async def about(ctx):
 
 if __name__ == "__main__":
     start_time = time.time()
+    import threading
+    from roxbot import webapp
+    threading.Thread(target=webapp.app.app.run, kwargs={'debug': True,'use_reloader': False}).start()
     bot.run(roxbot.token)
+
+

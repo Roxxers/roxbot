@@ -86,18 +86,22 @@ class Roxbot(commands.Bot):
         print("Cogs Loaded:")
         for cog in roxbot.cog_list:
             try:
-                # Define all tables in cogs
-                cog.define_tables(db)
-            except AttributeError:
-                pass
-            try:
                 self.load_extension(cog)
                 print(cog.split(".")[2])
             except ImportError:
                 print("{} FAILED TO LOAD. MISSING REQUIREMENTS".format(cog.split(".")[2]))
 
-        # Finish DB setup
+        # DB setup
 
+        for name, cog in self._cogs.items():
+            try:
+                # Define all tables in cogs
+                cog.define_tables(db)
+            except AttributeError:
+                pass
+
+        roxbot.leveling.define_tables(db)
+        db.generate_mapping(create_tables=True)
         self.loop.create_task(roxbot.db.populate_db(self))
 
         print(term.seperator)
