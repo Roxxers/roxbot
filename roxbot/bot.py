@@ -23,7 +23,6 @@
 # SOFTWARE.
 
 
-import time
 import asyncio
 import discord
 from discord.ext import commands
@@ -79,6 +78,7 @@ class Roxbot(commands.Bot):
         print("Loading core...", end="\r")
 
         self.load_extension("roxbot.core")
+        self.load_extension("roxbot.leveling")
         print("Loaded core.py")
         print(term.seperator)
 
@@ -100,7 +100,6 @@ class Roxbot(commands.Bot):
             except AttributeError:
                 pass
 
-        roxbot.leveling.define_tables(db)
         db.generate_mapping(create_tables=True)
         self.loop.create_task(roxbot.db.populate_db(self))
 
