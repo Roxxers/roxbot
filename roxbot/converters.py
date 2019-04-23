@@ -75,7 +75,7 @@ class AvatarURL(commands.UserConverter):
     """
     async def convert(self, ctx, argument):
         if any(x in argument.split(".")[-1].lower() for x in ("png", "jpg", "jpeg")):
-            return argument
+            return argument.strip("<>")
         else:
             try:
                 user = await super().convert(ctx, argument)
