@@ -16,15 +16,15 @@ class Leveleing(commands.Cog):
         self.recent_talkers = {}
         self.bot.add_listener(self.populate_dicts, "on_ready")
 
-    def define_tables(self, db):
-        class Users(db.Entity):
+    def define_tables(self, database):
+        class Users(database.Entity):
             id = PrimaryKey(int, size=64)
             pronouns = Optional(str)
             bio = Optional(str)
             guild_leaderboards = Set("LevelingLBEntries", cascade_delete=True)
             currency = Required(int, size=64, default=0)
 
-        class LevelingLBEntries(db.Entity):
+        class LevelingLBEntries(database.Entity):
             user = Required(Users)
             points = Required(int, size=64, default=0)
             guild_id = Required(int, size=64)
@@ -56,7 +56,6 @@ class Leveleing(commands.Cog):
                 except TransactionIntegrityError:
                     pass
 
-
     @commands.Cog.listener()
     async def on_message(self, message):
         async def remove_recent_talker_entry(author):
@@ -66,11 +65,14 @@ class Leveleing(commands.Cog):
         author = message.author
         guild = message.guild
 
-        if self.bot.blacklisted(author): return
-        if isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)): return
-        if author.id in self.recent_talkers[guild.id]: return
+        if self.bot.blacklisted(author):
+            return
+        if isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)):
+            return
+        if author.id in self.recent_talkers[guild.id]:
+            return
 
-        self.recent_talkers[guild.id][author.id] = True  # Using dict here so that hopefully this runs quicker at the price of memory
+        self.recent_talkers[guild.id][author.id] = True
         points_awarded = random.randint(1, 11)
         currency_awarded = random.randint(1, 11)
         with db_session:
