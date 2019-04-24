@@ -214,7 +214,8 @@ class CustomCommands(commands.Cog):
 
 
             CCCommands(name=command, guild_id=ctx.guild.id, output=output, type=command_type)
-        return await ctx.send(self.OUTPUT_ADD.format(command, output if len(output) > 1 else output[0]))
+
+        return await ctx.send(self.OUTPUT_ADD.format(command, output if len(output) > 1 or isinstance(output, dict) else output[0]))
 
     @commands.has_permissions(manage_messages=True)
     @custom.command()
