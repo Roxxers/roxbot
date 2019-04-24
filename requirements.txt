@@ -1,4 +1,4 @@
-git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
+discord
 beautifulsoup4==4.6.0
 pillow==5.1.0
 numpy==1.14.3
