@@ -88,7 +88,7 @@ class Leveleing(commands.Cog):
     async def points(self, ctx):
         with db_session:
             user = db.Users.get(id=ctx.author.id)
-            entry = db.LevelingLBEntries.get(user=user, guild_id=ctx.guild.id)
+            entry = user.guild_leaderboards.select(lambda lb_entry: lb_entry.guild_id == ctx.guild.id)[:][0]
         await ctx.send(entry.points)
 
 
