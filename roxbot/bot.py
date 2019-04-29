@@ -93,7 +93,7 @@ class Roxbot(commands.Bot):
 
         # DB setup
 
-        for name, cog in self._cogs.items():
+        for name, cog in self.cogs.items():
             try:
                 # Define all tables in cogs
                 cog.define_tables(db)
