@@ -60,6 +60,7 @@ cog_list = [
     "roxbot.cogs.trivia",
     "roxbot.cogs.util",
     "roxbot.cogs.voice",
+    "roxbot.cogs.wordplay"
     #"roxbot.cogs.ags"
 ]
 
