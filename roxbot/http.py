@@ -83,6 +83,8 @@ async def download_file(url, filename=None):
     filename: str
         Handy if no filename given
     """
+    if not isinstance(url, str):
+        url = str(url)
     if filename is None:
         filename = url.split("/")[-1].split("?")[0]
     async with aiohttp.ClientSession() as session:
