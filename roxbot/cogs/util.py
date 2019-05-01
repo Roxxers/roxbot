@@ -57,7 +57,7 @@ class Util(commands.Cog):
         url = user.avatar_url_as(static_format="png")
         filename = re.sub(' |\?|\.|!|/|\\|:|\"|\[|\]|;|=|\||\*|,', '', user.name+str(user.id))
 
-        if ".gif" in url:
+        if ".gif" in str(url):
             avaimg = '{0}.gif'.format(filename)
         else:
             avaimg = '{0}.png'.format(filename)
