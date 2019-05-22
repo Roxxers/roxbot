@@ -69,8 +69,14 @@ class Leveleing(commands.Cog):
             return
         if isinstance(message.channel, (discord.DMChannel, discord.GroupChannel)):
             return
-        if author.id in self.recent_talkers[guild.id]:
+        try:
+            if author.id in self.recent_talkers[guild.id]:
+                return
+        except KeyError:
             return
+            # This will only happen when a guild is not in the dict which only happens a small number of ways.
+            # Either way it's best to continue and log the error for diagnostic use.
+            # TODO: Add logging here
 
         self.recent_talkers[guild.id][author.id] = True
         points_awarded = random.randint(1, 11)
