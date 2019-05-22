@@ -193,7 +193,7 @@ class Util(commands.Cog):
             return await ctx.send(embed=em)
         except commands.errors.BadArgument:  # unicode emoji
             title = emoji.demojize(emote)
-            if not emoji.EMOJI_UNICODE.get(title):
+            if not (emoji.EMOJI_UNICODE.get(title) or emoji.EMOJI_ALIAS_UNICODE.get(title)):
                 raise commands.BadArgument("Could not convert input to either unicode emoji or Discord custom emote.")
 
             emojis = []

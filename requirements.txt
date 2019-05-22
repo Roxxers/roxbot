@@ -3,5 +3,5 @@ beautifulsoup4==4.6.0
 pillow==5.1.0
 numpy==1.14.3
 youtube_dl
-emoji==0.5.1
+git+git://github.com/roxxers/emoji@master#egg=emoji
 pony==0.7.9
