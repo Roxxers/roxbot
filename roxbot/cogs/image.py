@@ -131,6 +131,17 @@ class PrideFlags:
         green = (176, 244, 141)
         colours = (black, grey, white, green, white, grey, black)
         return cls(rows=rows, colours=colours)
+    
+    @classmethod
+    def aro(cls):
+        rows = 5
+        green = (61, 165, 66)
+        ltgreen = (167, 212, 121)
+        white = (255, 255, 255)
+        grey = (169, 169, 169)
+        black = (0, 0, 0)
+        colours = (green, ltgreen, white, grey, black)
+        return cls(rows=rows, colours=colours)
 
 
 class ImageEditor(commands.Cog):
@@ -399,6 +410,26 @@ class ImageEditor(commands.Cog):
         flag = PrideFlags.agender()
         async with ctx.typing():
             file = await self.flag_filter("agender", flag, image)
+        output = await ctx.send(file=file)
+        os.remove(file.filename)
+        await self.image_logging(ctx, output)
+        
+    @pride.command(aliases=["aro"])
+    async def aromantic(self, ctx, image: roxbot.converters.AvatarURL = None):
+        """Adds a Aromantic Pride Flag filter to the given image
+        Args:
+            image: Optional
+                If nothing, your avatar
+                Mention a user, their avatar
+                Provide a URL, that image
+                Provide an image via upload, that image.
+        """
+        if not image:
+            image = self.image_lookup(ctx.message)
+
+        flag = PrideFlags.aro()
+        async with ctx.typing():
+            file = await self.flag_filter("aro", flag, image)
         output = await ctx.send(file=file)
         os.remove(file.filename)
         await self.image_logging(ctx, output)

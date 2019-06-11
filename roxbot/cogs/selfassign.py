@@ -71,32 +71,40 @@ class SelfAssign(commands.Cog):
         """
         with db_session:
             self_assign = SelfAssignSingle.get(guild_id=ctx.guild.id)
-            if setting == "enable":
+        if setting == "enable":
+            with db_session:
                 self_assign.enabled = True
-                await ctx.send("'self_assign' was enabled!")
-            elif setting == "disable":
+            await ctx.send("'self_assign' was enabled!")
+
+        elif setting == "disable":
+            with db_session:
                 self_assign.enabled = False
-                await ctx.send("'self_assign' was disabled :cry:")
-            elif setting == "add":
-                try:
+            await ctx.send("'self_assign' was disabled :cry:")
+
+        elif setting == "add":
+            try:
+                with db_session:
                     SelfAssignRoles(role_id=role.id, guild_id=ctx.guild.id)
-                    await ctx.send('Role "{}" added'.format(str(role)))
-                except AttributeError:
-                    raise commands.BadArgument("Could not find that role.")
-                except TransactionIntegrityError:
-                    raise commands.BadArgument("{} is already a self-assignable role.".format(role.name))
-            elif setting == "remove":
-                try:
+                return await ctx.send('Role "{}" added'.format(str(role)))
+            except AttributeError:
+                raise commands.BadArgument("Could not find that role.")
+            except TransactionIntegrityError:
+                raise commands.BadArgument("{} is already a self-assignable role.".format(role.name))
+
+        elif setting == "remove":
+            try:
+                with db_session:
                     query = SelfAssignRoles.get(role_id=role.id)
-                    if query:
+                if query:
+                    with db_session:
                         query.delete()
-                        return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
-                    else:
-                        return await ctx.send("That role was not in the list.")
-                except AttributeError:
-                    raise commands.BadArgument("Could not find that role.")
-            else:
-                return await ctx.send("No valid option given.")
+                    return await ctx.send('"{}" has been removed from the self-assignable roles.'.format(str(role)))
+                else:
+                    return await ctx.send("That role was not in the list.")
+            except AttributeError:
+                raise commands.BadArgument("Could not find that role.")
+        else:
+            return await ctx.send("No valid option given.")
 
     @commands.guild_only()
     @commands.command(pass_context=True)
