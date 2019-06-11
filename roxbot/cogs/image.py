@@ -216,15 +216,16 @@ class ImageEditor(commands.Cog):
     async def image_logging(self, ctx, output):
         """Logging function for all image commands to avoid shit loads or repeating code.
         Required because image has outputs that are user decided and therefore could need logging for."""
-        return await self.bot.log(
-            ctx.guild,
-            "image",
-            User=ctx.author,
-            User_ID=ctx.author.id,
-            Output_Message_ID=output.id,
-            Channel=ctx.channel,
-            Channel_Mention=ctx.channel.mention,
-            Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+        if isinstance(ctx.channel, discord.TextChannel):
+            return await self.bot.log(
+                ctx.guild,
+                "image",
+                User=ctx.author,
+                User_ID=ctx.author.id,
+                Output_Message_ID=output.id,
+                Channel=ctx.channel,
+                Channel_Mention=ctx.channel.mention,
+                Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
         )
 
     @commands.group(case_insensitive=True)
