@@ -108,7 +108,7 @@ class Fun(commands.Cog):
             # Make "Hello World" be emoji.
             ;emojify Hello World
         """
-        old_string = list(text)
+        old_string = list(text.lower())
         new_string = ""
         for char in old_string:
             if char == " ":
