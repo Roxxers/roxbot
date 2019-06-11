@@ -1,5 +1,7 @@
 
 import random
+import string
+import emoji
 
 import roxbot
 
@@ -84,6 +86,51 @@ class Fun(commands.Cog):
         old_string = list(text)
         for x in old_string[::-1]:
             new_string += x
+        output = await ctx.send(new_string)
+
+        if isinstance(ctx.channel, discord.TextChannel):
+            await self.bot.log(
+                ctx.guild,
+                "aesthetics",
+                User=ctx.author,
+                User_ID=ctx.author.id,
+                Output_Message_ID=output.id,
+                Channel=ctx.channel,
+                Channel_Mention=ctx.channel.mention,
+                Time=roxbot.datetime.format(ctx.message.created_at)
+            )
+
+    @commands.command(aliases=[])
+    async def emojify(self, ctx, *, text):
+        """
+        Changes all text given to emoji characters. Ascii only.
+        Example:
+            # Make "Hello World" be emoji.
+            ;emojify Hello World
+        """
+        old_string = list(text.lower())
+        new_string = ""
+        for char in old_string:
+            if char == " ":
+                new_string += "  "
+            elif char in string.ascii_letters:
+                new_string += emoji.emojize(":regional_indicator_{}:".format(char), use_aliases=True)
+            elif char in string.digits:
+                unicode_emoji =  emoji.emojize(":keycap_{}:".format(char))
+                # Discord uses the keycap emoji without the variant selector so we need to remove it so it displays correctly.
+                removed_variant_char = [c for c in unicode_emoji]
+                removed_variant_char.pop(1)
+                new_string += "".join(removed_variant_char)
+            elif char == "*":
+                new_string += emoji.emojize(":keycap_asterisk:".format(char))
+            elif char == "#":
+                new_string += emoji.emojize(":keycap_number_sign:".format(char))
+            elif char in string.punctuation:
+                new_string += char
+            else:
+                raise commands.BadArgument("This command does not work with non-ascii characters.")
+            new_string += " "
+
         output = await ctx.send(new_string)
 
         if isinstance(ctx.channel, discord.TextChannel):

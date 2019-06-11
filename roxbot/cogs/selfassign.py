@@ -76,14 +76,14 @@ class SelfAssign(commands.Cog):
             if setting == "enable":
                 self_assign.enabled = True
                 db.commit()
-            await ctx.send("'self_assign' was enabled!")
+                await ctx.send("'self_assign' was enabled!")
 
-        elif setting == "disable":
-            with db_session:
+            elif setting == "disable":
                 self_assign.enabled = False
                 db.commit()
                 await ctx.send("'self_assign' was disabled :cry:")
             elif setting == "add":
+                try:
                     db.SelfAssignRoles(role_id=role.id, guild_id=ctx.guild.id)
                     db.commit()
                     await ctx.send('Role "{}" added'.format(str(role)))
@@ -102,8 +102,8 @@ class SelfAssign(commands.Cog):
                         return await ctx.send("That role was not in the list.")
                 except AttributeError:
                     raise commands.BadArgument("Could not find that role.")
-        else:
-            return await ctx.send("No valid option given.")
+            else:
+                return await ctx.send("No valid option given.")
 
     @commands.guild_only()
     @commands.command(pass_context=True)
