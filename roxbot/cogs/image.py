@@ -35,16 +35,17 @@ from discord.ext import commands
 import roxbot
 
 
-class PrideFlags:
+class Flag:
     """Class to produce pride flags for the filters in Roxbot."""
-    def __init__(self, rows=0, colours=None, ratio=None):
-        self.rows = rows
+    def __init__(self, colours=None, ratio=None, name=""):
+        self.name = name
+        self.rows = len(colours)
         self.colours = colours
-        self.ratio = ratio or tuple([(1/rows)]*rows)  # Custom ratio is here for things like the bi pride flag
+        self.ratio = ratio or tuple([(1/self.rows)]*self.rows)  # Custom ratio is here for things like the bi pride flag
 
     @classmethod
     def lgbt(cls):
-        rows = 6
+        name = "lgbt"
         red = (243, 28, 28)
         orange = (255, 196, 0)
         yellow = (255, 247, 0)
@@ -52,96 +53,143 @@ class PrideFlags:
         blue = (0, 149, 255)
         violet = (181, 46, 193)
         colours = (red, orange, yellow, green, blue, violet)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def trans(cls):
-        rows = 5
+        name = "trans"
         blue = (91, 206, 250)
         pink = (245, 169, 184)
         white = (255, 255, 255)
         colours = (blue, pink, white, pink, blue)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def non_binary(cls):
-        rows = 4
+        name = "nb"
         yellow = (255, 244, 51)
         white = (255, 255, 255)
         purple = (155, 89, 208)
         grey = (45, 45, 45)
         colours = (yellow, white, purple, grey)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def bi(cls):
-        rows = 3
+        name = "bi"
         ratio = (0.4, 0.2, 0.4)
         pink = (215, 2, 112)
         lavender = (115, 79, 150)
         blue = (0, 56, 168)
         colours = (pink, lavender, blue)
-        return cls(rows=rows, colours=colours, ratio=ratio)
+        return cls(colours=colours, ratio=ratio, name=name)
 
     @classmethod
     def pan(cls):
-        rows = 3
+        name = "pan"
         pink = (255, 33, 140)
         yellow = (255, 216, 0)
         blue = (33, 177, 255)
         colours = (pink, yellow, blue)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def ace(cls):
-        rows = 4
+        name = "ace"
         black = (0, 0, 0)
         grey = (163, 163, 163)
         white = (255, 255, 255)
         purple = (128, 0, 128)
         colours = (black, grey, white, purple)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def gq(cls):
-        rows = 3
+        name = "gq"
         purple = (181, 126, 220)
         white = (255, 255, 255)
         green = (74, 129, 35)
         colours = (purple, white, green)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def gf(cls):
-        rows = 5
+        name = "genderflu"
         pink = (255, 117, 162)
         white = (255, 255, 255)
         purple = (190, 24, 214)
         black = (0, 0, 0)
         blue = (51, 62, 189)
         colours = (pink, white, purple, black, blue)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
 
     @classmethod
     def agender(cls):
-        rows = 7
+        name = "agender"
         black = (0, 0, 0)
         white = (255, 255, 255)
         grey = (185, 185, 185)
         green = (176, 244, 141)
         colours = (black, grey, white, green, white, grey, black)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
     
     @classmethod
     def aro(cls):
-        rows = 5
+        name = "aro"
         green = (61, 165, 66)
         ltgreen = (167, 212, 121)
         white = (255, 255, 255)
         grey = (169, 169, 169)
         black = (0, 0, 0)
         colours = (green, ltgreen, white, grey, black)
-        return cls(rows=rows, colours=colours)
+        return cls(colours=colours, name=name)
+
+    @classmethod
+    def demigirl(cls):
+        name = "demigirl"
+        grey = (128, 128, 128)
+        silver = (196, 196, 196)
+        pink = (254, 176, 202)
+        colours = (grey, silver, pink, silver, grey)
+        return cls(colours=colours, name=name)
+
+    @classmethod
+    def demiboy(cls):
+        name = "demiboy"
+        grey = (128, 128, 128)
+        silver = (196, 196, 196)
+        blue = (155, 218, 235)
+        colours = (grey, silver, blue, silver, grey)
+        return cls(colours=colours, name=name)
+
+    @classmethod
+    def deminb(cls):
+        name = "deminb"
+        grey = (128, 128, 128)
+        silver = (196, 196, 196)
+        yellow = (251, 255, 117)
+        colours = (grey, silver, yellow, silver, grey)
+        return cls(colours=colours, name=name)
+
+    @classmethod
+    def polygender(cls):
+        name = "polygender"
+        black = (0, 0, 0)
+        grey = (147, 147, 147)
+        pink = (237, 148, 197)
+        yellow = (245, 237, 129)
+        blue = (100, 187, 230)
+        colours = (black, grey, pink, yellow, blue)
+        return cls(colours=colours, name=name)
+
+    @classmethod
+    def polysexual(cls):
+        name = "polysexual"
+        pink = (246, 22, 186)
+        green = (0, 214, 105)
+        blue = (21, 147, 246)
+        colours = (pink, green, blue)
+        return cls(colours=colours, name=name)
 
 
 class ImageEditor(commands.Cog):
@@ -178,10 +226,10 @@ class ImageEditor(commands.Cog):
         return Image.composite(noisy, img, mask)
 
     @staticmethod
-    async def flag_filter(name, flag, url):
+    async def flag_filter(flag, url):
         """At the moment, can only make horizontal stripe flags"""
 
-        f = 'filter_{}.png'.format(name)
+        f = 'filter_{}.png'.format(flag.name)
 
         await roxbot.http.download_file(url, f)
 
@@ -216,15 +264,16 @@ class ImageEditor(commands.Cog):
     async def image_logging(self, ctx, output):
         """Logging function for all image commands to avoid shit loads or repeating code.
         Required because image has outputs that are user decided and therefore could need logging for."""
-        return await self.bot.log(
-            ctx.guild,
-            "image",
-            User=ctx.author,
-            User_ID=ctx.author.id,
-            Output_Message_ID=output.id,
-            Channel=ctx.channel,
-            Channel_Mention=ctx.channel.mention,
-            Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
+        if isinstance(ctx.channel, discord.TextChannel):
+            return await self.bot.log(
+                ctx.guild,
+                "image",
+                User=ctx.author,
+                User_ID=ctx.author.id,
+                Output_Message_ID=output.id,
+                Channel=ctx.channel,
+                Channel_Mention=ctx.channel.mention,
+                Time="{:%a %Y/%m/%d %H:%M:%S} UTC".format(ctx.message.created_at)
         )
 
     @commands.group(case_insensitive=True)
@@ -232,6 +281,13 @@ class ImageEditor(commands.Cog):
         """`;pride` is a command group for multiple pride flag filters."""
         if ctx.invoked_subcommand is None:
             raise commands.CommandNotFound("Subcommand '{}' does not exist.".format(ctx.subcommand_passed))
+
+    async def pride_flag_posting(self, ctx, flag, image):
+        async with ctx.typing():
+            file = await self.flag_filter(flag, image)
+        output = await ctx.send(file=file)
+        os.remove(file.filename)
+        await self.image_logging(ctx, output)
 
     @pride.command()
     async def lgbt(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -246,13 +302,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.lgbt()
-        async with ctx.typing():
-            file = await self.flag_filter("lgbt", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
-
+        flag = Flag.lgbt()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["trans"])
     async def transgender(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -267,12 +318,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.trans()
-        async with ctx.typing():
-            file = await self.flag_filter("trans", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.trans()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["nb", "enby"])
     async def nonbinary(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -287,12 +334,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.non_binary()
-        async with ctx.typing():
-            file = await self.flag_filter("nb", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.non_binary()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["bi"])
     async def bisexual(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -307,12 +350,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.bi()
-        async with ctx.typing():
-            file = await self.flag_filter("bi", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.bi()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["gq"])
     async def genderqueer(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -327,12 +366,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.gq()
-        async with ctx.typing():
-            file = await self.flag_filter("gq", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.gq()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["pan"])
     async def pansexual(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -347,12 +382,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.pan()
-        async with ctx.typing():
-            file = await self.flag_filter("pan", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.pan()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["ace"])
     async def asexual(self, ctx, image: roxbot.converters.AvatarURL=None):
@@ -367,12 +398,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.ace()
-        async with ctx.typing():
-            file = await self.flag_filter("ace", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.ace()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command(aliases=["gf"])
     async def genderfluid(self, ctx, image: roxbot.converters.AvatarURL = None):
@@ -387,12 +414,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.gf()
-        async with ctx.typing():
-            file = await self.flag_filter("gf", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.gf()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @pride.command()
     async def agender(self, ctx, image: roxbot.converters.AvatarURL = None):
@@ -407,12 +430,8 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.agender()
-        async with ctx.typing():
-            file = await self.flag_filter("agender", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.agender()
+        await self.pride_flag_posting(ctx, flag, image)
         
     @pride.command(aliases=["aro"])
     async def aromantic(self, ctx, image: roxbot.converters.AvatarURL = None):
@@ -427,12 +446,88 @@ class ImageEditor(commands.Cog):
         if not image:
             image = self.image_lookup(ctx.message)
 
-        flag = PrideFlags.aro()
-        async with ctx.typing():
-            file = await self.flag_filter("aro", flag, image)
-        output = await ctx.send(file=file)
-        os.remove(file.filename)
-        await self.image_logging(ctx, output)
+        flag = Flag.aro()
+        await self.pride_flag_posting(ctx, flag, image)
+
+    @pride.command(aliases=[])
+    async def demigirl(self, ctx, image: roxbot.converters.AvatarURL = None):
+        """Adds a Demi Girl Pride Flag filter to the given image
+        Args:
+            image: Optional
+                If nothing, your avatar
+                Mention a user, their avatar
+                Provide a URL, that image
+                Provide an image via upload, that image.
+        """
+        if not image:
+            image = self.image_lookup(ctx.message)
+
+        flag = Flag.demigirl()
+        await self.pride_flag_posting(ctx, flag, image)
+
+    @pride.command(aliases=[])
+    async def demiboy(self, ctx, image: roxbot.converters.AvatarURL = None):
+        """Adds a Demi Boy Pride Flag filter to the given image
+        Args:
+            image: Optional
+                If nothing, your avatar
+                Mention a user, their avatar
+                Provide a URL, that image
+                Provide an image via upload, that image.
+        """
+        if not image:
+            image = self.image_lookup(ctx.message)
+
+        flag = Flag.demiboy()
+        await self.pride_flag_posting(ctx, flag, image)
+
+    @pride.command(aliases=["deminonbinary"])
+    async def deminb(self, ctx, image: roxbot.converters.AvatarURL = None):
+        """Adds a Demi non-binary Pride Flag filter to the given image
+        Args:
+            image: Optional
+                If nothing, your avatar
+                Mention a user, their avatar
+                Provide a URL, that image
+                Provide an image via upload, that image.
+        """
+        if not image:
+            image = self.image_lookup(ctx.message)
+
+        flag = Flag.deminb()
+        await self.pride_flag_posting(ctx, flag, image)
+
+    @pride.command(aliases=[])
+    async def polygender(self, ctx, image: roxbot.converters.AvatarURL = None):
+        """Adds a Polygender Pride Flag filter to the given image
+        Args:
+            image: Optional
+                If nothing, your avatar
+                Mention a user, their avatar
+                Provide a URL, that image
+                Provide an image via upload, that image.
+        """
+        if not image:
+            image = self.image_lookup(ctx.message)
+
+        flag = Flag.polygender()
+        await self.pride_flag_posting(ctx, flag, image)
+
+    @pride.command(aliases=[])
+    async def polysexual(self, ctx, image: roxbot.converters.AvatarURL = None):
+        """Adds a Polysexual Pride Flag filter to the given image
+        Args:
+            image: Optional
+                If nothing, your avatar
+                Mention a user, their avatar
+                Provide a URL, that image
+                Provide an image via upload, that image.
+        """
+        if not image:
+            image = self.image_lookup(ctx.message)
+
+        flag = Flag.polysexual()
+        await self.pride_flag_posting(ctx, flag, image)
 
     @commands.command(aliases=["df"])
     async def deepfry(self, ctx, image: roxbot.converters.AvatarURL=None):
