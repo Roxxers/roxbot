@@ -150,7 +150,8 @@ class Flag:
         grey = (128, 128, 128)
         silver = (196, 196, 196)
         pink = (254, 176, 202)
-        colours = (grey, silver, pink, silver, grey)
+        white = (255, 255, 255)
+        colours = (grey, silver, pink, white, pink, silver, grey)
         return cls(colours=colours, name=name)
 
     @classmethod
@@ -159,7 +160,8 @@ class Flag:
         grey = (128, 128, 128)
         silver = (196, 196, 196)
         blue = (155, 218, 235)
-        colours = (grey, silver, blue, silver, grey)
+        white = (255, 255, 255)
+        colours = (grey, silver, blue, white, blue, silver, grey)
         return cls(colours=colours, name=name)
 
     @classmethod
@@ -168,7 +170,8 @@ class Flag:
         grey = (128, 128, 128)
         silver = (196, 196, 196)
         yellow = (251, 255, 117)
-        colours = (grey, silver, yellow, silver, grey)
+        white = (255, 255, 255)
+        colours = (grey, silver, yellow, white, yellow, silver, grey)
         return cls(colours=colours, name=name)
 
     @classmethod
