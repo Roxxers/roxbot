@@ -60,7 +60,7 @@ class AssortedGenderSounds(commands.Cog):
     async def on_member_join(self, member):
         if member.guild == self.ags:
             await member.add_roles(self.newbie_role, reason="Auto-add role on join")
-            await member.send("Please read our <#396697172139180033> and <#422514427263188993> channels. To gain access to the server, you must agree to the rules.")
+            await member.send("Welcome to AGS! If you're new here, please take the time to read our <#422514427263188993> and the <#396697172139180033> channel. Once you are ready, just make a post in <#450040463794241536> - if you're having any trouble, ask for a member of staff. We hope you have fun and enjoy the server <:hrtTrans:591277334926196736> <:hrtNonbinary:591245470165368839> <:hrtlgbtphilly:589153299266142218> <:hrtGenderqueer:591277330673172502> <:hrtAgender:591245404415459338>")
 
     async def tatsumaki_api_call(self, member, guild):
         base = "https://api.tatsumaki.xyz/"
