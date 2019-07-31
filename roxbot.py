@@ -25,9 +25,7 @@
 
 
 import datetime
-import logging
 import time
-import traceback
 
 import discord
 
@@ -110,9 +108,6 @@ async def about(ctx):
 
 if __name__ == "__main__":
     start_time = time.time()
-    import threading
-    from roxbot import webapp
-    threading.Thread(target=webapp.app.app.run, kwargs={'debug': True,'use_reloader': False}).start()
     bot.run(roxbot.token)
 
 

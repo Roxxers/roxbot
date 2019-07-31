@@ -31,9 +31,6 @@ from .exceptions import UserError, CogSettingDisabled
 
 from . import checks, http, converters, utils, roxbotfacts, exceptions, db, bot, leveling
 
-from . import webapp
-
-
 command_prefix = config["Roxbot"]["Command_Prefix"]
 owner = int(config["Roxbot"]["OwnerID"])
 token = config["Tokens"]["Discord"]

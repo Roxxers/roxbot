@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+{% block head %}
+
+    {% block styles %}
+        <link rel="stylesheet" type="text/css" href="static/css/bulma.css">
+    {% endblock styles %}
+    <meta charset="UTF-8">
+    <title>{% block title %}{% block page_name %}{% endblock page_name %} - Roxbot{% endblock title %}</title>
+{% endblock %}
+</head>
+
+<body>
+{% block body %}
+    {% include "base/nav.html" %}
+    {% block content %}
+    {% endblock content %}
+{% endblock body %}
+</body>
+
+</html>
