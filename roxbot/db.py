@@ -25,7 +25,11 @@ from pony.orm import Database, db_session, TransactionIntegrityError
 
 db_dir = getcwd() + "/roxbot/settings/db.sqlite"
 db = Database()
-db.bind("sqlite", db_dir, create_db=True)
+#db.bind("sqlite", db_dir, create_db=True)
+db.bind(provider='postgres', user='roxie', password='', host='localhost', database='roxbot')
+
+# TODO: Need to include error handling for not being able to connect to the db
+# TODO: Docs for making postgres db
 
 
 # Entities are committed to the db in the main file during boot up
@@ -49,6 +53,7 @@ def populate_single_settings(bot):
 
 
 def delete_single_settings(guild):
+    # TODO: Fix this to actually work with postgres
     database = sqlite3.connect(db_dir)
     cursor = database.cursor()
     cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
