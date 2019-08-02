@@ -2,14 +2,6 @@ import os
 from quart import Quart
 import configparser
 
-from pony.orm import Database, db_session, TransactionIntegrityError
-
-db = Database()
-db.bind(provider='postgres', user='roxie', password='', host='localhost', database='roxbot')
-db.generate_mapping(create_tables=True)
-
-print(db.entities)
-
 
 config = configparser.ConfigParser()
 config.read("../roxbot.conf")
@@ -32,7 +24,7 @@ app.use_reloader=False
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 app.config['TEMPLATES_AUTO_RELOAD'] = False
 
-from webapp import routes, oauth
+from webapp import routes, oauth, db
 
 
 

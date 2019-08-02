@@ -86,8 +86,8 @@ async def login():
 
 @app.route('/logout')
 async def logout():
-    await session.clear()
-    return redirect(url_for(".index"))
+     session.clear()
+     return redirect(url_for(".index"))
 
 
 @app.route('/callback')
