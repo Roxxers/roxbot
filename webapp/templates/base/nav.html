@@ -1,4 +1,4 @@
-<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
+<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
       <div class="navbar-brand">
         <a class="navbar-item" href="{{ url_for('.index') }}">
           <strong>Roxbot</strong>
@@ -21,6 +21,9 @@
           </div>
         </div>
         <div class="navbar-end">
+            <a class="navbar-item" href="https://github.com/roxxers/roxbot">
+              <i class="fab fa-github"></i>
+            </a>
             {% if oauth_token %}
             <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link">
@@ -35,7 +38,7 @@
             {% else %}
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button is-primary" href='{{ url_for(".login") }}'>Login</a>
+                    <a class="button discord-login" href='{{ url_for(".login") }}'><span id="discord-login-logo" class="fab fa-discord"></span> Login</a>
                 </div>
             </div>
           {% endif %}
