@@ -1,5 +1,5 @@
 
-from quart import session, redirect, request, url_for, jsonify, render_template
+from quart import session, redirect, request, url_for, jsonify, render_template, abort
 import webapp
 from webapp import oauth, app
 
@@ -25,6 +25,17 @@ async def index():
 @app.route('/stats')
 async def stats():
     return ""
+
+@app.route("/settings/instance")
+async def instance():
+    oauth_token = session.get('oauth2_token')
+    if oauth_token is None:
+        return redirect(url_for("login"))
+
+    if webapp.config["Roxbot"]["OwnerID"] != session['user']['id']:
+        abort(401)
+
+    return "hello world"
 
 
 @app.route('/guilds')
@@ -95,12 +106,14 @@ async def callback():
     form =  await request.form
     if form.get('error'):
         return form['error']
-    discord = oauth.make_session(state=session.get('oauth2_state'))
-    token = discord.fetch_token(
+    discord_session = oauth.make_session(state=session.get('oauth2_state'))
+
+    token = discord_session.fetch_token(
         webapp.TOKEN_URL,
         client_secret=webapp.OAUTH2_CLIENT_SECRET,
         authorization_response=request.url)
     session['oauth2_token'] = token
+    session['user'] = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
     return redirect(url_for('index'))
 
 

@@ -6,7 +6,7 @@
 
 <section class="section">
   <div class="container">
-      <div class="columns is-desktop is-multiline ">
+    <div class="columns is-desktop is-multiline ">
       {% for guild in guilds  %}
         <div class="column is-4">
           <a class="box" href="{{ url_for('guild_page', guild_id=guild['id']) }}">
@@ -36,7 +36,7 @@
           </a>
         </div>
       {% endfor %}
-      </div>
+    </div>
   </div>
 </section>
 {% endblock content %}

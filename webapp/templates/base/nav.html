@@ -22,12 +22,12 @@
         </div>
         <div class="navbar-end">
             <a class="navbar-item" href="https://github.com/roxxers/roxbot">
-              <i class="fab fa-github"></i>
+              <i class="fab fa-github navbar-social-link"></i>
             </a>
             {% if oauth_token %}
             <div class="navbar-item has-dropdown is-hoverable">
-                <a class="navbar-link">
-                    <span class="navbar-username">{{ user.get("username") }}#{{ user.get("discriminator") }}</span>
+                <a class="navbar-link is-arrowless">
+                    <span class="discord-username">{{ user.get("username") }}#{{ user.get("discriminator") }}</span>
                     <img class="avatar" src="{{ IMAGE_BASE_URL }}avatars/{{ user['id'] }}/{{ user['avatar'] }}{% if user['avatar'].startswith('a_') %}.gif{% else %}.webp{% endif %}" height="28" onerror="this.src='{{ IMAGE_BASE_URL }}embed/avatars/{{ user['discriminator']|int % 5 }}.png'">
                 </a>
                 <div class="navbar-dropdown">
@@ -38,7 +38,7 @@
             {% else %}
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button discord-login" href='{{ url_for(".login") }}'><span id="discord-login-logo" class="fab fa-discord"></span> Login</a>
+                    <a class="button discord-blue discord-login" href='{{ url_for(".login") }}'><span id="discord-login-logo" class="fab fa-discord"></span> Login</a>
                 </div>
             </div>
           {% endif %}
