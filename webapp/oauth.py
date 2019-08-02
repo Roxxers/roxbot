@@ -1,6 +1,6 @@
 from requests_oauthlib import OAuth2Session
 from webapp import *
-from flask import session
+from quart import session
 
 
 if 'http://' in OAUTH2_REDIRECT_URI:

@@ -1,16 +1,21 @@
 import os
-from flask import Flask
-from pony.flask import Pony
+from quart import Quart
 import configparser
+
+from pony.orm import Database, db_session, TransactionIntegrityError
+
+db = Database()
+db.bind(provider='postgres', user='roxie', password='', host='localhost', database='roxbot')
+db.generate_mapping(create_tables=True)
+
+print(db.entities)
 
 
 config = configparser.ConfigParser()
-config.read("../roxbot/settings/roxbot.conf")
+config.read("../roxbot.conf")
 
+app = Quart(__name__)
 
-
-app = Flask(__name__)
-#Pony(app)
 
 OAUTH2_CLIENT_ID = config["webapp"]['OAUTH2_CLIENT_ID']
 OAUTH2_CLIENT_SECRET = config["webapp"]['OAUTH2_CLIENT_SECRET']

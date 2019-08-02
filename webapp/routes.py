@@ -1,11 +1,11 @@
 
-from flask import session, redirect, request, url_for, jsonify, render_template
+from quart import session, redirect, request, url_for, jsonify, render_template
 import webapp
 from webapp import oauth, app
 
 
 @app.route("/")
-def index():
+async def index():
     oauth_token = session.get('oauth2_token', None)
     if oauth_token:
         discord_session = oauth.make_session(token=oauth_token)
@@ -14,7 +14,7 @@ def index():
         discord_session = {}
         user = {}
 
-    return render_template(
+    return await render_template(
         "index.html",
         oauth_token=oauth_token,
         discord_session=discord_session,
@@ -23,12 +23,12 @@ def index():
     )
 
 @app.route('/stats')
-def stats():
+async def stats():
     return ""
 
 
 @app.route('/guilds')
-def guilds_page():
+async def guilds():
     oauth_token = session.get('oauth2_token')
     if oauth_token is None:
         return redirect(url_for("login"))
@@ -37,7 +37,7 @@ def guilds_page():
     guilds = discord_session.get(webapp.API_BASE_URL + '/users/@me/guilds').json()
     user = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
 
-    return render_template(
+    return await render_template(
         "guilds.html",
         oauth_token=oauth_token,
         user=user,
@@ -47,7 +47,7 @@ def guilds_page():
 
 
 @app.route('/guilds/<guild_id>')
-def guild_page(guild_id):
+async def guild_page(guild_id):
     oauth_token = session.get('oauth2_token')
     if oauth_token is None:
         return redirect(url_for("login"))
@@ -60,7 +60,7 @@ def guild_page(guild_id):
 
 
 @app.route('/me')
-def me():
+async def me():
     if session.get('oauth2_token') is None:
         return redirect(url_for("login"))
 
@@ -74,7 +74,7 @@ def me():
 ###########
 
 @app.route('/login')
-def login():
+async def login():
     scope = request.args.get(
         'scope',
         'identify guilds')
@@ -85,22 +85,22 @@ def login():
 
 
 @app.route('/logout')
-def logout():
-    session.clear()
+async def logout():
+    await session.clear()
     return redirect(url_for(".index"))
 
 
 @app.route('/callback')
-def callback():
-    if request.values.get('error'):
-        return request.values['error']
+async def callback():
+    form =  await request.form
+    if form.get('error'):
+        return form['error']
     discord = oauth.make_session(state=session.get('oauth2_state'))
     token = discord.fetch_token(
         webapp.TOKEN_URL,
         client_secret=webapp.OAUTH2_CLIENT_SECRET,
         authorization_response=request.url)
     session['oauth2_token'] = token
-    print(request.referrer)
     return redirect(url_for('index'))
 
 

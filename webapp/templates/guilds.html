@@ -4,42 +4,39 @@
 
 {% block content %}
 
-<div class="container">
-    <div class="columns is-desktop is-multiline ">
-    {% for guild in guilds  %}
-      <div class="column is-4">
-        <a class="box" href="{{ url_for('guild_page', guild_id=guild['id']) }}">
-          <article class="media">
-            <figure class="media-left">
-              <p class="image">
-                {% set guild_icon = namespace(exists=false) %}
-                {% if guild['icon'] %}
-                  {% set guild_icon.exists=true %}
-                {% endif %}
-                {% if guild_icon.exists %}
-                  {% if guild['icon'].startswith('a_') %}
-                    <img class="avatar" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.gif" alt="{{ guild['name'][0].upper() }}">
+<section class="section">
+  <div class="container">
+      <div class="columns is-desktop is-multiline ">
+      {% for guild in guilds  %}
+        <div class="column is-4">
+          <a class="box" href="{{ url_for('guild_page', guild_id=guild['id']) }}">
+            <article class="media">
+              <figure class="media-left">
+                <p class="image">
+                  {% if guild['icon'] != none %}
+                    {% if guild['icon'].startswith('a_') %}
+                      <img class="avatar" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.gif" alt="{{ guild['name'][0].upper() }}">
+                    {% else %}
+                      <img class="avatar" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.webp" alt="{{ guild['name'][0].upper() }}">
+                    {% endif %}
                   {% else %}
-                    <img class="avatar" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.webp" alt="{{ guild['name'][0].upper() }}">
+                    <div class="avatar guild-icon-backup"></div>
                   {% endif %}
-                {% else %}
-                  <div class="avatar guild-icon-backup"></div>
-                {% endif %}
-              </p>
-            </figure>
-            <div class="media-content guild-card">
-              <div class="content">
-                <p >{{ guild['name'] }}</p>
+                </p>
+              </figure>
+              <div class="media-content guild-card">
+                <div class="content">
+                  <p >{{ guild['name'] }}</p>
+                </div>
               </div>
-            </div>
-            <div class="media-right">
+              <div class="media-right">
 
-            </div>
-          </article>
-        </a>
+              </div>
+            </article>
+          </a>
+        </div>
+      {% endfor %}
       </div>
-    {% endfor %}
-    </div>
-</div>
-
+  </div>
+</section>
 {% endblock content %}
