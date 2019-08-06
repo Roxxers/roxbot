@@ -27,10 +27,10 @@ import os.path
 import configparser
 
 
-if not os.path.isfile("roxbot/settings/roxbot.conf"):
+if not os.path.isfile("roxbot.conf"):
     print("PREFERENCE FILE MISSING. Please make sure there is a file called 'roxbot.conf' in the settings folder")
     exit(1)
 
 
 config = configparser.ConfigParser()
-config.read("roxbot/settings/roxbot.conf")
+config.read("roxbot.conf")

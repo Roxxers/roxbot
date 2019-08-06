@@ -1,7 +1,8 @@
-<nav class="navbar is-transparent" role="navigation" aria-label="main navigation">
+<nav class="navbar is-transparent has-shadow is-spaced" role="navigation" aria-label="main navigation">
+    <div class="container">
       <div class="navbar-brand">
         <a class="navbar-item" href="{{ url_for('.index') }}">
-          <strong>Roxbot</strong>
+          <strong style="font-size: 1.8em">Roxbot</strong>
         </a>
 
         <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
@@ -35,9 +36,10 @@
             {% else %}
             <div class="navbar-item">
                 <div class="buttons">
-                    <a class="button discord-blue discord-login" href='{{ url_for(".login") }}'><span id="discord-login-logo" class="fab fa-discord"></span> Login</a>
+                    <a class="button is-primary discord-login" href='{{ url_for(".login") }}'><span id="discord-login-logo" class="fab fa-discord"></span> Login</a>
                 </div>
             </div>
           {% endif %}
         </div>
+    </div>
 </nav>
