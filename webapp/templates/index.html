@@ -6,7 +6,7 @@
 {% block content %}
 
 <section class="hero is-medium is-dark is-bold">
-  <div class="hero-body">
+  <div class="hero-body has-text-centered">
     <div class="container">
         <h1 class="title">
             Roxbot
@@ -14,6 +14,10 @@
         <h2 class="subtitle">
             An inclusive modular multi-purpose Discord bot.<br />Built with ❤️
         </h2>
+        <div class="buttons is-centered">
+          <a class="button is-primary is-outlined" href="{{ invite_url }}">Invite to <i id="discord-invite-logo" class="fab fa-discord"></i> </a>
+          <button class="button is-warning is-outlined">Dashboard</button>
+        </div>
     </div>
   </div>
 </section>

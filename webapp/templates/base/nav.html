@@ -25,8 +25,13 @@
             {% if oauth_token %}
             <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link is-arrowless">
-                    <span class="discord-username">{{ user.get("username") }}#{{ user.get("discriminator") }}</span>
-                    <img id="nav-ava" class="avatar" src="{{ IMAGE_BASE_URL }}avatars/{{ user['id'] }}/{{ user['avatar'] }}{% if user['avatar'].startswith('a_') %}.gif{% else %}.webp{% endif %}" height="28" onerror="this.src='{{ IMAGE_BASE_URL }}embed/avatars/{{ user['discriminator']|int % 5 }}.png'">
+                    <span class="discord-username">{{ logged_in_user.get("username") }}#{{ logged_in_user.get("discriminator") }}</span>
+                    {% set fallback = "{0}embed/avatars/{1}.png".format(IMAGE_BASE_URL, logged_in_user['discriminator']|int % 5) %}
+                    {% if logged_in_user['avatar'].startswith('a_') %}
+                      <img id="nav-ava" class="avatar" src="{{ IMAGE_BASE_URL }}avatars/{{ logged_in_user['id'] }}/{{ logged_in_user['avatar'] }}.gif" height="28" onerror="this.src='{{ fallback }}'">
+                    {% else %}
+                      <img id="nav-ava" class="avatar" src="{{ IMAGE_BASE_URL }}avatars/{{ logged_in_user['id'] }}/{{ logged_in_user['avatar'] }}.webp" height="28" onerror="this.src='{{ fallback }}'">
+                    {% endif %}
                 </a>
                 <div class="navbar-dropdown">
                     <a class="navbar-item" href='{{ url_for(".me") }}'>Me</a>

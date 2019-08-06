@@ -3,6 +3,7 @@ from quart import session, redirect, request, url_for, jsonify, render_template,
 import webapp
 from webapp import oauth, app, config
 from webapp.discord_client import bot
+import discord
 
 
 def requires_login(func):
@@ -21,17 +22,19 @@ async def index():
     oauth_token = session.get('oauth2_token', None)
     if oauth_token:
         discord_session = oauth.make_session(token=oauth_token)
-        user = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
+        logged_in_user = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
     else:
         discord_session = {}
-        user = {}
+        logged_in_user = {}
 
     return await render_template(
         "index.html",
         oauth_token=oauth_token,
         discord_session=discord_session,
-        user=user,
-        IMAGE_BASE_URL=webapp.IMAGE_BASE_URL
+        logged_in_user=logged_in_user,
+        IMAGE_BASE_URL=webapp.IMAGE_BASE_URL,
+        client=app.discord_client,
+        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558), redirect_uri=url_for(".index"))
     )
 
 
