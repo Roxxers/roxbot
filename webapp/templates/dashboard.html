@@ -1,6 +1,6 @@
 {% extends "base/base.html" %}
 
-{% block page_name %}Guilds{% endblock page_name %}
+{% block page_name %}Dashboard{% endblock page_name %}
 
 {% block content %}
 
@@ -8,19 +8,19 @@
   <div class="container">
     <div class="columns is-desktop is-multiline ">
       {% for guild in guilds  %}
-        <div class="column is-4">
+        <div class="column is-3">
           <a class="box" href="{{ url_for('guild_page', guild_id=guild['id']) }}">
             <article class="media">
               <figure class="media-left">
                 <p class="image">
                   {% if guild['icon'] != none %}
                     {% if guild['icon'].startswith('a_') %}
-                      <img class="avatar" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.gif" alt="{{ guild['name'][0].upper() }}">
+                      <img class="avatar guild-icon" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.gif?size=64" alt="{{ guild['name'][0].upper() }}">
                     {% else %}
-                      <img class="avatar" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.webp" alt="{{ guild['name'][0].upper() }}">
+                      <img class="avatar guild-icon" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.webp?size=64" alt="{{ guild['name'][0].upper() }}">
                     {% endif %}
                   {% else %}
-                    <div class="avatar guild-icon-backup"></div>
+                    <div class="avatar guild-icon guild-icon-backup"></div>
                   {% endif %}
                 </p>
               </figure>

@@ -1,12 +1,18 @@
 import os
-from quart import Quart
 import configparser
+import asyncio
+import quart.flask_patch
+
 
 
 config = configparser.ConfigParser()
 config.read("../roxbot.conf")
 
-app = Quart(__name__)
+from webapp.app import RoxbotWebapp
+
+app = RoxbotWebapp(__name__)
+loop = asyncio.get_event_loop()
+
 
 
 OAUTH2_CLIENT_ID = config["webapp"]['OAUTH2_CLIENT_ID']
@@ -24,7 +30,7 @@ app.use_reloader=False
 app.config['SECRET_KEY'] = OAUTH2_CLIENT_SECRET
 app.config['TEMPLATES_AUTO_RELOAD'] = False
 
-from webapp import routes, oauth, db
+from webapp import routes, oauth, db, discord_client
 
 
 

@@ -12,11 +12,8 @@
       </div>
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item" href="{{ url_for('.guilds') }}">
-            Guilds
-          </a>
-          <a class="navbar-item" href="{{ url_for('.stats') }}">
-            Stats
+          <a class="navbar-item" href="{{ url_for('.dashboard') }}">
+            Dashboard
           </a>
           </div>
         </div>
@@ -28,7 +25,7 @@
             <div class="navbar-item has-dropdown is-hoverable">
                 <a class="navbar-link is-arrowless">
                     <span class="discord-username">{{ user.get("username") }}#{{ user.get("discriminator") }}</span>
-                    <img class="avatar" src="{{ IMAGE_BASE_URL }}avatars/{{ user['id'] }}/{{ user['avatar'] }}{% if user['avatar'].startswith('a_') %}.gif{% else %}.webp{% endif %}" height="28" onerror="this.src='{{ IMAGE_BASE_URL }}embed/avatars/{{ user['discriminator']|int % 5 }}.png'">
+                    <img id="nav-ava" class="avatar" src="{{ IMAGE_BASE_URL }}avatars/{{ user['id'] }}/{{ user['avatar'] }}{% if user['avatar'].startswith('a_') %}.gif{% else %}.webp{% endif %}" height="28" onerror="this.src='{{ IMAGE_BASE_URL }}embed/avatars/{{ user['discriminator']|int % 5 }}.png'">
                 </a>
                 <div class="navbar-dropdown">
                     <a class="navbar-item" href='{{ url_for(".me") }}'>Me</a>
