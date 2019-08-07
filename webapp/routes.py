@@ -2,7 +2,6 @@
 from quart import session, redirect, request, url_for, jsonify, render_template, abort
 import webapp
 from webapp import oauth, app, config
-from webapp.discord_client import bot
 import discord
 
 
@@ -22,7 +21,7 @@ async def index():
     oauth_token = session.get('oauth2_token', None)
     if oauth_token:
         discord_session = oauth.make_session(token=oauth_token)
-        logged_in_user = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
+        logged_in_user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
     else:
         discord_session = {}
         logged_in_user = {}
@@ -32,15 +31,20 @@ async def index():
         oauth_token=oauth_token,
         discord_session=discord_session,
         logged_in_user=logged_in_user,
-        IMAGE_BASE_URL=webapp.IMAGE_BASE_URL,
+        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"],
         client=app.discord_client,
-        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558), redirect_uri=url_for(".index"))
+        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558), redirect_uri=url_for("index", _external=True))
     )
 
 
-@app.route('/stats')
-async def stats():
+@app.route('/about')
+async def about():
     return ""
+
+
+@app.route('/docs')
+async def docs():
+    return redirect("https://roxxers.github.io/roxbot/")
 
 
 @app.route("/settings/instance")
@@ -50,10 +54,10 @@ async def instance():
     if oauth_token is None:
         return redirect(url_for("login"))
 
-    if config["Roxbot"]["OwnerID"] != session['user']['id']:
+    if app.config["INSTANCE_OWNER_ID"] != session['user']['id']:
         abort(401)
 
-    return await render_template("settings/settings.html", bot=webapp.discord_client.bot.client.user)
+    return await render_template("settings/settings.html", bot=webapp._discord.bot.client.user)
 
 
 @app.route('/dashboard')
@@ -69,16 +73,16 @@ async def dashboard():
 
     oauth_token = session.get('oauth2_token')
     discord_session = oauth.make_session(token=oauth_token)
-    guilds = discord_session.get(webapp.API_BASE_URL + '/users/@me/guilds').json()
+    guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
     guilds = list(filter(filter_guilds, guilds))
-    user = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
+    user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
 
     return await render_template(
         "dashboard.html",
         oauth_token=oauth_token,
         user=user,
         guilds=sorted(guilds, key=lambda k: k['name']),
-        IMAGE_BASE_URL=webapp.IMAGE_BASE_URL
+        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"]
     )
 
 
@@ -90,7 +94,7 @@ async def guild_page(guild_id):
         return redirect(url_for("login"))
 
     discord_session = oauth.make_session(token=oauth_token)
-    guilds = discord_session.get(webapp.API_BASE_URL + '/users/@me/guilds').json()
+    guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
     guild = list(filter(lambda a: a != -1, [x if guild_id == x['id'] else -1 for x in guilds]))
 
     return jsonify(guild)
@@ -104,7 +108,7 @@ async def me():
 
     oauth_token = session.get('oauth2_token', None)
     discord_session = oauth.make_session(token=oauth_token)
-    return jsonify(discord_session.get(webapp.API_BASE_URL + '/users/@me').json())
+    return jsonify(discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json())
 
 
 ###########
@@ -118,7 +122,7 @@ async def login():
         'scope',
         'identify guilds')
     discord = oauth.make_session(scope=scope.split(' '))
-    authorization_url, state = discord.authorization_url(webapp.AUTHORIZATION_BASE_URL)
+    authorization_url, state = discord.authorization_url(app.config["AUTHORIZATION_BASE_URL"])
     session['oauth2_state'] = state
     return redirect(authorization_url)
 
@@ -137,11 +141,11 @@ async def callback():
     discord_session = oauth.make_session(state=session.get('oauth2_state'))
 
     token = discord_session.fetch_token(
-        webapp.TOKEN_URL,
-        client_secret=webapp.OAUTH2_CLIENT_SECRET,
+        app.config["TOKEN_URL"],
+        client_secret=app.config["OAUTH2_CLIENT_SECRET"],
         authorization_response=request.url)
     session['oauth2_token'] = token
-    session['user'] = discord_session.get(webapp.API_BASE_URL + '/users/@me').json()
+    session['user'] = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
     return redirect(session['login_referrer'])
 
 
