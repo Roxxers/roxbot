@@ -1,8 +1,10 @@
 
 from quart import session, redirect, request, url_for, jsonify, render_template, abort
 import webapp
-from webapp import oauth, app, config
+from webapp import oauth, app
 import discord
+
+# TODO: Make the bots own name dynamic in places on the webpages.
 
 
 def requires_login(func):
@@ -11,10 +13,16 @@ def requires_login(func):
             session['login_referrer'] = url_for(func.__name__)
             return redirect(url_for("login"))
         else:
+            if session.get('login_referrer'):
+                session.pop('login_referrer')
             return func(*args, **kwargs)
     wrapper.__name__ = func.__name__  # Weird work around needed to decorate app routes
     return wrapper
 
+@app.before_first_request
+async def wait_for_discord_client():
+    if not app.discord_client.is_ready():
+        abort(503)
 
 @app.route("/")
 async def index():
@@ -47,6 +55,11 @@ async def docs():
     return redirect("https://roxxers.github.io/roxbot/")
 
 
+##########
+#  DASH  #
+##########
+
+
 @app.route("/settings/instance")
 @requires_login
 async def instance():
@@ -64,6 +77,7 @@ async def instance():
 @requires_login
 async def dashboard():
     roxbot_guilds = app.discord_client.guilds
+
     def filter_guilds(guild):
         g_ids = [str(x.id) for x in roxbot_guilds]
         if guild.get('id', 0) in g_ids:
@@ -75,14 +89,16 @@ async def dashboard():
     discord_session = oauth.make_session(token=oauth_token)
     guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
     guilds = list(filter(filter_guilds, guilds))
-    user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
+    logged_in_user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
 
     return await render_template(
         "dashboard.html",
         oauth_token=oauth_token,
-        user=user,
+        logged_in_user=logged_in_user,
         guilds=sorted(guilds, key=lambda k: k['name']),
-        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"]
+        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"],
+        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558),
+                                           redirect_uri=url_for("index", _external=True))
     )
 
 
@@ -121,8 +137,13 @@ async def login():
     scope = request.args.get(
         'scope',
         'identify guilds')
-    discord = oauth.make_session(scope=scope.split(' '))
-    authorization_url, state = discord.authorization_url(app.config["AUTHORIZATION_BASE_URL"])
+
+    # In the case that the user pressed the login button instead of a route that requires login
+    if not session.get('login_referrer'):
+        session['login_referrer'] = url_for(".dashboard")
+
+    disc_session = oauth.make_session(scope=scope.split(' '))
+    authorization_url, state = disc_session.authorization_url(app.config["AUTHORIZATION_BASE_URL"])
     session['oauth2_state'] = state
     return redirect(authorization_url)
 
@@ -147,8 +168,3 @@ async def callback():
     session['oauth2_token'] = token
     session['user'] = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
     return redirect(session['login_referrer'])
-
-
-
-
-

@@ -46,8 +46,10 @@
             </div>
             {% else %}
             <div class="navbar-item">
-                <div class="buttons">
-                    <a class="button is-primary discord-login" href='{{ url_for(".login") }}'><span id="discord-login-logo" class="fab fa-discord"></span> Login</a>
+                <div class="field is-grouped">
+                    <p class="control">
+                    <a class="button is-primary" href='{{ url_for(".login") }}'><i id="discord-login-logo" class="fab fa-discord"></i> Login</a>
+                    </p>
                 </div>
             </div>
           {% endif %}

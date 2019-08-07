@@ -16,10 +16,28 @@
         </h2>
         <div class="buttons is-centered">
           <a class="button is-primary is-outlined" href="{{ invite_url }}">Invite to <i id="discord-invite-logo" class="fab fa-discord"></i> </a>
-          <button class="button is-warning is-outlined">Dashboard</button>
+          <a class="button is-warning is-outlined" href="{{ url_for('.dashboard') }}">Dashboard</a>
         </div>
     </div>
   </div>
 </section>
+
+
+<div class="container">
+  <section id="usage-level" class="section level is-mobile">
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Guilds</p>
+        <p class="title">{{ client.guilds | length }}</p>
+      </div>
+    </div>
+    <div class="level-item has-text-centered">
+      <div>
+        <p class="heading">Users</p>
+        <p class="title">{{ client.users | length }}</p>
+      </div>
+    </div>
+  </section>
+</div>
 
 {% endblock content %}
