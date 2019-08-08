@@ -85,6 +85,38 @@ async def dashboard():
         else:
             return False
 
+    # TODO: Make this shit cache or something in future before production
+    oauth_token = session.get('oauth2_token')
+    discord_session = oauth.make_session(token=oauth_token)
+    guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
+    guilds = list(filter(filter_guilds, guilds))
+    logged_in_user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
+
+    # TODO: We could probably make the sidebar used for the dashboard render from cogs enabled and all that fancy dynamic jazz
+    return await render_template(
+        "dashboard/index.html",
+        oauth_token=oauth_token,
+        logged_in_user=logged_in_user,
+        guilds=sorted(guilds, key=lambda k: k['name']),
+        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"],
+        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558),
+                                           redirect_uri=url_for("index", _external=True)),
+        owner_id=app.config["INSTANCE_OWNER_ID"]
+    )
+
+
+@app.route('/dashboard/roles')
+@requires_login
+async def dashboard_selfassign():
+    roxbot_guilds = app.discord_client.guilds
+
+    def filter_guilds(guild):
+        g_ids = [str(x.id) for x in roxbot_guilds]
+        if guild.get('id', 0) in g_ids:
+            return True
+        else:
+            return False
+
     oauth_token = session.get('oauth2_token')
     discord_session = oauth.make_session(token=oauth_token)
     guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
@@ -92,17 +124,78 @@ async def dashboard():
     logged_in_user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
 
     return await render_template(
-        "dashboard.html",
+        "dashboard/roles.html",
         oauth_token=oauth_token,
         logged_in_user=logged_in_user,
         guilds=sorted(guilds, key=lambda k: k['name']),
         IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"],
         invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558),
-                                           redirect_uri=url_for("index", _external=True))
+                                           redirect_uri=url_for("index", _external=True)),
+        owner_id=app.config["INSTANCE_OWNER_ID"]
     )
 
 
-@app.route('/guilds/<guild_id>')
+@app.route('/dashboard/guilds')
+@requires_login
+async def dashboard_guilds():
+    roxbot_guilds = app.discord_client.guilds
+
+    def filter_guilds(guild):
+        g_ids = [str(x.id) for x in roxbot_guilds]
+        if guild.get('id', 0) in g_ids:
+            return True
+        else:
+            return False
+
+    oauth_token = session.get('oauth2_token')
+    discord_session = oauth.make_session(token=oauth_token)
+    guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
+    guilds = list(filter(filter_guilds, guilds))
+    logged_in_user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
+
+    return await render_template(
+        "dashboard/guilds.html",
+        oauth_token=oauth_token,
+        logged_in_user=logged_in_user,
+        guilds=sorted(guilds, key=lambda k: k['name']),
+        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"],
+        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558),
+                                           redirect_uri=url_for("index", _external=True)),
+        owner_id=app.config["INSTANCE_OWNER_ID"]
+    )
+
+
+@app.route('/dashboard/instance')
+@requires_login
+async def dashboard_instance():
+    roxbot_guilds = app.discord_client.guilds
+
+    def filter_guilds(guild):
+        g_ids = [str(x.id) for x in roxbot_guilds]
+        if guild.get('id', 0) in g_ids:
+            return True
+        else:
+            return False
+
+    oauth_token = session.get('oauth2_token')
+    discord_session = oauth.make_session(token=oauth_token)
+    guilds = discord_session.get(app.config["API_BASE_URL"] + '/users/@me/guilds').json()
+    guilds = list(filter(filter_guilds, guilds))
+    logged_in_user = discord_session.get(app.config["API_BASE_URL"] + '/users/@me').json()
+
+    return await render_template(
+        "dashboard/instance.html",
+        oauth_token=oauth_token,
+        logged_in_user=logged_in_user,
+        guilds=sorted(guilds, key=lambda k: k['name']),
+        IMAGE_BASE_URL=app.config["IMAGE_BASE_URL"],
+        invite_url=discord.utils.oauth_url(app.discord_client.user.id, permissions=discord.Permissions(1983245558),
+                                           redirect_uri=url_for("index", _external=True)),
+        owner_id=app.config["INSTANCE_OWNER_ID"]
+    )
+
+
+@app.route('/dashboard/guilds/<guild_id>')
 @requires_login
 async def guild_page(guild_id):
     oauth_token = session.get('oauth2_token')

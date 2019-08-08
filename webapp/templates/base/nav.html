@@ -13,13 +13,13 @@
       </div>
       <div id="navbarBasicExample" class="navbar-menu">
         <div class="navbar-start">
-          <a class="navbar-item" href="{{ url_for('.about') }}">
+          <a class="navbar-item{% if request.path == url_for('.about') %} is-active{% endif %}" href="{{ url_for('.about') }}">
             About
           </a>
           <a class="navbar-item" href="{{ url_for('.docs') }}">
             Docs
           </a>
-          <a class="navbar-item" href="{{ url_for('.dashboard') }}">
+          <a class="navbar-item{% if url_for('.dashboard') in request.path %} is-active{% endif %}" href="{{ url_for('.dashboard') }}">
             Dashboard
           </a>
           </div>

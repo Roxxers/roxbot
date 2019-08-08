@@ -1,0 +1,37 @@
+{% extends "dashboard/base.html" %}
+
+{% block settings %}
+<section id="guilds" class="section">
+  <h2 class="title">Guilds</h2>
+  <h3 class="subtitle">
+    Click on a guild to edit it's settings! Don't see the guild you want? <a href="{{ invite_url }}">Invite Roxbot!</a>
+  </h3>
+  <div class="columns is-desktop is-multiline">
+    {% for guild in guilds  %}
+    <div class="column is-one-third">
+      <a class="box guild-card" href="{{ url_for('guild_page', guild_id=guild['id']) }}">
+        <article class="media">
+          <figure class="media-left">
+            {% if guild['icon'] != none %}
+              {% if guild['icon'].startswith('a_') %}
+                <img class="avatar guild-icon" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.gif?size=64" alt="{{ guild['name'][0].upper() }}">
+              {% else %}
+                <img class="avatar guild-icon" src="{{ IMAGE_BASE_URL }}icons/{{ guild['id'] }}/{{ guild['icon'] }}.webp?size=64" alt="{{ guild['name'][0].upper() }}">
+              {% endif %}
+            {% else %}
+            <div class="avatar guild-icon guild-icon-backup"></div>
+            {% endif %}
+          </figure>
+          <div class="media-content guild-content">
+            <div class="content">
+              <p >{{ guild['name'] }}</p>
+            </div>
+          </div>
+          <div class="media-right"></div>
+        </article>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock settings %}

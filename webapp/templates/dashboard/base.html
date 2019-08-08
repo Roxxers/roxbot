@@ -1,0 +1,56 @@
+{% extends "base/base.html" %}
+
+{% block page_name %}Dashboard{% endblock page_name %}
+
+{% block content %}
+<main>
+  <section id="header" class="hero is-dark is-bold">
+    <div class="hero-body">
+      <div class="container">
+        <h1 class="title">
+          Dashboard
+        </h1>
+        <h2 class="subtitle">
+          Edit all of Roxbot's settings from here!
+        </h2>
+      </div>
+    </div>
+  </section>
+  <div class="container">
+    <div class="columns is-fullheight">
+      <div class="column is-2">
+        <aside class="menu column section">
+          <p class="menu-label">
+            General
+          </p>
+          <ul class="menu-list">
+            <li>
+                <a class="{% if request.path == url_for('dashboard') %}is-active{% endif %}" href="{{ url_for('dashboard') }}">Overview</a>
+            </li>
+            <li>
+                <a class="{% if request.path == url_for('dashboard_selfassign') %}is-active{% endif %}" href="{{ url_for('dashboard_selfassign') }}">Self Assign Roles</a>
+            </li>
+          </ul>
+          <p class="menu-label">
+            Settings
+          </p>
+          <ul class="menu-list">
+            {% if owner_id == logged_in_user.get('id') %}
+            <li>
+                <a class="{% if request.path == url_for('dashboard_instance') %}is-active{% endif %}" href="{{ url_for('dashboard_instance') }}">Instance</a>
+            </li>
+            {% endif %}
+            <li>
+                <a class="{% if request.path == url_for('dashboard_guilds') %}is-active{% endif %}" href="{{ url_for('dashboard_guilds') }}">Guilds</a>
+            </li>
+          </ul>
+        </aside>
+      </div>
+      <div class="column is-10">
+        {% block settings %}
+        {% endblock settings %}
+      </div>
+    </div>
+  </div>
+</main>
+{% endblock content %}
