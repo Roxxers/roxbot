@@ -36,7 +36,7 @@ class AssortedGenderSounds(commands.Cog):
         self.bot = bot_client
         self.required_score = 2000
         self.days = 5
-        self.logging_channel_id = 394959819796381697
+        self.logging_channel_id = 712934360600543253
         self.newbie_role_id = 450042170112475136
         self.selfie_role_id = 394939389823811584
         self.ags_id = 393764974444675073
